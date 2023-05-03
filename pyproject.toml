@@ -1,0 +1,2 @@
+[tool.pytype]
+inputs = ['google', 'tests']
