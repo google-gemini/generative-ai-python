@@ -16,6 +16,7 @@
 
 from google.generativeai.types.discuss_types import *
 from google.generativeai.types.model_types import *
+from google.generativeai.types.text_types import *
 
 del discuss_types
 del model_types
