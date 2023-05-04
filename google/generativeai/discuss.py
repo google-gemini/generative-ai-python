@@ -315,7 +315,7 @@ def chat(
 
             For example, if the sorted probabilities are
             `[0.5, 0.2, 0.1, 0.1, 0.05, 0.05]` a `top_p` of `0.8` will sample
-            as `[0.625, 0.25, 0.125, 0, 0, 0].
+            as `[0.625, 0.25, 0.125, 0, 0, 0]`.
 
             Typical values are in the `[0.9, 1.0]` range.
         prompt: You may pass a `types.MessagePromptOptions` **instead** of a
