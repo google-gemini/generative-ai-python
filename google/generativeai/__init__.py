@@ -53,6 +53,7 @@ for model in genai.list_models():
 """
 
 from google.generativeai import types
+from google.generativeai import version
 
 from google.generativeai.discuss import chat
 from google.generativeai.discuss import chat_async
@@ -64,10 +65,12 @@ from google.generativeai.text import generate_embeddings
 from google.generativeai.models import list_models
 from google.generativeai.models import get_model
 
-
 from google.generativeai.client import configure
+
+__version__ = version.__version__
 
 del discuss
 del text
 del models
 del client
+del version
