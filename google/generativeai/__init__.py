@@ -16,10 +16,14 @@
 
 ## Setup
 
+```posix-terminal
+pip install google-generativeai
+```
+
 ```
 import google.generativeai as genai
 
-genai.configure(api_key=os.environ['API_KEY']
+genai.configure(api_key=os.environ['API_KEY'])
 ```
 
 ## Chat
