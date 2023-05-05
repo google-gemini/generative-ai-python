@@ -44,6 +44,7 @@ extras_require = {
         "asynctest",
         "black",
         "nose2",
+        "pandas",
         "pytype",
         "pyyaml",
     ],
