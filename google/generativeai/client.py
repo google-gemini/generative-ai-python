@@ -21,7 +21,10 @@ import google.ai.generativelanguage as glm
 from google.auth import credentials as ga_credentials
 from google.api_core import client_options as client_options_lib
 from google.api_core import gapic_v1
+from google.generativeai import version
 
+
+USER_AGENT = "genai-py"
 
 default_client_config = {}
 default_discuss_client = None
@@ -80,6 +83,16 @@ def configure(
             api_key = os.getenv("GOOGLE_API_KEY")
 
         client_options.api_key = api_key
+
+    user_agent = f"{USER_AGENT}/{version.__version__}"
+    if client_info:
+      # Be respectful of any existing agent setting.
+      if client_info.user_agent:
+        client_info.user_agent += f" {user_agent}"
+      else:
+        client_info.user_agent = user_agent
+    else:
+      client_info = gapic_v1.client_info.ClientInfo(user_agent=user_agent)
 
     new_default_client_config = {
         "credentials": credentials,
