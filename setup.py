@@ -35,7 +35,7 @@ else:
     release_status = "Development Status :: 5 - Production/Stable"
 
 dependencies = [
-    "google-ai-generativelanguage==0.1.0"
+    "google-ai-generativelanguage==0.2.0"
 ]
 
 extras_require = {
