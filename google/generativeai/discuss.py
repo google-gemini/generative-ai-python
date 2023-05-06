@@ -440,7 +440,7 @@ def _build_chat_response(
     request["messages"] = prompt["messages"]
 
     response = type(response).to_dict(response)
-    request["messages"].append(response["candidates"][0])
+    request["messages"].extend(response.get("candidates", [])[:1])
     request.setdefault("temperature", None)
     request.setdefault("candidate_count", None)
 
