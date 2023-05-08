@@ -167,7 +167,6 @@ class UnitTests(parameterized.TestCase):
             ],
         )
 
-        # Just make sure it made it into the request object.
         self.assertEqual(
             self.observed_request.safety_settings[0].category,
             safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
@@ -243,13 +242,48 @@ class UnitTests(parameterized.TestCase):
         )
 
         result = text_service.generate_text(prompt="Write a story from the ER.")
-        self.assertIsInstance(result.candidates[0]['safety_ratings'][0]['category'], safety_types.HarmCategory)
-        self.assertEqual(result.candidates[0]['safety_ratings'][0]['category'], safety_types.HarmCategory.HARM_CATEGORY_MEDICAL)
+        self.assertIsInstance(
+            result.candidates[0]["safety_ratings"][0]["category"],
+            safety_types.HarmCategory,
+        )
+        self.assertEqual(
+            result.candidates[0]["safety_ratings"][0]["category"],
+            safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+        )
 
-        self.assertIsInstance(result.candidates[0]['safety_ratings'][0]['probability'], safety_types.HarmProbability)
-        self.assertEqual(result.candidates[0]['safety_ratings'][0]['probability'], safety_types.HarmProbability.HIGH)
+        self.assertIsInstance(
+            result.candidates[0]["safety_ratings"][0]["probability"],
+            safety_types.HarmProbability,
+        )
+        self.assertEqual(
+            result.candidates[0]["safety_ratings"][0]["probability"],
+            safety_types.HarmProbability.HIGH,
+        )
 
-    # def test_candidate_citations(self):
+    def test_candidate_citations(self):
+        self.mock_response = glm.GenerateTextResponse(
+            candidates=[
+                {
+                    "output": "Hello Google!",
+                    "citation_metadata": {
+                        "citation_sources": [
+                            {
+                                "start_index": 6,
+                                "end_index": 12,
+                                "uri": "https://google.com",
+                            }
+                        ]
+                    },
+                }
+            ]
+        )
+        result = text_service.generate_text(prompt="Hi my name is Google")
+        self.assertEqual(
+            result.candidates[0]["citation_metadata"]["citation_sources"][0][
+                "start_index"
+            ],
+            6,
+        )
 
 
 if __name__ == "__main__":
