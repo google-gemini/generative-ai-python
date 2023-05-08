@@ -21,6 +21,7 @@ from __future__ import annotations
 import abc
 
 from google.auth import credentials
+from google.generativeai import client as palm
 from google.generativeai.notebook import gspread_client
 from google.generativeai.notebook import ipython_env
 from google.generativeai.notebook import ipython_env_impl
@@ -31,6 +32,11 @@ from google.generativeai.notebook import sheets_utils
 import IPython
 from IPython.core import magic
 
+
+# Set the UA to distinguish the magic from the client. Do this at import-time
+# so that a user can still call `palm.configure()`, and both their settings
+# and this are honored.
+palm.USER_AGENT = "genai-py-magic"
 
 SheetsInputs = sheets_utils.SheetsInputs
 SheetsOutputs = sheets_utils.SheetsOutputs
