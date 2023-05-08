@@ -16,7 +16,7 @@
 import enum
 from google.ai import generativelanguage as glm
 from google.generativeai import docstring_utils
-from typing import TypedDict
+from typing import Iterable, List, TypedDict
 
 __all__ = [
     "HarmCategory",
@@ -43,9 +43,13 @@ class ContentFilterDict(TypedDict):
     __doc__ = docstring_utils.strip_oneof(glm.ContentFilter.__doc__)
 
 
-def convert_filters_to_enums(filters):
+def convert_filters_to_enums(filters: Iterable[dict]) -> List[ContentFilterDict]:
+    result = []
     for f in filters:
+        f = f.copy()
         f["reason"] = BlockedReason(f["reason"])
+        result.append(f)
+    return result
 
 
 class SafetyRatingDict(TypedDict):
@@ -55,9 +59,18 @@ class SafetyRatingDict(TypedDict):
     __doc__ = docstring_utils.strip_oneof(glm.SafetyRating.__doc__)
 
 
-def convert_rating_to_enum(setting):
-    setting["category"] = HarmCategory(setting["category"])
-    setting["probability"] = HarmProbability(setting["probability"])
+def convert_rating_to_enum(rating: dict) -> SafetyRatingDict:
+    return {
+        "category": HarmCategory(rating["category"]),
+        "probability": HarmProbability(rating["probability"]),
+    }
+
+
+def convert_ratings_to_enum(ratings: Iterable[dict]) -> List[SafetyRatingDict]:
+    result = []
+    for r in ratings:
+        result.append(convert_rating_to_enum(r))
+    return result
 
 
 class SafetySettingDict(TypedDict):
@@ -67,9 +80,11 @@ class SafetySettingDict(TypedDict):
     __doc__ = docstring_utils.strip_oneof(glm.SafetySetting.__doc__)
 
 
-def convert_setting_to_enum(setting):
-    setting["category"] = HarmCategory(setting["category"])
-    setting["threshold"] = HarmBlockThreshold(setting["threshold"])
+def convert_setting_to_enum(setting: dict) -> SafetySettingDict:
+    return {
+        "category": HarmCategory(setting["category"]),
+        "threshold": HarmBlockThreshold(setting["threshold"]),
+    }
 
 
 class SafetyFeedbackDict(TypedDict):
@@ -79,7 +94,24 @@ class SafetyFeedbackDict(TypedDict):
     __doc__ = docstring_utils.strip_oneof(glm.SafetyFeedback.__doc__)
 
 
-def convert_safety_feedback_to_enums(safety_feedback):
+def convert_safety_feedback_to_enums(
+    safety_feedback: Iterable[dict],
+) -> List[SafetyFeedbackDict]:
+    result = []
     for sf in safety_feedback:
-        convert_rating_to_enum(sf["rating"])
-        convert_setting_to_enum(sf["setting"])
+        result.append(
+            {
+                "rating": convert_rating_to_enum(sf["rating"]),
+                "setting": convert_setting_to_enum(sf["setting"]),
+            }
+        )
+    return result
+
+
+def convert_candidate_enums(candidates):
+    result = []
+    for candidate in candidates:
+        candidate = candidate.copy()
+        candidate['safety_ratings'] = convert_ratings_to_enum(candidate['safety_ratings'])
+        result.append(candidate)
+    return result

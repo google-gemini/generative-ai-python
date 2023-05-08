@@ -45,7 +45,7 @@ def configure(
     # but that seems rare. Users that need it can just switch to the low level API.
     transport: Union[str, None] = None,
     client_options: Union[client_options_lib.ClientOptions, dict, None] = None,
-    client_info: Optional[gapic_v1.client_info.ClientInfo] = None
+    client_info: Optional[gapic_v1.client_info.ClientInfo] = None,
 ):
     """Captures default client configuration.
 
@@ -86,13 +86,13 @@ def configure(
 
     user_agent = f"{USER_AGENT}/{version.__version__}"
     if client_info:
-      # Be respectful of any existing agent setting.
-      if client_info.user_agent:
-        client_info.user_agent += f" {user_agent}"
-      else:
-        client_info.user_agent = user_agent
+        # Be respectful of any existing agent setting.
+        if client_info.user_agent:
+            client_info.user_agent += f" {user_agent}"
+        else:
+            client_info.user_agent = user_agent
     else:
-      client_info = gapic_v1.client_info.ClientInfo(user_agent=user_agent)
+        client_info = gapic_v1.client_info.ClientInfo(user_agent=user_agent)
 
     new_default_client_config = {
         "credentials": credentials,

@@ -223,9 +223,33 @@ class UnitTests(parameterized.TestCase):
             safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
         )
 
-    #def test_candidate_safety_feedback(self):
+    def test_candidate_safety_feedback(self):
+        self.mock_response = glm.GenerateTextResponse(
+            candidates=[
+                {
+                    "output": "hello",
+                    "safety_ratings": [
+                        {
+                            "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                            "probability": safety_types.HarmProbability.HIGH,
+                        },
+                        {
+                            "category": safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
+                            "probability": safety_types.HarmProbability.LOW,
+                        },
+                    ],
+                }
+            ]
+        )
 
-    #def test_candidate_citations(self):
+        result = text_service.generate_text(prompt="Write a story from the ER.")
+        self.assertIsInstance(result.candidates[0]['safety_ratings'][0]['category'], safety_types.HarmCategory)
+        self.assertEqual(result.candidates[0]['safety_ratings'][0]['category'], safety_types.HarmCategory.HARM_CATEGORY_MEDICAL)
+
+        self.assertIsInstance(result.candidates[0]['safety_ratings'][0]['probability'], safety_types.HarmProbability)
+        self.assertEqual(result.candidates[0]['safety_ratings'][0]['probability'], safety_types.HarmProbability.HIGH)
+
+    # def test_candidate_citations(self):
 
 
 if __name__ == "__main__":
