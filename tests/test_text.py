@@ -21,6 +21,7 @@ import google.ai.generativelanguage as glm
 
 from google.generativeai import text as text_service
 from google.generativeai import client
+from google.generativeai.types import safety_types
 from absl.testing import absltest
 from absl.testing import parameterized
 
@@ -33,17 +34,19 @@ class UnitTests(parameterized.TestCase):
 
         self.observed_request = None
 
+        self.mock_response = glm.GenerateTextResponse(
+            candidates=[
+                glm.TextCompletion(output=" road?"),
+                glm.TextCompletion(output=" bridge?"),
+                glm.TextCompletion(output=" river?"),
+            ]
+        )
+
         def fake_generate_completion(
             request: glm.GenerateTextRequest,
         ) -> glm.GenerateTextResponse:
             self.observed_request = request
-            return glm.GenerateTextResponse(
-                candidates=[
-                    glm.TextCompletion(output=" road?"),
-                    glm.TextCompletion(output=" bridge?"),
-                    glm.TextCompletion(output=" river?"),
-                ]
-            )
+            return self.mock_response
 
         self.client.generate_text = fake_generate_completion
 
@@ -75,7 +78,6 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual("models/chat-lamda-001", x.model)
         self.assertIsInstance(x, glm.GenerateTextRequest)
 
-    # @unittest.skipUnless(os.getenv('API_KEY'), "No API key set")
     @parameterized.named_parameters(
         [
             dict(
@@ -130,9 +132,9 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(
             complete.candidates,
             [
-                {"output": " road?", 'safety_ratings': []},
-                {"output": " bridge?", 'safety_ratings': []},
-                {"output": " river?", 'safety_ratings': []},
+                {"output": " road?", "safety_ratings": []},
+                {"output": " bridge?", "safety_ratings": []},
+                {"output": " river?", "safety_ratings": []},
             ],
         )
 
@@ -147,6 +149,83 @@ class UnitTests(parameterized.TestCase):
                 stop_sequences=["stop"],
             ),
         )
+        # Just make sure it made it into the request object.
+        self.assertEqual(self.observed_request.stop_sequences, ["stop"])
+
+    def test_safety_settings(self):
+        result = text_service.generate_text(
+            prompt="Say something wicked.",
+            safety_settings=[
+                {
+                    "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                    "threshold": safety_types.HarmBlockThreshold.BLOCK_NONE,
+                },
+                {
+                    "category": safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
+                    "threshold": safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                },
+            ],
+        )
+
+        # Just make sure it made it into the request object.
+        self.assertEqual(
+            self.observed_request.safety_settings[0].category,
+            safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+        )
+
+    def test_filters(self):
+        self.mock_response = glm.GenerateTextResponse(
+            candidates=[{"output": "hello"}],
+            filters=[
+                {"reason": safety_types.BlockedReason.SAFETY, "message": "not safe"}
+            ],
+        )
+
+        response = text_service.generate_text(prompt="do filters work?")
+        self.assertIsInstance(response.filters[0]["reason"], safety_types.BlockedReason)
+        self.assertEqual(
+            response.filters[0]["reason"], safety_types.BlockedReason.SAFETY
+        )
+
+    def test_safety_feedback(self):
+        self.mock_response = glm.GenerateTextResponse(
+            candidates=[{"output": "hello"}],
+            safety_feedback=[
+                {
+                    "rating": {
+                        "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                        "probability": safety_types.HarmProbability.HIGH,
+                    },
+                    "setting": {
+                        "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                        "threshold": safety_types.HarmBlockThreshold.BLOCK_NONE,
+                    },
+                }
+            ],
+        )
+
+        response = text_service.generate_text(prompt="does safety feedback work?")
+        self.assertIsInstance(
+            response.safety_feedback[0]["rating"]["probability"],
+            safety_types.HarmProbability,
+        )
+        self.assertEqual(
+            response.safety_feedback[0]["rating"]["probability"],
+            safety_types.HarmProbability.HIGH,
+        )
+
+        self.assertIsInstance(
+            response.safety_feedback[0]["setting"]["category"],
+            safety_types.HarmCategory,
+        )
+        self.assertEqual(
+            response.safety_feedback[0]["setting"]["category"],
+            safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+        )
+
+    #def test_candidate_safety_feedback(self):
+
+    #def test_candidate_citations(self):
 
 
 if __name__ == "__main__":

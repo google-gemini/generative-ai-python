@@ -45,7 +45,7 @@ def _make_generate_text_request(
     max_output_tokens: Optional[int] = None,
     top_p: Optional[int] = None,
     top_k: Optional[int] = None,
-    safety_settings: Optional[List[safety_types.SafetySetting]] = None,
+    safety_settings: Optional[List[safety_types.SafetySettingDict]] = None,
     stop_sequences: Union[str, Iterable[str]] = None,
 ) -> glm.GenerateTextRequest:
     model = model_types.make_model_name(model)
@@ -77,7 +77,7 @@ def generate_text(
     max_output_tokens: Optional[int] = None,
     top_p: Optional[float] = None,
     top_k: Optional[float] = None,
-    safety_settings: Optional[Iterable[safety.SafetySetting]] = None,
+    safety_settings: Optional[Iterable[safety.SafetySettingDict]] = None,
     stop_sequences: Union[str, Iterable[str]] = None,
     client: Optional[glm.TextServiceClient] = None,
 ) -> text_types.Completion:
@@ -158,6 +158,9 @@ def _generate_response(
 
     response = client.generate_text(request)
     response = type(response).to_dict(response)
+
+    safety_types.convert_filters_to_enums(response["filters"])
+    safety_types.convert_safety_feedback_to_enums(response["safety_feedback"])
 
     return Completion(_client=client, **response)
 

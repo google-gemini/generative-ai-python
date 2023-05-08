@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def strip_oneof(docstring):
     lines = docstring.splitlines()
     lines = [line for line in lines if ".. _oneof:" not in line]

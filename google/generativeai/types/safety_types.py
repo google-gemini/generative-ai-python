@@ -23,9 +23,9 @@ __all__ = [
     "HarmProbability",
     "HarmBlockThreshold",
     "BlockedReason",
-    "ContentFilter",
+    "ContentFilterDict",
     "SafetyRatingDict",
-    "SafetySetting",
+    "SafetySettingDict",
     "SafetyFeedbackDict",
 ]
 
@@ -36,11 +36,16 @@ HarmBlockThreshold = glm.SafetySetting.HarmBlockThreshold
 BlockedReason = glm.ContentFilter.BlockedReason
 
 
-class ContentFilter(TypedDict):
+class ContentFilterDict(TypedDict):
     reason: BlockedReason
     message: str
 
     __doc__ = docstring_utils.strip_oneof(glm.ContentFilter.__doc__)
+
+
+def convert_filters_to_enums(filters):
+    for f in filters:
+        f["reason"] = BlockedReason(f["reason"])
 
 
 class SafetyRatingDict(TypedDict):
@@ -50,15 +55,31 @@ class SafetyRatingDict(TypedDict):
     __doc__ = docstring_utils.strip_oneof(glm.SafetyRating.__doc__)
 
 
-class SafetySetting(TypedDict):
+def convert_rating_to_enum(setting):
+    setting["category"] = HarmCategory(setting["category"])
+    setting["probability"] = HarmProbability(setting["probability"])
+
+
+class SafetySettingDict(TypedDict):
     category: HarmCategory
     threshold: HarmBlockThreshold
 
     __doc__ = docstring_utils.strip_oneof(glm.SafetySetting.__doc__)
 
 
+def convert_setting_to_enum(setting):
+    setting["category"] = HarmCategory(setting["category"])
+    setting["threshold"] = HarmBlockThreshold(setting["threshold"])
+
+
 class SafetyFeedbackDict(TypedDict):
     rating: SafetyRatingDict
-    setting: SafetySetting
+    setting: SafetySettingDict
 
     __doc__ = docstring_utils.strip_oneof(glm.SafetyFeedback.__doc__)
+
+
+def convert_safety_feedback_to_enums(safety_feedback):
+    for sf in safety_feedback:
+        convert_rating_to_enum(sf["rating"])
+        convert_setting_to_enum(sf["setting"])

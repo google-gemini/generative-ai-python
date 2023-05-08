@@ -392,9 +392,9 @@ class ChatResponse(discuss_types.ChatResponse):
     @set_doc(discuss_types.ChatResponse.last.__doc__)
     def last(self) -> Optional[str]:
         if self.messages[-1]:
-          return self.messages[-1]["content"]
+            return self.messages[-1]["content"]
         else:
-          return None
+            return None
 
     @last.setter
     def last(self, message: discuss_types.MessageOptions):
@@ -410,9 +410,11 @@ class ChatResponse(discuss_types.ChatResponse):
                 f"reply can't be called on an async client, use reply_async instead."
             )
         if self.last is None:
-            raise ValueError('The last response from the model did not return any candidates.\n'
-                             'Check the `.filters` attribute to see why the responses were filtered:\n'
-                             f'{self.filters}')
+            raise ValueError(
+                "The last response from the model did not return any candidates.\n"
+                "Check the `.filters` attribute to see why the responses were filtered:\n"
+                f"{self.filters}"
+            )
 
         request = self.to_dict()
         request.pop("candidates")
@@ -438,9 +440,6 @@ class ChatResponse(discuss_types.ChatResponse):
         request = _make_generate_message_request(**request)
         return await _generate_response_async(request=request, client=self._client)
 
-def _convert_filters_to_enums(filters):
-    for f in filters:
-        f['reason'] = safety_types.BlockedReason(f['reason'])
 
 def _build_chat_response(
     request: glm.GenerateMessageRequest,
@@ -456,7 +455,7 @@ def _build_chat_response(
     response = type(response).to_dict(response)
     response.pop("messages")
 
-    _convert_filters_to_enums(response['filters'])
+    safety_types.convert_filters_to_enums(response["filters"])
 
     if response["candidates"]:
         last = response["candidates"][0]
