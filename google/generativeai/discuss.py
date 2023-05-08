@@ -390,8 +390,11 @@ class ChatResponse(discuss_types.ChatResponse):
 
     @property
     @set_doc(discuss_types.ChatResponse.last.__doc__)
-    def last(self) -> str:
-        return self.messages[-1]["content"]
+    def last(self) -> Optional[str]:
+        if self.messages[-1]:
+          return self.messages[-1]["content"]
+        else:
+          return None
 
     @last.setter
     def last(self, message: discuss_types.MessageOptions):
@@ -406,9 +409,14 @@ class ChatResponse(discuss_types.ChatResponse):
             raise TypeError(
                 f"reply can't be called on an async client, use reply_async instead."
             )
+        if self.last is None:
+            raise ValueError('The last response from the model did not return any candidates.\n'
+                             'Check the `.filters` attribute to see why the responses were filtered:\n'
+                             f'{self.filters}')
+
         request = self.to_dict()
         request.pop("candidates")
-        request.pop("filters")
+        request.pop("filters", None)
         request["messages"] = list(request["messages"])
         request["messages"].append(_make_message(message))
         request = _make_generate_message_request(**request)
@@ -424,6 +432,7 @@ class ChatResponse(discuss_types.ChatResponse):
             )
         request = self.to_dict()
         request.pop("candidates")
+        request.pop("filters")
         request["messages"] = list(request["messages"])
         request["messages"].append(_make_message(message))
         request = _make_generate_message_request(**request)
@@ -444,7 +453,11 @@ def _build_chat_response(
     response = type(response).to_dict(response)
     response.pop("messages")
 
-    request["messages"].append(response["candidates"][0])
+    if response["candidates"]:
+        last = response["candidates"][0]
+    else:
+        last = None
+    request["messages"].append(last)
     request.setdefault("temperature", None)
     request.setdefault("candidate_count", None)
 
