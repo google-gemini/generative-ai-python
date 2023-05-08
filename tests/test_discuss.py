@@ -311,5 +311,39 @@ class UnitTests(parameterized.TestCase):
         )
 
 
+    def test_chat_citations(self):
+        self.mock_response = mock_response = glm.GenerateMessageResponse(
+            candidates=[{'content':"Hello google!", 'author':"1", "citation_metadata": {
+                        "citation_sources": [
+                            {
+                                "start_index": 6,
+                                "end_index": 12,
+                                "uri": "https://google.com",
+                            }
+                        ]
+                    },
+            }],
+        )
+
+        response = discuss.chat(messages="Do citations work?")
+
+        self.assertEqual(
+            response.candidates[0]["citation_metadata"]["citation_sources"][0][
+                "start_index"
+            ],
+            6,
+        )
+
+        response = response.reply("What about a second time?")
+
+        self.assertEqual(
+            response.candidates[0]["citation_metadata"]["citation_sources"][0][
+                "start_index"
+            ],
+            6,
+        )
+        self.assertLen(response.messages, 4)
+
+
 if __name__ == "__main__":
     absltest.main()
