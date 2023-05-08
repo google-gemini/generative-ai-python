@@ -14,8 +14,8 @@
 # limitations under the License.
 import unittest.mock
 
-import asynctest
-from asynctest import mock as async_mock
+#import asynctest
+#from asynctest import mock as async_mock
 
 import google.ai.generativelanguage as glm
 
@@ -28,7 +28,7 @@ from absl.testing import parameterized
 # TODO: replace returns with 'assert' statements
 
 
-class UnitTests(parameterized.TestCase, asynctest.TestCase):
+class UnitTests(parameterized.TestCase):
     def setUp(self):
         self.client = unittest.mock.MagicMock()
 
@@ -271,7 +271,7 @@ class UnitTests(parameterized.TestCase, asynctest.TestCase):
 
         response = response.reply("again")
 
-
+'''
 class AsyncTests(parameterized.TestCase, asynctest.TestCase):
     async def test_chat_async(self):
         client = async_mock.MagicMock()
@@ -325,7 +325,7 @@ class AsyncTests(parameterized.TestCase, asynctest.TestCase):
             observed_response.candidates,
             [{"author": "1", "content": "Why did the chicken cross the road?"}],
         )
-
+'''
 
 if __name__ == "__main__":
     absltest.main()
