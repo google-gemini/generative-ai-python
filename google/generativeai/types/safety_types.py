@@ -112,6 +112,8 @@ def convert_candidate_enums(candidates):
     result = []
     for candidate in candidates:
         candidate = candidate.copy()
-        candidate['safety_ratings'] = convert_ratings_to_enum(candidate['safety_ratings'])
+        candidate["safety_ratings"] = convert_ratings_to_enum(
+            candidate["safety_ratings"]
+        )
         result.append(candidate)
     return result
