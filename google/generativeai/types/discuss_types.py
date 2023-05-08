@@ -20,6 +20,7 @@ from typing import Any, Dict, TypedDict, Union, Iterable, Optional, Tuple, List
 
 import google.ai.generativelanguage as glm
 from google.generativeai.types import safety_types
+from google.generativeai.types import citation_types
 
 __all__ = [
     "MessageDict",
@@ -155,17 +156,17 @@ class ChatResponse(abc.ABC):
     model: str
     context: str
     examples: List[ExampleDict]
-    messages: List[MessageDict]
+    messages: List[Optional[MessageDict]]
     temperature: Optional[float]
     candidate_count: Optional[int]
     candidates: List[MessageDict]
     top_p: Optional[float] = None
     top_k: Optional[float] = None
-    filters: List[safety.ContentFilter]
+    filters: List[safety_types.ContentFilter]
 
     @property
     @abc.abstractmethod
-    def last(self) -> str:
+    def last(self) -> Optional[str]:
         """A settable property that provides simple access to the last response string
 
         A shortcut for `response.messages[0]['content']`.
