@@ -19,6 +19,7 @@ import dataclasses
 from typing import Any, Dict, TypedDict, Union, Iterable, Optional, Tuple, List
 
 import google.ai.generativelanguage as glm
+from google.generativeai.types import safety_types
 
 __all__ = [
     "MessageDict",
@@ -35,11 +36,12 @@ __all__ = [
 ]
 
 
-class MessageDict(TypedDict, total=False):
+class MessageDict(TypedDict):
     """A dict representation of a `glm.Message`."""
 
     author: str
     content: str
+    citation_metadata: Optional[citation_types.CitationMetadataDict]
 
 
 MessageOptions = Union[str, MessageDict, glm.Message]
@@ -129,7 +131,14 @@ class ChatResponse(abc.ABC):
             Note: The `temperature` field affects the variability of the responses. Low
             temperatures will return few candidates. Setting `temperature=0` is deterministic,
             so it will only ever return one candidate.
+        filters: This indicates which `types.SafetyCategory`(s) blocked a
+           candidate from this response, the lowest `types.HarmProbability`
+           that triggered a block, and the `types.HarmThreshold` setting for that category.
+           This indicates the smallest change to the `types.SafetySettings` that would be
+           necessary to unblock at least 1 response.
 
+           The blocking is configured by the `types.SafetySettings` in the request (or the
+           default `types.SafetySettings` of the API).
         messages: Contains all the `messages` that were passed when the model was called,
             plus the top `candidate` message.
         model: The model name.
@@ -140,6 +149,7 @@ class ChatResponse(abc.ABC):
         candidate_count: The **maximum** number of generated response messages to return.
         top_k: The maximum number of tokens to consider when sampling.
         top_p: The maximum cumulative probability of tokens to consider when sampling.
+
     """
 
     model: str
@@ -151,6 +161,7 @@ class ChatResponse(abc.ABC):
     candidates: List[MessageDict]
     top_p: Optional[float] = None
     top_k: Optional[float] = None
+    filters: List[safety.ContentFilter]
 
     @property
     @abc.abstractmethod

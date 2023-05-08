@@ -25,6 +25,7 @@ from google.generativeai.client import get_default_discuss_client
 from google.generativeai.client import get_default_discuss_async_client
 from google.generativeai.types import discuss_types
 from google.generativeai.types import model_types
+from google.generativeai.types import safety_types
 
 
 def _make_message(content: discuss_types.MessageOptions) -> glm.Message:
@@ -407,6 +408,7 @@ class ChatResponse(discuss_types.ChatResponse):
             )
         request = self.to_dict()
         request.pop("candidates")
+        request.pop("filters")
         request["messages"] = list(request["messages"])
         request["messages"].append(_make_message(message))
         request = _make_generate_message_request(**request)
@@ -440,12 +442,14 @@ def _build_chat_response(
     request["messages"] = prompt["messages"]
 
     response = type(response).to_dict(response)
+    response.pop("messages")
+
     request["messages"].append(response["candidates"][0])
     request.setdefault("temperature", None)
     request.setdefault("candidate_count", None)
 
     return ChatResponse(
-        _client=client, candidates=response["candidates"], **request
+        _client=client, **response, **request
     )  # pytype: disable=missing-parameter
 
 
