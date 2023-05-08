@@ -22,7 +22,7 @@ __all__ = [
     "HarmCategory",
     "HarmProbability",
     "HarmBlockThreshold",
-    "BlockReason",
+    "BlockedReason",
     "ContentFilter",
     "SafetyRatingDict",
     "SafetySetting",
@@ -33,11 +33,11 @@ __all__ = [
 HarmCategory = glm.HarmCategory
 HarmProbability = glm.SafetyRating.HarmProbability
 HarmBlockThreshold = glm.SafetySetting.HarmBlockThreshold
-BlockReason = glm.ContentFilter.BlockedReason
+BlockedReason = glm.ContentFilter.BlockedReason
 
 
 class ContentFilter(TypedDict):
-    reason: BlockReason
+    reason: BlockedReason
     message: str
 
     __doc__ = docstring_utils.strip_oneof(glm.ContentFilter.__doc__)

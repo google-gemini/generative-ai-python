@@ -64,28 +64,28 @@ class AsyncTests(*bases):
                 client=client,
             )
 
-        self.assertEqual(
-            observed_request,
-            glm.GenerateMessageRequest(
-                model="models/bard",
-                prompt=glm.MessagePrompt(
-                    context="Example Prompt",
-                    examples=[
-                        glm.Example(
-                            input=glm.Message(content="Example from human"),
-                            output=glm.Message(content="Example response from AI"),
-                        )
-                    ],
-                    messages=[glm.Message(author="0", content="Tell me a joke")],
+            self.assertEqual(
+                observed_request,
+                glm.GenerateMessageRequest(
+                    model="models/bard",
+                    prompt=glm.MessagePrompt(
+                        context="Example Prompt",
+                        examples=[
+                            glm.Example(
+                                input=glm.Message(content="Example from human"),
+                                output=glm.Message(content="Example response from AI"),
+                            )
+                        ],
+                        messages=[glm.Message(author="0", content="Tell me a joke")],
+                    ),
+                    temperature=0.75,
+                    candidate_count=1,
                 ),
-                temperature=0.75,
-                candidate_count=1,
-            ),
-        )
-        self.assertEqual(
-            observed_response.candidates,
-            [{"author": "1", "content": "Why did the chicken cross the road?"}],
-        )
+            )
+            self.assertEqual(
+                observed_response.candidates,
+                [{"author": "1", "content": "Why did the chicken cross the road?"}],
+            )
 
 
 if __name__ == "__main__":
