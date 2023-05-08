@@ -17,9 +17,6 @@ import os
 import unittest
 import unittest.mock as mock
 
-import asynctest
-from asynctest import mock as async_mock
-
 import google.ai.generativelanguage as glm
 
 from google.generativeai import text as text_service
