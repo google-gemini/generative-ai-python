@@ -24,6 +24,7 @@ import google.ai.generativelanguage as glm
 from google.generativeai.client import get_default_text_client
 from google.generativeai.types import text_types
 from google.generativeai.types import model_types
+from google.generativeai.types import safety_types
 
 
 def _make_text_prompt(prompt: Union[str, dict[str, str]]) -> glm.TextPrompt:
@@ -44,6 +45,7 @@ def _make_generate_text_request(
     max_output_tokens: Optional[int] = None,
     top_p: Optional[int] = None,
     top_k: Optional[int] = None,
+    safety_settings: Optional[List[safety_types.SafetySetting]] = None,
     stop_sequences: Union[str, Iterable[str]] = None,
 ) -> glm.GenerateTextRequest:
     model = model_types.make_model_name(model)
@@ -61,6 +63,7 @@ def _make_generate_text_request(
         max_output_tokens=max_output_tokens,
         top_p=top_p,
         top_k=top_k,
+        safety_settings=safety_settings,
         stop_sequences=stop_sequences,
     )
 
@@ -74,6 +77,7 @@ def generate_text(
     max_output_tokens: Optional[int] = None,
     top_p: Optional[float] = None,
     top_k: Optional[float] = None,
+    safety_settings: Optional[Iterable[safety.SafetySetting]] = None,
     stop_sequences: Union[str, Iterable[str]] = None,
     client: Optional[glm.TextServiceClient] = None,
 ) -> text_types.Completion:
@@ -103,6 +107,15 @@ def generate_text(
             For example, if the sorted probabilities are
             `[0.5, 0.2, 0.1, 0.1, 0.05, 0.05]` a `top_p` of `0.8` will sample
             as `[0.625, 0.25, 0.125, 0, 0, 0].
+        safety_settings: A list of unique `types.SafetySetting` instances for blocking unsafe content.
+           These will be enforced on the `prompt` and
+           `candidates`. There should not be more than one
+           setting for each `types.SafetyCategory` type. The API will block any prompts and
+           responses that fail to meet the thresholds set by these settings. This list
+           overrides the default settings for each `SafetyCategory` specified in the
+           safety_settings. If there is no `types.SafetySetting` for a given
+           `SafetyCategory` provided in the list, the API will use the default safety
+           setting for that category.
         stop_sequences: A set of up to 5 character sequences that will stop output generation.
           If specified, the API will stop at the first appearance of a stop
           sequence. The stop sequence will not be included as part of the response.
@@ -119,6 +132,7 @@ def generate_text(
         max_output_tokens=max_output_tokens,
         top_p=top_p,
         top_k=top_k,
+        safety_settings=safety_settings,
         stop_sequences=stop_sequences,
     )
 
