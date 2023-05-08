@@ -162,7 +162,7 @@ class ChatResponse(abc.ABC):
     candidates: List[MessageDict]
     top_p: Optional[float] = None
     top_k: Optional[float] = None
-    filters: List[safety_types.ContentFilter]
+    filters: List[safety_types.ContentFilterDict]
 
     @property
     @abc.abstractmethod
