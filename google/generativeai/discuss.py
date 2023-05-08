@@ -438,6 +438,9 @@ class ChatResponse(discuss_types.ChatResponse):
         request = _make_generate_message_request(**request)
         return await _generate_response_async(request=request, client=self._client)
 
+def _convert_filters_to_enums(filters):
+    for f in filters:
+        f['reason'] = safety_types.BlockedReason(f['reason'])
 
 def _build_chat_response(
     request: glm.GenerateMessageRequest,
@@ -452,6 +455,8 @@ def _build_chat_response(
 
     response = type(response).to_dict(response)
     response.pop("messages")
+
+    _convert_filters_to_enums(response['filters'])
 
     if response["candidates"]:
         last = response["candidates"][0]

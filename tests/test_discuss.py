@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import copy
+
 import unittest.mock
 
 import google.ai.generativelanguage as glm
@@ -33,18 +35,21 @@ class UnitTests(parameterized.TestCase):
 
         self.observed_request = None
 
-        def fake_generate_message(
-            request: glm.GenerateMessageRequest,
-        ) -> glm.GenerateMessageResponse:
-            self.observed_request = request
-            return glm.GenerateMessageResponse(
-                messages=request.prompt.messages,
+        self.mock_response = glm.GenerateMessageResponse(
                 candidates=[
                     glm.Message(content="a", author="1"),
                     glm.Message(content="b", author="1"),
                     glm.Message(content="c", author="1"),
                 ],
             )
+
+        def fake_generate_message(
+            request: glm.GenerateMessageRequest,
+        ) -> glm.GenerateMessageResponse:
+            self.observed_request = request
+            response = copy.copy(self.mock_response)
+            response.messages = request.prompt.messages
+            return response
 
         self.client.generate_message = fake_generate_message
 
@@ -267,6 +272,34 @@ class UnitTests(parameterized.TestCase):
         )
 
         response = response.reply("again")
+
+    def test_receive_and_reply_with_filters(self):
+
+        self.mock_response = mock_response = glm.GenerateMessageResponse(
+            candidates=[glm.Message(content="a", author="1")],
+            filters=[
+                glm.ContentFilter(reason=glm.ContentFilter.BlockedReason.SAFETY, message='unsafe'),
+                glm.ContentFilter(reason=glm.ContentFilter.BlockedReason.OTHER),]
+        )
+        response = discuss.chat(messages="do filters work?")
+
+        filters = response.filters
+        self.assertLen(filters, 2)
+        self.assertIsInstance(filters[0]['reason'], glm.ContentFilter.BlockedReason)
+        self.assertEquals(filters[0]['reason'], glm.ContentFilter.BlockedReason.SAFETY)
+        self.assertEquals(filters[0]['message'], 'unsafe')
+
+        self.mock_response = glm.GenerateMessageResponse(
+            candidates=[glm.Message(content="a", author="1")],
+            filters=[
+                glm.ContentFilter(reason=glm.ContentFilter.BlockedReason.BLOCKED_REASON_UNSPECIFIED)]
+        )
+
+        response = response.reply('Does reply work?')
+        filters = response.filters
+        self.assertLen(filters, 1)
+        self.assertIsInstance(filters[0]['reason'], glm.ContentFilter.BlockedReason)
+        self.assertEquals(filters[0]['reason'], glm.ContentFilter.BlockedReason.BLOCKED_REASON_UNSPECIFIED)
 
 
 if __name__ == "__main__":
