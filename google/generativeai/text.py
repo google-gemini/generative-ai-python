@@ -159,8 +159,11 @@ def _generate_response(
     response = client.generate_text(request)
     response = type(response).to_dict(response)
 
-    safety_types.convert_filters_to_enums(response["filters"])
-    safety_types.convert_safety_feedback_to_enums(response["safety_feedback"])
+    response["filters"] = safety_types.convert_filters_to_enums(response["filters"])
+    response["safety_feedback"] = safety_types.convert_safety_feedback_to_enums(
+        response["safety_feedback"]
+    )
+    response['candidates'] = safety_types.convert_candidate_enums(response['candidates'])
 
     return Completion(_client=client, **response)
 

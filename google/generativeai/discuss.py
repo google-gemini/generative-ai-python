@@ -455,7 +455,7 @@ def _build_chat_response(
     response = type(response).to_dict(response)
     response.pop("messages")
 
-    safety_types.convert_filters_to_enums(response["filters"])
+    response["filters"] = safety_types.convert_filters_to_enums(response["filters"])
 
     if response["candidates"]:
         last = response["candidates"][0]
