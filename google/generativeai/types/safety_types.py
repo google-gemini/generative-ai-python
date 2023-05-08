@@ -15,6 +15,7 @@
 
 import enum
 from google.ai import generativelanguage as glm
+from google.generativeai import docstring_utils
 from typing import TypedDict
 
 __all__ = [
@@ -31,7 +32,7 @@ __all__ = [
 # These are basic python enums, it's okay to expose them
 HarmCategory = glm.HarmCategory
 HarmProbability = glm.SafetyRating.HarmProbability
-HarmBlockThreshold = glm.SafetySetting
+HarmBlockThreshold = glm.SafetySetting.HarmBlockThreshold
 BlockReason = glm.ContentFilter.BlockedReason
 
 
