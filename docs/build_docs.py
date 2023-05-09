@@ -154,7 +154,7 @@ class MyDocGenerator(generate_lib.DocGenerator):
             public_api.add_proto_fields,
             public_api.filter_builtin_modules,
             public_api.filter_private_symbols,
-            MyFilter(self._base_dir),  # public_api.FilterBaseDirs(self._base_dir),
+            MyFilter(self._base_dir),  # Replaces: public_api.FilterBaseDirs(self._base_dir),
             public_api.FilterPrivateMap(self._private_map),
             public_api.filter_doc_controls_skip,
             public_api.ignore_typing,
@@ -182,12 +182,10 @@ def gen_api_docs():
             pathlib.Path(google.generativeai.__file__).parent,
             pathlib.Path(google.ai.generativelanguage.__file__).parent.parent,
         ),
-        code_url_prefix=(None, None),
+        code_url_prefix=('https://github.com/google/generative-ai-python/blob/master/google/generativeai',
+                         'https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai'),
         search_hints=_SEARCH_HINTS.value,
         site_path=_SITE_PATH.value,
-        # This callback ensures that docs are only generated for objects that
-        # are explicitly imported in your __init__.py files. There are other
-        # options but this is a good starting point.
         callbacks=[],
     )
 
