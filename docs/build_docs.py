@@ -37,8 +37,6 @@ from tensorflow_docs.api_generator import public_api
 
 import yaml
 
-# del google.ai.generativelanguage_v1beta2
-
 google.ai.generativelanguage.__doc__ = """\
 This package, `google.ai.generativelanguage`, is a low-level auto-generated client library for the PaLM API.
 
@@ -133,13 +131,15 @@ class MyFilter:
                 yield name, value
 
     def __call__(self, path, parent, children):
-        if "generativelanguage" in path or "generativeai" in path:
+        if (
+                any("generativelanguage" in part for part in path)
+                or "generativeai" in path):
             children = self.filter_base_dirs(path, parent, children)
             children = public_api.explicit_package_contents_filter(
                 path, parent, children
             )
 
-        if "generativelanguage" in path:
+        if any("generativelanguage" in part for part in path):
             if "ServiceClient" in path[-1]:
                 children = list(self.drop_staticmethods(parent, children))
 
