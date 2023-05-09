@@ -22,6 +22,7 @@ $> python build_docs.py
 
 import os
 import pathlib
+import re
 import textwrap
 
 from absl import app
@@ -210,6 +211,16 @@ def gen_api_docs():
     redirects["redirects"].insert(0, {"from": "/api/python/google", "to": "/api/"})
     redirects["redirects"].insert(0, {"from": "/api/python", "to": "/api/"})
     redirects_path.write_text(yaml.dump(redirects))
+
+    # clear `oneof` junk from proto pages
+    for fpath in out_path.rglob('*.md'):
+        old_content = fpath.read_text()
+        new_content = old_content
+        new_content = re.sub(r'\.\. _oneof:.*?\n', '', new_content)
+        new_content = re.sub(r'`oneof`_.*?\n', '', new_content)
+        new_content = re.sub(r'\.\. code-block:: python.*?\n', '', new_content)
+        if new_content != old_content:
+            fpath.write_text(new_content)
 
     print("Output docs to: ", _OUTPUT_DIR.value)
 
