@@ -22,6 +22,7 @@ $> python build_docs.py
 
 import os
 import pathlib
+import re
 import textwrap
 
 from absl import app
@@ -35,8 +36,6 @@ from tensorflow_docs.api_generator import generate_lib
 from tensorflow_docs.api_generator import public_api
 
 import yaml
-
-# del google.ai.generativelanguage_v1beta2
 
 google.ai.generativelanguage.__doc__ = """\
 This package, `google.ai.generativelanguage`, is a low-level auto-generated client library for the PaLM API.
@@ -132,13 +131,15 @@ class MyFilter:
                 yield name, value
 
     def __call__(self, path, parent, children):
-        if "generativelanguage" in path or "generativeai" in path:
+        if (
+                any("generativelanguage" in part for part in path)
+                or "generativeai" in path):
             children = self.filter_base_dirs(path, parent, children)
             children = public_api.explicit_package_contents_filter(
                 path, parent, children
             )
 
-        if "generativelanguage" in path:
+        if any("generativelanguage" in part for part in path):
             if "ServiceClient" in path[-1]:
                 children = list(self.drop_staticmethods(parent, children))
 
@@ -154,7 +155,7 @@ class MyDocGenerator(generate_lib.DocGenerator):
             public_api.add_proto_fields,
             public_api.filter_builtin_modules,
             public_api.filter_private_symbols,
-            MyFilter(self._base_dir),  # public_api.FilterBaseDirs(self._base_dir),
+            MyFilter(self._base_dir),  # Replaces: public_api.FilterBaseDirs(self._base_dir),
             public_api.FilterPrivateMap(self._private_map),
             public_api.filter_doc_controls_skip,
             public_api.ignore_typing,
@@ -182,12 +183,10 @@ def gen_api_docs():
             pathlib.Path(google.generativeai.__file__).parent,
             pathlib.Path(google.ai.generativelanguage.__file__).parent.parent,
         ),
-        code_url_prefix=(None, None),
+        code_url_prefix=('https://github.com/google/generative-ai-python/blob/master/google/generativeai',
+                         'https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai'),
         search_hints=_SEARCH_HINTS.value,
         site_path=_SITE_PATH.value,
-        # This callback ensures that docs are only generated for objects that
-        # are explicitly imported in your __init__.py files. There are other
-        # options but this is a good starting point.
         callbacks=[],
     )
 
@@ -212,6 +211,16 @@ def gen_api_docs():
     redirects["redirects"].insert(0, {"from": "/api/python/google", "to": "/api/"})
     redirects["redirects"].insert(0, {"from": "/api/python", "to": "/api/"})
     redirects_path.write_text(yaml.dump(redirects))
+
+    # clear `oneof` junk from proto pages
+    for fpath in out_path.rglob('*.md'):
+        old_content = fpath.read_text()
+        new_content = old_content
+        new_content = re.sub(r'\.\. _oneof:.*?\n', '', new_content)
+        new_content = re.sub(r'`oneof`_.*?\n', '', new_content)
+        new_content = re.sub(r'\.\. code-block:: python.*?\n', '', new_content)
+        if new_content != old_content:
+            fpath.write_text(new_content)
 
     print("Output docs to: ", _OUTPUT_DIR.value)
 
