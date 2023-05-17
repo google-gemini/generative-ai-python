@@ -18,10 +18,18 @@ Get an [API key from MakerSuite](https://makersuite.google.com/app/apikey), then
 ```python
 import google.generativeai as palm
 
-palm.configure(api_key=os.environ['PALM_API_KEY'])
+palm.configure(api_key=os.environ["PALM_API_KEY"])
 ```
 
-Use the `palm.chat` function to have a discussion with a model.
+Use [`palm.generate_text`](https://developers.generativeai.google/api/python/google/generativeai/generate_text)
+to have the model complete some initial text.
+```python
+response = palm.generate_text(prompt="The opposite of hot is")
+print(response.result)  # cold.
+```
+
+Use [`palm.chat`](https://developers.generativeai.google/api/python/google/generativeai/chat)
+to have a discussion with a model.
 ```python
 response = palm.chat(messages=["Hello."])
 print(response.last) #  'Hello! What can I help you with?'
