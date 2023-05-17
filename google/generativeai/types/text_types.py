@@ -46,8 +46,8 @@ class Completion(abc.ABC):
 
     candidates: List[TextCompletion]
     result: Optional[str]
-    filters: Optional[list[safety_types.ContentFilterDict]]
-    safety_feedback: Optional[list[safety_types.SafetyFeedbackDict]]
+    filters: Optional[List[safety_types.ContentFilterDict]]
+    safety_feedback: Optional[List[safety_types.SafetyFeedbackDict]]
 
     def to_dict(self) -> Dict[str, Any]:
         result = {
