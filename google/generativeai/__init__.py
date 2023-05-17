@@ -21,17 +21,27 @@ pip install google-generativeai
 ```
 
 ```
-import google.generativeai as genai
+import google.generativeai as palm
 
-genai.configure(api_key=os.environ['API_KEY'])
+palm.configure(api_key=os.environ['API_KEY'])
+```
+
+## Text
+
+Use the `palm.generate_text` function to have the model complete some initial
+text.
+
+```
+response = palm.generate_text(prompt="The opposite of hot is")
+print(response.result) #  'cold.'
 ```
 
 ## Chat
 
-Use the `genai.chat` function to have a discussion with a model:
+Use the `palm.chat` function to have a discussion with a model:
 
 ```
-response = genai.chat(messages=["Hello."])
+response = palm.chat(messages=["Hello."])
 print(response.last) #  'Hello! What can I help you with?'
 response.reply("Can you tell me a joke?")
 ```
@@ -40,17 +50,17 @@ response.reply("Can you tell me a joke?")
 
 Use the model service discover models and find out more about them:
 
-Use `genai.get_model` to get details if you know a model's name:
+Use `palm.get_model` to get details if you know a model's name:
 
 ```
-model = genai.get_model('chat-bison-001') # 🦬
+model = palm.get_model('chat-bison-001') # 🦬
 ```
 
-Use `genai.list_models` to discover models:
+Use `palm.list_models` to discover models:
 
 ```
 import pprint
-for model in genai.list_models():
+for model in palm.list_models():
     pprint.pprint(model) # 🦎🦦🦬🦄
 ```
 
