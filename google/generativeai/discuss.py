@@ -399,6 +399,7 @@ class ChatResponse(discuss_types.ChatResponse):
     @last.setter
     def last(self, message: discuss_types.MessageOptions):
         message = _make_message(message)
+        message = type(message).to_dict(message)
         self.messages[-1] = message
 
     @set_doc(discuss_types.ChatResponse.reply.__doc__)

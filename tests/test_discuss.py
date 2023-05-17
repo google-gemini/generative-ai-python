@@ -344,6 +344,13 @@ class UnitTests(parameterized.TestCase):
         )
         self.assertLen(response.messages, 4)
 
+    def test_set_last(self):
+        response = discuss.chat(messages="Can you overwrite `.last`?")
+        response.last = 'yes'
+        response = response.reply('glad to hear it!')
+        response.last = "Me too!"
+        self.assertEqual([msg['content'] for msg in response.messages],
+                         ["Can you overwrite `.last`?", 'yes', 'glad to hear it!', 'Me too!'])
 
 if __name__ == "__main__":
     absltest.main()
