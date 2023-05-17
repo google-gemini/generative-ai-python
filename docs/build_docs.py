@@ -119,6 +119,9 @@ _SITE_PATH = flags.DEFINE_string(
     "site_path", "/api/python", "Path prefix in the _toc.yaml"
 )
 
+_CODE_URL_PREFIX = flags.DEFINE_string(
+    'code_url_prefix", "https://github.com/google/generative-ai-python/blob/master/google/generativeai",
+    "where to find the project code")
 
 class MyFilter:
     def __init__(self, base_dirs):
@@ -183,7 +186,7 @@ def gen_api_docs():
             pathlib.Path(google.generativeai.__file__).parent,
             pathlib.Path(google.ai.generativelanguage.__file__).parent.parent,
         ),
-        code_url_prefix=('https://github.com/google/generative-ai-python/blob/master/google/generativeai',
+        code_url_prefix=(_CODE_URL_PREFIX.value,
                          'https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai'),
         search_hints=_SEARCH_HINTS.value,
         site_path=_SITE_PATH.value,
