@@ -106,7 +106,7 @@ def generate_text(
             probability of tokens to sample from.
             For example, if the sorted probabilities are
             `[0.5, 0.2, 0.1, 0.1, 0.05, 0.05]` a `top_p` of `0.8` will sample
-            as `[0.625, 0.25, 0.125, 0, 0, 0].
+            as `[0.625, 0.25, 0.125, 0, 0, 0]`.
         safety_settings: A list of unique `types.SafetySetting` instances for blocking unsafe content.
            These will be enforced on the `prompt` and
            `candidates`. There should not be more than one
