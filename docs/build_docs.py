@@ -120,7 +120,7 @@ _SITE_PATH = flags.DEFINE_string(
 )
 
 _CODE_URL_PREFIX = flags.DEFINE_string(
-    'code_url_prefix", "https://github.com/google/generative-ai-python/blob/master/google/generativeai",
+    "code_url_prefix", "https://github.com/google/generative-ai-python/blob/master/google/generativeai",
     "where to find the project code")
 
 class MyFilter:
@@ -143,7 +143,7 @@ class MyFilter:
             )
 
         if any("generativelanguage" in part for part in path):
-            if "ServiceClient" in path[-1]:
+            if "ServiceClient" in path[-1] or "ServiceAsyncClient" in path[-1]:
                 children = list(self.drop_staticmethods(parent, children))
 
         return children
