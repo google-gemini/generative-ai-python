@@ -47,7 +47,7 @@ pip install google.ai.generativelanguage
 It is built using the same tooling as Google Cloud client libraries, and will be quite familiar if you've used
 those before.
 
-While we encourage Python users to access the PaLM API using the `google.ganerativeai` package (aka `palm`), 
+While we encourage Python users to access the PaLM API using the `google.generativeai` package (aka `palm`),
 this lower level package is also available.
 
 Each method in the PaLM API is connected to one of the client classes. Pass your API-key to the class' `client_options`
