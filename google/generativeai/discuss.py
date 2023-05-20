@@ -214,6 +214,7 @@ def _make_generate_message_request(
     messages: Optional[discuss_types.MessagesOptions] = None,
     temperature: Optional[float] = None,
     candidate_count: Optional[int] = None,
+    max_output_tokens: Optional[int] = None,
     top_p: Optional[float] = None,
     top_k: Optional[float] = None,
     prompt: Optional[discuss_types.MessagePromptOptions] = None,
@@ -231,6 +232,7 @@ def _make_generate_message_request(
         top_p=top_p,
         top_k=top_k,
         candidate_count=candidate_count,
+        max_output_tokens=max_output_tokens,
     )
 
 
@@ -253,6 +255,7 @@ def chat(
     messages: Optional[discuss_types.MessagesOptions] = None,
     temperature: Optional[float] = None,
     candidate_count: Optional[int] = None,
+    max_output_tokens: Optional[int] = None,
     top_p: Optional[float] = None,
     top_k: Optional[float] = None,
     prompt: Optional[discuss_types.MessagePromptOptions] = None,
@@ -304,6 +307,8 @@ def chat(
             Note: Only unique candidates are returned. Higher temperatures are more
             likely to produce unique candidates. Setting `temperature=0.0` will always
             return 1 candidate regardless of the `candidate_count`.
+        max_output_tokens: Maximum number of tokens to include in a candidate. Must be greater
+                           than zero. If unset, will default to 64.
         top_k: The API uses combined [nucleus](https://arxiv.org/abs/1904.09751) and
             top-k sampling.
 
@@ -334,6 +339,7 @@ def chat(
         messages=messages,
         temperature=temperature,
         candidate_count=candidate_count,
+        max_output_tokens=max_output_tokens,
         top_p=top_p,
         top_k=top_k,
         prompt=prompt,
@@ -351,6 +357,7 @@ async def chat_async(
     messages: Optional[discuss_types.MessagesOptions] = None,
     temperature: Optional[float] = None,
     candidate_count: Optional[int] = None,
+    max_output_tokens: Optional[int] = None,
     top_p: Optional[float] = None,
     top_k: Optional[float] = None,
     prompt: Optional[discuss_types.MessagePromptOptions] = None,
@@ -363,6 +370,7 @@ async def chat_async(
         messages=messages,
         temperature=temperature,
         candidate_count=candidate_count,
+        max_output_tokens=max_output_tokens,
         top_p=top_p,
         top_k=top_k,
         prompt=prompt,
