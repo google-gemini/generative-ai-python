@@ -93,9 +93,9 @@ def _make_examples_from_flat(
     if len(examples) % 2 != 0:
         raise ValueError(
             textwrap.dedent(
-                """\
+                f"""\
             You must pass `Primer` objects, pairs of messages, or an *even* number of messages, got: 
-              {len(primers)} messages"""
+              {len(examples)} messages"""
             )
         )
     result = []
