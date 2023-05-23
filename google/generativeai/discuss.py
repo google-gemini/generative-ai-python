@@ -520,7 +520,7 @@ def count_message_tokens(
             messages: A snapshot of the conversation history sorted chronologically. Refer to 
                 `chat()` for more details.
             
-            model: Which model to call, as a string or a `types.Model`.
+            model: Which model's  tokenizer to use, as a string or a `types.Model`.
             
             client: If you're not relying on the default client, you pass a
                 `glm.DiscussServiceClient` instead.
