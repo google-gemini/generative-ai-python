@@ -285,7 +285,7 @@ def chat(
             These `examples` are treated identically to conversation messages except
             that they take precedence over the history in `messages`:
             If the total input size exceeds the model's `input_token_limit` the input
-            will be truncated. Items will be dropped from `messages` before `examples`
+            will be truncated. Items will be dropped from `messages` before `examples`.
         messages: A snapshot of the conversation history sorted chronologically.
 
             Turns alternate between two authors.
@@ -505,9 +505,53 @@ def count_message_tokens(
     client: Optional[glm.DiscussServiceAsyncClient] = None,
 ):
     """
-        Counts the number of tokens in the `prompt` sent to a model. Models may tokenize 
-        text differently, so each model may return a different `token_count`. Value of 
-        `token_count` is always non-negative.
+        Counts the number of tokens in the `prompt` sent to a model. 
+        
+        Args:
+            prompt: You may pass a `types.MessagePromptOptions` **instead** of a
+                setting `context`/`examples`/`messages`, but not both.
+                   
+            context: Text that should be provided to the model first, to ground the response.
+
+                If not empty, this `context` will be given to the model first before the
+                `examples` and `messages`.
+
+                This field can be a description of your prompt to the model to help provide
+                context and guide the responses.
+
+                Examples:
+
+                * "Translate the phrase from English to French."
+                * "Given a statement, classify the sentiment as happy, sad or neutral."
+
+                Anything included in this field will take precedence over history in `messages`
+                if the total input size exceeds the model's `Model.input_token_limit`.
+            
+            examples: Examples of what the model should generate.
+
+                This includes both the user input and the response that the model should
+                emulate.
+
+                These `examples` are treated identically to conversation messages except
+                that they take precedence over the history in `messages`:
+                If the total input size exceeds the model's `input_token_limit` the input
+                will be truncated. Items will be dropped from `messages` before `examples`.
+            
+            messages: A snapshot of the conversation history sorted chronologically.
+
+                Turns alternate between two authors.
+
+                If the total input size exceeds the model's `input_token_limit` the input
+                will be truncated: The oldest items will be dropped from `messages`.
+            
+            model: Which model to call, as a string or a `types.Model`.
+            
+            client: If you're not relying on the default client, you pass a
+                `glm.DiscussServiceClient` instead.
+            
+        Returns:
+            Dictionary containing token count for a given prompt.
+            
     """
     prompt = _make_message_prompt(
         prompt, context=context, examples=examples, messages=messages
