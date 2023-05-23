@@ -504,6 +504,11 @@ def count_message_tokens(
     model: str = DEFAULT_DISCUSS_MODEL,
     client: Optional[glm.DiscussServiceAsyncClient] = None,
 ):
+    """
+        Counts the number of tokens in the `prompt` sent to a model. Models may tokenize 
+        text differently, so each model may return a different `token_count`. Value of 
+        `token_count` is always non-negative.
+    """
     prompt = _make_message_prompt(
         prompt, context=context, examples=examples, messages=messages
     )
