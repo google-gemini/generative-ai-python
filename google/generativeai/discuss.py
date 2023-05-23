@@ -512,37 +512,13 @@ def count_message_tokens(
                 setting `context`/`examples`/`messages`, but not both.
                    
             context: Text that should be provided to the model first, to ground the response.
-
-                If not empty, this `context` will be given to the model first before the
-                `examples` and `messages`.
-
-                This field can be a description of your prompt to the model to help provide
-                context and guide the responses.
-
-                Examples:
-
-                * "Translate the phrase from English to French."
-                * "Given a statement, classify the sentiment as happy, sad or neutral."
-
-                Anything included in this field will take precedence over history in `messages`
-                if the total input size exceeds the model's `Model.input_token_limit`.
+                Refer to `chat()` for more details.
             
-            examples: Examples of what the model should generate.
-
-                This includes both the user input and the response that the model should
-                emulate.
-
-                These `examples` are treated identically to conversation messages except
-                that they take precedence over the history in `messages`:
-                If the total input size exceeds the model's `input_token_limit` the input
-                will be truncated. Items will be dropped from `messages` before `examples`.
+            examples: Examples of what the model should generate. Refer to `chat()` for more 
+                details.
             
-            messages: A snapshot of the conversation history sorted chronologically.
-
-                Turns alternate between two authors.
-
-                If the total input size exceeds the model's `input_token_limit` the input
-                will be truncated: The oldest items will be dropped from `messages`.
+            messages: A snapshot of the conversation history sorted chronologically. Refer to 
+                `chat()` for more details.
             
             model: Which model to call, as a string or a `types.Model`.
             
