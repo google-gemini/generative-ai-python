@@ -504,30 +504,28 @@ def count_message_tokens(
     model: str = DEFAULT_DISCUSS_MODEL,
     client: Optional[glm.DiscussServiceAsyncClient] = None,
 ):
-    """
-        Counts the number of tokens in the `prompt` sent to a model. 
-        
-        Args:
-            prompt: You may pass a `types.MessagePromptOptions` **instead** of a
-                setting `context`/`examples`/`messages`, but not both.
-                   
-            context: Text that should be provided to the model first, to ground the response.
-                Refer to `chat()` for more details.
-            
-            examples: Examples of what the model should generate. Refer to `chat()` for more 
-                details.
-            
-            messages: A snapshot of the conversation history sorted chronologically. Refer to 
-                `chat()` for more details.
-            
-            model: Which model's  tokenizer to use, as a string or a `types.Model`.
-            
-            client: If you're not relying on the default client, you pass a
-                `glm.DiscussServiceClient` instead.
-            
-        Returns:
-            Dictionary containing token count for a given prompt.
-            
+    """Counts the number of tokens in a chat `prompt`. 
+
+    Args:
+        prompt: You may pass a `types.MessagePromptOptions` **instead** of a
+            setting `context`/`examples`/`messages`, but not both.
+
+        context: Text that should be provided to the model first, to ground the response.
+            Refer to `chat()` for more details.
+
+        examples: Examples of what the model should generate. Refer to `chat()` for more 
+            details.
+
+        messages: A snapshot of the conversation history sorted chronologically. Refer to 
+            `chat()` for more details.
+
+        model: Which model's  tokenizer to use, as a string or a `types.Model`.
+
+        client: If you're not relying on the default client, you pass a
+            `glm.DiscussServiceClient` instead.
+
+    Returns:
+        Dictionary containing token count for a given prompt.
     """
     prompt = _make_message_prompt(
         prompt, context=context, examples=examples, messages=messages
