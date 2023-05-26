@@ -23,26 +23,25 @@ LLMFnOutputRow = llmfn_output_row.LLMFnOutputRow
 
 
 class UniqueFntest(absltest.TestCase):
+    def test_all_unique(self):
+        rows = [
+            LLMFnOutputRow(data={"text_result": "red"}, result_type=str),
+            LLMFnOutputRow(data={"text_result": "green"}, result_type=str),
+            LLMFnOutputRow(data={"text_result": "blue"}, result_type=str),
+        ]
+        self.assertEqual([0, 1, 2], unique_fn.unique_fn(rows))
 
-  def test_all_unique(self):
-    rows = [
-        LLMFnOutputRow(data={"text_result": "red"}, result_type=str),
-        LLMFnOutputRow(data={"text_result": "green"}, result_type=str),
-        LLMFnOutputRow(data={"text_result": "blue"}, result_type=str),
-    ]
-    self.assertEqual([0, 1, 2], unique_fn.unique_fn(rows))
-
-  def test_some_dupes(self):
-    rows = [
-        LLMFnOutputRow(data={"text_result": "red"}, result_type=str),
-        LLMFnOutputRow(data={"text_result": "red"}, result_type=str),
-        LLMFnOutputRow(data={"text_result": "green"}, result_type=str),
-        LLMFnOutputRow(data={"text_result": "red"}, result_type=str),
-        LLMFnOutputRow(data={"text_result": "green"}, result_type=str),
-        LLMFnOutputRow(data={"text_result": "blue"}, result_type=str),
-    ]
-    self.assertEqual([0, 2, 5], unique_fn.unique_fn(rows))
+    def test_some_dupes(self):
+        rows = [
+            LLMFnOutputRow(data={"text_result": "red"}, result_type=str),
+            LLMFnOutputRow(data={"text_result": "red"}, result_type=str),
+            LLMFnOutputRow(data={"text_result": "green"}, result_type=str),
+            LLMFnOutputRow(data={"text_result": "red"}, result_type=str),
+            LLMFnOutputRow(data={"text_result": "green"}, result_type=str),
+            LLMFnOutputRow(data={"text_result": "blue"}, result_type=str),
+        ]
+        self.assertEqual([0, 2, 5], unique_fn.unique_fn(rows))
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

@@ -51,4 +51,17 @@ jobs:
         python --version
         pip install -q -e .[dev]
         python -m unittest discover --pattern '*test*.py'
-        
+  format:
+    name: Check format with black
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Check format
+      run: |
+        python --version
+        pip install -q -e .
+        pip install -q black
+        black . --check

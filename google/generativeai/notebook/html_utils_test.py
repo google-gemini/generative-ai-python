@@ -21,37 +21,36 @@ from google.generativeai.notebook import sheets_id
 
 
 class HtmlUtilsTest(absltest.TestCase):
+    def test_get_anchor_tag_text_is_escaped(self):
+        html = html_utils.get_anchor_tag(
+            url=sheets_id.SheetsURL("https://docs.google.com/?a=b#hello"),
+            text="hello<evil_tag/>world",
+        )
+        self.assertEqual(
+            (
+                '<a target="_blank" rel="noopener"'
+                ' href="https://docs.google.com/?a=b#hello">hello&lt;evil_tag/&gt;world</a>'
+            ),
+            html,
+        )
 
-  def test_get_anchor_tag_text_is_escaped(self):
-    html = html_utils.get_anchor_tag(
-        url=sheets_id.SheetsURL("https://docs.google.com/?a=b#hello"),
-        text="hello<evil_tag/>world",
-    )
-    self.assertEqual(
-        (
-            '<a target="_blank" rel="noopener"'
-            ' href="https://docs.google.com/?a=b#hello">hello&lt;evil_tag/&gt;world</a>'
-        ),
-        html,
-    )
-
-  def test_get_anchor_tag_url_is_escaped(self):
-    url = sheets_id.SheetsURL("https://docs.google.com/")
-    # Break encapsulation to modify the URL.
-    url._url = 'https://docs.google.com/"evil_string"'
-    html = html_utils.get_anchor_tag(
-        url=url,
-        text="hello world",
-    )
-    self.assertEqual(
-        (
-            '<a target="_blank" rel="noopener"'
-            ' href="https://docs.google.com/&quot;evil_string&quot;">hello'
-            " world</a>"
-        ),
-        html,
-    )
+    def test_get_anchor_tag_url_is_escaped(self):
+        url = sheets_id.SheetsURL("https://docs.google.com/")
+        # Break encapsulation to modify the URL.
+        url._url = 'https://docs.google.com/"evil_string"'
+        html = html_utils.get_anchor_tag(
+            url=url,
+            text="hello world",
+        )
+        self.assertEqual(
+            (
+                '<a target="_blank" rel="noopener"'
+                ' href="https://docs.google.com/&quot;evil_string&quot;">hello'
+                " world</a>"
+            ),
+            html,
+        )
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

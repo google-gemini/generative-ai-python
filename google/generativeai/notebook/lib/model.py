@@ -22,48 +22,47 @@ from typing import Sequence
 
 @dataclasses.dataclass(frozen=True)
 class ModelArguments:
-  """Common arguments for models.
+    """Common arguments for models.
 
-  Attributes:
-    model: The model string to use. If None a default model will be selected.
-    temperature: The temperature. Must be greater-than-or-equal-to zero.
-    candidate_count: Number of candidates to return.
-  """
+    Attributes:
+      model: The model string to use. If None a default model will be selected.
+      temperature: The temperature. Must be greater-than-or-equal-to zero.
+      candidate_count: Number of candidates to return.
+    """
 
-  model: str | None = None
-  temperature: float | None = None
-  candidate_count: int | None = None
+    model: str | None = None
+    temperature: float | None = None
+    candidate_count: int | None = None
 
 
 @dataclasses.dataclass
 class ModelResults:
-  """Results from calling AbstractModel.call_model()."""
+    """Results from calling AbstractModel.call_model()."""
 
-  model_input: str
-  text_results: Sequence[str]
+    model_input: str
+    text_results: Sequence[str]
 
 
 class AbstractModel(abc.ABC):
-
-  @abc.abstractmethod
-  def call_model(
-      self, model_input: str, model_args: ModelArguments | None = None
-  ) -> ModelResults:
-    """Executes the model."""
+    @abc.abstractmethod
+    def call_model(
+        self, model_input: str, model_args: ModelArguments | None = None
+    ) -> ModelResults:
+        """Executes the model."""
 
 
 class EchoModel(AbstractModel):
-  """Model that returns the original input.
+    """Model that returns the original input.
 
-  This is primarily used for testing.
-  """
+    This is primarily used for testing.
+    """
 
-  def call_model(
-      self, model_input: str, model_args: ModelArguments | None = None
-  ) -> ModelResults:
-    candidate_count = model_args.candidate_count if model_args else None
-    if candidate_count is None:
-      candidate_count = 1
-    return ModelResults(
-        model_input=model_input, text_results=[model_input] * candidate_count
-    )
+    def call_model(
+        self, model_input: str, model_args: ModelArguments | None = None
+    ) -> ModelResults:
+        candidate_count = model_args.candidate_count if model_args else None
+        if candidate_count is None:
+            candidate_count = 1
+        return ModelResults(
+            model_input=model_input, text_results=[model_input] * candidate_count
+        )

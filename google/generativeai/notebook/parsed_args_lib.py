@@ -41,49 +41,49 @@ TextResultCompareFn = Callable[[str, str], Any]
 
 
 class CommandName(enum.Enum):
-  RUN_CMD = "run"
-  COMPILE_CMD = "compile"
-  COMPARE_CMD = "compare"
-  EVAL_CMD = "eval"
+    RUN_CMD = "run"
+    COMPILE_CMD = "compile"
+    COMPARE_CMD = "compare"
+    EVAL_CMD = "eval"
 
 
 @dataclasses.dataclass(frozen=True)
 class ParsedArgs:
-  """The results of parsing the command line."""
+    """The results of parsing the command line."""
 
-  cmd: CommandName
+    cmd: CommandName
 
-  # For run, compile and eval commands.
-  model_args: model_lib.ModelArguments
-  model_type: model_registry.ModelName | None = None
-  unique: bool = False
+    # For run, compile and eval commands.
+    model_args: model_lib.ModelArguments
+    model_type: model_registry.ModelName | None = None
+    unique: bool = False
 
-  # For run, compare and eval commands.
-  inputs: Sequence[llmfn_inputs_source.LLMFnInputsSource] = dataclasses.field(
-      default_factory=list
-  )
-  sheets_input_names: Sequence[llmfn_inputs_source.LLMFnInputsSource] = (
-      dataclasses.field(default_factory=list)
-  )
+    # For run, compare and eval commands.
+    inputs: Sequence[llmfn_inputs_source.LLMFnInputsSource] = dataclasses.field(
+        default_factory=list
+    )
+    sheets_input_names: Sequence[
+        llmfn_inputs_source.LLMFnInputsSource
+    ] = dataclasses.field(default_factory=list)
 
-  outputs: Sequence[llmfn_outputs.LLMFnOutputsSink] = dataclasses.field(
-      default_factory=list
-  )
-  sheets_output_names: Sequence[llmfn_outputs.LLMFnOutputsSink] = (
-      dataclasses.field(default_factory=list)
-  )
+    outputs: Sequence[llmfn_outputs.LLMFnOutputsSink] = dataclasses.field(
+        default_factory=list
+    )
+    sheets_output_names: Sequence[llmfn_outputs.LLMFnOutputsSink] = dataclasses.field(
+        default_factory=list
+    )
 
-  # For compile command.
-  compile_save_name: str | None = None
+    # For compile command.
+    compile_save_name: str | None = None
 
-  # For compare command.
-  lhs_name_and_fn: tuple[str, llm_function.LLMFunction] | None = None
-  rhs_name_and_fn: tuple[str, llm_function.LLMFunction] | None = None
+    # For compare command.
+    lhs_name_and_fn: tuple[str, llm_function.LLMFunction] | None = None
+    rhs_name_and_fn: tuple[str, llm_function.LLMFunction] | None = None
 
-  # For compare and eval commands.
-  compare_fn: Sequence[tuple[str, TextResultCompareFn]] = dataclasses.field(
-      default_factory=list
-  )
+    # For compare and eval commands.
+    compare_fn: Sequence[tuple[str, TextResultCompareFn]] = dataclasses.field(
+        default_factory=list
+    )
 
-  # For eval command.
-  ground_truth: Sequence[str] = dataclasses.field(default_factory=list)
+    # For eval command.
+    ground_truth: Sequence[str] = dataclasses.field(default_factory=list)

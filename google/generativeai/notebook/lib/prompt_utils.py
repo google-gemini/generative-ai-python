@@ -20,19 +20,19 @@ from typing import AbstractSet
 
 
 def get_placeholders(prompt: str) -> AbstractSet[str]:
-  """Returns the placeholders for `prompt`.
+    """Returns the placeholders for `prompt`.
 
-  E.g. Given "A for {word_one} B for {word_two}", returns {"word_one",
-  "word_two"}.
+    E.g. Given "A for {word_one} B for {word_two}", returns {"word_one",
+    "word_two"}.
 
-  Args:
-    prompt: A prompt template with optional placeholders.
+    Args:
+      prompt: A prompt template with optional placeholders.
 
-  Returns:
-    A sequence of placeholders in `prompt`.
-  """
-  placeholders: list[str] = []
-  for _, field_name, _, _ in string.Formatter().parse(prompt):
-    if field_name is not None:
-      placeholders.append(field_name)
-  return frozenset(placeholders)
+    Returns:
+      A sequence of placeholders in `prompt`.
+    """
+    placeholders: list[str] = []
+    for _, field_name, _, _ in string.Formatter().parse(prompt):
+        if field_name is not None:
+            placeholders.append(field_name)
+    return frozenset(placeholders)

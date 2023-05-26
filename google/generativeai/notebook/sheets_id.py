@@ -20,84 +20,82 @@ from google.generativeai.notebook import sheets_sanitize_url
 
 
 def _sanitize_key(key: str) -> str:
-  if not re.fullmatch("[a-zA-Z0-9_-]+", key):
-    raise ValueError('"{}" is not a valid Sheets key'.format(key))
-  return key
+    if not re.fullmatch("[a-zA-Z0-9_-]+", key):
+        raise ValueError('"{}" is not a valid Sheets key'.format(key))
+    return key
 
 
 class SheetsURL:
-  """Class that enforces safety by ensuring that URLs are sanitized."""
+    """Class that enforces safety by ensuring that URLs are sanitized."""
 
-  def __init__(self, url: str):
-    self._url: str = sheets_sanitize_url.sanitize_sheets_url(url)
+    def __init__(self, url: str):
+        self._url: str = sheets_sanitize_url.sanitize_sheets_url(url)
 
-  def __str__(self) -> str:
-    return self._url
+    def __str__(self) -> str:
+        return self._url
 
 
 class SheetsKey:
-  """Class that enforces safety by ensuring that keys are sanitized."""
+    """Class that enforces safety by ensuring that keys are sanitized."""
 
-  def __init__(self, key: str):
-    self._key: str = _sanitize_key(key)
+    def __init__(self, key: str):
+        self._key: str = _sanitize_key(key)
 
-  def __str__(self) -> str:
-    return self._key
+    def __str__(self) -> str:
+        return self._key
 
 
 class SheetsIdentifier:
-  """Encapsulates a means to identify a Sheets document.
+    """Encapsulates a means to identify a Sheets document.
 
-  The gspread library provides three ways to look up a Sheets document: by name,
-  by url and by key. An instance of this class represents exactly one of the
-  methods.
-  """
-
-  def __init__(
-      self,
-      name: str | None = None,
-      key: SheetsKey | None = None,
-      url: SheetsURL | None = None,
-  ):
-    """Constructor.
-
-    Exactly one of the arguments should be provided.
-
-    Args:
-      name: The name of the Sheets document. More-than-one Sheets documents can
-        have the same name, so this is the least precise method of identifying
-        the document.
-      key: The key of the Sheets document
-      url: The url to the Sheets document
-
-    Raises:
-      ValueError: If the caller does not specify exactly one of name, url or
-      key.
+    The gspread library provides three ways to look up a Sheets document: by name,
+    by url and by key. An instance of this class represents exactly one of the
+    methods.
     """
-    self._name = name
-    self._key = key
-    self._url = url
 
-    # There should be exactly one.
-    num_inputs = (
-        int(bool(self._name)) + int(bool(self._key)) + int(bool(self._url))
-    )
-    if num_inputs != 1:
-      raise ValueError("Must set exactly one of name, key or url")
+    def __init__(
+        self,
+        name: str | None = None,
+        key: SheetsKey | None = None,
+        url: SheetsURL | None = None,
+    ):
+        """Constructor.
 
-  def name(self) -> str | None:
-    return self._name
+        Exactly one of the arguments should be provided.
 
-  def key(self) -> SheetsKey | None:
-    return self._key
+        Args:
+          name: The name of the Sheets document. More-than-one Sheets documents can
+            have the same name, so this is the least precise method of identifying
+            the document.
+          key: The key of the Sheets document
+          url: The url to the Sheets document
 
-  def url(self) -> SheetsURL | None:
-    return self._url
+        Raises:
+          ValueError: If the caller does not specify exactly one of name, url or
+          key.
+        """
+        self._name = name
+        self._key = key
+        self._url = url
 
-  def __str__(self):
-    if self._name:
-      return "name={}".format(self._name)
-    elif self._key:
-      return "key={}".format(self._key)
-    else:
-      return "url={}".format(self._url)
+        # There should be exactly one.
+        num_inputs = int(bool(self._name)) + int(bool(self._key)) + int(bool(self._url))
+        if num_inputs != 1:
+            raise ValueError("Must set exactly one of name, key or url")
+
+    def name(self) -> str | None:
+        return self._name
+
+    def key(self) -> SheetsKey | None:
+        return self._key
+
+    def url(self) -> SheetsURL | None:
+        return self._url
+
+    def __str__(self):
+        if self._name:
+            return "name={}".format(self._name)
+        elif self._key:
+            return "key={}".format(self._key)
+        else:
+            return "url={}".format(self._url)

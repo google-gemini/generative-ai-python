@@ -26,14 +26,16 @@ name = "google-generativeai"
 
 description = "Google Generative AI High level API client library and tools."
 
+
 def get_version():
     version = {}
-    version_source = (package_root/"google/generativeai/version.py").read_text()
+    version_source = (package_root / "google/generativeai/version.py").read_text()
     exec(version_source, version)
     version = version["__version__"]
     return version
 
-version=get_version()
+
+version = get_version()
 
 if version[0] == "0":
     release_status = "Development Status :: 4 - Beta"
@@ -56,7 +58,7 @@ extras_require = {
 
 url = "https://github.com/google/generative-ai-python"
 
-readme = (package_root/'README.md').read_text()
+readme = (package_root / "README.md").read_text()
 
 packages = [
     package
@@ -83,7 +85,7 @@ setuptools.setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10", # Colab
+        "Programming Language :: Python :: 3.10",  # Colab
         "Programming Language :: Python :: 3.11",
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",

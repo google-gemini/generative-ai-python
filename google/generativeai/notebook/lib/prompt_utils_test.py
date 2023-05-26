@@ -19,26 +19,23 @@ from google.generativeai.notebook.lib import prompt_utils
 
 
 class PromptUtilsTest(absltest.TestCase):
+    def test_get_placeholders_empty(self):
+        placeholders = prompt_utils.get_placeholders("")
+        self.assertEmpty(placeholders)
 
-  def test_get_placeholders_empty(self):
-    placeholders = prompt_utils.get_placeholders("")
-    self.assertEmpty(placeholders)
+        placeholders = prompt_utils.get_placeholders("There are no placeholders here")
+        self.assertEmpty(placeholders)
 
-    placeholders = prompt_utils.get_placeholders(
-        "There are no placeholders here"
-    )
-    self.assertEmpty(placeholders)
+    def test_get_placeholders(self):
+        placeholders = prompt_utils.get_placeholders("today {hello} world")
+        self.assertEqual(frozenset({"hello"}), placeholders)
 
-  def test_get_placeholders(self):
-    placeholders = prompt_utils.get_placeholders("today {hello} world")
-    self.assertEqual(frozenset({"hello"}), placeholders)
+        placeholders = prompt_utils.get_placeholders("{hello} {world}")
+        self.assertEqual(frozenset({"hello", "world"}), placeholders)
 
-    placeholders = prompt_utils.get_placeholders("{hello} {world}")
-    self.assertEqual(frozenset({"hello", "world"}), placeholders)
-
-    placeholders = prompt_utils.get_placeholders("{hello} {hello}")
-    self.assertEqual(frozenset({"hello"}), placeholders)
+        placeholders = prompt_utils.get_placeholders("{hello} {hello}")
+        self.assertEqual(frozenset({"hello"}), placeholders)
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

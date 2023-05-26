@@ -16,17 +16,17 @@
 
 
 def load_ipython_extension(ipython):
-  """Register the Colab Magic extension to support %load_ext."""
-  # pylint: disable-next=g-import-not-at-top
-  from google.generativeai.notebook import magics
-
-  ipython.register_magics(magics.Magics)
-
-  # Since we're in an interactive environment, make the tables prettier.
-  try:
+    """Register the Colab Magic extension to support %load_ext."""
     # pylint: disable-next=g-import-not-at-top
-    from google import colab
+    from google.generativeai.notebook import magics
 
-    colab.data_table.enable_dataframe_formatter()
-  except ImportError:
-    pass
+    ipython.register_magics(magics.Magics)
+
+    # Since we're in an interactive environment, make the tables prettier.
+    try:
+        # pylint: disable-next=g-import-not-at-top
+        from google import colab
+
+        colab.data_table.enable_dataframe_formatter()
+    except ImportError:
+        pass

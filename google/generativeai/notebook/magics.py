@@ -50,93 +50,93 @@ _ipython_env: ipython_env.IPythonEnv | None = None
 
 
 def _get_ipython_env() -> ipython_env.IPythonEnv:
-  """Lazily constructs and returns a global IPythonEnv instance."""
-  global _ipython_env
-  if _ipython_env is None:
-    _ipython_env = ipython_env_impl.IPythonEnvImpl()
-  return _ipython_env
+    """Lazily constructs and returns a global IPythonEnv instance."""
+    global _ipython_env
+    if _ipython_env is None:
+        _ipython_env = ipython_env_impl.IPythonEnvImpl()
+    return _ipython_env
 
 
 def authorize(creds: credentials.Credentials) -> None:
-  """Sets up credentials.
+    """Sets up credentials.
 
-  This is used for interacting Google APIs, such as Google Sheets.
+    This is used for interacting Google APIs, such as Google Sheets.
 
-  Args:
-    creds: The credentials that will be used (e.g. to read from Google Sheets.)
-  """
-  gspread_client.authorize(creds=creds, env=_get_ipython_env())
+    Args:
+      creds: The credentials that will be used (e.g. to read from Google Sheets.)
+    """
+    gspread_client.authorize(creds=creds, env=_get_ipython_env())
 
 
 class AbstractMagics(abc.ABC):
-  """Defines interface to Magics class."""
+    """Defines interface to Magics class."""
 
-  @abc.abstractmethod
-  def palm(self, cell_line: str | None, cell_body: str | None):
-    """Perform various LLM-related operations.
+    @abc.abstractmethod
+    def palm(self, cell_line: str | None, cell_body: str | None):
+        """Perform various LLM-related operations.
 
-    Args:
-      cell_line: String to pass to the MagicsEngine.
-      cell_body: Contents of the cell body.
-    """
-    raise NotImplementedError()
+        Args:
+          cell_line: String to pass to the MagicsEngine.
+          cell_body: Contents of the cell body.
+        """
+        raise NotImplementedError()
 
 
 class MagicsImpl(AbstractMagics):
-  """Actual class implementing the magics functionality.
+    """Actual class implementing the magics functionality.
 
-  We use a separate class to ensure a single, global instance
-  of the magics class.
-  """
-
-  def __init__(self):
-    self._engine = magics_engine.MagicsEngine(env=_get_ipython_env())
-
-  def palm(self, cell_line: str | None, cell_body: str | None):
-    """Perform various LLM-related operations.
-
-    Args:
-      cell_line: String to pass to the MagicsEngine.
-      cell_body: Contents of the cell body.
-
-    Returns:
-      Results from running MagicsEngine.
+    We use a separate class to ensure a single, global instance
+    of the magics class.
     """
-    cell_line = cell_line or ""
-    cell_body = cell_body or ""
-    return self._engine.execute_cell(cell_line, cell_body)
+
+    def __init__(self):
+        self._engine = magics_engine.MagicsEngine(env=_get_ipython_env())
+
+    def palm(self, cell_line: str | None, cell_body: str | None):
+        """Perform various LLM-related operations.
+
+        Args:
+          cell_line: String to pass to the MagicsEngine.
+          cell_body: Contents of the cell body.
+
+        Returns:
+          Results from running MagicsEngine.
+        """
+        cell_line = cell_line or ""
+        cell_body = cell_body or ""
+        return self._engine.execute_cell(cell_line, cell_body)
 
 
 @magic.magics_class
 class Magics(magic.Magics):
-  """Class to register the magic with Colab.
+    """Class to register the magic with Colab.
 
-  Objects of this class delegate all calls to a single,
-  global instance.
-  """
-
-  # Global instance
-  _instance = None
-
-  @classmethod
-  def get_instance(cls) -> AbstractMagics:
-    """Retrieve global instance of the Magics object."""
-    if cls._instance is None:
-      cls._instance = MagicsImpl()
-    return cls._instance
-
-  @magic.line_cell_magic
-  def palm(self, cell_line: str | None, cell_body: str | None):
-    """Perform various LLM-related operations.
-
-    Args:
-      cell_line: String to pass to the MagicsEngine.
-      cell_body: Contents of the cell body.
-
-    Returns:
-      Results from running MagicsEngine.
+    Objects of this class delegate all calls to a single,
+    global instance.
     """
-    return Magics.get_instance().palm(cell_line=cell_line, cell_body=cell_body)
+
+    # Global instance
+    _instance = None
+
+    @classmethod
+    def get_instance(cls) -> AbstractMagics:
+        """Retrieve global instance of the Magics object."""
+        if cls._instance is None:
+            cls._instance = MagicsImpl()
+        return cls._instance
+
+    @magic.line_cell_magic
+    def palm(self, cell_line: str | None, cell_body: str | None):
+        """Perform various LLM-related operations.
+
+        Args:
+          cell_line: String to pass to the MagicsEngine.
+          cell_body: Contents of the cell body.
+
+        Returns:
+          Results from running MagicsEngine.
+        """
+        return Magics.get_instance().palm(cell_line=cell_line, cell_body=cell_body)
 
 
 IPython.get_ipython().register_magics(Magics)

@@ -23,35 +23,35 @@ from google.generativeai.notebook.lib import model as model_lib
 
 
 class ModelName(enum.Enum):
-  ECHO_MODEL = "echo"
-  TEXT_MODEL = "text"
+    ECHO_MODEL = "echo"
+    TEXT_MODEL = "text"
 
 
 class ModelRegistry:
-  """Registry that instantiates and caches models."""
+    """Registry that instantiates and caches models."""
 
-  DEFAULT_MODEL = ModelName.TEXT_MODEL
+    DEFAULT_MODEL = ModelName.TEXT_MODEL
 
-  def __init__(self):
-    self._model_cache: dict[ModelName, model_lib.AbstractModel] = {}
-    self._model_constructors: dict[
-        ModelName, Callable[[], model_lib.AbstractModel]
-    ] = {
-        ModelName.ECHO_MODEL: model_lib.EchoModel,
-        ModelName.TEXT_MODEL: text_model.TextModel,
-    }
+    def __init__(self):
+        self._model_cache: dict[ModelName, model_lib.AbstractModel] = {}
+        self._model_constructors: dict[
+            ModelName, Callable[[], model_lib.AbstractModel]
+        ] = {
+            ModelName.ECHO_MODEL: model_lib.EchoModel,
+            ModelName.TEXT_MODEL: text_model.TextModel,
+        }
 
-  def get_model(self, model_name: ModelName) -> model_lib.AbstractModel:
-    """Given `model_name`, return the corresponding Model instance.
+    def get_model(self, model_name: ModelName) -> model_lib.AbstractModel:
+        """Given `model_name`, return the corresponding Model instance.
 
-    Model instances are cached and reused for the same `model_name`.
+        Model instances are cached and reused for the same `model_name`.
 
-    Args:
-      model_name: The name of the model.
+        Args:
+          model_name: The name of the model.
 
-    Returns:
-      The corresponding model instance for `model_name`.
-    """
-    if model_name not in self._model_cache:
-      self._model_cache[model_name] = self._model_constructors[model_name]()
-    return self._model_cache[model_name]
+        Returns:
+          The corresponding model instance for `model_name`.
+        """
+        if model_name not in self._model_cache:
+            self._model_cache[model_name] = self._model_constructors[model_name]()
+        return self._model_cache[model_name]

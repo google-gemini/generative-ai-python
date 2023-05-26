@@ -21,38 +21,35 @@ from google.generativeai.notebook import argument_parser as parser_lib
 
 
 class ArgumentParserTest(absltest.TestCase):
+    def test_help(self):
+        """Verify that help messages raise ParserNormalExit."""
+        parser = parser_lib.ArgumentParser()
+        with self.assertRaisesRegex(
+            parser_lib.ParserNormalExit, "show this help message and exit"
+        ):
+            parser.parse_args(["-h"])
 
-  def test_help(self):
-    """Verify that help messages raise ParserNormalExit."""
-    parser = parser_lib.ArgumentParser()
-    with self.assertRaisesRegex(
-        parser_lib.ParserNormalExit, "show this help message and exit"
-    ):
-      parser.parse_args(["-h"])
+    def test_parse_arg_errors(self):
+        def new_parser() -> argparse.ArgumentParser:
+            parser = parser_lib.ArgumentParser()
+            parser.add_argument("--value", type=int, required=True)
+            return parser
 
-  def test_parse_arg_errors(self):
-    def new_parser() -> argparse.ArgumentParser:
-      parser = parser_lib.ArgumentParser()
-      parser.add_argument("--value", type=int, required=True)
-      return parser
+        # Normal case: no error.
+        results = new_parser().parse_args(["--value", "42"])
+        self.assertEqual(42, results.value)
 
-    # Normal case: no error.
-    results = new_parser().parse_args(["--value", "42"])
-    self.assertEqual(42, results.value)
+        with self.assertRaisesRegex(parser_lib.ParserError, "invalid int value"):
+            new_parser().parse_args(["--value", "forty-two"])
 
-    with self.assertRaisesRegex(parser_lib.ParserError, "invalid int value"):
-      new_parser().parse_args(["--value", "forty-two"])
+        with self.assertRaisesRegex(
+            parser_lib.ParserError, "the following arguments are required"
+        ):
+            new_parser().parse_args([])
 
-    with self.assertRaisesRegex(
-        parser_lib.ParserError, "the following arguments are required"
-    ):
-      new_parser().parse_args([])
-
-    with self.assertRaisesRegex(
-        parser_lib.ParserError, "expected one argument"
-    ):
-      new_parser().parse_args(["--value"])
+        with self.assertRaisesRegex(parser_lib.ParserError, "expected one argument"):
+            new_parser().parse_args(["--value"])
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

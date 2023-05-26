@@ -29,49 +29,47 @@ import pandas
 
 
 class EvalCommand(command.Command):
-  """Implementation of "eval" command."""
+    """Implementation of "eval" command."""
 
-  def __init__(
-      self,
-      models: model_registry.ModelRegistry,
-      env: ipython_env.IPythonEnv | None = None,
-  ):
-    """Constructor.
+    def __init__(
+        self,
+        models: model_registry.ModelRegistry,
+        env: ipython_env.IPythonEnv | None = None,
+    ):
+        """Constructor.
 
-    Args:
-      models: ModelRegistry instance.
-      env: The IPythonEnv environment.
-    """
-    super().__init__()
-    self._models = models
-    self._ipython_env = env
+        Args:
+          models: ModelRegistry instance.
+          env: The IPythonEnv environment.
+        """
+        super().__init__()
+        self._models = models
+        self._ipython_env = env
 
-  def execute(
-      self,
-      parsed_args: parsed_args_lib.ParsedArgs,
-      cell_content: str,
-      post_processing_fns: Sequence[post_process_utils.ParsedPostProcessExpr],
-  ) -> pandas.DataFrame:
-    # We expect CmdLineParser to have already read the inputs once to validate
-    # that the placeholders in the prompt are present in the inputs, so we can
-    # suppress the status messages here.
-    inputs = input_utils.join_inputs_sources(
-        parsed_args, suppress_status_msgs=True
-    )
+    def execute(
+        self,
+        parsed_args: parsed_args_lib.ParsedArgs,
+        cell_content: str,
+        post_processing_fns: Sequence[post_process_utils.ParsedPostProcessExpr],
+    ) -> pandas.DataFrame:
+        # We expect CmdLineParser to have already read the inputs once to validate
+        # that the placeholders in the prompt are present in the inputs, so we can
+        # suppress the status messages here.
+        inputs = input_utils.join_inputs_sources(parsed_args, suppress_status_msgs=True)
 
-    llm_cmp_fn = command_utils.create_llm_eval_function(
-        models=self._models,
-        env=self._ipython_env,
-        parsed_args=parsed_args,
-        cell_content=cell_content,
-        post_processing_fns=post_processing_fns,
-    )
+        llm_cmp_fn = command_utils.create_llm_eval_function(
+            models=self._models,
+            env=self._ipython_env,
+            parsed_args=parsed_args,
+            cell_content=cell_content,
+            post_processing_fns=post_processing_fns,
+        )
 
-    results = llm_cmp_fn(inputs=inputs)
-    output_utils.write_to_outputs(results=results, parsed_args=parsed_args)
-    return results.as_pandas_dataframe()
+        results = llm_cmp_fn(inputs=inputs)
+        output_utils.write_to_outputs(results=results, parsed_args=parsed_args)
+        return results.as_pandas_dataframe()
 
-  def parse_post_processing_tokens(
-      self, tokens: Sequence[Sequence[str]]
-  ) -> Sequence[post_process_utils.ParsedPostProcessExpr]:
-    return post_process_utils.resolve_post_processing_tokens(tokens)
+    def parse_post_processing_tokens(
+        self, tokens: Sequence[Sequence[str]]
+    ) -> Sequence[post_process_utils.ParsedPostProcessExpr]:
+        return post_process_utils.resolve_post_processing_tokens(tokens)

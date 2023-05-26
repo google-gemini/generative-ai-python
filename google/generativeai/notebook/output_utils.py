@@ -23,39 +23,39 @@ from google.generativeai.notebook.lib import llmfn_outputs
 
 
 class _PyVarOutputsSink(llmfn_outputs.LLMFnOutputsSink):
-  """Sink that writes results to a Python variable."""
+    """Sink that writes results to a Python variable."""
 
-  def __init__(self, var_name: str):
-    self._var_name = var_name
+    def __init__(self, var_name: str):
+        self._var_name = var_name
 
-  def write_outputs(self, outputs: llmfn_outputs.LLMFnOutputsBase) -> None:
-    # Clone our results so that they are all independent.
-    py_utils.set_py_var(self._var_name, copy.deepcopy(outputs))
+    def write_outputs(self, outputs: llmfn_outputs.LLMFnOutputsBase) -> None:
+        # Clone our results so that they are all independent.
+        py_utils.set_py_var(self._var_name, copy.deepcopy(outputs))
 
 
 def get_outputs_sink_from_py_var(
     var_name: str,
 ) -> llmfn_outputs.LLMFnOutputsSink:
-  # The output variable `var_name` will be created if it does not already
-  # exist.
-  if py_utils.has_py_var(var_name):
-    data = py_utils.get_py_var(var_name)
-    if isinstance(data, llmfn_outputs.LLMFnOutputsSink):
-      return data
-  return _PyVarOutputsSink(var_name)
+    # The output variable `var_name` will be created if it does not already
+    # exist.
+    if py_utils.has_py_var(var_name):
+        data = py_utils.get_py_var(var_name)
+        if isinstance(data, llmfn_outputs.LLMFnOutputsSink):
+            return data
+    return _PyVarOutputsSink(var_name)
 
 
 def write_to_outputs(
     results: llmfn_outputs.LLMFnOutputs,
     parsed_args: parsed_args_lib.ParsedArgs,
 ) -> None:
-  """Writes `results` to the sinks provided.
+    """Writes `results` to the sinks provided.
 
-  Args:
-    results: The results to export.
-    parsed_args: Arguments parsed from the command line.
-  """
-  for sink in parsed_args.outputs:
-    results.export(sink)
-  for sink in parsed_args.sheets_output_names:
-    results.export(sink)
+    Args:
+      results: The results to export.
+      parsed_args: Arguments parsed from the command line.
+    """
+    for sink in parsed_args.outputs:
+        results.export(sink)
+    for sink in parsed_args.sheets_output_names:
+        results.export(sink)

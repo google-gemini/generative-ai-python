@@ -27,23 +27,23 @@ from typing import Any
 
 
 class IPythonEnv(abc.ABC):
-  """Abstract base class that provides a wrapper around IPython methods."""
+    """Abstract base class that provides a wrapper around IPython methods."""
 
-  @abc.abstractmethod
-  def display(self, x: Any) -> None:
-    """Wrapper around IPython.core.display.display()."""
+    @abc.abstractmethod
+    def display(self, x: Any) -> None:
+        """Wrapper around IPython.core.display.display()."""
 
-  @abc.abstractmethod
-  def display_html(self, x: str) -> None:
-    """Wrapper to display HTML.
+    @abc.abstractmethod
+    def display_html(self, x: str) -> None:
+        """Wrapper to display HTML.
 
-    This method is equivalent to calling:
-      display.display(display.HTML(x))
+        This method is equivalent to calling:
+          display.display(display.HTML(x))
 
-    display() and HTML() are combined into a single method because
-    display.HTML() returns an object, which would be complicated to model with
-    this abstract interface.
+        display() and HTML() are combined into a single method because
+        display.HTML() returns an object, which would be complicated to model with
+        this abstract interface.
 
-    Args:
-      x: An HTML string to be displayed.
-    """
+        Args:
+          x: An HTML string to be displayed.
+        """

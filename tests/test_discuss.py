@@ -310,10 +310,13 @@ class UnitTests(parameterized.TestCase):
             filters[0]["reason"], safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED
         )
 
-
     def test_chat_citations(self):
         self.mock_response = mock_response = glm.GenerateMessageResponse(
-            candidates=[{'content':"Hello google!", 'author':"1", "citation_metadata": {
+            candidates=[
+                {
+                    "content": "Hello google!",
+                    "author": "1",
+                    "citation_metadata": {
                         "citation_sources": [
                             {
                                 "start_index": 6,
@@ -322,7 +325,8 @@ class UnitTests(parameterized.TestCase):
                             }
                         ]
                     },
-            }],
+                }
+            ],
         )
 
         response = discuss.chat(messages="Do citations work?")
@@ -346,11 +350,14 @@ class UnitTests(parameterized.TestCase):
 
     def test_set_last(self):
         response = discuss.chat(messages="Can you overwrite `.last`?")
-        response.last = 'yes'
-        response = response.reply('glad to hear it!')
+        response.last = "yes"
+        response = response.reply("glad to hear it!")
         response.last = "Me too!"
-        self.assertEqual([msg['content'] for msg in response.messages],
-                         ["Can you overwrite `.last`?", 'yes', 'glad to hear it!', 'Me too!'])
+        self.assertEqual(
+            [msg["content"] for msg in response.messages],
+            ["Can you overwrite `.last`?", "yes", "glad to hear it!", "Me too!"],
+        )
+
 
 if __name__ == "__main__":
     absltest.main()

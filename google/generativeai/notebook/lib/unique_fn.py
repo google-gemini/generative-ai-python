@@ -22,26 +22,26 @@ from google.generativeai.notebook.lib import llmfn_output_row
 def unique_fn(
     rows: Sequence[llmfn_output_row.LLMFnOutputRowView],
 ) -> Sequence[int]:
-  """Returns a list of indices with duplicates removed.
+    """Returns a list of indices with duplicates removed.
 
-  E.g. if rows has results ["hello", "hello", "world"], the return value would
-  be [0, 2], indicating that the results at index 1 is a duplicate and should be
-  removed.
+    E.g. if rows has results ["hello", "hello", "world"], the return value would
+    be [0, 2], indicating that the results at index 1 is a duplicate and should be
+    removed.
 
-  Args:
-    rows: The input rows
+    Args:
+      rows: The input rows
 
-  Returns:
-    A sequence of indices indicating which entries have unique results.
-  """
-  indices: list[int] = []
-  seen_entries = set()
-  for idx, row in enumerate(rows):
-    value = row.result_value()
-    if value in seen_entries:
-      continue
+    Returns:
+      A sequence of indices indicating which entries have unique results.
+    """
+    indices: list[int] = []
+    seen_entries = set()
+    for idx, row in enumerate(rows):
+        value = row.result_value()
+        if value in seen_entries:
+            continue
 
-    seen_entries.add(value)
-    indices.append(idx)
+        seen_entries.add(value)
+        indices.append(idx)
 
-  return indices
+    return indices

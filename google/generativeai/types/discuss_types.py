@@ -195,4 +195,5 @@ class ChatResponse(abc.ABC):
 
 class AuthorError(Exception):
     """Raised by the `chat` (or `reply`) functions when the author list can't be normalized."""
+
     pass

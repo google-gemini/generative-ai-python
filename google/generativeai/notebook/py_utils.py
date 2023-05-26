@@ -22,43 +22,43 @@ from typing import Any
 
 
 def validate_var_name(var_name: str) -> None:
-  """Validates that the variable name is a valid identifier."""
-  if not var_name.isidentifier():
-    raise ValueError('Invalid Python variable name, got "{}"'.format(var_name))
-  if keyword.iskeyword(var_name):
-    raise ValueError('Cannot use Python keywords, got "{}"'.format(var_name))
+    """Validates that the variable name is a valid identifier."""
+    if not var_name.isidentifier():
+        raise ValueError('Invalid Python variable name, got "{}"'.format(var_name))
+    if keyword.iskeyword(var_name):
+        raise ValueError('Cannot use Python keywords, got "{}"'.format(var_name))
 
 
 def get_main_module():
-  return sys.modules['__main__']
+    return sys.modules["__main__"]
 
 
 def get_py_var(var_name: str) -> Any:
-  """Retrieves the value of `var_name` from the global environment."""
-  validate_var_name(var_name)
-  g_vars = vars(get_main_module())
-  if var_name in g_vars:
-    return g_vars[var_name]
-  elif var_name in vars(builtins):
-    return vars(builtins)[var_name]
-  raise NameError('"{}" not found'.format(var_name))
+    """Retrieves the value of `var_name` from the global environment."""
+    validate_var_name(var_name)
+    g_vars = vars(get_main_module())
+    if var_name in g_vars:
+        return g_vars[var_name]
+    elif var_name in vars(builtins):
+        return vars(builtins)[var_name]
+    raise NameError('"{}" not found'.format(var_name))
 
 
 def has_py_var(var_name: str) -> bool:
-  """Returns true if `var_name` is defined in the global environment."""
-  try:
-    validate_var_name(var_name)
-    _ = get_py_var(var_name)
-  except ValueError:
-    return False
-  except NameError:
-    return False
+    """Returns true if `var_name` is defined in the global environment."""
+    try:
+        validate_var_name(var_name)
+        _ = get_py_var(var_name)
+    except ValueError:
+        return False
+    except NameError:
+        return False
 
-  return True
+    return True
 
 
 def set_py_var(var_name: str, val: Any) -> None:
-  """Sets the value of `var_name` in the global environment."""
-  validate_var_name(var_name)
-  g_vars = vars(get_main_module())
-  g_vars[var_name] = val
+    """Sets the value of `var_name` in the global environment."""
+    validate_var_name(var_name)
+    g_vars = vars(get_main_module())
+    g_vars[var_name] = val
