@@ -120,8 +120,11 @@ _SITE_PATH = flags.DEFINE_string(
 )
 
 _CODE_URL_PREFIX = flags.DEFINE_string(
-    "code_url_prefix", "https://github.com/google/generative-ai-python/blob/master/google/generativeai",
-    "where to find the project code")
+    "code_url_prefix",
+    "https://github.com/google/generative-ai-python/blob/master/google/generativeai",
+    "where to find the project code",
+)
+
 
 class MyFilter:
     def __init__(self, base_dirs):
@@ -134,9 +137,7 @@ class MyFilter:
                 yield name, value
 
     def __call__(self, path, parent, children):
-        if (
-                any("generativelanguage" in part for part in path)
-                or "generativeai" in path):
+        if any("generativelanguage" in part for part in path) or "generativeai" in path:
             children = self.filter_base_dirs(path, parent, children)
             children = public_api.explicit_package_contents_filter(
                 path, parent, children
@@ -158,7 +159,9 @@ class MyDocGenerator(generate_lib.DocGenerator):
             public_api.add_proto_fields,
             public_api.filter_builtin_modules,
             public_api.filter_private_symbols,
-            MyFilter(self._base_dir),  # Replaces: public_api.FilterBaseDirs(self._base_dir),
+            MyFilter(
+                self._base_dir
+            ),  # Replaces: public_api.FilterBaseDirs(self._base_dir),
             public_api.FilterPrivateMap(self._private_map),
             public_api.filter_doc_controls_skip,
             public_api.ignore_typing,
@@ -186,8 +189,10 @@ def gen_api_docs():
             pathlib.Path(google.generativeai.__file__).parent,
             pathlib.Path(google.ai.generativelanguage.__file__).parent.parent,
         ),
-        code_url_prefix=(_CODE_URL_PREFIX.value,
-                         'https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai'),
+        code_url_prefix=(
+            _CODE_URL_PREFIX.value,
+            "https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai",
+        ),
         search_hints=_SEARCH_HINTS.value,
         site_path=_SITE_PATH.value,
         callbacks=[],
@@ -216,12 +221,12 @@ def gen_api_docs():
     redirects_path.write_text(yaml.dump(redirects))
 
     # clear `oneof` junk from proto pages
-    for fpath in out_path.rglob('*.md'):
+    for fpath in out_path.rglob("*.md"):
         old_content = fpath.read_text()
         new_content = old_content
-        new_content = re.sub(r'\.\. _oneof:.*?\n', '', new_content)
-        new_content = re.sub(r'`oneof`_.*?\n', '', new_content)
-        new_content = re.sub(r'\.\. code-block:: python.*?\n', '', new_content)
+        new_content = re.sub(r"\.\. _oneof:.*?\n", "", new_content)
+        new_content = re.sub(r"`oneof`_.*?\n", "", new_content)
+        new_content = re.sub(r"\.\. code-block:: python.*?\n", "", new_content)
         if new_content != old_content:
             fpath.write_text(new_content)
 

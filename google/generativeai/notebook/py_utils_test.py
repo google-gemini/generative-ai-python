@@ -28,24 +28,23 @@ _OUTPUT_VAR = None
 # `unittest discover` does not run via __main__, so patch this context in.
 @mock.patch.dict(sys.modules, {"__main__": sys.modules[__name__]})
 class PyUtilsTest(absltest.TestCase):
+    def test_get_py_var(self):
+        # get_py_var() with an invalid var should raise an error.
+        with self.assertRaisesRegex(NameError, "IncorrectVar"):
+            py_utils.get_py_var("IncorrectVar")
 
-  def test_get_py_var(self):
-    # get_py_var() with an invalid var should raise an error.
-    with self.assertRaisesRegex(NameError, "IncorrectVar"):
-      py_utils.get_py_var("IncorrectVar")
+        results = py_utils.get_py_var("_INPUT_VAR")
+        self.assertEqual("hello world", results)
 
-    results = py_utils.get_py_var("_INPUT_VAR")
-    self.assertEqual("hello world", results)
+    def test_set_py_var(self):
+        py_utils.set_py_var("_OUTPUT_VAR", "world hello")
+        self.assertEqual("world hello", _OUTPUT_VAR)
 
-  def test_set_py_var(self):
-    py_utils.set_py_var("_OUTPUT_VAR", "world hello")
-    self.assertEqual("world hello", _OUTPUT_VAR)
-
-    # Calling with a new variable name creates a new variable.
-    py_utils.set_py_var("_NEW_VAR", "world hello world")
-    # pylint: disable-next=undefined-variable
-    self.assertEqual("world hello world", _NEW_VAR)  # type: ignore
+        # Calling with a new variable name creates a new variable.
+        py_utils.set_py_var("_NEW_VAR", "world hello world")
+        # pylint: disable-next=undefined-variable
+        self.assertEqual("world hello world", _NEW_VAR)  # type: ignore
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

@@ -20,16 +20,15 @@ from google.generativeai.notebook import model_registry
 
 
 class ModelRegistryTest(absltest.TestCase):
+    def test_get_model_echo_model(self):
+        registry = model_registry.ModelRegistry()
+        model = registry.get_model(model_registry.ModelName.ECHO_MODEL)
+        results = model.call_model(model_input="this_is_a_test")
+        self.assertEqual("this_is_a_test", results.model_input)
 
-  def test_get_model_echo_model(self):
-    registry = model_registry.ModelRegistry()
-    model = registry.get_model(model_registry.ModelName.ECHO_MODEL)
-    results = model.call_model(model_input="this_is_a_test")
-    self.assertEqual("this_is_a_test", results.model_input)
-
-    # Echo model returns the model_input as text results.
-    self.assertEqual(["this_is_a_test"], results.text_results)
+        # Echo model returns the model_input as text results.
+        self.assertEqual(["this_is_a_test"], results.text_results)
 
 
 if __name__ == "__main__":
-  absltest.main()
+    absltest.main()

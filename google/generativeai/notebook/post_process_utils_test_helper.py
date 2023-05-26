@@ -19,14 +19,14 @@ from google.generativeai.notebook import post_process_utils
 
 
 def add_length(x: str) -> int:
-  return len(x)
+    return len(x)
 
 
 @post_process_utils.post_process_add_fn
 def add_length_decorated(x: str) -> int:
-  return len(x)
+    return len(x)
 
 
 @post_process_utils.post_process_replace_fn
 def to_upper(x: str) -> str:
-  return x.upper()
+    return x.upper()

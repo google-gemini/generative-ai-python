@@ -21,10 +21,10 @@ from IPython.core import display as ipython_display
 
 
 class IPythonEnvImpl(ipython_env.IPythonEnv):
-  """Concrete implementation of IPythonEnv."""
+    """Concrete implementation of IPythonEnv."""
 
-  def display(self, x: Any) -> None:
-    ipython_display.display(x)
+    def display(self, x: Any) -> None:
+        ipython_display.display(x)
 
-  def display_html(self, x: str) -> None:
-    ipython_display.display(ipython_display.HTML(x))
+    def display_html(self, x: str) -> None:
+        ipython_display.display(ipython_display.HTML(x))

@@ -21,7 +21,7 @@ from google.generativeai.notebook.lib import llmfn_output_row
 
 
 class PostProcessExecutionError(RuntimeError):
-  """An error while executing a post-processing command."""
+    """An error while executing a post-processing command."""
 
 
 # A batch-process function takes a batch of rows, and returns a sequence of

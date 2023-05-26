@@ -30,73 +30,72 @@ def _fake_generator(
     temperature: float | None = None,
     candidate_count: int | None = None,
 ) -> text.Completion:
-  return text.Completion(
-      prompt=prompt,
-      model=model,
-      temperature=temperature,
-      candidate_count=candidate_count,
-      # Smuggle the parameters as text output, so we can make assertions.
-      candidates=[
-          {'output': f'{prompt}_1'},
-          {'output': model},
-          {'output': temperature},
-          {'output': candidate_count},
-      ],
-  )
-
-
-class TestModel(text_model.TextModel):
-  """A TextModel, but with _generate_text stubbed out."""
-
-  def _generate_text(
-      self,
-      prompt: str,
-      model: str | None = None,
-      temperature: float | None = None,
-      candidate_count: int | None = None,
-      **kwargs,
-  ) -> text.Completion:
-    return _fake_generator(
+    return text.Completion(
         prompt=prompt,
         model=model,
         temperature=temperature,
         candidate_count=candidate_count,
+        # Smuggle the parameters as text output, so we can make assertions.
+        candidates=[
+            {"output": f"{prompt}_1"},
+            {"output": model},
+            {"output": temperature},
+            {"output": candidate_count},
+        ],
     )
+
+
+class TestModel(text_model.TextModel):
+    """A TextModel, but with _generate_text stubbed out."""
+
+    def _generate_text(
+        self,
+        prompt: str,
+        model: str | None = None,
+        temperature: float | None = None,
+        candidate_count: int | None = None,
+        **kwargs,
+    ) -> text.Completion:
+        return _fake_generator(
+            prompt=prompt,
+            model=model,
+            temperature=temperature,
+            candidate_count=candidate_count,
+        )
 
 
 class TextModelTestCase(absltest.TestCase):
+    def test_generate_text(self):
+        model = TestModel()
 
-  def test_generate_text(self):
-    model = TestModel()
+        result = model.call_model("prompt goes in")
+        self.assertEqual(result.text_results[0], "prompt goes in_1")
+        self.assertIsNone(result.text_results[1])
+        self.assertIsNone(result.text_results[2])
+        self.assertIsNone(result.text_results[3])
 
-    result = model.call_model('prompt goes in')
-    self.assertEqual(result.text_results[0], 'prompt goes in_1')
-    self.assertIsNone(result.text_results[1])
-    self.assertIsNone(result.text_results[2])
-    self.assertIsNone(result.text_results[3])
+        args = model_lib.ModelArguments(
+            model="model_name", temperature=0.42, candidate_count=5
+        )
+        result = model.call_model("prompt goes in", args)
+        self.assertEqual(result.text_results[0], "prompt goes in_1")
+        self.assertEqual(result.text_results[1], "model_name")
+        self.assertEqual(result.text_results[2], 0.42)
+        self.assertEqual(result.text_results[3], 5)
 
-    args = model_lib.ModelArguments(
-        model='model_name', temperature=0.42, candidate_count=5
-    )
-    result = model.call_model('prompt goes in', args)
-    self.assertEqual(result.text_results[0], 'prompt goes in_1')
-    self.assertEqual(result.text_results[1], 'model_name')
-    self.assertEqual(result.text_results[2], 0.42)
-    self.assertEqual(result.text_results[3], 5)
+    def test_retry(self):
+        model = TestModel()
 
-  def test_retry(self):
-    model = TestModel()
+        with mock.patch.object(model, "_generate_text") as erroneous_generator:
+            erroneous_generator.side_effect = [
+                exceptions.ResourceExhausted("Over quota"),
+                mock.DEFAULT,
+            ]
 
-    with mock.patch.object(model, '_generate_text') as erroneous_generator:
-      erroneous_generator.side_effect = [
-          exceptions.ResourceExhausted('Over quota'),
-          mock.DEFAULT,
-      ]
+            _ = model.call_model("phew it worked")
 
-      _ = model.call_model('phew it worked')
-
-    self.assertEqual(erroneous_generator.call_count, 2)
+        self.assertEqual(erroneous_generator.call_count, 2)
 
 
-if __name__ == '__main__':
-  absltest.main()
+if __name__ == "__main__":
+    absltest.main()

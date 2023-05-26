@@ -27,19 +27,19 @@ ProcessingCommand = collections.namedtuple("ProcessingCommand", ["name", "fn"])
 
 
 class Command(abc.ABC):
-  """Base class for implementation of Magics commands like "run"."""
+    """Base class for implementation of Magics commands like "run"."""
 
-  @abc.abstractmethod
-  def execute(
-      self,
-      parsed_args: parsed_args_lib.ParsedArgs,
-      cell_content: str,
-      post_processing_fns: Sequence[post_process_utils.ParsedPostProcessExpr],
-  ):
-    """Executes the command given `parsed_args` and the `cell_content`."""
+    @abc.abstractmethod
+    def execute(
+        self,
+        parsed_args: parsed_args_lib.ParsedArgs,
+        cell_content: str,
+        post_processing_fns: Sequence[post_process_utils.ParsedPostProcessExpr],
+    ):
+        """Executes the command given `parsed_args` and the `cell_content`."""
 
-  @abc.abstractmethod
-  def parse_post_processing_tokens(
-      self, tokens: Sequence[Sequence[str]]
-  ) -> Sequence[post_process_utils.ParsedPostProcessExpr]:
-    """Parses post-processing tokens for this command."""
+    @abc.abstractmethod
+    def parse_post_processing_tokens(
+        self, tokens: Sequence[Sequence[str]]
+    ) -> Sequence[post_process_utils.ParsedPostProcessExpr]:
+        """Parses post-processing tokens for this command."""
