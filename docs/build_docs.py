@@ -169,7 +169,7 @@ class MyDocGenerator(generate_lib.DocGenerator):
 
 
 def gen_api_docs():
-    """Generates api docs for the tensorflow docs package."""
+    """Generates api docs for the generative-ai package."""
     for name in dir(google):
         if name not in ("generativeai", "ai"):
             delattr(google, name)
