@@ -1,0 +1,54 @@
+# Notebook-related checks
+
+name: Run all tests
+
+on:
+  # Relevant PRs
+  pull_request:
+    paths:
+    - "google/**"
+    - "tests/**"
+  # Allow manual runs
+  workflow_dispatch:
+
+jobs:
+  test3_11:
+    name: py 3.11
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Run tests
+      run: |
+        python --version
+        pip install -q -e .[dev]
+        python -m unittest discover --pattern '*test*.py'
+  test3_10:
+    name: py 3.10
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Run tests
+      run: |
+        python --version
+        pip install -q -e .[dev]
+        python -m unittest discover --pattern '*test*.py'
+  test3_9:
+    name: py 3.9
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - name: Run tests
+      run: |
+        python --version
+        pip install -q -e .[dev]
+        python -m unittest discover --pattern '*test*.py'
+        
