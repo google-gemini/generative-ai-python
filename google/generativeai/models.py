@@ -12,18 +12,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import dataclasses
+import re
 from typing import Optional, List
 
 import google.ai.generativelanguage as glm
 from google.generativeai.client import get_default_model_client
 from google.generativeai.types import model_types
 
+# A bare model name, with no preceding namespace. e.g. foo-bar-001
+_BARE_MODEL_NAME = re.compile(r"^\w+-\w+-\d+$")
 
-def get_model(name, *, client=None) -> model_types.Model:
+
+def get_model(name: str, *, client=None) -> model_types.Model:
     """Get the `types.Model` for the given model name."""
     if client is None:
         client = get_default_model_client()
+
+    # If only a bare model name is passed, give it the structure we expect.
+    if _BARE_MODEL_NAME.match(name):
+        name = f"models/{name}"
 
     result = client.get_model(name=name)
     result = type(result).to_dict(result)
@@ -37,7 +44,7 @@ class ModelsIterable(model_types.ModelsIterable):
         page_size: int,
         page_token: Optional[str],
         models: List[model_types.Model],
-        client: Optional[glm.ModelServiceClient]
+        client: Optional[glm.ModelServiceClient],
     ):
         self._page_size = page_size
         self._page_token = page_token
