@@ -14,6 +14,7 @@
 # limitations under the License.
 """Type definitions for the models service."""
 
+import re
 import abc
 import dataclasses
 from typing import Iterator, List, Optional, Union
@@ -58,10 +59,18 @@ class Model:
 
 ModelNameOptions = Union[str, Model]
 
+# A bare model name, with no preceding namespace. e.g. foo-bar-001
+_BARE_MODEL_NAME = re.compile(r"^\w+-\w+-\d+$")
+
 
 def make_model_name(name: ModelNameOptions):
     if isinstance(name, Model):
         name = name.name
+    elif isinstance(name, str):
+        # If only a bare model name is passed, give it the structure we expect.
+        if _BARE_MODEL_NAME.match(name):
+            name = f"models/{name}"
+
     return name
 
 

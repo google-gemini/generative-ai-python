@@ -26,6 +26,8 @@ from google.generativeai.types import text_types
 from google.generativeai.types import model_types
 from google.generativeai.types import safety_types
 
+DEFAULT_TEXT_MODEL = "models/text-bison-001"
+
 
 def _make_text_prompt(prompt: Union[str, dict[str, str]]) -> glm.TextPrompt:
     if isinstance(prompt, str):
@@ -38,7 +40,7 @@ def _make_text_prompt(prompt: Union[str, dict[str, str]]) -> glm.TextPrompt:
 
 def _make_generate_text_request(
     *,
-    model: model_types.ModelNameOptions = "models/chat-lamda-001",
+    model: model_types.ModelNameOptions = DEFAULT_TEXT_MODEL,
     prompt: Optional[str] = None,
     temperature: Optional[float] = None,
     candidate_count: Optional[int] = None,
@@ -46,7 +48,7 @@ def _make_generate_text_request(
     top_p: Optional[int] = None,
     top_k: Optional[int] = None,
     safety_settings: Optional[List[safety_types.SafetySettingDict]] = None,
-    stop_sequences: Union[str, Iterable[str]] = None,
+    stop_sequences: Optional[Union[str, Iterable[str]]] = None,
 ) -> glm.GenerateTextRequest:
     model = model_types.make_model_name(model)
     prompt = _make_text_prompt(prompt=prompt)
@@ -70,15 +72,15 @@ def _make_generate_text_request(
 
 def generate_text(
     *,
-    model: Optional[model_types.ModelNameOptions] = "models/text-bison-001",
+    model: model_types.ModelNameOptions = DEFAULT_TEXT_MODEL,
     prompt: str,
     temperature: Optional[float] = None,
     candidate_count: Optional[int] = None,
     max_output_tokens: Optional[int] = None,
     top_p: Optional[float] = None,
     top_k: Optional[float] = None,
-    safety_settings: Optional[Iterable[safety.SafetySettingDict]] = None,
-    stop_sequences: Union[str, Iterable[str]] = None,
+    safety_settings: Optional[Iterable[safety_types.SafetySettingDict]] = None,
+    stop_sequences: Optional[Union[str, Iterable[str]]] = None,
     client: Optional[glm.TextServiceClient] = None,
 ) -> text_types.Completion:
     """Calls the API and returns a `types.Completion` containing the response.
@@ -170,7 +172,9 @@ def _generate_response(
     return Completion(_client=client, **response)
 
 
-def generate_embeddings(model: str, text: str, client: glm.TextServiceClient = None):
+def generate_embeddings(
+    model: model_types.ModelNameOptions, text: str, client: glm.TextServiceClient = None
+):
     """Calls the API to create an embedding for the text passed in.
 
     Args:
