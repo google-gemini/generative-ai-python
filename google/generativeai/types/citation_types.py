@@ -25,15 +25,15 @@ __all__ = [
 
 
 class CitationSourceDict(TypedDict):
-    start_index: Optional[int]
-    end_index: Optional[int]
-    uri: Optional[str]
-    license: Optional[str]
+    start_index: int | None
+    end_index: int | None
+    uri: str | None
+    license: str | None
 
     __doc__ = docstring_utils.strip_oneof(glm.CitationSource.__doc__)
 
 
 class CitationMetadataDict(TypedDict):
-    citation_sources = Optional[List[CitationSourceDict]]
+    citation_sources: List[CitationSourceDict | None]
 
     __doc__ = docstring_utils.strip_oneof(glm.CitationMetadata.__doc__)

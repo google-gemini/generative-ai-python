@@ -16,6 +16,7 @@
 import enum
 from google.ai import generativelanguage as glm
 from google.generativeai import docstring_utils
+import typing
 from typing import Iterable, List, TypedDict
 
 __all__ = [
@@ -48,6 +49,7 @@ def convert_filters_to_enums(filters: Iterable[dict]) -> List[ContentFilterDict]
     for f in filters:
         f = f.copy()
         f["reason"] = BlockedReason(f["reason"])
+        f = typing.cast(ContentFilterDict, f)
         result.append(f)
     return result
 

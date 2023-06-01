@@ -51,9 +51,9 @@ class Model:
     input_token_limit: int
     output_token_limit: int
     supported_generation_methods: List[str]
-    temperature: Optional[float] = None
-    top_p: Optional[float] = None
-    top_k: Optional[int] = None
+    temperature: float | None = None
+    top_p: float | None = None
+    top_k: int | None = None
 
 
 ModelNameOptions = Union[str, Model]

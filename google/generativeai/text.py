@@ -39,14 +39,14 @@ def _make_text_prompt(prompt: Union[str, dict[str, str]]) -> glm.TextPrompt:
 def _make_generate_text_request(
     *,
     model: model_types.ModelNameOptions = "models/chat-lamda-001",
-    prompt: Optional[str] = None,
-    temperature: Optional[float] = None,
-    candidate_count: Optional[int] = None,
-    max_output_tokens: Optional[int] = None,
-    top_p: Optional[int] = None,
-    top_k: Optional[int] = None,
-    safety_settings: Optional[List[safety_types.SafetySettingDict]] = None,
-    stop_sequences: Union[str, Iterable[str]] = None,
+    prompt: str | None = None,
+    temperature: float | None = None,
+    candidate_count: int | None = None,
+    max_output_tokens: int | None = None,
+    top_p: int | None = None,
+    top_k: int | None = None,
+    safety_settings: List[safety_types.SafetySettingDict] | None = None,
+    stop_sequences: str | Iterable[str] | None = None,
 ) -> glm.GenerateTextRequest:
     model = model_types.make_model_name(model)
     prompt = _make_text_prompt(prompt=prompt)
@@ -70,16 +70,16 @@ def _make_generate_text_request(
 
 def generate_text(
     *,
-    model: Optional[model_types.ModelNameOptions] = "models/text-bison-001",
+    model: model_types.ModelNameOptions | None = "models/text-bison-001",
     prompt: str,
-    temperature: Optional[float] = None,
-    candidate_count: Optional[int] = None,
-    max_output_tokens: Optional[int] = None,
-    top_p: Optional[float] = None,
-    top_k: Optional[float] = None,
-    safety_settings: Optional[Iterable[safety.SafetySettingDict]] = None,
-    stop_sequences: Union[str, Iterable[str]] = None,
-    client: Optional[glm.TextServiceClient] = None,
+    temperature: float | None = None,
+    candidate_count: int | None = None,
+    max_output_tokens: int | None = None,
+    top_p: float | None = None,
+    top_k: float | None = None,
+    safety_settings: Iterable[safety_types.SafetySettingDict] | None = None,
+    stop_sequences: str | Iterable[str] | None = None,
+    client: glm.TextServiceClient | None = None,
 ) -> text_types.Completion:
     """Calls the API and returns a `types.Completion` containing the response.
 

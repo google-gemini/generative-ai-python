@@ -42,7 +42,7 @@ class MessageDict(TypedDict):
 
     author: str
     content: str
-    citation_metadata: Optional[citation_types.CitationMetadataDict]
+    citation_metadata: citation_types.CitationMetadataDict | None
 
 
 MessageOptions = Union[str, MessageDict, glm.Message]
@@ -156,17 +156,17 @@ class ChatResponse(abc.ABC):
     model: str
     context: str
     examples: List[ExampleDict]
-    messages: List[Optional[MessageDict]]
-    temperature: Optional[float]
-    candidate_count: Optional[int]
+    messages: List[MessageDict | None]
+    temperature: float | None
+    candidate_count: int | None
     candidates: List[MessageDict]
     filters: List[safety_types.ContentFilterDict]
-    top_p: Optional[float] = None
-    top_k: Optional[float] = None
+    top_p: float | None = None
+    top_k: float | None = None
 
     @property
     @abc.abstractmethod
-    def last(self) -> Optional[str]:
+    def last(self) -> str | None:
         """A settable property that provides simple access to the last response string
 
         A shortcut for `response.messages[0]['content']`.

@@ -35,7 +35,7 @@ default_text_client = None
 
 def configure(
     *,
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     credentials: Union[ga_credentials.Credentials, dict, None] = None,
     # The user can pass a string to choose `rest` or `grpc` or 'grpc_asyncio'.
     # See `_transport_registry` in `DiscussServiceClientMeta`.
@@ -45,7 +45,7 @@ def configure(
     # but that seems rare. Users that need it can just switch to the low level API.
     transport: Union[str, None] = None,
     client_options: Union[client_options_lib.ClientOptions, dict, None] = None,
-    client_info: Optional[gapic_v1.client_info.ClientInfo] = None,
+    client_info: gapic_v1.client_info.ClientInfo | None = None,
 ):
     """Captures default client configuration.
 
