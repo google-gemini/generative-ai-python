@@ -74,8 +74,10 @@ class UnitTests(parameterized.TestCase):
         ]
     )
     def test_make_generate_text_request(self, prompt):
-        x = text_service._make_generate_text_request(prompt=prompt)
-        self.assertEqual("models/chat-lamda-001", x.model)
+        x = text_service._make_generate_text_request(
+            model="chat-bison-001", prompt=prompt
+        )
+        self.assertEqual("models/chat-bison-001", x.model)
         self.assertIsInstance(x, glm.GenerateTextRequest)
 
     @parameterized.named_parameters(
