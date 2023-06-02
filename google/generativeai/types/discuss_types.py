@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import abc
 import dataclasses
-from typing import Any, Dict, TypedDict, Union, Iterable, Optional, Tuple, List
+from typing import Any, Dict, TypedDict, Iterable, Tuple, List
 
 import google.ai.generativelanguage as glm
 from google.generativeai.types import safety_types
@@ -49,10 +49,7 @@ class MessageDict(TypedDict):
 MessageOptions = str | MessageDict | glm.Message
 MESSAGE_OPTIONS = (str, dict, glm.Message)
 
-MessagesOptions = (
-    MessageOptions |
-    Iterable[MessageOptions]
-)
+MessagesOptions = MessageOptions | Iterable[MessageOptions]
 MESSAGES_OPTIONS = (MESSAGE_OPTIONS, Iterable)
 
 
@@ -64,10 +61,10 @@ class ExampleDict(TypedDict):
 
 
 ExampleOptions = (
-    Tuple[MessageOptions, MessageOptions]|
-    Iterable[MessageOptions]|
-    ExampleDict|
-    glm.Example
+    Tuple[MessageOptions, MessageOptions]
+    | Iterable[MessageOptions]
+    | ExampleDict
+    | glm.Example
 )
 EXAMPLE_OPTIONS = (glm.Example, dict, Iterable)
 
@@ -83,11 +80,11 @@ class MessagePromptDict(TypedDict, total=False):
 
 
 MessagePromptOptions = (
-    str|
-    glm.Message|
-    Iterable[str | glm.Message]|
-    MessagePromptDict|
-    glm.MessagePrompt
+    str
+    | glm.Message
+    | Iterable[str | glm.Message]
+    | MessagePromptDict
+    | glm.MessagePrompt
 )
 MESSAGE_PROMPT_KEYS = {"context", "examples", "messages"}
 

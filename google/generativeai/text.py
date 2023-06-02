@@ -34,6 +34,7 @@ def _make_text_prompt(prompt: str | dict[str, str]) -> glm.TextPrompt:
     else:
         TypeError("Expected string or dictionary for text prompt.")
 
+
 def _make_generate_text_request(
     *,
     model: model_types.ModelNameOptions = "models/chat-lamda-001",

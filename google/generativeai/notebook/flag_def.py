@@ -47,12 +47,12 @@ _PARSETYPES = str | int | float
 # converted into. It is a superset of _PARSETYPES because we support converting
 # the parsed type into a more precise type, e.g. from str to Enum.
 _DESTTYPES = (
-    _PARSETYPES|
-    enum.Enum|
-    Tuple[str, Callable[[str, str], Any]]|  # For --compare_fn
-    Sequence[str]|  # For --ground_truth
-    llmfn_inputs_source.LLMFnInputsSource|  # For --inputs
-    llmfn_outputs.LLMFnOutputsSink  # For --outputs
+    _PARSETYPES
+    | enum.Enum
+    | Tuple[str, Callable[[str, str], Any]]
+    | Sequence[str]  # For --compare_fn
+    | llmfn_inputs_source.LLMFnInputsSource  # For --ground_truth
+    | llmfn_outputs.LLMFnOutputsSink  # For --inputs  # For --outputs
 )
 
 # The signature of a function that converts a command line argument from the
