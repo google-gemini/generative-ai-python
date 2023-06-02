@@ -48,10 +48,10 @@ class MessageDict(TypedDict):
 MessageOptions = str | MessageDict | glm.Message
 MESSAGE_OPTIONS = (str, dict, glm.Message)
 
-MessagesOptions = Union[
-    MessageOptions,
-    Iterable[MessageOptions],
-]
+MessagesOptions = (
+    MessageOptions |
+    Iterable[MessageOptions]
+)
 MESSAGES_OPTIONS = (MESSAGE_OPTIONS, Iterable)
 
 
@@ -62,14 +62,15 @@ class ExampleDict(TypedDict):
     output: MessageOptions
 
 
-ExampleOptions = Union[
-    Tuple[MessageOptions, MessageOptions],
-    Iterable[MessageOptions],
-    ExampleDict,
-    glm.Example,
-]
+ExampleOptions = (
+    Tuple[MessageOptions, MessageOptions]|
+    Iterable[MessageOptions]|
+    ExampleDict|
+    glm.Example
+)
 EXAMPLE_OPTIONS = (glm.Example, dict, Iterable)
-ExamplesOptions = Union[ExampleOptions, Iterable[ExampleOptions]]
+
+ExamplesOptions = ExampleOptions | Iterable[ExampleOptions]
 
 
 class MessagePromptDict(TypedDict, total=False):
@@ -80,13 +81,13 @@ class MessagePromptDict(TypedDict, total=False):
     messages: MessagesOptions
 
 
-MessagePromptOptions = Union[
-    str,
-    glm.Message,
-    Iterable[Union[str, glm.Message]],
-    MessagePromptDict,
-    glm.MessagePrompt,
-]
+MessagePromptOptions = (
+    str|
+    glm.Message|
+    Iterable[str | glm.Message]|
+    MessagePromptDict|
+    glm.MessagePrompt
+)
 MESSAGE_PROMPT_KEYS = {"context", "examples", "messages"}
 
 

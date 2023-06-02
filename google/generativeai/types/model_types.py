@@ -56,7 +56,7 @@ class Model:
     top_k: int | None = None
 
 
-ModelNameOptions = Union[str, Model]
+ModelNameOptions = str | Model
 
 
 def make_model_name(name: ModelNameOptions):

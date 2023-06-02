@@ -43,7 +43,7 @@ def configure(
     # sense to accept a `Transport` object here even though the client classes can.
     # We could accept a dict since all the `Transport` classes take the same args,
     # but that seems rare. Users that need it can just switch to the low level API.
-    transport: Union[str, None] = None,
+    transport: str | None = None,
     client_options: client_options_lib.ClientOptions | dict | None = None,
     client_info: gapic_v1.client_info.ClientInfo | None = None,
 ):

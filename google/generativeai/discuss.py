@@ -445,7 +445,7 @@ class ChatResponse(discuss_types.ChatResponse):
 def _build_chat_response(
     request: glm.GenerateMessageRequest,
     response: glm.GenerateMessageResponse,
-    client: Union[glm.DiscussServiceClient, glm.DiscussServiceAsyncClient],
+    client: glm.DiscussServiceClient | glm.DiscussServiceAsyncClient,
 ) -> ChatResponse:
     request = type(request).to_dict(request)
     prompt = request.pop("prompt")

@@ -35,7 +35,7 @@ import abc
 import argparse
 import dataclasses
 import enum
-from typing import Any, Callable, Sequence, Union, Tuple
+from typing import Any, Callable, Sequence, Tuple
 
 from google.generativeai.notebook.lib import llmfn_inputs_source
 from google.generativeai.notebook.lib import llmfn_outputs
@@ -46,14 +46,14 @@ _PARSETYPES = str | int | float
 # These are the final result types that the intermediate parsed values will be
 # converted into. It is a superset of _PARSETYPES because we support converting
 # the parsed type into a more precise type, e.g. from str to Enum.
-_DESTTYPES = Union[
-    _PARSETYPES,
-    enum.Enum,
-    Tuple[str, Callable[[str, str], Any]],  # For --compare_fn
-    Sequence[str],  # For --ground_truth
-    llmfn_inputs_source.LLMFnInputsSource,  # For --inputs
-    llmfn_outputs.LLMFnOutputsSink,  # For --outputs
-]
+_DESTTYPES = (
+    _PARSETYPES|
+    enum.Enum|
+    Tuple[str, Callable[[str, str], Any]]|  # For --compare_fn
+    Sequence[str]|  # For --ground_truth
+    llmfn_inputs_source.LLMFnInputsSource|  # For --inputs
+    llmfn_outputs.LLMFnOutputsSink  # For --outputs
+)
 
 # The signature of a function that converts a command line argument from the
 # intermediate parsed type to the result type.
