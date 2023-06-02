@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Type definitions for the discuss service."""
+from __future__ import annotations
 
 import abc
 import dataclasses
