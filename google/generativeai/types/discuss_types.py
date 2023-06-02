@@ -45,7 +45,7 @@ class MessageDict(TypedDict):
     citation_metadata: citation_types.CitationMetadataDict | None
 
 
-MessageOptions = Union[str, MessageDict, glm.Message]
+MessageOptions = str | MessageDict | glm.Message
 MESSAGE_OPTIONS = (str, dict, glm.Message)
 
 MessagesOptions = Union[

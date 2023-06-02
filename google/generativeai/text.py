@@ -27,7 +27,7 @@ from google.generativeai.types import model_types
 from google.generativeai.types import safety_types
 
 
-def _make_text_prompt(prompt: Union[str, dict[str, str]]) -> glm.TextPrompt:
+def _make_text_prompt(prompt: str | dict[str, str]) -> glm.TextPrompt:
     if isinstance(prompt, str):
         return glm.TextPrompt(text=prompt)
     elif isinstance(prompt, dict):

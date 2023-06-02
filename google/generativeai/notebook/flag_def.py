@@ -42,7 +42,7 @@ from google.generativeai.notebook.lib import llmfn_outputs
 
 # These are the intermediate types that argparse.ArgumentParser.parse_args()
 # will pass command line arguments into.
-_PARSETYPES = Union[str, int, float]
+_PARSETYPES = str | int | float
 # These are the final result types that the intermediate parsed values will be
 # converted into. It is a superset of _PARSETYPES because we support converting
 # the parsed type into a more precise type, e.g. from str to Enum.
