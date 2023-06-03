@@ -501,9 +501,10 @@ def count_message_tokens(
     context: Optional[str] = None,
     examples: Optional[discuss_types.ExamplesOptions] = None,
     messages: Optional[discuss_types.MessagesOptions] = None,
-    model: str = DEFAULT_DISCUSS_MODEL,
+    model: model_types.ModelNameOptions = DEFAULT_DISCUSS_MODEL,
     client: Optional[glm.DiscussServiceAsyncClient] = None,
 ):
+    model = model_types.make_model_name(model)
     prompt = _make_message_prompt(
         prompt, context=context, examples=examples, messages=messages
     )

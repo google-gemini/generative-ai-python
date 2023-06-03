@@ -19,18 +19,13 @@ import google.ai.generativelanguage as glm
 from google.generativeai.client import get_default_model_client
 from google.generativeai.types import model_types
 
-# A bare model name, with no preceding namespace. e.g. foo-bar-001
-_BARE_MODEL_NAME = re.compile(r"^\w+-\w+-\d+$")
-
 
 def get_model(name: str, *, client=None) -> model_types.Model:
     """Get the `types.Model` for the given model name."""
     if client is None:
         client = get_default_model_client()
 
-    # If only a bare model name is passed, give it the structure we expect.
-    if _BARE_MODEL_NAME.match(name):
-        name = f"models/{name}"
+    name = model_types.make_model_name(name)
 
     result = client.get_model(name=name)
     result = type(result).to_dict(result)
