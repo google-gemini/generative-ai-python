@@ -13,11 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Type definitions for the discuss service."""
-from __future__ import annotations
 
 import abc
 import dataclasses
-from typing import Any, Dict, TypedDict, Iterable, Tuple, List
+from typing import Any, Dict, TypedDict, Union, Iterable, Optional, Tuple, List
 
 import google.ai.generativelanguage as glm
 from google.generativeai.types import safety_types
@@ -43,13 +42,16 @@ class MessageDict(TypedDict):
 
     author: str
     content: str
-    citation_metadata: citation_types.CitationMetadataDict | None
+    citation_metadata: Optional[citation_types.CitationMetadataDict]
 
 
-MessageOptions = str | MessageDict | glm.Message
+MessageOptions = Union[str, MessageDict, glm.Message]
 MESSAGE_OPTIONS = (str, dict, glm.Message)
 
-MessagesOptions = MessageOptions | Iterable[MessageOptions]
+MessagesOptions = Union[
+    MessageOptions,
+    Iterable[MessageOptions],
+]
 MESSAGES_OPTIONS = (MESSAGE_OPTIONS, Iterable)
 
 
@@ -60,15 +62,14 @@ class ExampleDict(TypedDict):
     output: MessageOptions
 
 
-ExampleOptions = (
-    Tuple[MessageOptions, MessageOptions]
-    | Iterable[MessageOptions]
-    | ExampleDict
-    | glm.Example
-)
+ExampleOptions = Union[
+    Tuple[MessageOptions, MessageOptions],
+    Iterable[MessageOptions],
+    ExampleDict,
+    glm.Example,
+]
 EXAMPLE_OPTIONS = (glm.Example, dict, Iterable)
-
-ExamplesOptions = ExampleOptions | Iterable[ExampleOptions]
+ExamplesOptions = Union[ExampleOptions, Iterable[ExampleOptions]]
 
 
 class MessagePromptDict(TypedDict, total=False):
@@ -79,13 +80,13 @@ class MessagePromptDict(TypedDict, total=False):
     messages: MessagesOptions
 
 
-MessagePromptOptions = (
-    str
-    | glm.Message
-    | Iterable[str | glm.Message]
-    | MessagePromptDict
-    | glm.MessagePrompt
-)
+MessagePromptOptions = Union[
+    str,
+    glm.Message,
+    Iterable[Union[str, glm.Message]],
+    MessagePromptDict,
+    glm.MessagePrompt,
+]
 MESSAGE_PROMPT_KEYS = {"context", "examples", "messages"}
 
 
@@ -155,17 +156,17 @@ class ChatResponse(abc.ABC):
     model: str
     context: str
     examples: List[ExampleDict]
-    messages: List[MessageDict | None]
-    temperature: float | None
-    candidate_count: int | None
+    messages: List[Optional[MessageDict]]
+    temperature: Optional[float]
+    candidate_count: Optional[int]
     candidates: List[MessageDict]
     filters: List[safety_types.ContentFilterDict]
-    top_p: float | None = None
-    top_k: float | None = None
+    top_p: Optional[float] = None
+    top_k: Optional[float] = None
 
     @property
     @abc.abstractmethod
-    def last(self) -> str | None:
+    def last(self) -> Optional[str]:
         """A settable property that provides simple access to the last response string
 
         A shortcut for `response.messages[0]['content']`.
