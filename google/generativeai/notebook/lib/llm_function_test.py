@@ -15,7 +15,7 @@
 """Unittest for llm_function."""
 from __future__ import annotations
 
-from typing import Any, Callable, Optional, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from absl.testing import absltest
 from google.generativeai.notebook.lib import llm_function
@@ -61,7 +61,7 @@ class LLMFunctionBasicTest(absltest.TestCase):
 
     def _test_is_callable(
         self,
-        llm_fn: Callable[[Optional[Sequence[tuple[str, str]]]], LLMFnOutputs],
+        llm_fn: Callable[[Sequence[tuple[str, str]] | None], LLMFnOutputs],
     ) -> LLMFnOutputs:
         return llm_fn(None)
 

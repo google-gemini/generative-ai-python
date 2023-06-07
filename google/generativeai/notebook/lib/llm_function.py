@@ -117,7 +117,7 @@ def _generate_prompts(
 
 class LLMFunction(
     Callable[
-        [Optional[llmfn_input_utils.LLMFunctionInputs]],
+        [llmfn_input_utils.LLMFunctionInputs | None],
         llmfn_outputs.LLMFnOutputs,
     ],
     metaclass=abc.ABCMeta,

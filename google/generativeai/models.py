@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 import re
 from typing import Optional, List
 
@@ -37,9 +39,9 @@ class ModelsIterable(model_types.ModelsIterable):
         self,
         *,
         page_size: int,
-        page_token: Optional[str],
+        page_token: str | None,
         models: List[model_types.Model],
-        client: Optional[glm.ModelServiceClient],
+        client: glm.ModelServiceClient | None,
     ):
         self._page_size = page_size
         self._page_token = page_token
@@ -73,7 +75,7 @@ def _list_models(page_size, page_token, client):
 
 
 def list_models(
-    *, page_size: Optional[int] = None, client: Optional[glm.ModelServiceClient] = None
+    *, page_size: int | None = None, client: glm.ModelServiceClient | None = None
 ) -> model_types.ModelsIterable:
     """Lists available models.
 
