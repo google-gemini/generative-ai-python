@@ -58,7 +58,7 @@ class Model:
     top_k: int | None = None
 
 
-ModelNameOptions = str | Model
+ModelNameOptions = Union[str, Model]
 
 # A bare model name, with no preceding namespace. e.g. foo-bar-001
 _BARE_MODEL_NAME = re.compile(r"^\w+-\w+-\d+$")
