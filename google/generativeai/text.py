@@ -80,7 +80,7 @@ def generate_text(
     top_k: float | None = None,
     safety_settings: Iterable[safety_types.SafetySettingDict] | None = None,
     stop_sequences: str | Iterable[str] | None = None,
-    client: glm.TextServiceClient | None = None,\
+    client: glm.TextServiceClient | None = None,
 ) -> text_types.Completion:
     """Calls the API and returns a `types.Completion` containing the response.
 

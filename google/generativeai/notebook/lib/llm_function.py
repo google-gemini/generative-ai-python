@@ -17,7 +17,16 @@ from __future__ import annotations
 
 import abc
 import dataclasses
-from typing import AbstractSet, Any, Callable, Iterable, Mapping, Optional, Sequence, Union
+from typing import (
+    AbstractSet,
+    Any,
+    Callable,
+    Iterable,
+    Mapping,
+    Optional,
+    Sequence,
+    Union,
+)
 
 from google.generativeai.notebook.lib import llmfn_input_utils
 from google.generativeai.notebook.lib import llmfn_output_row

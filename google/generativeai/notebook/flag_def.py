@@ -52,7 +52,7 @@ _DESTTYPES = Union[
     Tuple[str, Callable[[str, str], Any]],
     Sequence[str],  # For --compare_fn
     llmfn_inputs_source.LLMFnInputsSource,  # For --ground_truth
-    llmfn_outputs.LLMFnOutputsSink  # For --inputs  # For --outputs
+    llmfn_outputs.LLMFnOutputsSink,  # For --inputs  # For --outputs
 ]
 
 # The signature of a function that converts a command line argument from the
