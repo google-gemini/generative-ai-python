@@ -25,7 +25,7 @@ def load_ipython_extension(ipython):
     # Since we're in an interactive environment, make the tables prettier.
     try:
         # pylint: disable-next=g-import-not-at-top
-        from google import colab
+        from google import colab  # type: ignore
 
         colab.data_table.enable_dataframe_formatter()
     except ImportError:

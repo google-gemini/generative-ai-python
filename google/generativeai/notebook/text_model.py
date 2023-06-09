@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from google.api_core import retry
 from google.generativeai import text
+from google.generativeai.types import text_types
 from google.generativeai.notebook.lib import model as model_lib
 
 
@@ -30,7 +31,7 @@ class TextModel(model_lib.AbstractModel):
         temperature: float | None = None,
         candidate_count: int | None = None,
         **kwargs,
-    ) -> text.Completion:
+    ) -> text_types.Completion:
         if model is not None:
             kwargs["model"] = model
         if temperature is not None:

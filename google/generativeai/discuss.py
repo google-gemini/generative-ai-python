@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 
 import dataclasses
 import sys
@@ -150,9 +151,9 @@ def _make_examples(examples: discuss_types.ExamplesOptions) -> List[glm.Example]
 def _make_message_prompt_dict(
     prompt: discuss_types.MessagePromptOptions = None,
     *,
-    context: Optional[str] = None,
-    examples: Optional[discuss_types.ExamplesOptions] = None,
-    messages: Optional[discuss_types.MessagesOptions] = None,
+    context: str | None = None,
+    examples: discuss_types.ExamplesOptions | None = None,
+    messages: discuss_types.MessagesOptions | None = None,
 ) -> glm.MessagePrompt:
     if prompt is None:
         prompt = dict(
@@ -196,9 +197,9 @@ def _make_message_prompt_dict(
 def _make_message_prompt(
     prompt: discuss_types.MessagePromptOptions = None,
     *,
-    context: Optional[str] = None,
-    examples: Optional[discuss_types.ExamplesOptions] = None,
-    messages: Optional[discuss_types.MessagesOptions] = None,
+    context: str | None = None,
+    examples: discuss_types.ExamplesOptions | None = None,
+    messages: discuss_types.MessagesOptions | None = None,
 ) -> glm.MessagePrompt:
     prompt = _make_message_prompt_dict(
         prompt=prompt, context=context, examples=examples, messages=messages
@@ -208,15 +209,15 @@ def _make_message_prompt(
 
 def _make_generate_message_request(
     *,
-    model: Optional[model_types.ModelNameOptions],
-    context: Optional[str] = None,
-    examples: Optional[discuss_types.ExamplesOptions] = None,
-    messages: Optional[discuss_types.MessagesOptions] = None,
-    temperature: Optional[float] = None,
-    candidate_count: Optional[int] = None,
-    top_p: Optional[float] = None,
-    top_k: Optional[float] = None,
-    prompt: Optional[discuss_types.MessagePromptOptions] = None,
+    model: model_types.ModelNameOptions | None,
+    context: str | None = None,
+    examples: discuss_types.ExamplesOptions | None = None,
+    messages: discuss_types.MessagesOptions | None = None,
+    temperature: float | None = None,
+    candidate_count: int | None = None,
+    top_p: float | None = None,
+    top_k: float | None = None,
+    prompt: discuss_types.MessagePromptOptions | None = None,
 ) -> glm.GenerateMessageRequest:
     model = model_types.make_model_name(model)
 
@@ -247,16 +248,16 @@ DEFAULT_DISCUSS_MODEL = "models/chat-bison-001"
 
 def chat(
     *,
-    model: Optional[model_types.ModelNameOptions] = "models/chat-bison-001",
-    context: Optional[str] = None,
-    examples: Optional[discuss_types.ExamplesOptions] = None,
-    messages: Optional[discuss_types.MessagesOptions] = None,
-    temperature: Optional[float] = None,
-    candidate_count: Optional[int] = None,
-    top_p: Optional[float] = None,
-    top_k: Optional[float] = None,
-    prompt: Optional[discuss_types.MessagePromptOptions] = None,
-    client: Optional[glm.DiscussServiceClient] = None,
+    model: model_types.ModelNameOptions | None = "models/chat-bison-001",
+    context: str | None = None,
+    examples: discuss_types.ExamplesOptions | None = None,
+    messages: discuss_types.MessagesOptions | None = None,
+    temperature: float | None = None,
+    candidate_count: int | None = None,
+    top_p: float | None = None,
+    top_k: float | None = None,
+    prompt: discuss_types.MessagePromptOptions | None = None,
+    client: glm.DiscussServiceClient | None = None,
 ) -> discuss_types.ChatResponse:
     """Calls the API and returns a `types.ChatResponse` containing the response.
 
@@ -345,16 +346,16 @@ def chat(
 @set_doc(chat.__doc__)
 async def chat_async(
     *,
-    model: Optional[model_types.ModelNameOptions] = None,
-    context: Optional[str] = None,
-    examples: Optional[discuss_types.ExamplesOptions] = None,
-    messages: Optional[discuss_types.MessagesOptions] = None,
-    temperature: Optional[float] = None,
-    candidate_count: Optional[int] = None,
-    top_p: Optional[float] = None,
-    top_k: Optional[float] = None,
-    prompt: Optional[discuss_types.MessagePromptOptions] = None,
-    client: Optional[glm.DiscussServiceAsyncClient] = None,
+    model: model_types.ModelNameOptions | None = None,
+    context: str | None = None,
+    examples: discuss_types.ExamplesOptions | None = None,
+    messages: discuss_types.MessagesOptions | None = None,
+    temperature: float | None = None,
+    candidate_count: int | None = None,
+    top_p: float | None = None,
+    top_k: float | None = None,
+    prompt: discuss_types.MessagePromptOptions | None = None,
+    client: glm.DiscussServiceAsyncClient | None = None,
 ) -> discuss_types.ChatResponse:
     request = _make_generate_message_request(
         model=model,
@@ -380,7 +381,7 @@ else:
 @set_doc(discuss_types.ChatResponse.__doc__)
 @dataclasses.dataclass(**DATACLASS_KWARGS, init=False)
 class ChatResponse(discuss_types.ChatResponse):
-    _client: Optional[glm.DiscussServiceClient] = dataclasses.field(
+    _client: glm.DiscussServiceClient | None = dataclasses.field(
         default=lambda: None, repr=False
     )
 
@@ -390,7 +391,7 @@ class ChatResponse(discuss_types.ChatResponse):
 
     @property
     @set_doc(discuss_types.ChatResponse.last.__doc__)
-    def last(self) -> Optional[str]:
+    def last(self) -> str | None:
         if self.messages[-1]:
             return self.messages[-1]["content"]
         else:
@@ -445,7 +446,7 @@ class ChatResponse(discuss_types.ChatResponse):
 def _build_chat_response(
     request: glm.GenerateMessageRequest,
     response: glm.GenerateMessageResponse,
-    client: Union[glm.DiscussServiceClient, glm.DiscussServiceAsyncClient],
+    client: glm.DiscussServiceClient | glm.DiscussServiceAsyncClient,
 ) -> ChatResponse:
     request = type(request).to_dict(request)
     prompt = request.pop("prompt")
@@ -473,7 +474,7 @@ def _build_chat_response(
 
 def _generate_response(
     request: glm.GenerateMessageRequest,
-    client: Optional[glm.DiscussServiceClient] = None,
+    client: glm.DiscussServiceClient | None = None,
 ) -> ChatResponse:
     if client is None:
         client = get_default_discuss_client()
@@ -485,7 +486,7 @@ def _generate_response(
 
 async def _generate_response_async(
     request: glm.GenerateMessageRequest,
-    client: Optional[glm.DiscussServiceAsyncClient] = None,
+    client: glm.DiscussServiceAsyncClient | None = None,
 ) -> ChatResponse:
     if client is None:
         client = get_default_discuss_async_client()
@@ -498,11 +499,11 @@ async def _generate_response_async(
 def count_message_tokens(
     *,
     prompt: discuss_types.MessagePromptOptions = None,
-    context: Optional[str] = None,
-    examples: Optional[discuss_types.ExamplesOptions] = None,
-    messages: Optional[discuss_types.MessagesOptions] = None,
+    context: str | None = None,
+    examples: discuss_types.ExamplesOptions | None = None,
+    messages: discuss_types.MessagesOptions | None = None,
     model: model_types.ModelNameOptions = DEFAULT_DISCUSS_MODEL,
-    client: Optional[glm.DiscussServiceAsyncClient] = None,
+    client: glm.DiscussServiceAsyncClient | None = None,
 ):
     model = model_types.make_model_name(model)
     prompt = _make_message_prompt(

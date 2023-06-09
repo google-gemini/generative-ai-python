@@ -65,6 +65,7 @@ for model in palm.list_models():
 ```
 
 """
+from __future__ import annotations
 
 from google.generativeai import types
 from google.generativeai import version

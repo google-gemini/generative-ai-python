@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 
 import os
 from typing import cast, Optional, Union
@@ -35,17 +36,17 @@ default_text_client = None
 
 def configure(
     *,
-    api_key: Optional[str] = None,
-    credentials: Union[ga_credentials.Credentials, dict, None] = None,
+    api_key: str | None = None,
+    credentials: ga_credentials.Credentials | dict | None = None,
     # The user can pass a string to choose `rest` or `grpc` or 'grpc_asyncio'.
     # See `_transport_registry` in `DiscussServiceClientMeta`.
     # Since the transport classes align with the client classes it wouldn't make
     # sense to accept a `Transport` object here even though the client classes can.
     # We could accept a dict since all the `Transport` classes take the same args,
     # but that seems rare. Users that need it can just switch to the low level API.
-    transport: Union[str, None] = None,
-    client_options: Union[client_options_lib.ClientOptions, dict, None] = None,
-    client_info: Optional[gapic_v1.client_info.ClientInfo] = None,
+    transport: str | None = None,
+    client_options: client_options_lib.ClientOptions | dict | None = None,
+    client_info: gapic_v1.client_info.ClientInfo | None = None,
 ):
     """Captures default client configuration.
 

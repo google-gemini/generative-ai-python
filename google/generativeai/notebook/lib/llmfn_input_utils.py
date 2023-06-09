@@ -24,10 +24,7 @@ _NormalizedInputsList = llmfn_inputs_source.NormalizedInputsList
 
 _ColumnOrderValuesList = Mapping[str, Sequence[str]]
 
-LLMFunctionInputs = Union[
-    _ColumnOrderValuesList,
-    llmfn_inputs_source.LLMFnInputsSource,
-]
+LLMFunctionInputs = Union[_ColumnOrderValuesList, llmfn_inputs_source.LLMFnInputsSource]
 
 
 def _is_column_order_values_list(inputs: Any) -> bool:

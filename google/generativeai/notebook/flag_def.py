@@ -35,7 +35,7 @@ import abc
 import argparse
 import dataclasses
 import enum
-from typing import Any, Callable, Sequence, Union, Tuple
+from typing import Any, Callable, Sequence, Tuple, Union
 
 from google.generativeai.notebook.lib import llmfn_inputs_source
 from google.generativeai.notebook.lib import llmfn_outputs
@@ -49,10 +49,10 @@ _PARSETYPES = Union[str, int, float]
 _DESTTYPES = Union[
     _PARSETYPES,
     enum.Enum,
-    Tuple[str, Callable[[str, str], Any]],  # For --compare_fn
-    Sequence[str],  # For --ground_truth
-    llmfn_inputs_source.LLMFnInputsSource,  # For --inputs
-    llmfn_outputs.LLMFnOutputsSink,  # For --outputs
+    Tuple[str, Callable[[str, str], Any]],
+    Sequence[str],  # For --compare_fn
+    llmfn_inputs_source.LLMFnInputsSource,  # For --ground_truth
+    llmfn_outputs.LLMFnOutputsSink,  # For --inputs  # For --outputs
 ]
 
 # The signature of a function that converts a command line argument from the

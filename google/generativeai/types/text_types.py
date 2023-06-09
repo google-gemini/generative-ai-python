@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 
 import abc
 import dataclasses
@@ -26,8 +27,8 @@ __all__ = ["Completion"]
 
 class TextCompletion(TypedDict, total=False):
     output: str
-    safety_ratings: Optional[List[safety_types.SafetyRatingDict]]
-    citation_metadata: Optional[citation_types.CitationMetadataDict]
+    safety_ratings: List[safety_types.SafetyRatingDict | None]
+    citation_metadata: citation_types.CitationMetadataDict | None
 
 
 @dataclasses.dataclass(init=False)
@@ -45,9 +46,9 @@ class Completion(abc.ABC):
     """
 
     candidates: List[TextCompletion]
-    result: Optional[str]
-    filters: Optional[List[safety_types.ContentFilterDict]]
-    safety_feedback: Optional[List[safety_types.SafetyFeedbackDict]]
+    result: str | None
+    filters: List[safety_types.ContentFilterDict | None]
+    safety_feedback: List[safety_types.SafetyFeedbackDict | None]
 
     def to_dict(self) -> Dict[str, Any]:
         result = {

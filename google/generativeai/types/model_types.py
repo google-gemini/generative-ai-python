@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Type definitions for the models service."""
+from __future__ import annotations
 
 import re
 import abc
@@ -52,9 +53,9 @@ class Model:
     input_token_limit: int
     output_token_limit: int
     supported_generation_methods: List[str]
-    temperature: Optional[float] = None
-    top_p: Optional[float] = None
-    top_k: Optional[int] = None
+    temperature: float | None = None
+    top_p: float | None = None
+    top_k: int | None = None
 
 
 ModelNameOptions = Union[str, Model]
