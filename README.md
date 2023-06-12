@@ -2,6 +2,7 @@ Google Generative AI Python Client
 ==================================
 
 [![PyPI version](https://badge.fury.io/py/google-generativeai.svg)](https://badge.fury.io/py/google-generativeai)
+![Python support](https://img.shields.io/pypi/pyversions/google-generativeai)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/google-generativeai)
 
 Get started using the PaLM API in Python. Check out the [developer site](https://developers.generativeai.google/)
