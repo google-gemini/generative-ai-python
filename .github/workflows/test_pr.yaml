@@ -63,7 +63,7 @@ jobs:
       run: |
         python --version
         pip install -q -e .[dev]
-        pip install -q gspread pandas ipython
+        pip install -q gspread ipython
         pytype
   format:
     name: Check format with black
