@@ -46,11 +46,12 @@ def _make_generate_text_request(
     max_output_tokens: int | None = None,
     top_p: int | None = None,
     top_k: int | None = None,
-    safety_settings: List[safety_types.SafetySettingDict] | None = None,
+    safety_settings: safety_types.SafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
 ) -> glm.GenerateTextRequest:
     model = model_types.make_model_name(model)
     prompt = _make_text_prompt(prompt=prompt)
+    safety_settings = safety_types.normalize_safety_settings(safety_settings)
     if isinstance(stop_sequences, str):
         stop_sequences = [stop_sequences]
     if stop_sequences:
@@ -78,7 +79,7 @@ def generate_text(
     max_output_tokens: int | None = None,
     top_p: float | None = None,
     top_k: float | None = None,
-    safety_settings: Iterable[safety_types.SafetySettingDict] | None = None,
+    safety_settings: safety_types.SafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
     client: glm.TextServiceClient | None = None,
 ) -> text_types.Completion:

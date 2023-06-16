@@ -15,10 +15,12 @@
 from __future__ import annotations
 
 import enum
+from collections.abc import Mapping
+
 from google.ai import generativelanguage as glm
 from google.generativeai import docstring_utils
 import typing
-from typing import Iterable, List, TypedDict
+from typing import Iterable, Dict, Iterable, List, TypedDict, Union
 
 __all__ = [
     "HarmCategory",
@@ -36,6 +38,69 @@ HarmCategory = glm.HarmCategory
 HarmProbability = glm.SafetyRating.HarmProbability
 HarmBlockThreshold = glm.SafetySetting.HarmBlockThreshold
 BlockedReason = glm.ContentFilter.BlockedReason
+
+HarmCategoryOptions = Union[str, int, HarmCategory]
+
+_HARM_CATEGORIES: Dict[HarmCategoryOptions, HarmCategory] = {
+    HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    0: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    HarmCategory.HARM_CATEGORY_DEROGATORY: HarmCategory.HARM_CATEGORY_DEROGATORY,
+    1: HarmCategory.HARM_CATEGORY_DEROGATORY,
+    "derogatory": HarmCategory.HARM_CATEGORY_DEROGATORY,
+    HarmCategory.HARM_CATEGORY_TOXICITY: HarmCategory.HARM_CATEGORY_TOXICITY,
+    2: HarmCategory.HARM_CATEGORY_TOXICITY,
+    "toxicity": HarmCategory.HARM_CATEGORY_TOXICITY,
+    "toxic": HarmCategory.HARM_CATEGORY_TOXICITY,
+    HarmCategory.HARM_CATEGORY_VIOLENCE: HarmCategory.HARM_CATEGORY_VIOLENCE,
+    3: HarmCategory.HARM_CATEGORY_VIOLENCE,
+    "violence": HarmCategory.HARM_CATEGORY_VIOLENCE,
+    "violent": HarmCategory.HARM_CATEGORY_VIOLENCE,
+    HarmCategory.HARM_CATEGORY_SEXUAL: HarmCategory.HARM_CATEGORY_SEXUAL,
+    4: HarmCategory.HARM_CATEGORY_SEXUAL,
+    "sexual": HarmCategory.HARM_CATEGORY_SEXUAL,
+    "sex": HarmCategory.HARM_CATEGORY_SEXUAL,
+    HarmCategory.HARM_CATEGORY_MEDICAL: HarmCategory.HARM_CATEGORY_MEDICAL,
+    5: HarmCategory.HARM_CATEGORY_MEDICAL,
+    "medical": HarmCategory.HARM_CATEGORY_MEDICAL,
+    "med": HarmCategory.HARM_CATEGORY_MEDICAL,
+    HarmCategory.HARM_CATEGORY_DANGEROUS: HarmCategory.HARM_CATEGORY_DANGEROUS,
+    6: HarmCategory.HARM_CATEGORY_DANGEROUS,
+    "danger": HarmCategory.HARM_CATEGORY_DANGEROUS,
+    "dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS,
+}
+
+
+def to_harm_category(x: HarmCategoryOptions) -> HarmCategory:
+    if isinstance(x, str):
+        x = x.lower()
+    return _HARM_CATEGORIES[x]
+
+
+HarmBlockThresholdOptions = Union[str, int, HarmBlockThreshold]
+
+_BLOCK_THRESHOLDS: Dict[HarmBlockThresholdOptions, HarmBlockThreshold] = {
+    HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED: HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED,
+    0: HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED,
+    HarmBlockThreshold.BLOCK_LOW_AND_ABOVE: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    1: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    "low": HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    2: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    "medium": HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    "med": HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    HarmBlockThreshold.BLOCK_ONLY_HIGH: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    3: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    "high": HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    HarmBlockThreshold.BLOCK_NONE: HarmBlockThreshold.BLOCK_NONE,
+    4: HarmBlockThreshold.BLOCK_NONE,
+    "block_none": HarmBlockThreshold.BLOCK_NONE,
+}
+
+
+def to_block_threshold(x: HarmBlockThresholdOptions) -> HarmCategory:
+    if isinstance(x, str):
+        x = x.lower()
+    return _BLOCK_THRESHOLDS[x]
 
 
 class ContentFilterDict(TypedDict):
@@ -81,6 +146,35 @@ class SafetySettingDict(TypedDict):
     threshold: HarmBlockThreshold
 
     __doc__ = docstring_utils.strip_oneof(glm.SafetySetting.__doc__)
+
+
+class LooseSafetySettingDict(TypedDict):
+    category: HarmCategoryOptions
+    threshold: HarmBlockThresholdOptions
+
+
+EasySafetySetting = Mapping[HarmCategoryOptions, HarmBlockThresholdOptions]
+
+SafetySettingOptions = Union[EasySafetySetting, Iterable[LooseSafetySettingDict], None]
+
+
+def normalize_safety_settings(
+    settings: SafetySettingOptions,
+) -> list[SafetySettingDict] | None:
+    if settings is None:
+        return None
+    if isinstance(settings, Mapping):
+        return [
+            {"category": to_harm_category(key), "threshold": to_block_threshold(value)}
+            for key, value in settings.items()
+        ]
+    return [
+        {
+            "category": to_harm_category(d["category"]),
+            "threshold": to_block_threshold(d["threshold"]),
+        }
+        for d in settings
+    ]
 
 
 def convert_setting_to_enum(setting: dict) -> SafetySettingDict:

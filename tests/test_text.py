@@ -154,19 +154,51 @@ class UnitTests(parameterized.TestCase):
         # Just make sure it made it into the request object.
         self.assertEqual(self.observed_request.stop_sequences, ["stop"])
 
-    def test_safety_settings(self):
+    @parameterized.named_parameters(
+        [
+            dict(
+                testcase_name="basic",
+                safety_settings=[
+                    {
+                        "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                        "threshold": safety_types.HarmBlockThreshold.BLOCK_NONE,
+                    },
+                    {
+                        "category": safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
+                        "threshold": safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                    },
+                ],
+            ),
+            dict(
+                testcase_name="strings",
+                safety_settings=[
+                    {
+                        "category": "medical",
+                        "threshold": "block_none",
+                    },
+                    {
+                        "category": "violent",
+                        "threshold": "low",
+                    },
+                ],
+            ),
+            dict(
+                testcase_name="flat",
+                safety_settings={"medical": "block_none", "sex": "low"},
+            ),
+            dict(
+                testcase_name="mixed",
+                safety_settings={
+                    "medical": safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                    safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE: 1,
+                },
+            ),
+        ]
+    )
+    def test_safety_settings(self, safety_settings):
+        # This test really just checks that the safety_settings get converted to a proto.
         result = text_service.generate_text(
-            prompt="Say something wicked.",
-            safety_settings=[
-                {
-                    "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
-                    "threshold": safety_types.HarmBlockThreshold.BLOCK_NONE,
-                },
-                {
-                    "category": safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
-                    "threshold": safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-                },
-            ],
+            prompt="Say something wicked.", safety_settings=safety_settings
         )
 
         self.assertEqual(
