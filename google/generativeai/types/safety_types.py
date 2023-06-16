@@ -155,7 +155,7 @@ class LooseSafetySettingDict(TypedDict):
 
 EasySafetySetting = Mapping[HarmCategoryOptions, HarmBlockThresholdOptions]
 
-SafetySettingOptions = EasySafetySetting | Iterable[LooseSafetySettingDict] | None
+SafetySettingOptions = Union[EasySafetySetting, Iterable[LooseSafetySettingDict], None]
 
 
 def normalize_safety_settings(
