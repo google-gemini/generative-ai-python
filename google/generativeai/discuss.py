@@ -346,7 +346,7 @@ def chat(
 @set_doc(chat.__doc__)
 async def chat_async(
     *,
-    model: model_types.ModelNameOptions | None = None,
+    model: model_types.ModelNameOptions | None = "models/chat-bison-001",
     context: str | None = None,
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
@@ -436,7 +436,7 @@ class ChatResponse(discuss_types.ChatResponse):
             )
         request = self.to_dict()
         request.pop("candidates")
-        request.pop("filters")
+        request.pop("filters", None)
         request["messages"] = list(request["messages"])
         request["messages"].append(_make_message(message))
         request = _make_generate_message_request(**request)
