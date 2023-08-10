@@ -207,7 +207,7 @@ class UnitTests(parameterized.TestCase):
     ):
         request0 = discuss._make_generate_message_request(
             **{
-                "model": "Dave",
+                "model": "models/Dave",
                 "context": "you are a cat",
                 "examples": ["hello", "meow", "are you hungry?", "meow!"],
                 "messages": "Please catch that mouse.",
@@ -217,7 +217,7 @@ class UnitTests(parameterized.TestCase):
         )
         request1 = discuss._make_generate_message_request(
             **{
-                "model": "Dave",
+                "model": "models/Dave",
                 "prompt": {
                     "context": "you are a cat",
                     "examples": ["hello", "meow", "are you hungry?", "meow!"],

@@ -18,13 +18,22 @@ from __future__ import annotations
 import re
 import abc
 import dataclasses
-from typing import Iterator, List, Optional, Union
+import datetime
+from typing import Iterable, TypedDict, Union
+
+import google.ai.generativelanguage as glm
 
 __all__ = [
     "Model",
-    "ModelNameOptions",
+    "AnyModelNameOptions",
+    "BaseModelNameOptions",
+    "TunedModelNameOptions",
     "ModelsIterable",
+    "TunedModel",
+    "TunedModelState",
 ]
+
+TunedModelState = glm.TunedModel.State
 
 
 @dataclasses.dataclass
@@ -52,35 +61,86 @@ class Model:
     description: str
     input_token_limit: int
     output_token_limit: int
-    supported_generation_methods: List[str]
+    supported_generation_methods: list[str]
     temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
 
 
-ModelNameOptions = Union[str, Model]
+@dataclasses.dataclass
+class TunedModel:
+    """A dataclass representation of a `glm.TunedModel`."""
 
-# A bare model name, with no preceding namespace. e.g. foo-bar-001
-_BARE_MODEL_NAME = re.compile(r"^\w+-\w+-\d+$")
+    name: str | None = None
+    source_model: str | Model | TunedModel | None = None
+    base_model: str | None = None
+    display_name: str | None = None
+    description: str | None = None
+    temperature: float | None = None
+    top_p: float | None = None
+    top_k: float | None = None
+    state: glm.TunedModel.State | None = None
+    create_time: datetime.datetime | None = None
+    update_time: datetime.datetime | None = None
+    tuning_task: TuningTask | None = None
 
 
-def make_model_name(name: ModelNameOptions):
-    if isinstance(name, Model):
+@dataclasses.dataclass
+class TuningTask:
+    start_time: datetime.datetime | None
+    complete_time: datetime.datetime | None
+    snapshots: list[TuningSnapshot] | None
+    training_data: list[TuningExampleDict]
+    hyperparameters: Hyperparameters
+
+
+class TuningExampleDict(TypedDict):
+    model_input: str
+    output: str
+
+
+TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, str]]
+TuningDataOptions = (
+    glm.Dataset | Iterable[TuningExampleOptions]
+)  # TODO(markdaoust): csv, json, pandas, np
+
+
+@dataclasses.dataclass
+class TuningSnapshot:
+    step: int
+    epoch: int
+    mean_score: float
+    compute_time: datetime.datetime
+
+
+@dataclasses.dataclass
+class Hyperparameters:
+    epoch_count: int
+    batch_size: int
+    learning_rate: float
+
+
+BaseModelNameOptions = Union[str, Model, glm.Model]
+TunedModelNameOptions = Union[str, TunedModel, glm.TunedModel]
+AnyModelNameOptions = Union[str, Model, glm.Model, TunedModel, glm.TunedModel]
+
+
+def make_model_name(name: AnyModelNameOptions):
+    if isinstance(name, (Model, glm.Model, TunedModel, glm.TunedModel)):
         name = name.name
     elif isinstance(name, str):
-        # If only a bare model name is passed, give it the structure we expect.
-        if _BARE_MODEL_NAME.match(name):
-            name = f"models/{name}"
+        name = name
+    else:
+        raise TypeError("Expected: str, Model, or TunedModel")
+
+    if not (name.startswith("models/") or name.startswith("tunedModels/")):
+        raise ValueError("Model names should start with `models/` or `tunedModels/`")
 
     return name
 
 
-class ModelsIterable(abc.ABC):
-    """Iterate over this to yield `types.Model` objects."""
-
-    @abc.abstractmethod
-    def __iter__(self) -> Iterator[Model]:
-        pass
+ModelsIterable = Iterable[Model]
+TunedModelsIterable = Iterable[TunedModel]
 
 
 @dataclasses.dataclass

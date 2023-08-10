@@ -16,13 +16,21 @@ from __future__ import annotations
 
 import abc
 import dataclasses
-from typing import Any, Dict, Optional, List, Iterator, TypedDict
+from typing import Any, Dict, List, TypedDict
 
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
 
 
 __all__ = ["Completion"]
+
+
+class EmbeddingDict(TypedDict):
+    embedding: list[float]
+
+
+class BatchEmbeddingDict(TypedDict):
+    embedding: list[list[float]]
 
 
 class TextCompletion(TypedDict, total=False):

@@ -12,43 +12,168 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import copy
+import dataclasses
+from typing import Any
+import unittest
 from unittest import mock
 
 from absl.testing import absltest
+from absl.testing import parameterized
 
 import google.ai.generativelanguage as glm
 
-from google.ai.generativelanguage_v1beta2.types import model
-
 from google.generativeai import models
-
-_FAKE_MODEL = model.Model(
-    name="models/fake-model-001",
-    base_model_id="",
-    version="001",
-    display_name="Fake Model",
-    description="A fake model",
-    input_token_limit=123,
-    output_token_limit=234,
-    supported_generation_methods=[],
-)
+from google.generativeai import client
+from google.generativeai.types import model_types
 
 
-class UnitTests(absltest.TestCase):
-    def test_model_prefix(self):
-        """Test `models/` prefix applies to get_model calls when necessary."""
-        # The SUT needs a concrete return type from `get_model`, so set up a real-enough client.
-        fake_client = mock.Mock(spec=glm.ModelServiceClient)
-        fake_client.get_model.return_value = _FAKE_MODEL
+class UnitTests(parameterized.TestCase):
+    def setUp(self):
+        self.client = unittest.mock.MagicMock()
 
-        # Ensure that we don't mess with correctly structure args.
-        models.get_model(name="models/text-bison-001", client=fake_client)
-        fake_client.get_model.assert_called_with(name="models/text-bison-001")
+        client.default_model_client = self.client
 
-        # Ensure that we do correct bare models.
-        models.get_model(name="text-bison-001", client=fake_client)
-        fake_client.get_model.assert_called_with(name="models/text-bison-001")
+        def add_client_method(f):
+            name = f.__name__
+            setattr(self.client, name, f)
+            return f
 
-        # And unknown structure is not touched.
-        models.get_model(name="unknown_string", client=fake_client)
-        fake_client.get_model.assert_called_with(name="unknown_string")
+        self.observed_requests = []
+        self.responses = {}
+
+        @add_client_method
+        def get_model(
+            request: glm.GetModelRequest | None = None, *, name=None
+        ) -> glm.Model:
+            if request is None:
+                request = glm.GetModelRequest(name=name)
+            self.assertIsInstance(request, glm.GetModelRequest)
+            self.observed_requests.append(request)
+            response = copy.copy(self.responses["get_model"])
+            return response
+
+        @add_client_method
+        def get_tuned_model(
+            request: glm.GetTunedModelRequest | None = None, *, name=None
+        ) -> glm.TunedModel:
+            if request is None:
+                request = glm.GetTunedModelRequest(name=name)
+            self.assertIsInstance(request, glm.GetTunedModelRequest)
+            self.observed_requests.append(request)
+            response = copy.copy(self.responses["get_tuned_model"])
+            return response
+
+        @dataclasses.dataclass
+        class ListWrapper:
+            _response: Any
+
+        @add_client_method
+        def list_models(
+            request: glm.ListModelsRequest = None, *, page_size=None, page_token=None
+        ) -> glm.ListModelsResponse:
+            if request is None:
+                request = glm.ListModelsRequest(
+                    page_size=page_size, page_token=page_token
+                )
+            self.assertIsInstance(request, glm.ListModelsRequest)
+            self.observed_requests.append(request)
+            response = self.responses["list_models"][request.page_token]
+            return ListWrapper(response)
+
+        @add_client_method
+        def list_tuned_models(
+            request: glm.ListTunedModelsRequest = None,
+            *,
+            page_size=None,
+            page_token=None
+        ) -> glm.ListModelsResponse:
+            if request is None:
+                request = glm.ListTunedModelsRequest(
+                    page_size=page_size, page_token=page_token
+                )
+            self.assertIsInstance(request, glm.ListTunedModelsRequest)
+            self.observed_requests.append(request)
+            response = self.responses["list_tuned_models"][request.page_token]
+            return ListWrapper(response)
+
+    @parameterized.named_parameters(
+        ["simple", "models/fake-bison-001"],
+        ["simple-tuned", "tunedModels/my-pig-001"],
+        ["model-instance", glm.Model(name="models/fake-bison-001")],
+        ["tuned-model-instance", glm.TunedModel(name="tunedModels/my-pig-001")],
+    )
+    def test_get_model(self, name):
+        self.responses = {
+            "get_model": glm.Model(name="models/fake-bison-001"),
+            "get_tuned_model": glm.TunedModel(name="tunedModels/my-pig-001"),
+        }
+
+        model = models.get_model(name)
+        if self.observed_requests[0].name.startswith("models/"):
+            self.assertIsInstance(model, model_types.Model)
+        else:
+            self.assertIsInstance(model, model_types.TunedModel)
+
+    @parameterized.named_parameters(
+        ["simple", "mystery-bison-001"],
+        ["model-instance", glm.Model(name="how?-bison-001")],
+    )
+    def test_fail_with_unscoped_model_name(self, name):
+        with self.assertRaises(ValueError):
+            model = models.get_model(name)
+
+    def test_list_models(self):
+        self.responses = {
+            "list_models": {
+                # The first request doesn't pass a page token
+                "": glm.ListModelsResponse(
+                    models=[
+                        glm.Model(name="models/fake-bison-001"),
+                        glm.Model(name="models/fake-bison-002"),
+                    ],
+                    next_page_token="page1",
+                ),
+                "page1": glm.ListModelsResponse(
+                    models=[
+                        glm.Model(name="models/fake-bison-003"),
+                    ],
+                    # The last page returns an empty page token.
+                    next_page_token="",
+                ),
+            }
+        }
+
+        found_models = list(models.list_models())
+        self.assertLen(found_models, 3)
+        for m in found_models:
+            self.assertIsInstance(m, model_types.Model)
+
+    def test_list_tuned_models(self):
+        self.responses = {
+            "list_tuned_models": {
+                # The first request doesn't pass a page token
+                "": glm.ListTunedModelsResponse(
+                    tuned_models=[
+                        glm.TunedModel(name="tunedModels/my-pig-001"),
+                        glm.TunedModel(name="tunedModels/my-pig-002"),
+                    ],
+                    next_page_token="page1",
+                ),
+                "page1": glm.ListTunedModelsResponse(
+                    tuned_models=[
+                        glm.TunedModel(name="tunedModels/my-pig-003"),
+                    ],
+                    # The last page returns an empty page token.
+                    next_page_token="",
+                ),
+            }
+        }
+        found_models = list(models.list_tuned_models())
+        self.assertLen(found_models, 3)
+        for m in found_models:
+            self.assertIsInstance(m, model_types.TunedModel)
+
+
+if __name__ == "__main__":
+    absltest.main()

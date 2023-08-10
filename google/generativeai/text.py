@@ -15,8 +15,8 @@
 from __future__ import annotations
 
 import dataclasses
-
-from typing import List, Iterable, Iterator, Optional, Union
+from collections.abc import Sequence
+from typing import Iterable, overload
 
 import google.ai.generativelanguage as glm
 
@@ -217,9 +217,29 @@ def _generate_response(
     return Completion(_client=client, **response)
 
 
+@overload
 def generate_embeddings(
-    model: model_types.ModelNameOptions, text: str, client: glm.TextServiceClient = None
-):
+    model: model_types.ModelNameOptions,
+    text: str,
+    client: glm.TextServiceClient = None,
+) -> text_types.EmbeddingDict:
+    ...
+
+
+@overload
+def generate_embeddings(
+    model: model_types.ModelNameOptions,
+    text: Sequence[str],
+    client: glm.TextServiceClient = None,
+) -> text_types.BatchEmbeddingDict:
+    ...
+
+
+def generate_embeddings(
+    model: model_types.ModelNameOptions,
+    text: str | Sequence[str],
+    client: glm.TextServiceClient = None,
+) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
     """Calls the API to create an embedding for the text passed in.
 
     Args:
@@ -233,18 +253,20 @@ def generate_embeddings(
     Returns:
         Dictionary containing the embedding (list of float values) for the input text.
     """
-    if model is None:
-        model = "models/chat-lamda-001"
-    else:
-        model = model_types.make_model_name(model)
+    model = model_types.make_model_name(model)
 
     if client is None:
         client = get_default_text_client()
 
-    embedding_request = glm.EmbedTextRequest(model=model, text=text)
-    embedding_response = client.embed_text(embedding_request)
+    if isinstance(text, str):
+        embedding_request = glm.EmbedTextRequest(model=model, text=text)
+        embedding_response = client.embed_text(embedding_request)
+        embedding_dict = type(embedding_response).to_dict(embedding_response)
+        embedding_dict["embedding"] = embedding_dict["embedding"]["value"]
+    else:
+        embedding_request = glm.BatchEmbedTextRequest(model=model, texts=text)
+        embedding_response = client.batch_embed_text(embedding_request)
+        embedding_dict = type(embedding_response).to_dict(embedding_response)
+        embedding_dict["embedding"] = [e["value"] for e in embedding_dict["embeddings"]]
 
-    embedding_dict = type(embedding_response).to_dict(embedding_response)
-
-    embedding_dict["embedding"] = embedding_dict["embedding"]["value"]
     return embedding_dict
