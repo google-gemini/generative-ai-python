@@ -53,7 +53,7 @@ Use the model service discover models and find out more about them:
 Use `palm.get_model` to get details if you know a model's name:
 
 ```
-model = palm.get_model('chat-bison-001') # 🦬
+model = palm.get_model('models/chat-bison-001') # 🦬
 ```
 
 Use `palm.list_models` to discover models:
