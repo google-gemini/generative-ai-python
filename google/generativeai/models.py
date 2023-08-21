@@ -14,12 +14,14 @@
 # limitations under the License.
 from __future__ import annotations
 
-from typing import Optional, Literal
+import typing
+from typing import Any, Literal
 
 import google.ai.generativelanguage as glm
 from google.generativeai.client import get_default_model_client
 from google.generativeai.types import model_types
 from google.api_core import operation
+from google.api_core import protobuf_helpers
 from google.protobuf import field_mask_pb2
 
 
@@ -317,11 +319,103 @@ def _make_tuning_data(data: model_types.TuningDataOptions) -> glm.Dataset:
     return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
 
 
+@typing.overload
 def update_tuned_model(
-    tuned_model: model_types.TunedModel, update_mask: field_mask_pb2.FieldMask
+    tuned_model: glm.TunedModel | dict[str, Any],
+    updates: None = None,
+    *,
+    client: glm.ModelServiceClient | None = None,
 ) -> model_types.TunedModel:
     pass
 
 
-def delete_tuned_model(name: model_types.ModelNameOptions) -> None:
+@typing.overload
+def update_tuned_model(
+    tuned_model: str,
+    updates: dict[str, Any] | glm.TunedModel = None,
+    *,
+    client: glm.ModelServiceClient | None = None,
+) -> model_types.TunedModel:
     pass
+
+
+def update_tuned_model(
+    tuned_model: model_types.ModelNameOptions,
+    updates: dict[str, Any] | glm.TunedModel | model_types.TunedModel | None = None,
+    *,
+    client: glm.ModelServiceClient | None = None,
+) -> model_types.TunedModel:
+    """Push updates to the tuned model. Only certain attributes are updatable."""
+    if client is None:
+        client = get_default_model_client()
+
+    if isinstance(tuned_model, str):
+        name = tuned_model
+        if isinstance(updates, glm.TunedModel):
+            updates = type(updates).to_dict(updates)
+        if not isinstance(updates, dict):
+            raise TypeError(
+                "When calling `update_tuned_model(name:str, updates: dict|glm.TunedModel)`,\n"
+                "`updates` must be a `dict` or a `google.ai.generativelanguage.TunedModel`\n"
+                f"got: {type(updates)}"
+            )
+        tuned_model = client.get_tuned_model(name=name)
+
+        updates = _flatten_update_paths(updates)
+        field_mask = field_mask_pb2.FieldMask()
+        for path in updates.keys():
+            field_mask.paths.append(path)
+        for path, value in updates.items():
+            _apply_update(tuned_model, path, value)
+    else:
+        if updates is not None:
+            raise ValueError(
+                "When calling `update_tuned_model(tuned_model:dict|glm.TunedModel, updates=None)`,"
+                "`updates` must not be set."
+            )
+        if isinstance(tuned_model, dict):
+            tuned_model = glm.TunedModel(tuned_model)
+
+        if not isinstance(tuned_model, glm.TunedModel):
+            raise TypeError(
+                "When calling `update_tuned_model(tuned_model:dict|glm.TunedModel)`,"
+                "`tuned_model` must be a dict or a `glm.TunedModel`."
+            )
+
+        name = tuned_model.name
+        was = client.get_tuned_model(name=name)
+        field_mask = protobuf_helpers.field_mask(was._pb, tuned_model._pb)
+
+    result = client.update_tuned_model(tuned_model, field_mask)
+    result = type(result).to_dict(result)
+    return model_types.TunedModel(**result)
+
+
+def _flatten_update_paths(updates):
+    new_updates = {}
+    for key, value in updates.items():
+        if isinstance(value, dict):
+            for sub_key, sub_value in _flatten_update_paths(value).items():
+                new_updates[f"{key}.{sub_key}"] = sub_value
+    else:
+        new_updates[key] = value
+
+    return new_updates
+
+
+def _apply_update(thing, path, value):
+    parts = path.split(".")
+    for part in parts[:-1]:
+        thing = getattr(thing, part)
+    setattr(thing, parts[-1], value)
+
+
+def delete_tuned_model(
+    tuned_model: model_types.ModelNameOptions,
+    client: glm.ModelServiceClient | None = None,
+) -> None:
+    if client is None:
+        client = get_default_model_client()
+
+    name = model_types.make_model_name(tuned_model)
+    client.delete_tuned_model(name)

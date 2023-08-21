@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import copy
+import datetime
 import dataclasses
 from typing import Any
 import unittest
@@ -26,6 +27,7 @@ import google.ai.generativelanguage as glm
 from google.generativeai import models
 from google.generativeai import client
 from google.generativeai.types import model_types
+from google.protobuf import field_mask_pb2
 
 
 class UnitTests(parameterized.TestCase):
@@ -96,6 +98,26 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             response = self.responses["list_tuned_models"][request.page_token]
             return ListWrapper(response)
+
+        @add_client_method
+        def update_tuned_model(
+            tuned_model: glm.TunedModel, field_mask: field_mask_pb2.FieldMask
+        ):
+            request = glm.UpdateTunedModelRequest(
+                tuned_model=tuned_model, update_mask=field_mask
+            )
+            self.observed_requests.append(request)
+            response = self.responses.get("update_tuned_model", None)
+            if response is None:
+                response = tuned_model
+            return response
+
+        @add_client_method
+        def delete_tuned_model(name):
+            request = glm.DeleteTunedModelRequest(name=name)
+            self.observed_requests.append(request)
+            response = True
+            return response
 
     @parameterized.named_parameters(
         ["simple", "models/fake-bison-001"],
@@ -173,6 +195,80 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(found_models, 3)
         for m in found_models:
             self.assertIsInstance(m, model_types.TunedModel)
+
+    @parameterized.named_parameters(
+        [
+            "edited-glm-model",
+            glm.TunedModel(
+                name="tunedModels/my-pig-001",
+                description="Trained on my data",
+            ),
+            None,
+        ],
+        [
+            "name-and-dict",
+            "tunedModels/my-pig-001",
+            {"description": "Trained on my data"},
+        ],
+        [
+            "name-and-glm-model",
+            "tunedModels/my-pig-001",
+            glm.TunedModel(description="Trained on my data"),
+        ],
+    )
+    def test_update_tuned_model_basics(self, tuned_model, updates):
+        self.responses["get_tuned_model"] = glm.TunedModel(
+            name="tunedModels/my-pig-001"
+        )
+        # No self.responses['update_tuned_model'] the mock just returns the input.
+        updated_model = models.update_tuned_model(tuned_model, updates)
+        updated_model.description = "Trained on my data"
+
+    @parameterized.named_parameters(
+        [
+            "glm-model",
+            glm.TunedModel(tuning_task={"hyperparameters": {"batch_size": 8}}),
+        ],
+        [
+            "dict",
+            {"tuning_task": {"hyperparameters": {"batch_size": 8}}},
+        ],
+        [
+            "flat-dict",
+            {"tuning_task.hyperparameters.batch_size": 8},
+        ],
+    )
+    def test_update_tuned_model_nested_fields(self, updates):
+        self.responses["get_tuned_model"] = glm.TunedModel(
+            name="tunedModels/my-pig-001", base_model="models/dance-monkey-007"
+        )
+
+        result = models.update_tuned_model("tunedModels/my-pig-001", updates)
+        self.assertEqual(
+            result,
+            model_types.TunedModel(
+                name="tunedModels/my-pig-001",
+                base_model="models/dance-monkey-007",
+                tuning_task={"hyperparameters": {"batch_size": 8}, "snapshots": []},
+            ),
+        )
+
+    @parameterized.named_parameters(
+        ["name", "tunedModels/bipedal-pangolin-223"],
+        [
+            "glm.TunedModel",
+            glm.TunedModel(name="tunedModels/bipedal-pangolin-223"),
+        ],
+        [
+            "models.TunedModel",
+            model_types.TunedModel(name="tunedModels/bipedal-pangolin-223"),
+        ],
+    )
+    def test_delete_tuned_model(self, model):
+        models.delete_tuned_model(model)
+        self.assertEqual(
+            self.observed_requests[0].name, "tunedModels/bipedal-pangolin-223"
+        )
 
 
 if __name__ == "__main__":

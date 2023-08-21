@@ -74,12 +74,13 @@ class TunedModel:
     name: str | None = None
     source_model: str | Model | TunedModel | None = None
     base_model: str | None = None
-    display_name: str | None = None
-    description: str | None = None
+    display_name: str = ""
+    description: str = ""
     temperature: float | None = None
     top_p: float | None = None
     top_k: float | None = None
-    state: glm.TunedModel.State | None = None
+    # TODO: Use State.STATE_UNSPECIFIED
+    state: glm.TunedModel.State = 0
     create_time: datetime.datetime | None = None
     update_time: datetime.datetime | None = None
     tuning_task: TuningTask | None = None
