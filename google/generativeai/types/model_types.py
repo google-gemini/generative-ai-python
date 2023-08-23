@@ -15,11 +15,10 @@
 """Type definitions for the models service."""
 from __future__ import annotations
 
-import re
-import abc
 import dataclasses
 import datetime
-from typing import Iterable, TypedDict, Union
+from typing import Any, Iterable, TypedDict, Union
+import pytz
 
 import google.ai.generativelanguage as glm
 
@@ -34,6 +33,36 @@ __all__ = [
 ]
 
 TunedModelState = glm.TunedModel.State
+
+TunedModelStateOptions = Union[None, str, int, TunedModelState]
+
+# fmt: off
+_TUNED_MODEL_STATES: dict[TunedModelStateOptions, TunedModelState] = {
+    TunedModelState.ACTIVE: TunedModelState.ACTIVE,
+    int(TunedModelState.ACTIVE): TunedModelState.ACTIVE,
+    "active": TunedModelState.ACTIVE,
+
+    TunedModelState.CREATING: TunedModelState.CREATING,
+    int(TunedModelState.CREATING): TunedModelState.CREATING,
+    "creating": TunedModelState.CREATING,
+
+    TunedModelState.FAILED: TunedModelState.FAILED,
+    int(TunedModelState.FAILED): TunedModelState.FAILED,
+    "failed": TunedModelState.FAILED,
+
+    TunedModelState.STATE_UNSPECIFIED: TunedModelState.STATE_UNSPECIFIED,
+    int(TunedModelState.STATE_UNSPECIFIED): TunedModelState.STATE_UNSPECIFIED,
+    "state_unspecified": TunedModelState.STATE_UNSPECIFIED,
+    "unspecified": TunedModelState.STATE_UNSPECIFIED,
+    None: TunedModelState.STATE_UNSPECIFIED,
+}
+# fmt: on
+
+
+def to_tuned_model_state(x: TunedModelStateOptions) -> TunedModelState:
+    if isinstance(x, str):
+        x = x.lower()
+    return _TUNED_MODEL_STATES[x]
 
 
 @dataclasses.dataclass
@@ -67,20 +96,50 @@ class Model:
     top_k: int | None = None
 
 
+def idecode_time(parent: dict["str", Any], name: str):
+    time = parent.pop(name, None)
+    if time is not None:
+        t = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ")
+        t = pytz.UTC.localize(t)
+        parent[name] = t
+
+
+def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedModel:
+    if isinstance(tuned_model, glm.TunedModel):
+        tuned_model = type(tuned_model).to_dict(tuned_model)
+    tuned_model["state"] = to_tuned_model_state(tuned_model.pop("state", None))
+
+    idecode_time(tuned_model, "create_time")
+    idecode_time(tuned_model, "update_time")
+
+    task = tuned_model.pop("tuning_task", None)
+    if task is not None:
+        hype = task.pop("hyperparameters", None)
+        if hype is not None:
+            hype = Hyperparameters(**hype)
+            task["hyperparameters"] = hype
+
+        idecode_time(tuned_model, "start_time")
+        idecode_time(tuned_model, "complete_time")
+
+        task = TuningTask(**task)
+        tuned_model["tuning_task"] = task
+    return TunedModel(**tuned_model)
+
+
 @dataclasses.dataclass
 class TunedModel:
     """A dataclass representation of a `glm.TunedModel`."""
 
     name: str | None = None
-    source_model: str | Model | TunedModel | None = None
+    source_model: str | None = None
     base_model: str | None = None
     display_name: str = ""
     description: str = ""
     temperature: float | None = None
     top_p: float | None = None
     top_k: float | None = None
-    # TODO: Use State.STATE_UNSPECIFIED
-    state: glm.TunedModel.State = 0
+    state: TunedModelState = TunedModelState.STATE_UNSPECIFIED
     create_time: datetime.datetime | None = None
     update_time: datetime.datetime | None = None
     tuning_task: TuningTask | None = None
@@ -104,6 +163,25 @@ TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, st
 TuningDataOptions = (
     glm.Dataset | Iterable[TuningExampleOptions]
 )  # TODO(markdaoust): csv, json, pandas, np
+
+
+def encode_tuning_data(data: TuningDataOptions) -> glm.Dataset:
+    if isinstance(data, glm.Dataset):
+        return data
+
+    new_data = list()
+    for example in data:
+        example = encode_tuning_example(example)
+        new_data.append(example)
+    return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
+
+
+def encode_tuning_example(example: TuningExampleOptions):
+    if isinstance(example, tuple):
+        example = glm.TuningExample(model_input=example[0], output=example[1])
+    else:  # dict or  glm.TuningExample
+        example = glm.TuningExample(example)
+    return example
 
 
 @dataclasses.dataclass

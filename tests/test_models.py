@@ -15,6 +15,7 @@
 import copy
 import datetime
 import dataclasses
+import pytz
 from typing import Any
 import unittest
 from unittest import mock
@@ -118,6 +119,14 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             response = True
             return response
+
+    def test_decode_tuned_model_time_round_trip(self):
+        example_dt = datetime.datetime(2000, 1, 2, 3, 4, 5, 600000, pytz.UTC)
+        tuned_model = glm.TunedModel(
+            name="tunedModels/house-mouse-001", create_time=example_dt
+        )
+        tuned_model = model_types.decode_tuned_model(tuned_model)
+        self.assertEqual(tuned_model.create_time, example_dt)
 
     @parameterized.named_parameters(
         ["simple", "models/fake-bison-001"],

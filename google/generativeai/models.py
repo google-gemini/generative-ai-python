@@ -108,8 +108,8 @@ def get_tuned_model(
         raise ValueError("Tuned model names must start with `tunedModels/`")
 
     result = client.get_tuned_model(name=name)
-    result = type(result).to_dict(result)
-    return model_types.TunedModel(**result)
+
+    return model_types.decode_tuned_model(result)
 
 
 def _list_base_models_next_page(page_size, page_token, client):
@@ -130,7 +130,7 @@ def _list_tuned_models_next_page(page_size, page_token, client):
     result = result._response
     result = type(result).to_dict(result)
     result["models"] = [
-        model_types.TunedModel(**mod) for mod in result.pop("tuned_models")
+        model_types.decode_tuned_model(mod) for mod in result.pop("tuned_models")
     ]
     result["page_size"] = page_size
     result["page_token"] = result.pop("next_page_token")
@@ -277,7 +277,7 @@ def create_tuned_model(
     else:
         ValueError(f"Not understood: `{source_model=}`")
 
-    training_data = _make_tuning_data(training_data)
+    training_data = model_types.encode_tuning_data(training_data)
 
     hyperparameters = glm.Hyperparameters(
         epoch_count=epoch_count, batch_size=batch_size, learning_rate=learning_rate
@@ -298,25 +298,6 @@ def create_tuned_model(
 
     result = client.create_tuned_model(tuned_model_id=id, tuned_model=tuned_model)
     return result
-
-
-def _make_tuning_example(example: model_types.TuningExampleOptions):
-    if isinstance(example, tuple):
-        example = glm.TuningExample(model_input=example[0], output=example[1])
-    else:  # dict or  glm.TuningExample
-        example = glm.TuningExample(example)
-    return example
-
-
-def _make_tuning_data(data: model_types.TuningDataOptions) -> glm.Dataset:
-    if isinstance(data, glm.Dataset):
-        return data
-
-    new_data = list()
-    for example in data:
-        example = _make_tuning_example(example)
-        new_data.append(example)
-    return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
 
 
 @typing.overload
