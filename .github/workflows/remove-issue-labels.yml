@@ -1,0 +1,18 @@
+name: Remove issue labels
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  remove_label:
+    permissions:
+      contents: read
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions-ecosystem/action-remove-labels@v1
+      with:
+        labels: |
+          status:triaged
+          status:more data needed
