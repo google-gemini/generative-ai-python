@@ -1,0 +1,18 @@
+name: Remove PR Labels
+
+on:
+  pull_request_target:
+    types: ["closed", "merged"]
+
+jobs:
+  remove_label:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions-ecosystem/action-remove-labels@v1
+      with:
+        labels: |
+          status:awaiting review
+          status:awaiting user response
