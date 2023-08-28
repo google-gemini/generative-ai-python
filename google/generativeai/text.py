@@ -51,7 +51,7 @@ def _make_text_prompt(prompt: str | dict[str, str]) -> glm.TextPrompt:
 
 def _make_generate_text_request(
     *,
-    model: model_types.ModelNameOptions = DEFAULT_TEXT_MODEL,
+    model: model_types.AnyModelNameOptions = DEFAULT_TEXT_MODEL,
     prompt: str | None = None,
     temperature: float | None = None,
     candidate_count: int | None = None,
@@ -106,7 +106,7 @@ def _make_generate_text_request(
 
 def generate_text(
     *,
-    model: model_types.ModelNameOptions = DEFAULT_TEXT_MODEL,
+    model: model_types.AnyModelNameOptions = DEFAULT_TEXT_MODEL,
     prompt: str,
     temperature: float | None = None,
     candidate_count: int | None = None,
@@ -219,7 +219,7 @@ def _generate_response(
 
 @overload
 def generate_embeddings(
-    model: model_types.ModelNameOptions,
+    model: model_types.BaseModelNameOptions,
     text: str,
     client: glm.TextServiceClient = None,
 ) -> text_types.EmbeddingDict:
@@ -228,7 +228,7 @@ def generate_embeddings(
 
 @overload
 def generate_embeddings(
-    model: model_types.ModelNameOptions,
+    model: model_types.BaseModelNameOptions,
     text: Sequence[str],
     client: glm.TextServiceClient = None,
 ) -> text_types.BatchEmbeddingDict:
@@ -236,7 +236,7 @@ def generate_embeddings(
 
 
 def generate_embeddings(
-    model: model_types.ModelNameOptions,
+    model: model_types.BaseModelNameOptions,
     text: str | Sequence[str],
     client: glm.TextServiceClient = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:

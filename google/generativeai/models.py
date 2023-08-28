@@ -208,7 +208,7 @@ def list_tuned_models(
 
 def create_tuned_model(
     source_model: model_types.AnyModelNameOptions,
-    training_data: model_types.TrainingDataOptions,
+    training_data: model_types.TuningDataOptions,
     *,
     id: str | None = None,
     display_name: str | None = None,
@@ -269,11 +269,21 @@ def create_tuned_model(
     if client is None:
         client = get_default_model_client()
 
-    source_model = model_types.make_model_name(source_model)
-    if source_model.startswith("models/"):
-        source_model = {"base_model": source_model}
-    elif source_model.startswith("tunedModels/"):
-        source_model = {"tuned_model_source": {"tuned_model": source_model}}
+    source_model_name = model_types.make_model_name(source_model)
+    if source_model_name.startswith("models/"):
+        source_model = {"base_model": source_model_name}
+    elif source_model_name.startswith("tunedModels/"):
+        source_model = client.get_tuned_model(name=source_model_name)
+        base_model = source_model.base_model
+        if not base_model:
+            base_model = source_model.tuned_model_source.base_model
+
+        source_model = {
+            "tuned_model_source": {
+                "tuned_model": source_model_name,
+                "base_model": base_model,
+            }
+        }
     else:
         ValueError(f"Not understood: `{source_model=}`")
 
@@ -283,7 +293,8 @@ def create_tuned_model(
         epoch_count=epoch_count, batch_size=batch_size, learning_rate=learning_rate
     )
     tuning_task = glm.TuningTask(
-        training_data=training_data, hyperparameters=hyperparameters
+        training_data=training_data,
+        hyperparameters=hyperparameters,
     )
 
     tuned_model = glm.TunedModel(
@@ -295,14 +306,15 @@ def create_tuned_model(
         top_k=top_k,
         tuning_task=tuning_task,
     )
-
-    result = client.create_tuned_model(tuned_model_id=id, tuned_model=tuned_model)
-    return result
+    operation = client.create_tuned_model(
+        dict(tuned_model_id=id, tuned_model=tuned_model)
+    )
+    return operation
 
 
 @typing.overload
 def update_tuned_model(
-    tuned_model: glm.TunedModel | dict[str, Any],
+    tuned_model: glm.TunedModel,
     updates: None = None,
     *,
     client: glm.ModelServiceClient | None = None,
@@ -313,7 +325,7 @@ def update_tuned_model(
 @typing.overload
 def update_tuned_model(
     tuned_model: str,
-    updates: dict[str, Any] | glm.TunedModel = None,
+    updates: dict[str, Any],
     *,
     client: glm.ModelServiceClient | None = None,
 ) -> model_types.TunedModel:
@@ -321,8 +333,8 @@ def update_tuned_model(
 
 
 def update_tuned_model(
-    tuned_model: model_types.ModelNameOptions,
-    updates: dict[str, Any] | glm.TunedModel | model_types.TunedModel | None = None,
+    tuned_model: str | glm.TunedModel,
+    updates: dict[str, Any] | None = None,
     *,
     client: glm.ModelServiceClient | None = None,
 ) -> model_types.TunedModel:
@@ -332,12 +344,10 @@ def update_tuned_model(
 
     if isinstance(tuned_model, str):
         name = tuned_model
-        if isinstance(updates, glm.TunedModel):
-            updates = type(updates).to_dict(updates)
         if not isinstance(updates, dict):
             raise TypeError(
-                "When calling `update_tuned_model(name:str, updates: dict|glm.TunedModel)`,\n"
-                "`updates` must be a `dict` or a `google.ai.generativelanguage.TunedModel`\n"
+                "When calling `update_tuned_model(name:str, updates: dict)`,\n"
+                "`updates` must be a `dict`.\n"
                 f"got: {type(updates)}"
             )
         tuned_model = client.get_tuned_model(name=name)
@@ -348,28 +358,24 @@ def update_tuned_model(
             field_mask.paths.append(path)
         for path, value in updates.items():
             _apply_update(tuned_model, path, value)
-    else:
+    elif isinstance(tuned_model, glm.TunedModel):
         if updates is not None:
             raise ValueError(
-                "When calling `update_tuned_model(tuned_model:dict|glm.TunedModel, updates=None)`,"
+                "When calling `update_tuned_model(tuned_model:glm.TunedModel, updates=None)`,"
                 "`updates` must not be set."
-            )
-        if isinstance(tuned_model, dict):
-            tuned_model = glm.TunedModel(tuned_model)
-
-        if not isinstance(tuned_model, glm.TunedModel):
-            raise TypeError(
-                "When calling `update_tuned_model(tuned_model:dict|glm.TunedModel)`,"
-                "`tuned_model` must be a dict or a `glm.TunedModel`."
             )
 
         name = tuned_model.name
         was = client.get_tuned_model(name=name)
         field_mask = protobuf_helpers.field_mask(was._pb, tuned_model._pb)
+    else:
+        raise TypeError(
+            "For `update_tuned_model(tuned_model:dict|glm.TunedModel)`,"
+            f"`tuned_model` must be a `dict` or a `glm.TunedModel`. Got a: `{type(tuned_model)}`"
+        )
 
     result = client.update_tuned_model(tuned_model, field_mask)
-    result = type(result).to_dict(result)
-    return model_types.TunedModel(**result)
+    return model_types.decode_tuned_model(result)
 
 
 def _flatten_update_paths(updates):
@@ -378,8 +384,8 @@ def _flatten_update_paths(updates):
         if isinstance(value, dict):
             for sub_key, sub_value in _flatten_update_paths(value).items():
                 new_updates[f"{key}.{sub_key}"] = sub_value
-    else:
-        new_updates[key] = value
+        else:
+            new_updates[key] = value
 
     return new_updates
 
@@ -392,7 +398,7 @@ def _apply_update(thing, path, value):
 
 
 def delete_tuned_model(
-    tuned_model: model_types.ModelNameOptions,
+    tuned_model: model_types.TunedModelNameOptions,
     client: glm.ModelServiceClient | None = None,
 ) -> None:
     if client is None:

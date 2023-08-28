@@ -89,7 +89,7 @@ class UnitTests(parameterized.TestCase):
             request: glm.ListTunedModelsRequest = None,
             *,
             page_size=None,
-            page_token=None
+            page_token=None,
         ) -> glm.ListModelsResponse:
             if request is None:
                 request = glm.ListTunedModelsRequest(
@@ -120,8 +120,14 @@ class UnitTests(parameterized.TestCase):
             response = True
             return response
 
+        @add_client_method
+        def create_tuned_model(request):
+            request = glm.CreateTunedModelRequest(request)
+            self.observed_requests.append(request)
+            return self.responses["create_tuned_model"]
+
     def test_decode_tuned_model_time_round_trip(self):
-        example_dt = datetime.datetime(2000, 1, 2, 3, 4, 5, 600000, pytz.UTC)
+        example_dt = datetime.datetime(2000, 1, 2, 3, 4, 5, 600_000, pytz.UTC)
         tuned_model = glm.TunedModel(
             name="tunedModels/house-mouse-001", create_time=example_dt
         )
@@ -219,11 +225,6 @@ class UnitTests(parameterized.TestCase):
             "tunedModels/my-pig-001",
             {"description": "Trained on my data"},
         ],
-        [
-            "name-and-glm-model",
-            "tunedModels/my-pig-001",
-            glm.TunedModel(description="Trained on my data"),
-        ],
     )
     def test_update_tuned_model_basics(self, tuned_model, updates):
         self.responses["get_tuned_model"] = glm.TunedModel(
@@ -234,10 +235,6 @@ class UnitTests(parameterized.TestCase):
         updated_model.description = "Trained on my data"
 
     @parameterized.named_parameters(
-        [
-            "glm-model",
-            glm.TunedModel(tuning_task={"hyperparameters": {"batch_size": 8}}),
-        ],
         [
             "dict",
             {"tuning_task": {"hyperparameters": {"batch_size": 8}}},
@@ -258,7 +255,12 @@ class UnitTests(parameterized.TestCase):
             model_types.TunedModel(
                 name="tunedModels/my-pig-001",
                 base_model="models/dance-monkey-007",
-                tuning_task={"hyperparameters": {"batch_size": 8}, "snapshots": []},
+                tuning_task=model_types.TuningTask(
+                    hyperparameters=model_types.Hyperparameters(
+                        batch_size=8, learning_rate=0, epoch_count=0
+                    ),
+                    snapshots=[],
+                ),
             ),
         )
 
@@ -277,6 +279,107 @@ class UnitTests(parameterized.TestCase):
         models.delete_tuned_model(model)
         self.assertEqual(
             self.observed_requests[0].name, "tunedModels/bipedal-pangolin-223"
+        )
+
+    @parameterized.named_parameters(
+        ["simple", "2000-01-01T01:01:01.123456Z", 123456],
+        ["zeros-right", "2000-01-01T01:01:01.100000Z", 100000],
+        ["zeros-left", "2000-01-01T01:01:01.000001Z", 1],
+        ["short", "2000-01-01T01:01:01.12Z", 120000],
+        ["long", "2000-01-01T01:01:01.1234567899999999Z", 123457],
+    )
+    def test_decode_micros(self, time_str, micros):
+        time = {"time": time_str}
+        model_types.idecode_time(time, "time")
+        self.assertEqual(time["time"].microsecond, micros)
+
+    def test_decode_tuned_model(self):
+        out_fields = glm.TunedModel(
+            state=glm.TunedModel.State.CREATING,
+            create_time="2000-01-01T01:01:01.0Z",
+            update_time="2001-01-01T01:01:01.0Z",
+            tuning_task=glm.TuningTask(
+                hyperparameters=glm.Hyperparameters(
+                    batch_size=72, epoch_count=1, learning_rate=0.1
+                ),
+                start_time="2002-01-01T01:01:01.0Z",
+                complete_time="2003-01-01T01:01:01.0Z",
+                snapshots=[
+                    glm.TuningSnapshot(
+                        step=1,
+                        epoch=1,
+                        compute_time="2004-01-01T01:01:01.0Z",
+                    ),
+                    glm.TuningSnapshot(
+                        step=2,
+                        epoch=1,
+                        compute_time="2005-01-01T01:01:01.0Z",
+                    ),
+                ],
+            ),
+        )
+
+        decoded = model_types.decode_tuned_model(out_fields)
+        self.assertEqual(decoded.state, glm.TunedModel.State.CREATING)
+        self.assertEqual(decoded.create_time.year, 2000)
+        self.assertEqual(decoded.update_time.year, 2001)
+        self.assertIsInstance(
+            decoded.tuning_task.hyperparameters, model_types.Hyperparameters
+        )
+        self.assertEqual(decoded.tuning_task.hyperparameters.batch_size, 72)
+        self.assertIsInstance(decoded.tuning_task, model_types.TuningTask)
+        self.assertEqual(decoded.tuning_task.start_time.year, 2002)
+        self.assertEqual(decoded.tuning_task.complete_time.year, 2003)
+        self.assertIsInstance(decoded.tuning_task.snapshots, list)
+        self.assertEqual(decoded.tuning_task.snapshots[0]["compute_time"].year, 2004)
+        self.assertEqual(decoded.tuning_task.snapshots[1]["compute_time"].year, 2005)
+
+    def test_smoke_create_tuned_model(self):
+        self.responses["create_tuned_model"] = 'operation!'
+
+        models.create_tuned_model(
+            source_model="models/sneaky-fox-001",
+            temperature=0.5,
+            batch_size=32,
+            training_data=[
+                ("in", "out"),
+                {"text_input": "in", "output": "out"},
+                glm.TuningExample(text_input="in", output="out"),
+            ],
+        )
+        req = self.observed_requests[-1]
+        self.assertEqual(req.tuned_model.base_model, "models/sneaky-fox-001")
+        self.assertEqual(self.observed_requests[-1].tuned_model.temperature, 0.5)
+        self.assertEqual(req.tuned_model.tuning_task.hyperparameters.batch_size, 32)
+        self.assertLen(req.tuned_model.tuning_task.training_data.examples.examples, 3)
+
+    @parameterized.named_parameters(
+        ["simple", glm.TunedModel(base_model="models/swim-fish-000")],
+        [
+            "nested",
+            glm.TunedModel(
+                tuned_model_source={
+                    "tuned_model": "tunedModels/hidden-fish-55",
+                    "base_model": "models/swim-fish-000",
+                }
+            ),
+        ],
+    )
+    def test_create_tuned_model_on_tuned_model(self, tuned_source):
+        self.responses["create_tuned_model"] = "operation!"
+
+        self.responses["get_tuned_model"] = tuned_source
+        models.create_tuned_model(
+            source_model="tunedModels/swim-fish-001", training_data=[]
+        )
+
+        self.assertEqual(
+            self.observed_requests[-1].tuned_model.tuned_model_source.tuned_model,
+            "tunedModels/swim-fish-001",
+        )
+        self.assertEqual(
+            self.observed_requests[-1].tuned_model.tuned_model_source.base_model,
+            "models/swim-fish-000",
         )
 
 

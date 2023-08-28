@@ -17,8 +17,9 @@ from __future__ import annotations
 
 import dataclasses
 import datetime
-from typing import Any, Iterable, TypedDict, Union
 import pytz
+import re
+from typing import Any, Iterable, TypedDict, Union
 
 import google.ai.generativelanguage as glm
 
@@ -96,17 +97,30 @@ class Model:
     top_k: int | None = None
 
 
+def _fix_microseconds(match):
+    # microseconds needs exactly 6 digits
+    fraction = float(match.group(0))
+    return f".{int(round(fraction*1e6)):06d}"
+
+
 def idecode_time(parent: dict["str", Any], name: str):
     time = parent.pop(name, None)
     if time is not None:
-        t = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ")
-        t = pytz.UTC.localize(t)
-        parent[name] = t
+        if "." in time:
+            time = re.sub(r"\.\d+", _fix_microseconds, time)
+            dt = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ")
+        else:
+            dt = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ")
+
+        dt = pytz.UTC.localize(dt)
+        parent[name] = dt
 
 
 def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedModel:
     if isinstance(tuned_model, glm.TunedModel):
-        tuned_model = type(tuned_model).to_dict(tuned_model)
+        tuned_model = type(tuned_model).to_dict(
+            tuned_model
+        )  # pytype: disable=attribute-error
     tuned_model["state"] = to_tuned_model_state(tuned_model.pop("state", None))
 
     idecode_time(tuned_model, "create_time")
@@ -119,9 +133,14 @@ def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedM
             hype = Hyperparameters(**hype)
             task["hyperparameters"] = hype
 
-        idecode_time(tuned_model, "start_time")
-        idecode_time(tuned_model, "complete_time")
+        idecode_time(task, "start_time")
+        idecode_time(task, "complete_time")
 
+        snapshots = task.pop("snapshots", None)
+        if snapshots is not None:
+            for snap in snapshots:
+                idecode_time(snap, "compute_time")
+            task["snapshots"] = snapshots
         task = TuningTask(**task)
         tuned_model["tuning_task"] = task
     return TunedModel(**tuned_model)
@@ -147,15 +166,14 @@ class TunedModel:
 
 @dataclasses.dataclass
 class TuningTask:
-    start_time: datetime.datetime | None
-    complete_time: datetime.datetime | None
-    snapshots: list[TuningSnapshot] | None
-    training_data: list[TuningExampleDict]
-    hyperparameters: Hyperparameters
+    start_time: datetime.datetime | None = None
+    complete_time: datetime.datetime | None = None
+    snapshots: list[TuningSnapshot] = dataclasses.field(default_factory=list)
+    hyperparameters: Hyperparameters | None = None
 
 
 class TuningExampleDict(TypedDict):
-    model_input: str
+    text_input: str
     output: str
 
 
@@ -178,7 +196,7 @@ def encode_tuning_data(data: TuningDataOptions) -> glm.Dataset:
 
 def encode_tuning_example(example: TuningExampleOptions):
     if isinstance(example, tuple):
-        example = glm.TuningExample(model_input=example[0], output=example[1])
+        example = glm.TuningExample(text_input=example[0], output=example[1])
     else:  # dict or  glm.TuningExample
         example = glm.TuningExample(example)
     return example
@@ -194,9 +212,9 @@ class TuningSnapshot:
 
 @dataclasses.dataclass
 class Hyperparameters:
-    epoch_count: int
-    batch_size: int
-    learning_rate: float
+    epoch_count: int = 0
+    batch_size: int = 0
+    learning_rate: float = 0.0
 
 
 BaseModelNameOptions = Union[str, Model, glm.Model]
@@ -206,7 +224,7 @@ AnyModelNameOptions = Union[str, Model, glm.Model, TunedModel, glm.TunedModel]
 
 def make_model_name(name: AnyModelNameOptions):
     if isinstance(name, (Model, glm.Model, TunedModel, glm.TunedModel)):
-        name = name.name
+        name = name.name  # pytype: disable=attribute-error
     elif isinstance(name, str):
         name = name
     else:
