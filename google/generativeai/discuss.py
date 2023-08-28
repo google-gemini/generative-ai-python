@@ -30,7 +30,7 @@ from google.generativeai.types import safety_types
 
 
 def _make_message(content: discuss_types.MessageOptions) -> glm.Message:
-    """Creates a glm.Message object from the provided content."""
+    """Creates a `glm.Message` object from the provided content."""
     if isinstance(content, glm.Message):
         return content
     if isinstance(content, str):
@@ -44,15 +44,15 @@ def _make_messages(messages: discuss_types.MessagesOptions) -> List[glm.Message]
     Creates a list of glm.Message objects from the provided messages.
 
     This function takes a variety of message content inputs, such as strings, dictionaries,
-    or glm.Message objects, and creates a list of glm.Message objects. It ensures that
+    or `glm.Message` objects, and creates a list of `glm.Message` objects. It ensures that
     the authors of the messages alternate appropriately. If authors are not provided,
     default authors are assigned based on their position in the list.
 
     Args:
-        messages (discuss_types.MessagesOptions): The messages to convert.
+        messages: The messages to convert.
 
     Returns:
-        List[glm.Message]: A list of glm.Message objects with alternating authors if needed.
+        A list of `glm.Message` objects with alternating authors if needed.
     """
     if isinstance(messages, (str, dict, glm.Message)):
         messages = [_make_message(messages)]
@@ -86,7 +86,7 @@ def _make_messages(messages: discuss_types.MessagesOptions) -> List[glm.Message]
 
 
 def _make_example(item: discuss_types.ExampleOptions) -> glm.Example:
-    """Creates a glm.Example object from the provided item."""
+    """Creates a `glm.Example` object from the provided item."""
     if isinstance(item, glm.Example):
         return item
 
@@ -108,17 +108,19 @@ def _make_examples_from_flat(
     examples: List[discuss_types.MessageOptions],
 ) -> List[glm.Example]:
     """
-    Creates a list of glm.Example objects from a list of message options.
+    Creates a list of `glm.Example` objects from a list of message options.
 
-    This function takes a list of message options and pairs them into glm.Example objects.
-    The input examples must be in pairs to create valid examples. It raises a ValueError
-    if the provided list of examples is not of even length.
+    This function takes a list of message options and pairs them into `glm.Example` objects.
+    The input examples must be in pairs to create valid examples. 
 
     Args:
-        examples (List[discuss_types.MessageOptions]): The list of message options.
+        examples: The list of message options.
 
     Returns:
-        List[glm.Example]: A list of glm.Example objects created from the provided message pairs.
+        A list of glm.Example objects created from the provided message pairs.
+
+    Raises:
+        ValueError: If the provided list of examples is not of even length.
     """
     if len(examples) % 2 != 0:
         raise ValueError(
@@ -146,17 +148,17 @@ def _make_examples_from_flat(
 
 def _make_examples(examples: discuss_types.ExamplesOptions) -> List[glm.Example]:
     """
-    Creates a list of glm.Example objects from the provided examples.
+    Creates a list of `glm.Example` objects from the provided examples.
 
     This function takes various types of example content inputs and creates a list
-    of glm.Example objects. It handles the conversion of different input types and ensures
+    of `glm.Example` objects. It handles the conversion of different input types and ensures
     the appropriate structure for creating valid examples.
 
     Args:
-        examples (discuss_types.ExamplesOptions): The examples to convert.
+        examples: The examples to convert.
 
     Returns:
-        List[glm.Example]: A list of glm.Example objects created from the provided examples.
+        A list of glm.Example objects created from the provided examples.
     """
     if isinstance(examples, glm.Example):
         return [examples]
@@ -198,22 +200,21 @@ def _make_message_prompt_dict(
     messages: discuss_types.MessagesOptions | None = None,
 ) -> glm.MessagePrompt:
     """
-    Creates a glm.MessagePrompt object from the provided prompt components.
+    Creates a `glm.MessagePrompt` object from the provided prompt components.
 
-    This function constructs a glm.MessagePrompt object using the provided context, examples,
-    or messages. It ensures the proper structure and handling of the input components.
+    This function constructs a `glm.MessagePrompt` object using the provided `context`, `examples`,
+    or `messages`. It ensures the proper structure and handling of the input components.
+
+    Either pass a `prompt` or it's component `context`, `examples`, `messages`.
 
     Args:
-        prompt (discuss_types.MessagePromptOptions, optional): The complete prompt components.
-            Defaults to None.
-        context (str | None, optional): The context for the prompt. Defaults to None.
-        examples (discuss_types.ExamplesOptions | None, optional): The examples for the prompt.
-            Defaults to None.
-        messages (discuss_types.MessagesOptions | None, optional): The messages for the prompt.
-            Defaults to None.
+        prompt: The complete prompt components.
+        context: The context for the prompt.
+        examples: The examples for the prompt.
+        messages: The messages for the prompt.
 
     Returns:
-        glm.MessagePrompt: A glm.MessagePrompt object created from the provided prompt components.
+        A `glm.MessagePrompt` object created from the provided prompt components.
     """
     if prompt is None:
         prompt = dict(
