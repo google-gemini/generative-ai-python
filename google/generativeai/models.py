@@ -35,6 +35,21 @@ def get_model(name: str, *, client=None) -> model_types.Model:
 
 
 class ModelsIterable(model_types.ModelsIterable):
+    """
+    An iterable class to traverse through a list of models.
+
+    This class allows you to iterate over a list of models, fetching them in pages
+    if necessary based on the provided page_size and page_token.
+
+    Args:
+        page_size (int): The number of models to fetch per page.
+        page_token (str | None): Token representing the current page. Pass None for the first page.
+        models (List[model_types.Model]): List of models to iterate through.
+        client (glm.ModelServiceClient | None): An optional client for model service.
+
+    Returns:
+        ModelsIterable: An iterable object that allows iterating through the models.
+    """
     def __init__(
         self,
         *,
@@ -49,12 +64,25 @@ class ModelsIterable(model_types.ModelsIterable):
         self._client = client
 
     def __iter__(self):
+        """
+        Returns an iterator over the models.
+
+        Yields:
+            model_types.Model: A model object from the iterable.
+        """
         while self:
             page = self._models
             yield from page
             self = self._next_page()
 
     def _next_page(self):
+        """
+        Fetches the next page of models based on the page token.
+
+        Returns:
+            ModelsIterable | None: The next iterable object with the next page of models,
+            or None if there are no more pages.
+        """
         if not self._page_token:
             return None
         return _list_models(
@@ -63,6 +91,21 @@ class ModelsIterable(model_types.ModelsIterable):
 
 
 def _list_models(page_size, page_token, client):
+    """
+    Fetches a page of models using the provided client and pagination tokens.
+
+    This function queries the client to retrieve a page of models based on the given
+    page_size and page_token. It then processes the response and returns an iterable
+    object to traverse through the models.
+
+    Args:
+        page_size (int): The number of models to fetch per page.
+        page_token (str): Token representing the current page.
+        client (glm.ModelServiceClient): The client to communicate with the model service.
+
+    Returns:
+        ModelsIterable: An iterable object containing the fetched models and pagination info.
+    """
     result = client.list_models(page_size=page_size, page_token=page_token)
     result = result._response
     result = type(result).to_dict(result)
