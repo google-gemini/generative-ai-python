@@ -37,7 +37,7 @@ def _make_text_prompt(prompt: str | dict[str, str]) -> glm.TextPrompt:
 
     Returns:
         glm.TextPrompt: A TextPrompt object containing the prompt text.
-    
+
     Raises:
         TypeError: If the provided prompt is neither a string nor a dictionary.
     """

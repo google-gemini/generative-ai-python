@@ -111,7 +111,7 @@ def _make_examples_from_flat(
     Creates a list of `glm.Example` objects from a list of message options.
 
     This function takes a list of message options and pairs them into `glm.Example` objects.
-    The input examples must be in pairs to create valid examples. 
+    The input examples must be in pairs to create valid examples.
 
     Args:
         examples: The list of message options.
@@ -300,6 +300,7 @@ def _make_generate_message_request(
 
 def set_doc(doc):
     """A decorator to set the docstring of a function."""
+
     def inner(f):
         f.__doc__ = doc
         return f

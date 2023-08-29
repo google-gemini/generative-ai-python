@@ -39,17 +39,18 @@ class ModelsIterable(model_types.ModelsIterable):
     An iterable class to traverse through a list of models.
 
     This class allows you to iterate over a list of models, fetching them in pages
-    if necessary based on the provided page_size and page_token.
+    if necessary based on the provided `page_size` and `page_token`.
 
     Args:
-        page_size (int): The number of `models` to fetch per page.
-        page_token (str | None): Token representing the current page. Pass None for the first page.
-        models (List[model_types.Model]): List of models to iterate through.
-        client (glm.ModelServiceClient | None): An optional client for model service.
+        `page_size` (int): The number of `models` to fetch per page.
+        `page_token` (str | None): Token representing the current page. Pass None for the first page.
+        `models` (List[model_types.Model]): List of models to iterate through.
+        `client` (glm.ModelServiceClient | None): An optional client for model service.
 
     Returns:
         An `ModelsIterable` iterable object that allows iterating through the models.
     """
+
     def __init__(
         self,
         *,
@@ -92,9 +93,9 @@ def _list_models(page_size, page_token, client) -> ModelsIterable:
     object to traverse through the models.
 
     Args:
-        page_size (int): How many `types.Models` to fetch per page (api call).
-        page_token (str): Token representing the current page.
-        client (`glm.ModelServiceClient`): The client to communicate with the model service.
+        `page_size` (int): How many `types.Models` to fetch per page (api call).
+        `page_token`` (str): Token representing the current page.
+        `client` (`glm.ModelServiceClient`): The client to communicate with the model service.
 
     Returns:
         An iterable `ModelsIterable` object containing the fetched models and pagination info.
