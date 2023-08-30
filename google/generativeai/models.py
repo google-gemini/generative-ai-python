@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import re
-from typing import Optional, List, Iterable
+from typing import Optional, List, Iterator
 
 import google.ai.generativelanguage as glm
 from google.generativeai.client import get_default_model_client
@@ -42,13 +42,13 @@ class ModelsIterable(model_types.ModelsIterable):
     if necessary based on the provided `page_size` and `page_token`.
 
     Args:
-        `page_size` (int): The number of `models` to fetch per page.
-        `page_token` (str | None): Token representing the current page. Pass None for the first page.
-        `models` (List[model_types.Model]): List of models to iterate through.
-        `client` (glm.ModelServiceClient | None): An optional client for model service.
+        page_size: The number of `models` to fetch per page.
+        page_token: Token representing the current page. Pass `None` for the first page.
+        models: List of models to iterate through.
+        client: An optional client for the model service.
 
     Returns:
-        An `ModelsIterable` iterable object that allows iterating through the models.
+        A `ModelsIterable` iterable object that allows iterating through the models.
     """
 
     def __init__(
@@ -64,7 +64,7 @@ class ModelsIterable(model_types.ModelsIterable):
         self._models = models
         self._client = client
 
-    def __iter__(self) -> Iterable[model_types.Model]:
+    def __iter__(self) -> Iterator[model_types.Model]:
         """
         Returns an iterator over the models.
         """
@@ -84,7 +84,9 @@ class ModelsIterable(model_types.ModelsIterable):
         )
 
 
-def _list_models(page_size, page_token, client) -> ModelsIterable:
+def _list_models(
+    page_size: int, page_token: str | None, client: glm.ModelServiceClient
+) -> ModelsIterable:
     """
     Fetches a page of models using the provided client and pagination tokens.
 
@@ -93,9 +95,9 @@ def _list_models(page_size, page_token, client) -> ModelsIterable:
     object to traverse through the models.
 
     Args:
-        `page_size` (int): How many `types.Models` to fetch per page (api call).
-        `page_token`` (str): Token representing the current page.
-        `client` (`glm.ModelServiceClient`): The client to communicate with the model service.
+        page_size: How many `types.Models` to fetch per page (api call).
+        page_token: Token representing the current page.
+        client: The client to communicate with the model service.
 
     Returns:
         An iterable `ModelsIterable` object containing the fetched models and pagination info.

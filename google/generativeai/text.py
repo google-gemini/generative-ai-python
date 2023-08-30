@@ -30,10 +30,10 @@ DEFAULT_TEXT_MODEL = "models/text-bison-001"
 
 def _make_text_prompt(prompt: str | dict[str, str]) -> glm.TextPrompt:
     """
-    Creates a TextPrompt object based on the provided prompt input.
+    Creates a `glm.TextPrompt` object based on the provided prompt input.
 
     Args:
-        prompt (str | dict[str, str]): The prompt input, either a string or a dictionary.
+        prompt: The prompt input, either a string or a dictionary.
 
     Returns:
         glm.TextPrompt: A TextPrompt object containing the prompt text.
@@ -69,25 +69,16 @@ def _make_generate_text_request(
     used for generating text using the chosen model.
 
     Args:
-        `model` (`model_types.ModelNameOptions`, optional):
-            The model to use for text generation.
-        `prompt` (str | None, optional):
-            The prompt for text generation. Defaults to None.
-        `temperature` (float | None, optional):
-            The temperature for randomness in generation. Defaults to None.
-        `candidate_count` (int | None, optional):
-            The number of candidates to consider. Defaults to None.
-        `max_output_tokens` (int | None, optional):
-            The maximum number of output tokens. Defaults to None.
-        `top_p` (float | None, optional):
-            The nucleus sampling probability threshold. Defaults to None.
-        `top_k` (int | None, optional):
-            The top-k sampling parameter. Defaults to None.
-        `safety_settings` (`safety_types.SafetySettingOptions` | None, optional):
-            Safety settings for generated text. Defaults to None.
-        `stop_sequences` (str | Iterable[str] | None, optional):
-            Stop sequences to halt text generation.
-            Can be a string or iterable of strings. Defaults to None.
+        model: The model to use for text generation.
+        prompt: The prompt for text generation. Defaults to None.
+        temperature: The temperature for randomness in generation. Defaults to None.
+        candidate_count: The number of candidates to consider. Defaults to None.
+        max_output_tokens: The maximum number of output tokens. Defaults to None.
+        top_p: The nucleus sampling probability threshold. Defaults to None.
+        top_k: The top-k sampling parameter. Defaults to None.
+        safety_settings: Safety settings for generated text. Defaults to None.
+        stop_sequences: Stop sequences to halt text generation. Can be a string
+             or iterable of strings. Defaults to None.
 
     Returns:
         `glm.GenerateTextRequest`: A `GenerateTextRequest` object configured with the specified parameters.
@@ -202,9 +193,9 @@ def _generate_response(
     Generates a response using the provided `glm.GenerateTextRequest` and client.
 
     Args:
-        `request` (`glm.GenerateTextRequest`): The text generation request.
-        `client` (`glm.TextServiceClient`, optional):
-            The client to use for text generation. Defaults to None, in which case the default text client is used.
+        request: The text generation request.
+        client: The client to use for text generation. Defaults to None, in which
+            case the default text client is used.
 
     Returns:
         `Completion`: A `Completion` object with the generated text and response information.

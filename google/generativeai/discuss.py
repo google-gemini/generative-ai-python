@@ -41,7 +41,7 @@ def _make_message(content: discuss_types.MessageOptions) -> glm.Message:
 
 def _make_messages(messages: discuss_types.MessagesOptions) -> List[glm.Message]:
     """
-    Creates a list of glm.Message objects from the provided messages.
+    Creates a list of `glm.Message` objects from the provided messages.
 
     This function takes a variety of message content inputs, such as strings, dictionaries,
     or `glm.Message` objects, and creates a list of `glm.Message` objects. It ensures that
@@ -52,7 +52,7 @@ def _make_messages(messages: discuss_types.MessagesOptions) -> List[glm.Message]
         messages: The messages to convert.
 
     Returns:
-        A list of `glm.Message` objects with alternating authors if needed.
+        A list of `glm.Message` objects with alternating authors.
     """
     if isinstance(messages, (str, dict, glm.Message)):
         messages = [_make_message(messages)]
@@ -110,14 +110,14 @@ def _make_examples_from_flat(
     """
     Creates a list of `glm.Example` objects from a list of message options.
 
-    This function takes a list of message options and pairs them into `glm.Example` objects.
-    The input examples must be in pairs to create valid examples.
+    This function takes a list of `discuss_types.MessageOptions` and pairs them into
+    `glm.Example` objects. The input examples must be in pairs to create valid examples.
 
     Args:
-        examples: The list of message options.
+        examples: The list of `discuss_types.MessageOptions`.
 
     Returns:
-        A list of glm.Example objects created from the provided message pairs.
+        A list of `glm.Example objects` created by pairing up the provided messages.
 
     Raises:
         ValueError: If the provided list of examples is not of even length.
@@ -158,7 +158,7 @@ def _make_examples(examples: discuss_types.ExamplesOptions) -> List[glm.Example]
         examples: The examples to convert.
 
     Returns:
-        A list of glm.Example objects created from the provided examples.
+        A list of `glm.Example` objects created from the provided examples.
     """
     if isinstance(examples, glm.Example):
         return [examples]
@@ -262,7 +262,7 @@ def _make_message_prompt(
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
 ) -> glm.MessagePrompt:
-    """Creates a glm.MessagePrompt object from the provided prompt components."""
+    """Creates a `glm.MessagePrompt` object from the provided prompt components."""
     prompt = _make_message_prompt_dict(
         prompt=prompt, context=context, examples=examples, messages=messages
     )
@@ -281,7 +281,7 @@ def _make_generate_message_request(
     top_k: float | None = None,
     prompt: discuss_types.MessagePromptOptions | None = None,
 ) -> glm.GenerateMessageRequest:
-    """Creates a glm.GenerateMessageRequest object for generating messages."""
+    """Creates a `glm.GenerateMessageRequest` object for generating messages."""
     model = model_types.make_model_name(model)
 
     prompt = _make_message_prompt(

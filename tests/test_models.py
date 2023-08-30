@@ -17,6 +17,7 @@ from unittest import mock
 from absl.testing import absltest
 
 import google.ai.generativelanguage as glm
+
 from google.ai.generativelanguage_v1beta2.types import model
 
 from google.generativeai import models
