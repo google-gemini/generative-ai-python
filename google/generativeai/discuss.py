@@ -30,6 +30,7 @@ from google.generativeai.types import safety_types
 
 
 def _make_message(content: discuss_types.MessageOptions) -> glm.Message:
+    """Creates a `glm.Message` object from the provided content."""
     if isinstance(content, glm.Message):
         return content
     if isinstance(content, str):
@@ -39,6 +40,20 @@ def _make_message(content: discuss_types.MessageOptions) -> glm.Message:
 
 
 def _make_messages(messages: discuss_types.MessagesOptions) -> List[glm.Message]:
+    """
+    Creates a list of `glm.Message` objects from the provided messages.
+
+    This function takes a variety of message content inputs, such as strings, dictionaries,
+    or `glm.Message` objects, and creates a list of `glm.Message` objects. It ensures that
+    the authors of the messages alternate appropriately. If authors are not provided,
+    default authors are assigned based on their position in the list.
+
+    Args:
+        messages: The messages to convert.
+
+    Returns:
+        A list of `glm.Message` objects with alternating authors.
+    """
     if isinstance(messages, (str, dict, glm.Message)):
         messages = [_make_message(messages)]
     else:
@@ -71,6 +86,7 @@ def _make_messages(messages: discuss_types.MessagesOptions) -> List[glm.Message]
 
 
 def _make_example(item: discuss_types.ExampleOptions) -> glm.Example:
+    """Creates a `glm.Example` object from the provided item."""
     if isinstance(item, glm.Example):
         return item
 
@@ -91,6 +107,21 @@ def _make_example(item: discuss_types.ExampleOptions) -> glm.Example:
 def _make_examples_from_flat(
     examples: List[discuss_types.MessageOptions],
 ) -> List[glm.Example]:
+    """
+    Creates a list of `glm.Example` objects from a list of message options.
+
+    This function takes a list of `discuss_types.MessageOptions` and pairs them into
+    `glm.Example` objects. The input examples must be in pairs to create valid examples.
+
+    Args:
+        examples: The list of `discuss_types.MessageOptions`.
+
+    Returns:
+        A list of `glm.Example objects` created by pairing up the provided messages.
+
+    Raises:
+        ValueError: If the provided list of examples is not of even length.
+    """
     if len(examples) % 2 != 0:
         raise ValueError(
             textwrap.dedent(
@@ -116,6 +147,19 @@ def _make_examples_from_flat(
 
 
 def _make_examples(examples: discuss_types.ExamplesOptions) -> List[glm.Example]:
+    """
+    Creates a list of `glm.Example` objects from the provided examples.
+
+    This function takes various types of example content inputs and creates a list
+    of `glm.Example` objects. It handles the conversion of different input types and ensures
+    the appropriate structure for creating valid examples.
+
+    Args:
+        examples: The examples to convert.
+
+    Returns:
+        A list of `glm.Example` objects created from the provided examples.
+    """
     if isinstance(examples, glm.Example):
         return [examples]
 
@@ -155,6 +199,23 @@ def _make_message_prompt_dict(
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
 ) -> glm.MessagePrompt:
+    """
+    Creates a `glm.MessagePrompt` object from the provided prompt components.
+
+    This function constructs a `glm.MessagePrompt` object using the provided `context`, `examples`,
+    or `messages`. It ensures the proper structure and handling of the input components.
+
+    Either pass a `prompt` or it's component `context`, `examples`, `messages`.
+
+    Args:
+        prompt: The complete prompt components.
+        context: The context for the prompt.
+        examples: The examples for the prompt.
+        messages: The messages for the prompt.
+
+    Returns:
+        A `glm.MessagePrompt` object created from the provided prompt components.
+    """
     if prompt is None:
         prompt = dict(
             context=context,
@@ -201,6 +262,7 @@ def _make_message_prompt(
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
 ) -> glm.MessagePrompt:
+    """Creates a `glm.MessagePrompt` object from the provided prompt components."""
     prompt = _make_message_prompt_dict(
         prompt=prompt, context=context, examples=examples, messages=messages
     )
@@ -219,6 +281,7 @@ def _make_generate_message_request(
     top_k: float | None = None,
     prompt: discuss_types.MessagePromptOptions | None = None,
 ) -> glm.GenerateMessageRequest:
+    """Creates a `glm.GenerateMessageRequest` object for generating messages."""
     model = model_types.make_model_name(model)
 
     prompt = _make_message_prompt(
@@ -236,6 +299,8 @@ def _make_generate_message_request(
 
 
 def set_doc(doc):
+    """A decorator to set the docstring of a function."""
+
     def inner(f):
         f.__doc__ = doc
         return f

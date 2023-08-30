@@ -29,6 +29,18 @@ DEFAULT_TEXT_MODEL = "models/text-bison-001"
 
 
 def _make_text_prompt(prompt: str | dict[str, str]) -> glm.TextPrompt:
+    """
+    Creates a `glm.TextPrompt` object based on the provided prompt input.
+
+    Args:
+        prompt: The prompt input, either a string or a dictionary.
+
+    Returns:
+        glm.TextPrompt: A TextPrompt object containing the prompt text.
+
+    Raises:
+        TypeError: If the provided prompt is neither a string nor a dictionary.
+    """
     if isinstance(prompt, str):
         return glm.TextPrompt(text=prompt)
     elif isinstance(prompt, dict):
@@ -49,6 +61,28 @@ def _make_generate_text_request(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
 ) -> glm.GenerateTextRequest:
+    """
+    Creates a `glm.GenerateTextRequest` object based on the provided parameters.
+
+    This function generates a `glm.GenerateTextRequest` object with the specified
+    parameters. It prepares the input parameters and creates a request that can be
+    used for generating text using the chosen model.
+
+    Args:
+        model: The model to use for text generation.
+        prompt: The prompt for text generation. Defaults to None.
+        temperature: The temperature for randomness in generation. Defaults to None.
+        candidate_count: The number of candidates to consider. Defaults to None.
+        max_output_tokens: The maximum number of output tokens. Defaults to None.
+        top_p: The nucleus sampling probability threshold. Defaults to None.
+        top_k: The top-k sampling parameter. Defaults to None.
+        safety_settings: Safety settings for generated text. Defaults to None.
+        stop_sequences: Stop sequences to halt text generation. Can be a string
+             or iterable of strings. Defaults to None.
+
+    Returns:
+        `glm.GenerateTextRequest`: A `GenerateTextRequest` object configured with the specified parameters.
+    """
     model = model_types.make_model_name(model)
     prompt = _make_text_prompt(prompt=prompt)
     safety_settings = safety_types.normalize_safety_settings(safety_settings)
@@ -155,6 +189,17 @@ class Completion(text_types.Completion):
 def _generate_response(
     request: glm.GenerateTextRequest, client: glm.TextServiceClient = None
 ) -> Completion:
+    """
+    Generates a response using the provided `glm.GenerateTextRequest` and client.
+
+    Args:
+        request: The text generation request.
+        client: The client to use for text generation. Defaults to None, in which
+            case the default text client is used.
+
+    Returns:
+        `Completion`: A `Completion` object with the generated text and response information.
+    """
     if client is None:
         client = get_default_text_client()
 

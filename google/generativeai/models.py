@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import re
-from typing import Optional, List
+from typing import Optional, List, Iterator
 
 import google.ai.generativelanguage as glm
 from google.generativeai.client import get_default_model_client
@@ -35,6 +35,22 @@ def get_model(name: str, *, client=None) -> model_types.Model:
 
 
 class ModelsIterable(model_types.ModelsIterable):
+    """
+    An iterable class to traverse through a list of models.
+
+    This class allows you to iterate over a list of models, fetching them in pages
+    if necessary based on the provided `page_size` and `page_token`.
+
+    Args:
+        page_size: The number of `models` to fetch per page.
+        page_token: Token representing the current page. Pass `None` for the first page.
+        models: List of models to iterate through.
+        client: An optional client for the model service.
+
+    Returns:
+        A `ModelsIterable` iterable object that allows iterating through the models.
+    """
+
     def __init__(
         self,
         *,
@@ -48,13 +64,19 @@ class ModelsIterable(model_types.ModelsIterable):
         self._models = models
         self._client = client
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[model_types.Model]:
+        """
+        Returns an iterator over the models.
+        """
         while self:
             page = self._models
             yield from page
             self = self._next_page()
 
-    def _next_page(self):
+    def _next_page(self) -> ModelsIterable | None:
+        """
+        Fetches the next page of models based on the page token.
+        """
         if not self._page_token:
             return None
         return _list_models(
@@ -62,7 +84,24 @@ class ModelsIterable(model_types.ModelsIterable):
         )
 
 
-def _list_models(page_size, page_token, client):
+def _list_models(
+    page_size: int, page_token: str | None, client: glm.ModelServiceClient
+) -> ModelsIterable:
+    """
+    Fetches a page of models using the provided client and pagination tokens.
+
+    This function queries the `client` to retrieve a page of models based on the given
+    `page_size` and `page_token`. It then processes the response and returns an iterable
+    object to traverse through the models.
+
+    Args:
+        page_size: How many `types.Models` to fetch per page (api call).
+        page_token: Token representing the current page.
+        client: The client to communicate with the model service.
+
+    Returns:
+        An iterable `ModelsIterable` object containing the fetched models and pagination info.
+    """
     result = client.list_models(page_size=page_size, page_token=page_token)
     result = result._response
     result = type(result).to_dict(result)
