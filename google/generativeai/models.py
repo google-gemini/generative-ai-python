@@ -18,6 +18,7 @@ import typing
 from typing import Any, Literal
 
 import google.ai.generativelanguage as glm
+from google.generativeai import operations
 from google.generativeai.client import get_default_model_client
 from google.generativeai.types import model_types
 from google.api_core import operation
@@ -220,7 +221,7 @@ def create_tuned_model(
     batch_size: int | None = None,
     learning_rate: float | None = None,
     client: glm.ModelServiceClient | None = None,
-) -> operation.Operation:
+) -> operations.CreateTunedModelOperation:
     """Launches a tuning job to create a TunedModel.
 
     Since tuning a model can take significant time, this API doesn't wait for the tuning to complete.
@@ -309,7 +310,8 @@ def create_tuned_model(
     operation = client.create_tuned_model(
         dict(tuned_model_id=id, tuned_model=tuned_model)
     )
-    return operation
+
+    return operations.CreateTunedModelOperation.from_core_operation(operation)
 
 
 @typing.overload

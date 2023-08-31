@@ -24,6 +24,7 @@ from absl.testing import absltest
 from absl.testing import parameterized
 
 import google.ai.generativelanguage as glm
+from google.api_core import operation
 
 from google.generativeai import models
 from google.generativeai import client
@@ -335,8 +336,9 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(decoded.tuning_task.snapshots[1]["compute_time"].year, 2005)
 
     def test_smoke_create_tuned_model(self):
-        self.responses["create_tuned_model"] = 'operation!'
-
+        self.responses["create_tuned_model"] = operation.Operation(
+            operation.operations_pb2.Operation(), None, None, None
+        )
         models.create_tuned_model(
             source_model="models/sneaky-fox-001",
             temperature=0.5,
@@ -366,8 +368,9 @@ class UnitTests(parameterized.TestCase):
         ],
     )
     def test_create_tuned_model_on_tuned_model(self, tuned_source):
-        self.responses["create_tuned_model"] = "operation!"
-
+        self.responses["create_tuned_model"] = operation.Operation(
+            operation.operations_pb2.Operation(), None, None, None
+        )
         self.responses["get_tuned_model"] = tuned_source
         models.create_tuned_model(
             source_model="tunedModels/swim-fish-001", training_data=[]
