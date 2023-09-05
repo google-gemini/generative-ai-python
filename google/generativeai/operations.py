@@ -16,17 +16,68 @@ from __future__ import annotations
 
 from typing import Iterator
 from google.ai import generativelanguage as glm
+from google.generativeai import client as client_lib
 from google.generativeai.types import model_types
-from google.api_core import operation as operations
+from google.api_core import operation as operation_lib
 from google.api_core import protobuf_helpers
 
+import functools
 
-class CreateTunedModelOperation(operations.Operation):
 
-    @staticmethod
+def list_operations(*, client=None) -> Iterator[CreateTunedModelOperation]:
+    if client is None:
+        client = client_lib.get_default_operations_client()
+
+    # The client returns an iterator of Operation protos (`Iterator[google.longrunning.operations_pb2.Operation]`)
+    # not a gapic Operation object (`google.api_core.operation.Operation`)
+    operations = (
+        CreateTunedModelOperation.from_proto(op, client)
+        for op in client.list_operations(name="", filter_="")
+    )
+
+    return operations
+
+
+def get_operation(name: str, *, client=None) -> CreateTunedModelOperation:
+    if client is None:
+        client = client_lib.get_default_operations_client()
+
+    op = client.get_operation(name=name)
+    return CreateTunedModelOperation.from_proto(op, client)
+
+
+def delete_operation(name: str, *, client=None):
+    """Raises:
+    google.api_core.exceptions.MethodNotImplemented: Not implemented."""
+    if client is None:
+        client = client_lib.get_default_operations_client()
+
+    return client.delete_operation(name=name)
+
+
+class CreateTunedModelOperation(operation_lib.Operation):
+    @classmethod
+    def from_proto(cls, proto, client):
+        """
+        result = getattr(proto, 'result', None)
+        if result is not None:
+            if result.value == b'':
+                del proto.result
+        """
+
+        return from_gapic(
+            cls=CreateTunedModelOperation,
+            operation=proto,
+            operations_client=client,
+            result_type=glm.TunedModel,
+            metadata_type=glm.CreateTunedModelMetadata,
+        )
+
+    @classmethod
     def from_core_operation(
-        operation: operations.Operation,
-    ) -> CreateTunedModelOperation:
+        cls,
+        operation: operation_lib.Operation,
+    ):
         polling = getattr(operation, "_polling", None)
         retry = getattr(operation, "_retry", None)
         if polling is not None:
@@ -37,7 +88,7 @@ class CreateTunedModelOperation(operations.Operation):
             kwargs = {"retry": retry}
         else:
             kwargs = {}
-        return CreateTunedModelOperation(
+        return cls(
             operation=operation._operation,
             refresh=operation._refresh,
             cancel=operation._cancel,
@@ -45,6 +96,10 @@ class CreateTunedModelOperation(operations.Operation):
             metadata_type=operation._metadata_type,
             **kwargs,
         )
+
+    @property
+    def name(self) -> str:
+        return self._operation.name
 
     def update(self):
         """Refresh the current statuses in metadata/result/error"""
@@ -70,19 +125,41 @@ class CreateTunedModelOperation(operations.Operation):
             yield metadata
         metadata = self.metadata
         bar.update(self.metadata.completed_steps - bar.n)
+        return self.result()
 
     @property
     def _operation(self):
         # Workaround for b/297095680.
-        return self.__dict__['_operation']
+        return self.__dict__["_operation"]
 
     @_operation.setter
     def _operation(self, op):
         # Workaround for b/297095680.
-        op.response.type_url = op.response.type_url.replace("v1main", "v1beta3")
+        if op.HasField("response"):
+            op.response.type_url = op.response.type_url.replace("v1main", "v1beta3")
         op.metadata.type_url = op.metadata.type_url.replace("v1main", "v1beta3")
-        self.__dict__['_operation'] = op
+        self.__dict__["_operation"] = op
 
     def set_result(self, result: glm.TunedModel):
         result = model_types.decode_tuned_model(result)
         super().set_result(result)
+
+
+def from_gapic(
+    cls,
+    *,
+    operation,
+    operations_client,
+    result_type,
+    metadata_type,
+    grpc_metadata=None,
+    **kwargs,
+):
+    """`google.api_core.operation.from_gapic`, patched to allow subclasses subclasses."""
+    refresh = functools.partial(
+        operations_client.get_operation, operation.name, metadata=grpc_metadata
+    )
+    cancel = functools.partial(
+        operations_client.cancel_operation, operation.name, metadata=grpc_metadata
+    )
+    return cls(operation, refresh, cancel, result_type, metadata_type, **kwargs)

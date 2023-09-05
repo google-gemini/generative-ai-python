@@ -127,7 +127,9 @@ def _list_base_models_next_page(page_size, page_token, client):
 
 def _list_tuned_models_next_page(page_size, page_token, client):
     """Returns the next page of the base model or tuned model list."""
-    result = client.list_tuned_models(page_size=page_size, page_token=page_token)
+    result = client.list_tuned_models(
+        glm.ListTunedModelsRequest(page_size=page_size, page_token=page_token)
+    )
     result = result._response
     result = type(result).to_dict(result)
     result["models"] = [
@@ -407,4 +409,4 @@ def delete_tuned_model(
         client = get_default_model_client()
 
     name = model_types.make_model_name(tuned_model)
-    client.delete_tuned_model(name)
+    client.delete_tuned_model(name=name)

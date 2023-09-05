@@ -97,6 +97,7 @@ class OperationsTests(parameterized.TestCase):
 
         def gen_operations():
             """yield 10+done incremental operation statuses"""
+
             def make_metadata(completed_steps):
                 return google.protobuf.any_pb2.Any(
                     type_url=self.metadata_type,
