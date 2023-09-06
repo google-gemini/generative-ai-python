@@ -24,58 +24,58 @@ from absl.testing import parameterized
 
 
 class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
-        async def test_chat_async(self):
-            client = unittest.mock.AsyncMock()
+    async def test_chat_async(self):
+        client = unittest.mock.AsyncMock()
 
-            observed_request = None
+        observed_request = None
 
-            async def fake_generate_message(
-                request: glm.GenerateMessageRequest,
-            ) -> glm.GenerateMessageResponse:
-                nonlocal observed_request
-                observed_request = request
-                return glm.GenerateMessageResponse(
-                    candidates=[
-                        glm.Message(
-                            author="1", content="Why did the chicken cross the road?"
-                        )
-                    ]
-                )
+        async def fake_generate_message(
+            request: glm.GenerateMessageRequest,
+        ) -> glm.GenerateMessageResponse:
+            nonlocal observed_request
+            observed_request = request
+            return glm.GenerateMessageResponse(
+                candidates=[
+                    glm.Message(
+                        author="1", content="Why did the chicken cross the road?"
+                    )
+                ]
+            )
 
-            client.generate_message = fake_generate_message
+        client.generate_message = fake_generate_message
 
-            observed_response = await discuss.chat_async(
+        observed_response = await discuss.chat_async(
+            model="models/bard",
+            context="Example Prompt",
+            examples=[["Example from human", "Example response from AI"]],
+            messages=["Tell me a joke"],
+            temperature=0.75,
+            candidate_count=1,
+            client=client,
+        )
+
+        self.assertEqual(
+            observed_request,
+            glm.GenerateMessageRequest(
                 model="models/bard",
-                context="Example Prompt",
-                examples=[["Example from human", "Example response from AI"]],
-                messages=["Tell me a joke"],
+                prompt=glm.MessagePrompt(
+                    context="Example Prompt",
+                    examples=[
+                        glm.Example(
+                            input=glm.Message(content="Example from human"),
+                            output=glm.Message(content="Example response from AI"),
+                        )
+                    ],
+                    messages=[glm.Message(author="0", content="Tell me a joke")],
+                ),
                 temperature=0.75,
                 candidate_count=1,
-                client=client,
-            )
-
-            self.assertEqual(
-                observed_request,
-                glm.GenerateMessageRequest(
-                    model="models/bard",
-                    prompt=glm.MessagePrompt(
-                        context="Example Prompt",
-                        examples=[
-                            glm.Example(
-                                input=glm.Message(content="Example from human"),
-                                output=glm.Message(content="Example response from AI"),
-                            )
-                        ],
-                        messages=[glm.Message(author="0", content="Tell me a joke")],
-                    ),
-                    temperature=0.75,
-                    candidate_count=1,
-                ),
-            )
-            self.assertEqual(
-                observed_response.candidates,
-                [{"author": "1", "content": "Why did the chicken cross the road?"}],
-            )
+            ),
+        )
+        self.assertEqual(
+            observed_response.candidates,
+            [{"author": "1", "content": "Why did the chicken cross the road?"}],
+        )
 
 
 if __name__ == "__main__":
