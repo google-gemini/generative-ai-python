@@ -47,7 +47,6 @@ dependencies = ["google-ai-generativelanguage==0.2.0"]
 extras_require = {
     "dev": [
         "absl-py",
-        "asynctest",
         "black",
         "nose2",
         "pandas",

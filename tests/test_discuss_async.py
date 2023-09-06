@@ -16,31 +16,16 @@
 import sys
 import unittest
 
-if sys.version_info < (3, 11):
-    import asynctest
-    from asynctest import mock as async_mock
-
 import google.ai.generativelanguage as glm
 
 from google.generativeai import discuss
 from absl.testing import absltest
 from absl.testing import parameterized
 
-bases = (parameterized.TestCase,)
 
-if sys.version_info < (3, 11):
-    bases = bases + (asynctest.TestCase,)
-
-unittest.skipIf(
-    sys.version_info >= (3, 11), "asynctest is not suported on python 3.11+"
-)
-
-
-class AsyncTests(*bases):
-    if sys.version_info < (3, 11):
-
+class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         async def test_chat_async(self):
-            client = async_mock.MagicMock()
+            client = unittest.mock.AsyncMock()
 
             observed_request = None
 
