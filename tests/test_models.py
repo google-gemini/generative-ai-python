@@ -103,15 +103,12 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def update_tuned_model(
-            tuned_model: glm.TunedModel, field_mask: field_mask_pb2.FieldMask
+            request:glm.UpdateTunedModelRequest
         ):
-            request = glm.UpdateTunedModelRequest(
-                tuned_model=tuned_model, update_mask=field_mask
-            )
             self.observed_requests.append(request)
             response = self.responses.get("update_tuned_model", None)
             if response is None:
-                response = tuned_model
+                response = request.tuned_model
             return response
 
         @add_client_method

@@ -378,7 +378,7 @@ def update_tuned_model(
             f"`tuned_model` must be a `dict` or a `glm.TunedModel`. Got a: `{type(tuned_model)}`"
         )
 
-    result = client.update_tuned_model(tuned_model, field_mask)
+    result = client.update_tuned_model(glm.UpdateTunedModelRequest(tuned_model=tuned_model, update_mask=field_mask))
     return model_types.decode_tuned_model(result)
 
 
