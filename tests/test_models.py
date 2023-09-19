@@ -23,7 +23,7 @@ from unittest import mock
 from absl.testing import absltest
 from absl.testing import parameterized
 
-import google.ai.generativelanguage as glm
+import google.ai.generativelanguage_v1beta3 as glm
 from google.api_core import operation
 
 from google.generativeai import models
@@ -102,9 +102,7 @@ class UnitTests(parameterized.TestCase):
             return ListWrapper(response)
 
         @add_client_method
-        def update_tuned_model(
-            request:glm.UpdateTunedModelRequest
-        ):
+        def update_tuned_model(request: glm.UpdateTunedModelRequest):
             self.observed_requests.append(request)
             response = self.responses.get("update_tuned_model", None)
             if response is None:

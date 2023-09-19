@@ -21,7 +21,7 @@ import pytz
 import re
 from typing import Any, Iterable, TypedDict, Union
 
-import google.ai.generativelanguage as glm
+import google.ai.generativelanguage_v1beta3 as glm
 
 __all__ = [
     "Model",

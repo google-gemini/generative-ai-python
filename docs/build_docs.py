@@ -29,15 +29,15 @@ from absl import app
 from absl import flags
 
 import google
-from google import generativeai
-from google.ai import generativelanguage
+from google import generativeai as palm
+from google.ai import generativelanguage_v1beta3 as glm
 
 from tensorflow_docs.api_generator import generate_lib
 from tensorflow_docs.api_generator import public_api
 
 import yaml
 
-google.ai.generativelanguage.__doc__ = """\
+glm.__doc__ = """\
 This package, `google.ai.generativelanguage`, is a low-level auto-generated client library for the PaLM API.
 
 ```posix-terminal
@@ -54,7 +54,7 @@ Each method in the PaLM API is connected to one of the client classes. Pass your
 when initializing a client:
 
 ```
-from google.ai import generativelanguage as glm
+from google.ai import generativelanguage_v1beta3 as glm
 
 client = glm.DiscussServiceClient(
     client_options={'api_key':'YOUR_API_KEY'})
@@ -186,8 +186,8 @@ def gen_api_docs():
         py_modules=[("google", google)],
         # Replace `tensorflow_docs.api_generator` with your module, here.
         base_dir=(
-            pathlib.Path(google.generativeai.__file__).parent,
-            pathlib.Path(google.ai.generativelanguage.__file__).parent.parent,
+            pathlib.Path(palm.__file__).parent,
+            pathlib.Path(glm.__file__).parent.parent,
         ),
         code_url_prefix=(
             _CODE_URL_PREFIX.value,

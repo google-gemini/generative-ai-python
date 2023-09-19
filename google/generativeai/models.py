@@ -17,7 +17,7 @@ from __future__ import annotations
 import typing
 from typing import Any, Literal
 
-import google.ai.generativelanguage as glm
+import google.ai.generativelanguage_v1beta3 as glm
 from google.generativeai import operations
 from google.generativeai.client import get_default_model_client
 from google.generativeai.types import model_types
@@ -378,7 +378,9 @@ def update_tuned_model(
             f"`tuned_model` must be a `dict` or a `glm.TunedModel`. Got a: `{type(tuned_model)}`"
         )
 
-    result = client.update_tuned_model(glm.UpdateTunedModelRequest(tuned_model=tuned_model, update_mask=field_mask))
+    result = client.update_tuned_model(
+        glm.UpdateTunedModelRequest(tuned_model=tuned_model, update_mask=field_mask)
+    )
     return model_types.decode_tuned_model(result)
 
 

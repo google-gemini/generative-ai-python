@@ -14,14 +14,14 @@
 # limitations under the License.
 from __future__ import annotations
 
+import functools
 from typing import Iterator
-from google.ai import generativelanguage as glm
+
+from google.ai import generativelanguage_v1beta3 as glm
 from google.generativeai import client as client_lib
 from google.generativeai.types import model_types
 from google.api_core import operation as operation_lib
-from google.api_core import protobuf_helpers
 
-import functools
 
 
 def list_operations(*, client=None) -> Iterator[CreateTunedModelOperation]:
@@ -127,19 +127,6 @@ class CreateTunedModelOperation(operation_lib.Operation):
         bar.update(self.metadata.completed_steps - bar.n)
         return self.result()
 
-    @property
-    def _operation(self):
-        # Workaround for b/297095680.
-        return self.__dict__["_operation"]
-
-    @_operation.setter
-    def _operation(self, op):
-        # Workaround for b/297095680.
-        if op.HasField("response"):
-            op.response.type_url = op.response.type_url.replace("v1main", "v1beta3")
-        op.metadata.type_url = op.metadata.type_url.replace("v1main", "v1beta3")
-        self.__dict__["_operation"] = op
-
     def set_result(self, result: glm.TunedModel):
         result = model_types.decode_tuned_model(result)
         super().set_result(result)
@@ -155,7 +142,7 @@ def from_gapic(
     grpc_metadata=None,
     **kwargs,
 ):
-    """`google.api_core.operation.from_gapic`, patched to allow subclasses subclasses."""
+    """`google.api_core.operation.from_gapic`, patched to allow subclasses."""
     refresh = functools.partial(
         operations_client.get_operation, operation.name, metadata=grpc_metadata
     )
