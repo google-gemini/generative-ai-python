@@ -16,7 +16,7 @@ import copy
 import datetime
 import dataclasses
 import pytz
-from typing import Any
+from typing import Any, Union
 import unittest
 from unittest import mock
 
@@ -48,7 +48,7 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def get_model(
-            request: glm.GetModelRequest | None = None, *, name=None
+            request: Union[glm.GetModelRequest, None] = None, *, name=None
         ) -> glm.Model:
             if request is None:
                 request = glm.GetModelRequest(name=name)
@@ -59,7 +59,7 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def get_tuned_model(
-            request: glm.GetTunedModelRequest | None = None, *, name=None
+            request: Union[glm.GetTunedModelRequest, None] = None, *, name=None
         ) -> glm.TunedModel:
             if request is None:
                 request = glm.GetTunedModelRequest(name=name)
@@ -74,7 +74,7 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def list_models(
-            request: glm.ListModelsRequest = None, *, page_size=None, page_token=None
+            request: Union[glm.ListModelsRequest, None] = None, *, page_size=None, page_token=None
         ) -> glm.ListModelsResponse:
             if request is None:
                 request = glm.ListModelsRequest(
