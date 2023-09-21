@@ -186,7 +186,9 @@ class TuningExampleDict(TypedDict):
 
 
 TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, str]]
-TuningDataOptions = Union[glm.Dataset, Iterable[TuningExampleOptions]]    # TODO(markdaoust): csv, json, pandas, np
+TuningDataOptions = Union[
+    glm.Dataset, Iterable[TuningExampleOptions]
+]  # TODO(markdaoust): csv, json, pandas, np
 
 
 def encode_tuning_data(data: TuningDataOptions) -> glm.Dataset:

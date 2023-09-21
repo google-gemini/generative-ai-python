@@ -24,6 +24,7 @@ from google.api_core import operation as operation_lib
 
 import tqdm.auto as tqdm
 
+
 def list_operations(*, client=None) -> Iterator[CreateTunedModelOperation]:
     if client is None:
         client = client_lib.get_default_operations_client()

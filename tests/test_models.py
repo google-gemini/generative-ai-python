@@ -74,7 +74,10 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def list_models(
-            request: Union[glm.ListModelsRequest, None] = None, *, page_size=None, page_token=None
+            request: Union[glm.ListModelsRequest, None] = None,
+            *,
+            page_size=None,
+            page_token=None,
         ) -> glm.ListModelsResponse:
             if request is None:
                 request = glm.ListModelsRequest(
