@@ -250,6 +250,7 @@ class UnitTests(parameterized.TestCase):
             result,
             model_types.TunedModel(
                 name="tunedModels/my-pig-001",
+                source_model="models/dance-monkey-007",
                 base_model="models/dance-monkey-007",
                 tuning_task=model_types.TuningTask(
                     hyperparameters=model_types.Hyperparameters(
@@ -329,6 +330,23 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(decoded.tuning_task.snapshots, list)
         self.assertEqual(decoded.tuning_task.snapshots[0]["compute_time"].year, 2004)
         self.assertEqual(decoded.tuning_task.snapshots[1]["compute_time"].year, 2005)
+
+    @parameterized.named_parameters(
+        ["simple", glm.TunedModel(base_model="models/swim-fish-000")],
+        [
+            "nested",
+            glm.TunedModel(
+                tuned_model_source={
+                    "tuned_model": "tunedModels/hidden-fish-55",
+                    "base_model": "models/swim-fish-000",
+                }
+            ),
+        ],
+    )
+    def test_smoke_decode_tuned_model(self, model):
+        decoded = model_types.decode_tuned_model(model)
+        self.assertEqual(decoded.base_model, "models/swim-fish-000")
+        self.assertNotNone(decoded.source_model)
 
     def test_smoke_create_tuned_model(self):
         self.responses["create_tuned_model"] = operation.Operation(

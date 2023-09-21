@@ -28,8 +28,8 @@ from absl.testing import parameterized
 
 
 class OperationsTests(parameterized.TestCase):
-    metadata_type = "type.googleapis.com/google.ai.generativelanguage.v1main.CreateTunedModelMetadata"
-    result_type = "type.googleapis.com/google.ai.generativelanguage.v1main.TunedModel"
+    metadata_type = "type.googleapis.com/google.ai.generativelanguage.v1beta3.CreateTunedModelMetadata"
+    result_type = "type.googleapis.com/google.ai.generativelanguage.v1beta3.TunedModel"
 
     def test_end_to_end(self):
         name = "my-model"
