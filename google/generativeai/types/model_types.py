@@ -19,7 +19,6 @@ import dataclasses
 import datetime
 import re
 from typing import Any, Iterable, TypedDict, Union
-import zoneinfo
 
 import google.ai.generativelanguage_v1beta3 as glm
 
@@ -187,9 +186,7 @@ class TuningExampleDict(TypedDict):
 
 
 TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, str]]
-TuningDataOptions = (
-    glm.Dataset | Iterable[TuningExampleOptions]
-)  # TODO(markdaoust): csv, json, pandas, np
+TuningDataOptions = Union[glm.Dataset, Iterable[TuningExampleOptions]]    # TODO(markdaoust): csv, json, pandas, np
 
 
 def encode_tuning_data(data: TuningDataOptions) -> glm.Dataset:
