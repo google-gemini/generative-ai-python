@@ -123,14 +123,14 @@ def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedM
         )  # pytype: disable=attribute-error
     tuned_model["state"] = to_tuned_model_state(tuned_model.pop("state", None))
 
-    base_model = tuned_model.pop('base_model', None)
-    tuned_model_source = tuned_model.pop('tuned_model_source', None)
+    base_model = tuned_model.pop("base_model", None)
+    tuned_model_source = tuned_model.pop("tuned_model_source", None)
     if base_model is not None:
-        tuned_model['base_model'] = base_model
-        tuned_model['source_model'] = base_model
+        tuned_model["base_model"] = base_model
+        tuned_model["source_model"] = base_model
     elif tuned_model_source is not None:
-        tuned_model['base_model'] = tuned_model_source['base_model']
-        tuned_model['source_model'] = tuned_model_source['tuned_model']
+        tuned_model["base_model"] = tuned_model_source["base_model"]
+        tuned_model["source_model"] = tuned_model_source["tuned_model"]
 
     idecode_time(tuned_model, "create_time")
     idecode_time(tuned_model, "update_time")

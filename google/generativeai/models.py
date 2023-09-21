@@ -82,6 +82,7 @@ def get_base_model(
     result = type(result).to_dict(result)
     return model_types.Model(**result)
 
+
 def get_tuned_model(
     name: model_types.TunedModelNameOptions, *, client=None
 ) -> model_types.TunedModel:
