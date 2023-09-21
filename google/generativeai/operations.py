@@ -22,6 +22,7 @@ from google.generativeai import client as client_lib
 from google.generativeai.types import model_types
 from google.api_core import operation as operation_lib
 
+import tqdm.auto as tqdm
 
 def list_operations(*, client=None) -> Iterator[CreateTunedModelOperation]:
     if client is None:
@@ -113,8 +114,6 @@ class CreateTunedModelOperation(operation_lib.Operation):
         Yields:
             Operation statuses as `glm.CreateTunedModelMetadata` objects.
         """
-        import tqdm.auto as tqdm
-
         bar = tqdm.tqdm(total=self.metadata.total_steps, initial=0, **kwargs)
 
         # done() includes a `_refresh_and_update`
