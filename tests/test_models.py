@@ -346,7 +346,7 @@ class UnitTests(parameterized.TestCase):
     def test_smoke_decode_tuned_model(self, model):
         decoded = model_types.decode_tuned_model(model)
         self.assertEqual(decoded.base_model, "models/swim-fish-000")
-        self.assertNotNone(decoded.source_model)
+        self.assertFalse(decoded.source_model is None)
 
     def test_smoke_create_tuned_model(self):
         self.responses["create_tuned_model"] = operation.Operation(
