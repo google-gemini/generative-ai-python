@@ -20,7 +20,7 @@ if sys.version_info < (3, 11):
     import asynctest
     from asynctest import mock as async_mock
 
-import google.ai.generativelanguage as glm
+import google.ai.generativelanguage_v1beta3 as glm
 
 from google.generativeai import discuss
 from absl.testing import absltest

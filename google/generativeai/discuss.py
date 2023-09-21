@@ -20,7 +20,7 @@ import textwrap
 
 from typing import Iterable, List, Optional, Union
 
-import google.ai.generativelanguage as glm
+import google.ai.generativelanguage_v1beta3 as glm
 
 from google.generativeai.client import get_default_discuss_client
 from google.generativeai.client import get_default_discuss_async_client
@@ -271,7 +271,7 @@ def _make_message_prompt(
 
 def _make_generate_message_request(
     *,
-    model: model_types.ModelNameOptions | None,
+    model: model_types.AnyModelNameOptions | None,
     context: str | None = None,
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
@@ -313,7 +313,7 @@ DEFAULT_DISCUSS_MODEL = "models/chat-bison-001"
 
 def chat(
     *,
-    model: model_types.ModelNameOptions | None = "models/chat-bison-001",
+    model: model_types.AnyModelNameOptions | None = "models/chat-bison-001",
     context: str | None = None,
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
@@ -411,7 +411,7 @@ def chat(
 @set_doc(chat.__doc__)
 async def chat_async(
     *,
-    model: model_types.ModelNameOptions | None = "models/chat-bison-001",
+    model: model_types.AnyModelNameOptions | None = "models/chat-bison-001",
     context: str | None = None,
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
@@ -567,7 +567,7 @@ def count_message_tokens(
     context: str | None = None,
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
-    model: model_types.ModelNameOptions = DEFAULT_DISCUSS_MODEL,
+    model: model_types.AnyModelNameOptions = DEFAULT_DISCUSS_MODEL,
     client: glm.DiscussServiceAsyncClient | None = None,
 ):
     model = model_types.make_model_name(model)
