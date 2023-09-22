@@ -205,7 +205,7 @@ def gen_api_docs():
     toc_path = out_path / "google/_toc.yaml"
     toc = yaml.safe_load(toc_path.read_text())
     toc["toc"] = toc["toc"][1:]
-    toc["toc"][0]["title"] = "google.ai.generativelanguage"
+    toc["toc"][0]["title"] = "google.ai.generativelanguage_v1beta3"
     toc["toc"][0]["section"] = toc["toc"][0]["section"][1]["section"]
     toc["toc"][0], toc["toc"][1] = toc["toc"][1], toc["toc"][0]
     toc_path.write_text(yaml.dump(toc))
