@@ -148,7 +148,7 @@ class MyFilter:
                 children = list(self.drop_staticmethods(parent, children))
 
         if "generativelanguage" in path[-1]:
-            children.append(('types', glm.types))
+            children.append(("types", glm.types))
 
         return children
 

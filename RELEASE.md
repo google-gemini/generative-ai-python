@@ -1,3 +1,6 @@
+## v0.2.1
+
+- Bugfix: Add missing enum names to `saftey_types.py`
 
 ## v0.2
 
