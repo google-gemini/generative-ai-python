@@ -47,7 +47,6 @@ dependencies = ["google-ai-generativelanguage==0.3.2", "tqdm"]
 extras_require = {
     "dev": [
         "absl-py",
-        "asynctest",
         "black",
         "nose2",
         "pandas",
