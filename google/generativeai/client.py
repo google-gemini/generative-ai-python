@@ -17,11 +17,13 @@ from __future__ import annotations
 import os
 from typing import cast, Optional, Union
 
-import google.ai.generativelanguage as glm
+import google.ai.generativelanguage_v1beta3 as glm
 
 from google.auth import credentials as ga_credentials
 from google.api_core import client_options as client_options_lib
 from google.api_core import gapic_v1
+from google.api_core import operations_v1
+
 from google.generativeai import version
 
 
@@ -32,6 +34,7 @@ default_discuss_client = None
 default_discuss_async_client = None
 default_model_client = None
 default_text_client = None
+default_operations_client = None
 
 
 def configure(
@@ -64,6 +67,7 @@ def configure(
     global default_discuss_client
     global default_model_client
     global default_text_client
+    global default_operations_client
 
     if isinstance(client_options, dict):
         client_options = client_options_lib.from_dict(client_options)
@@ -112,6 +116,7 @@ def configure(
     default_discuss_client = None
     default_text_client = None
     default_model_client = None
+    default_operations_client = None
 
 
 def get_default_discuss_client() -> glm.DiscussServiceClient:
@@ -125,7 +130,7 @@ def get_default_discuss_client() -> glm.DiscussServiceClient:
     return default_discuss_client
 
 
-def get_default_text_client():
+def get_default_text_client() -> glm.TextServiceClient:
     global default_text_client
     if default_text_client is None:
         # Attempt to configure using defaults.
@@ -149,7 +154,7 @@ def get_default_discuss_async_client() -> glm.DiscussServiceAsyncClient:
     return default_discuss_async_client
 
 
-def get_default_model_client():
+def get_default_model_client() -> glm.ModelServiceClient:
     global default_model_client
     if default_model_client is None:
         # Attempt to configure using defaults.
@@ -158,3 +163,12 @@ def get_default_model_client():
         default_model_client = glm.ModelServiceClient(**default_client_config)
 
     return default_model_client
+
+
+def get_default_operations_client() -> operations_v1.OperationsClient:
+    global default_operations_client
+    if default_operations_client is None:
+        model_client = get_default_model_client()
+        default_operations_client = model_client._transport.operations_client
+
+    return default_operations_client

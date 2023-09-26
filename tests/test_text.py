@@ -17,7 +17,7 @@ import os
 import unittest
 import unittest.mock as mock
 
-import google.ai.generativelanguage as glm
+import google.ai.generativelanguage_v1beta3 as glm
 
 from google.generativeai import text as text_service
 from google.generativeai import client
@@ -34,29 +34,33 @@ class UnitTests(parameterized.TestCase):
 
         self.observed_request = None
 
-        self.mock_response = glm.GenerateTextResponse(
-            candidates=[
-                glm.TextCompletion(output=" road?"),
-                glm.TextCompletion(output=" bridge?"),
-                glm.TextCompletion(output=" river?"),
-            ]
-        )
+        self.responses = {}
 
-        def fake_generate_completion(
+        def add_client_method(f):
+            name = f.__name__
+            setattr(self.client, name, f)
+            return f
+
+        @add_client_method
+        def generate_text(
             request: glm.GenerateTextRequest,
         ) -> glm.GenerateTextResponse:
             self.observed_request = request
-            return self.mock_response
+            return self.responses["generate_text"]
 
-        self.client.generate_text = fake_generate_completion
-
-        def fake_embed_text(
+        @add_client_method
+        def embed_text(
             request: glm.EmbedTextRequest,
         ) -> glm.EmbedTextResponse:
             self.observed_request = request
-            return glm.EmbedTextResponse(embedding=glm.Embedding(value=[1, 2, 3]))
+            return self.responses["embed_text"]
 
-        self.client.embed_text = fake_embed_text
+        @add_client_method
+        def batch_embed_text(
+            request: glm.EmbedTextRequest,
+        ) -> glm.EmbedTextResponse:
+            self.observed_request = request
+            return self.responses["batch_embed_text"]
 
     @parameterized.named_parameters(
         [
@@ -75,7 +79,7 @@ class UnitTests(parameterized.TestCase):
     )
     def test_make_generate_text_request(self, prompt):
         x = text_service._make_generate_text_request(
-            model="chat-bison-001", prompt=prompt
+            model="models/chat-bison-001", prompt=prompt
         )
         self.assertEqual("models/chat-bison-001", x.model)
         self.assertIsInstance(x, glm.GenerateTextRequest)
@@ -85,17 +89,44 @@ class UnitTests(parameterized.TestCase):
             dict(
                 testcase_name="basic_model",
                 model="models/chat-lamda-001",
-                text="What are you",
+                text="What are you?",
             )
         ]
     )
     def test_generate_embeddings(self, model, text):
+        self.responses["embed_text"] = glm.EmbedTextResponse(
+            embedding=glm.Embedding(value=[1, 2, 3])
+        )
+
         emb = text_service.generate_embeddings(model=model, text=text)
 
         self.assertIsInstance(emb, dict)
         self.assertEqual(
             self.observed_request, glm.EmbedTextRequest(model=model, text=text)
         )
+        self.assertIsInstance(emb["embedding"][0], float)
+
+    @parameterized.named_parameters(
+        [
+            dict(
+                testcase_name="basic_model",
+                model="models/chat-lamda-001",
+                text=["Who are you?", "Who am I?"],
+            )
+        ]
+    )
+    def test_generate_embeddings_batch(self, model, text):
+        self.responses["batch_embed_text"] = glm.BatchEmbedTextResponse(
+            embeddings=[glm.Embedding(value=[1, 2, 3]), glm.Embedding(value=[4, 5, 6])]
+        )
+
+        emb = text_service.generate_embeddings(model=model, text=text)
+
+        self.assertIsInstance(emb, dict)
+        self.assertEqual(
+            self.observed_request, glm.BatchEmbedTextRequest(model=model, texts=text)
+        )
+        self.assertIsInstance(emb["embedding"][0], list)
 
     @parameterized.named_parameters(
         [
@@ -118,6 +149,14 @@ class UnitTests(parameterized.TestCase):
         ]
     )
     def test_generate_response(self, *, prompt, **kwargs):
+        self.responses["generate_text"] = glm.GenerateTextResponse(
+            candidates=[
+                glm.TextCompletion(output=" road?"),
+                glm.TextCompletion(output=" bridge?"),
+                glm.TextCompletion(output=" river?"),
+            ]
+        )
+
         complete = text_service.generate_text(prompt=prompt, **kwargs)
 
         self.assertEqual(
@@ -141,6 +180,13 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_stop_string(self):
+        self.responses["generate_text"] = glm.GenerateTextResponse(
+            candidates=[
+                glm.TextCompletion(output="Hello world?"),
+                glm.TextCompletion(output="Hell!"),
+                glm.TextCompletion(output="I'm going to stop"),
+            ]
+        )
         complete = text_service.generate_text(prompt="Hello", stop_sequences="stop")
 
         self.assertEqual(
@@ -196,6 +242,11 @@ class UnitTests(parameterized.TestCase):
         ]
     )
     def test_safety_settings(self, safety_settings):
+        self.responses["generate_text"] = glm.GenerateTextResponse(
+            candidates=[
+                glm.TextCompletion(output="No"),
+            ]
+        )
         # This test really just checks that the safety_settings get converted to a proto.
         result = text_service.generate_text(
             prompt="Say something wicked.", safety_settings=safety_settings
@@ -207,7 +258,7 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_filters(self):
-        self.mock_response = glm.GenerateTextResponse(
+        self.responses["generate_text"] = glm.GenerateTextResponse(
             candidates=[{"output": "hello"}],
             filters=[
                 {"reason": safety_types.BlockedReason.SAFETY, "message": "not safe"}
@@ -221,7 +272,7 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_safety_feedback(self):
-        self.mock_response = glm.GenerateTextResponse(
+        self.responses["generate_text"] = glm.GenerateTextResponse(
             candidates=[{"output": "hello"}],
             safety_feedback=[
                 {
@@ -257,7 +308,7 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_candidate_safety_feedback(self):
-        self.mock_response = glm.GenerateTextResponse(
+        self.responses["generate_text"] = glm.GenerateTextResponse(
             candidates=[
                 {
                     "output": "hello",
@@ -295,7 +346,7 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_candidate_citations(self):
-        self.mock_response = glm.GenerateTextResponse(
+        self.responses["generate_text"] = glm.GenerateTextResponse(
             candidates=[
                 {
                     "output": "Hello Google!",

@@ -79,7 +79,15 @@ from google.generativeai.text import generate_text
 from google.generativeai.text import generate_embeddings
 
 from google.generativeai.models import list_models
+from google.generativeai.models import list_tuned_models
+
 from google.generativeai.models import get_model
+from google.generativeai.models import get_base_model
+from google.generativeai.models import get_tuned_model
+
+from google.generativeai.models import create_tuned_model
+from google.generativeai.models import update_tuned_model
+from google.generativeai.models import delete_tuned_model
 
 from google.generativeai.client import configure
 
