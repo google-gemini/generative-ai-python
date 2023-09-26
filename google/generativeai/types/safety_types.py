@@ -14,7 +14,6 @@
 # limitations under the License.
 from __future__ import annotations
 
-import enum
 from collections.abc import Mapping
 
 from google.ai import generativelanguage_v1beta3 as glm
@@ -41,33 +40,49 @@ BlockedReason = glm.ContentFilter.BlockedReason
 
 HarmCategoryOptions = Union[str, int, HarmCategory]
 
+# fmt: off
 _HARM_CATEGORIES: Dict[HarmCategoryOptions, HarmCategory] = {
     HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
     0: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    "harm_category_unspecified": HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    "unspecified": HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+
     HarmCategory.HARM_CATEGORY_DEROGATORY: HarmCategory.HARM_CATEGORY_DEROGATORY,
     1: HarmCategory.HARM_CATEGORY_DEROGATORY,
+    "harm_category_derogatory": HarmCategory.HARM_CATEGORY_DEROGATORY,
     "derogatory": HarmCategory.HARM_CATEGORY_DEROGATORY,
+
     HarmCategory.HARM_CATEGORY_TOXICITY: HarmCategory.HARM_CATEGORY_TOXICITY,
     2: HarmCategory.HARM_CATEGORY_TOXICITY,
+    "harm_category_toxicity": HarmCategory.HARM_CATEGORY_TOXICITY,
     "toxicity": HarmCategory.HARM_CATEGORY_TOXICITY,
     "toxic": HarmCategory.HARM_CATEGORY_TOXICITY,
+
     HarmCategory.HARM_CATEGORY_VIOLENCE: HarmCategory.HARM_CATEGORY_VIOLENCE,
     3: HarmCategory.HARM_CATEGORY_VIOLENCE,
+    "harm_category_violence": HarmCategory.HARM_CATEGORY_VIOLENCE,
     "violence": HarmCategory.HARM_CATEGORY_VIOLENCE,
     "violent": HarmCategory.HARM_CATEGORY_VIOLENCE,
+
     HarmCategory.HARM_CATEGORY_SEXUAL: HarmCategory.HARM_CATEGORY_SEXUAL,
     4: HarmCategory.HARM_CATEGORY_SEXUAL,
+    "harm_category_sexual": HarmCategory.HARM_CATEGORY_SEXUAL,
     "sexual": HarmCategory.HARM_CATEGORY_SEXUAL,
     "sex": HarmCategory.HARM_CATEGORY_SEXUAL,
+
     HarmCategory.HARM_CATEGORY_MEDICAL: HarmCategory.HARM_CATEGORY_MEDICAL,
     5: HarmCategory.HARM_CATEGORY_MEDICAL,
+    "harm_category_medical": HarmCategory.HARM_CATEGORY_MEDICAL,
     "medical": HarmCategory.HARM_CATEGORY_MEDICAL,
     "med": HarmCategory.HARM_CATEGORY_MEDICAL,
+
     HarmCategory.HARM_CATEGORY_DANGEROUS: HarmCategory.HARM_CATEGORY_DANGEROUS,
     6: HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "danger": HarmCategory.HARM_CATEGORY_DANGEROUS,
+    "harm_category_dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS,
     "dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS,
+    "danger": HarmCategory.HARM_CATEGORY_DANGEROUS,
 }
+# fmt: on
 
 
 def to_harm_category(x: HarmCategoryOptions) -> HarmCategory:
@@ -78,23 +93,35 @@ def to_harm_category(x: HarmCategoryOptions) -> HarmCategory:
 
 HarmBlockThresholdOptions = Union[str, int, HarmBlockThreshold]
 
+# fmt: off
 _BLOCK_THRESHOLDS: Dict[HarmBlockThresholdOptions, HarmBlockThreshold] = {
     HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED: HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED,
     0: HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED,
+    "harm_block_threshold_unspecified": HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED,
+    "block_threshold_unspecified": HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED,
+    "unspecified": HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED,
+
     HarmBlockThreshold.BLOCK_LOW_AND_ABOVE: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
     1: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    "block_low_and_above": HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
     "low": HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+
     HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
     2: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    "block_medium_and_above": HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
     "medium": HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
     "med": HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+
     HarmBlockThreshold.BLOCK_ONLY_HIGH: HarmBlockThreshold.BLOCK_ONLY_HIGH,
     3: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    "block_only_high": HarmBlockThreshold.BLOCK_ONLY_HIGH,
     "high": HarmBlockThreshold.BLOCK_ONLY_HIGH,
+
     HarmBlockThreshold.BLOCK_NONE: HarmBlockThreshold.BLOCK_NONE,
     4: HarmBlockThreshold.BLOCK_NONE,
     "block_none": HarmBlockThreshold.BLOCK_NONE,
 }
+# fmt: on
 
 
 def to_block_threshold(x: HarmBlockThresholdOptions) -> HarmCategory:
