@@ -147,6 +147,9 @@ class MyFilter:
             if "ServiceClient" in path[-1] or "ServiceAsyncClient" in path[-1]:
                 children = list(self.drop_staticmethods(parent, children))
 
+        if "generativelanguage" in path[-1]:
+            children.append(('types', glm.types))
+
         return children
 
 
