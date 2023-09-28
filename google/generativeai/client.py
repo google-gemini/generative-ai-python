@@ -17,7 +17,7 @@ from __future__ import annotations
 import os
 from typing import cast, Optional, Union
 
-import google.ai.generativelanguage_v1beta3 as glm
+import google.ai.generativelanguage as glm
 
 from google.auth import credentials as ga_credentials
 from google.api_core import client_options as client_options_lib

@@ -18,7 +18,7 @@ import dataclasses
 from collections.abc import Sequence
 from typing import Iterable, overload
 
-import google.ai.generativelanguage_v1beta3 as glm
+import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_text_client
 from google.generativeai.types import text_types

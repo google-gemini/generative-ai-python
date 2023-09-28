@@ -17,7 +17,7 @@ from __future__ import annotations
 import functools
 from typing import Iterator
 
-from google.ai import generativelanguage_v1beta3 as glm
+from google.ai import generativelanguage as glm
 from google.generativeai import client as client_lib
 from google.generativeai.types import model_types
 from google.api_core import operation as operation_lib

@@ -42,7 +42,13 @@ if version[0] == "0":
 else:
     release_status = "Development Status :: 5 - Production/Stable"
 
-dependencies = ["google-ai-generativelanguage==0.3.2", "tqdm"]
+dependencies = [
+    "google-ai-generativelanguage==0.3.3",
+    "google-auth",
+    "google-api-core",
+    "protobuf",
+    "tqdm",
+]
 
 extras_require = {
     "dev": [

@@ -17,7 +17,7 @@ from __future__ import annotations
 import typing
 from typing import Any, Literal
 
-import google.ai.generativelanguage_v1beta3 as glm
+import google.ai.generativelanguage as glm
 from google.generativeai import operations
 from google.generativeai.client import get_default_model_client
 from google.generativeai.types import model_types

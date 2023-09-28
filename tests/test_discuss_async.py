@@ -16,7 +16,7 @@
 import sys
 import unittest
 
-import google.ai.generativelanguage_v1beta3 as glm
+import google.ai.generativelanguage as glm
 
 from google.generativeai import discuss
 from absl.testing import absltest

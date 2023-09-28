@@ -23,7 +23,7 @@ from unittest import mock
 from absl.testing import absltest
 from absl.testing import parameterized
 
-import google.ai.generativelanguage_v1beta3 as glm
+import google.ai.generativelanguage as glm
 from google.api_core import operation
 
 from google.generativeai import models
