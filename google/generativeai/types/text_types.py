@@ -18,6 +18,7 @@ import abc
 import dataclasses
 from typing import Any, Dict, List, TypedDict
 
+from google.generativeai import string_utils
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
 
@@ -39,6 +40,7 @@ class TextCompletion(TypedDict, total=False):
     citation_metadata: citation_types.CitationMetadataDict | None
 
 
+@string_utils.prettyprint
 @dataclasses.dataclass(init=False)
 class Completion(abc.ABC):
     """The result returned by `generativeai.generate_text`.

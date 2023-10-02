@@ -24,6 +24,7 @@ import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_discuss_client
 from google.generativeai.client import get_default_discuss_async_client
+from google.generativeai import string_utils
 from google.generativeai.types import discuss_types
 from google.generativeai.types import model_types
 from google.generativeai.types import safety_types
@@ -445,6 +446,7 @@ else:
     DATACLASS_KWARGS = {}
 
 
+@string_utils.prettyprint
 @set_doc(discuss_types.ChatResponse.__doc__)
 @dataclasses.dataclass(**DATACLASS_KWARGS, init=False)
 class ChatResponse(discuss_types.ChatResponse):
