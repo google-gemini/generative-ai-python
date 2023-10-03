@@ -30,7 +30,7 @@ from absl import flags
 
 import google
 from google import generativeai as palm
-from google.ai import generativelanguage_v1beta3 as glm
+from google.ai import generativelanguage as glm
 
 from tensorflow_docs.api_generator import generate_lib
 from tensorflow_docs.api_generator import public_api
@@ -54,7 +54,7 @@ Each method in the PaLM API is connected to one of the client classes. Pass your
 when initializing a client:
 
 ```
-from google.ai import generativelanguage_v1beta3 as glm
+from google.ai import generativelanguage as glm
 
 client = glm.DiscussServiceClient(
     client_options={'api_key':'YOUR_API_KEY'})
@@ -147,9 +147,6 @@ class MyFilter:
             if "ServiceClient" in path[-1] or "ServiceAsyncClient" in path[-1]:
                 children = list(self.drop_staticmethods(parent, children))
 
-        if "generativelanguage" in path[-1]:
-            children.append(('types', glm.types))
-
         return children
 
 
@@ -207,8 +204,9 @@ def gen_api_docs():
     # Fixup the toc file.
     toc_path = out_path / "google/_toc.yaml"
     toc = yaml.safe_load(toc_path.read_text())
+    assert toc["toc"][0]["title"] == "google"
     toc["toc"] = toc["toc"][1:]
-    toc["toc"][0]["title"] = "google.ai.generativelanguage_v1beta3"
+    toc["toc"][0]["title"] = "google.ai.generativelanguage"
     toc["toc"][0]["section"] = toc["toc"][0]["section"][1]["section"]
     toc["toc"][0], toc["toc"][1] = toc["toc"][1], toc["toc"][0]
     toc_path.write_text(yaml.dump(toc))
@@ -230,6 +228,11 @@ def gen_api_docs():
         new_content = re.sub(r"\.\. _oneof:.*?\n", "", new_content)
         new_content = re.sub(r"`oneof`_.*?\n", "", new_content)
         new_content = re.sub(r"\.\. code-block:: python.*?\n", "", new_content)
+
+        new_content = re.sub(
+            r"generativelanguage_\w+.types", "generativelanguage", new_content
+        )
+
         if new_content != old_content:
             fpath.write_text(new_content)
 

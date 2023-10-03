@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from typing import Optional, List
 
-from google.ai import generativelanguage_v1beta3 as glm
+from google.ai import generativelanguage as glm
 from google.generativeai import docstring_utils
 from typing import TypedDict
 

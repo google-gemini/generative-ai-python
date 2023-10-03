@@ -18,7 +18,7 @@ import abc
 import dataclasses
 from typing import Any, Dict, TypedDict, Union, Iterable, Optional, Tuple, List
 
-import google.ai.generativelanguage_v1beta3 as glm
+import google.ai.generativelanguage as glm
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
 

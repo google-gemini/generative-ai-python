@@ -20,7 +20,7 @@ import textwrap
 
 from typing import Iterable, List, Optional, Union
 
-import google.ai.generativelanguage_v1beta3 as glm
+import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_discuss_client
 from google.generativeai.client import get_default_discuss_async_client

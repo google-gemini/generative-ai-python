@@ -1,3 +1,7 @@
+## v0.2.1
+
+- Bugfix: Add missing enum names to `saftey_types.py`
+- Update to `google.ai.generativelanguage` v0.3.3 
 
 ## v0.2
 

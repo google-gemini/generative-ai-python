@@ -16,7 +16,7 @@
 from contextlib import redirect_stderr
 import io
 
-import google.ai.generativelanguage_v1beta3 as glm
+import google.ai.generativelanguage as glm
 import google.protobuf.any_pb2
 
 import google.generativeai.operations as genai_operation

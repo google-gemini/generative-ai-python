@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from google.ai import generativelanguage_v1beta3 as glm
+from google.ai import generativelanguage as glm
 from google.generativeai import docstring_utils
 import typing
 from typing import Iterable, Dict, Iterable, List, TypedDict, Union
