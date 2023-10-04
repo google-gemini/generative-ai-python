@@ -1,2 +1,5 @@
 [tool.pytype]
 inputs = ['google', 'tests']
+
+[tool.black]
+line-length = 100
