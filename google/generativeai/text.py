@@ -217,7 +217,7 @@ def _generate_response(
 
 
 def count_text_tokens(
-    model: model_types.ModelNameOptions,
+    model: model_types.AnyModelNameOptions,
     prompt: str,
     client: glm.TextServiceClient = None,
 ):
@@ -226,7 +226,9 @@ def count_text_tokens(
     if client is None:
         client = get_default_text_client()
 
-    result = client.count_text_tokens(glm.CountTextTokensRequest(model=base_model, prompt={'text':prompt}))
+    result = client.count_text_tokens(
+        glm.CountTextTokensRequest(model=base_model, prompt={"text": prompt})
+    )
 
     return type(result).to_dict(result)
 

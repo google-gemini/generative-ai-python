@@ -125,6 +125,14 @@ def get_base_model_name(
         base_model = model.base_model
     elif isinstance(model, model_types.Model):
         base_model = model.name
+    elif isinstance(model, glm.Model):
+        base_model = model.name
+    elif isinstance(model, glm.TunedModel):
+        base_model = getattr(model, "base_model", None)
+        if not base_model:
+            base_model = model.tuned_model_source.base_model
+    else:
+        raise TypeError(f"Cannot understand model: {model}")
 
     return base_model
 
