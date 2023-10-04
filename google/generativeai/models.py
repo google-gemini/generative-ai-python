@@ -74,7 +74,7 @@ def get_base_model(name: model_types.BaseModelNameOptions, *, client=None) -> mo
 
     name = model_types.make_model_name(name)
     if not name.startswith("models/"):
-        raise ValueError("Base model names must start with `models/`")
+        raise ValueError(f"Base model names must start with `models/`, got: {name}")
 
     result = client.get_model(name=name)
     result = type(result).to_dict(result)
@@ -110,6 +110,23 @@ def get_tuned_model(
     result = client.get_tuned_model(name=name)
 
     return model_types.decode_tuned_model(result)
+
+
+def get_base_model_name(
+    model: model_types.AnyModelNameOptions, client: glm.ModelServiceClient | None = None
+):
+    if isinstance(model, str):
+        if model.startswith("tunedModels/"):
+            model = get_model(model, client=client)
+            base_model = model.base_model
+        else:
+            base_model = model
+    elif isinstance(model, model_types.TunedModel):
+        base_model = model.base_model
+    elif isinstance(model, model_types.Model):
+        base_model = model.name
+
+    return base_model
 
 
 def _list_base_models_next_page(page_size, page_token, client):
