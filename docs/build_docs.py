@@ -226,7 +226,7 @@ def gen_api_docs():
         old_content = fpath.read_text()
         new_content = old_content
         new_content = re.sub(r"\.\. _oneof:.*?\n", "", new_content)
-        new_content = re.sub(r"`oneof`_.*?\n", "", new_content)
+        new_content = re.sub(r".*?`oneof`_ ``_.*?\n", "", new_content, re.MULTILINE)
         new_content = re.sub(r"\.\. code-block:: python.*?\n", "", new_content)
 
         new_content = re.sub(
