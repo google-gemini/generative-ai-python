@@ -34,7 +34,7 @@ USER_AGENT = "genai-py"
 @dataclasses.dataclass
 class _ClientManager:
     client_config: dict[str, Any] = dataclasses.field(default_factory=dict)
-    metadata: Sequence[tuple[str, str]] = ()
+    default_metadata: Sequence[tuple[str, str]] = ()
     discuss_client: glm.DiscussServiceClient | None = None
     discuss_async_client: glm.DiscussServiceAsyncClient | None = None
     model_client: glm.ModelServiceClient | None = None
@@ -117,7 +117,7 @@ class _ClientManager:
 
     def make_client(self, cls):
         # Attempt to configure using defaults.
-        if self.client_config is None:
+        if not self.client_config:
             configure()
 
         client = cls(**self.client_config)
@@ -176,7 +176,7 @@ class _ClientManager:
     def get_default_operations_client(self) -> operations_v1.OperationsClient:
         if self.operations_client is None:
             self.model_client = get_default_model_client()
-            self.operations_client = model_client._transport.operations_client
+            self.operations_client = self.model_client._transport.operations_client
 
         return self.operations_client
 
@@ -228,7 +228,7 @@ def get_default_discuss_client() -> glm.DiscussServiceClient:
 
 
 def get_default_text_client() -> glm.TextServiceClient:
-    return _client_manager.get_default_discuss_client()
+    return _client_manager.get_default_text_client()
 
 
 def get_default_operations_client() -> operations_v1.OperationsClient:
