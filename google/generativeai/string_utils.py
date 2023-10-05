@@ -33,7 +33,6 @@ def prettyprint(cls):
     return cls
 
 
-
 @reprlib.recursive_repr()
 def _prettyprint(self):
     """You can't use `__str__ = pprint.pformat`. That causes a recursion error.
