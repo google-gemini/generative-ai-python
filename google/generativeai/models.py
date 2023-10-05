@@ -295,18 +295,14 @@ def create_tuned_model(
         client = get_default_model_client()
 
     source_model_name = model_types.make_model_name(source_model)
+    base_model_name = get_base_model_name(source_model)
     if source_model_name.startswith("models/"):
         source_model = {"base_model": source_model_name}
     elif source_model_name.startswith("tunedModels/"):
-        source_model = client.get_tuned_model(name=source_model_name)
-        base_model = source_model.base_model
-        if not base_model:
-            base_model = source_model.tuned_model_source.base_model
-
         source_model = {
             "tuned_model_source": {
                 "tuned_model": source_model_name,
-                "base_model": base_model,
+                "base_model": base_model_name,
             }
         }
     else:
