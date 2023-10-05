@@ -92,8 +92,22 @@ class ClientTests(parameterized.TestCase):
         def generate_text(self, metadata=None):
             self.metadata = metadata
 
+        not_a_function = 7
+
+        def _hidden(self):
+            self.called_hidden = True
+
+        @staticmethod
+        def static():
+            pass
+
+        @classmethod
+        def classm(cls):
+            cls.called_classm = True
+
     @mock.patch.object(glm, "TextServiceClient", DummyClient)
     def test_default_metadata(self):
+        # The metadata wrapper injects this argument.
         metadata = [("hello", "world")]
         client.configure(default_metadata=metadata)
 
@@ -101,6 +115,17 @@ class ClientTests(parameterized.TestCase):
         text_client.generate_text()
 
         self.assertEqual(metadata, text_client.metadata)
+
+        self.assertEqual(text_client.not_a_function, ClientTests.DummyClient.not_a_function)
+
+        # Since these don't have a metadata arg, they'll fail if the wrapper is applied.
+        text_client._hidden()
+        self.assertTrue(text_client.called_hidden)
+
+        text_client.static()
+
+        text_client.classm()
+        self.assertTrue(ClientTests.DummyClient.called_classm)
 
 
 if __name__ == "__main__":

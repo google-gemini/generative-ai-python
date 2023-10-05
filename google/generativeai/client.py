@@ -17,7 +17,8 @@ from __future__ import annotations
 import os
 import dataclasses
 import types
-from typing import Any, cast, Sequence
+from typing import Any, cast
+from collections.abc import Sequence
 
 import google.ai.generativelanguage as glm
 
@@ -56,20 +57,23 @@ class _ClientManager:
         client_options: client_options_lib.ClientOptions | dict | None = None,
         client_info: gapic_v1.client_info.ClientInfo | None = None,
         default_metadata: Sequence[tuple[str, str]] = (),
-    ):
+    ) -> None:
         """Captures default client configuration.
 
         If no API key has been provided (either directly, or on `client_options`) and the
         `GOOGLE_API_KEY` environment variable is set, it will be used as the API key.
 
+        Note: Not all arguments are detailed below. Refer to the `*ServiceClient` classes in
+        `google.ai.generativelanguage` for details on the other arguments.
+
         Args:
-            Refer to `glm.DiscussServiceClient`, and `glm.ModelsServiceClient` for details on additional arguments.
             transport: A string, one of: [`rest`, `grpc`, `grpc_asyncio`].
             api_key: The API-Key to use when creating the default clients (each service uses
                 a separate client). This is a shortcut for `client_options={"api_key": api_key}`.
                 If omitted, and the `GOOGLE_API_KEY` environment variable is set, it will be
                 used.
             default_metadata: Default (key, value) metadata pairs to send with every request.
+                when using `transport="rest"` these are sent as HTTP headers.
         """
         if isinstance(client_options, dict):
             client_options = client_options_lib.from_dict(client_options)
@@ -128,14 +132,14 @@ class _ClientManager:
         def keep(name, f):
             if name.startswith("_"):
                 return False
-            if not isinstance(f, types.FunctionType):
+            elif not isinstance(f, types.FunctionType):
                 return False
-            if isinstance(f, classmethod):
+            elif isinstance(f, classmethod):
                 return False
-            if isinstance(f, staticmethod):
-                False
-
-            return True
+            elif isinstance(f, staticmethod):
+                return False
+            else:
+                return True
 
         def add_default_metadata_wrapper(f):
             def call(*args, metadata=(), **kwargs):
@@ -204,14 +208,17 @@ def configure(
     If no API key has been provided (either directly, or on `client_options`) and the
     `GOOGLE_API_KEY` environment variable is set, it will be used as the API key.
 
+    Note: Not all arguments are detailed below. Refer to the `*ServiceClient` classes in
+    `google.ai.generativelanguage` for details on the other arguments.
+
     Args:
-        Refer to `glm.DiscussServiceClient`, and `glm.ModelsServiceClient` for details on additional arguments.
         transport: A string, one of: [`rest`, `grpc`, `grpc_asyncio`].
         api_key: The API-Key to use when creating the default clients (each service uses
             a separate client). This is a shortcut for `client_options={"api_key": api_key}`.
             If omitted, and the `GOOGLE_API_KEY` environment variable is set, it will be
             used.
-        default_metadata: Default `(key, value)` metadata pairs to send with every request.
+        default_metadata: Default (key, value) metadata pairs to send with every request.
+            when using `transport="rest"` these are sent as HTTP headers.
     """
     return _client_manager.configure(
         api_key=api_key,
