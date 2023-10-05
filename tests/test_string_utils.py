@@ -80,7 +80,6 @@ class OperationsTests(parameterized.TestCase):
         self.assertEqual(pprint.pformat(m2), result)
         self.assertEqual(repr(m2), result)
 
-    @unittest.skip("I don't have a solution for this.")
     def test_recursive(self):
         m = MyClass(a=1, b=1 / 3, c=[1, 2, 3], d=None)
         m.d = m

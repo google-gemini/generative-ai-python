@@ -14,9 +14,10 @@
 # limitations under the License.
 from __future__ import annotations
 
-import pprint
-import textwrap
 import dataclasses
+import pprint
+import reprlib
+import textwrap
 
 
 def strip_oneof(docstring):
@@ -32,6 +33,8 @@ def prettyprint(cls):
     return cls
 
 
+
+@reprlib.recursive_repr()
 def _prettyprint(self):
     """You can't use `__str__ = pprint.pformat`. That causes a recursion error.
 
