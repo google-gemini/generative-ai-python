@@ -50,13 +50,13 @@ class OperationsTests(parameterized.TestCase):
         self.assertEqual(pprint.pformat(m), result)
         self.assertEqual(repr(m), result)
 
-    def test_long(self):
+    def test_long_list(self):
         m = MyClass(a=1, b=1 / 3, c=[1, 2, 3] * 10, d={"a": 1, "b": 2})
         expected = textwrap.dedent(
             """
             MyClass(a=1,
                     b=0.3333333333333333,
-                    c=...,
+                    c=[...],
                     d={'a': 1, 'b': 2})"""
         )[1:]
         self.assertEqual(expected, str(m))
@@ -79,6 +79,22 @@ class OperationsTests(parameterized.TestCase):
         self.assertEqual(expected, result)
         self.assertEqual(pprint.pformat(m2), result)
         self.assertEqual(repr(m2), result)
+
+    def test_long_obj(self):
+        m = MyClass(a=1, b=1 / 3, c=[1, 2, 3], d=None)
+        m = MyClass(a=1, b=1 / 3, c=[1, 2, 3], d=m)
+        m = MyClass(a=1, b=1 / 3, c=[1, 2, 3], d=m)
+        m = MyClass(a=1, b=1 / 3, c=[1, 2, 3], d=m)
+        m = MyClass(a=1, b=1 / 3, c=[1, 2, 3], d=m)
+
+        expected = textwrap.dedent(
+            """
+            MyClass(a=1,
+                    b=0.3333333333333333,
+                    c=[1, 2, 3],
+                    d=MyClass(...))"""
+        )[1:]
+        self.assertEqual(expected, str(m))
 
     def test_recursive(self):
         m = MyClass(a=1, b=1 / 3, c=[1, 2, 3], d=None)

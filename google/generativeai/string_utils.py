@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import dataclasses
 import pprint
+import re
 import reprlib
 import textwrap
 
@@ -33,17 +34,33 @@ def prettyprint(cls):
     return cls
 
 
+repr = reprlib.Repr()
+
+
 @reprlib.recursive_repr()
 def _prettyprint(self):
-    """You can't use `__str__ = pprint.pformat`. That causes a recursion error.
+    """A dataclass prettyprint function you can use in __str__or __repr__.
 
-    This works, but it doesn't handle objects that reference themselves.
+    Note: You can't set `__str__ = pprint.pformat` because it causes a recursion error.
+
+    Mostly identical to pprint but:
+
+    * This will contract long lists and dicts (> 10lines) to [...] and {...}.
+    * This will contract long object reprs to ClassName(...).
     """
     fields = []
     for f in dataclasses.fields(self):
         s = pprint.pformat(getattr(self, f.name))
+        class_re = r"^(\w+)\(.*\)$"
         if s.count("\n") >= 10:
-            s = "..."
+            if s.startswith("["):
+                s = "[...]"
+            elif s.startswith("{"):
+                s = "{...}"
+            elif re.match(class_re, s, flags=re.DOTALL):
+                s = re.sub(class_re, r"\1(...)", s, flags=re.DOTALL)
+            else:
+                s = "..."
         else:
             width = len(f.name) + 1
             s = textwrap.indent(s, " " * width).lstrip(" ")
