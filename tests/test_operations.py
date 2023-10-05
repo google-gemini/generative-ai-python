@@ -28,7 +28,9 @@ from absl.testing import parameterized
 
 
 class OperationsTests(parameterized.TestCase):
-    metadata_type = "type.googleapis.com/google.ai.generativelanguage.v1beta3.CreateTunedModelMetadata"
+    metadata_type = (
+        "type.googleapis.com/google.ai.generativelanguage.v1beta3.CreateTunedModelMetadata"
+    )
     result_type = "type.googleapis.com/google.ai.generativelanguage.v1beta3.TunedModel"
 
     def test_end_to_end(self):
@@ -39,9 +41,7 @@ class OperationsTests(parameterized.TestCase):
         # `Any` takes a type name and a serialized proto.
         metadata = google.protobuf.any_pb2.Any(
             type_url=self.metadata_type,
-            value=glm.CreateTunedModelMetadata(
-                tuned_model=name
-            )._pb.SerializeToString(),
+            value=glm.CreateTunedModelMetadata(tuned_model=name)._pb.SerializeToString(),
         )
 
         # Initially the `Operation` is not `done`, so it only gives a metadata.
@@ -77,9 +77,7 @@ class OperationsTests(parameterized.TestCase):
         )
 
         # Use our wrapper instead.
-        ctm_op = genai_operation.CreateTunedModelOperation.from_core_operation(
-            operation
-        )
+        ctm_op = genai_operation.CreateTunedModelOperation.from_core_operation(operation)
 
         # Test that the metadata was decoded
         meta = ctm_op.metadata
@@ -149,9 +147,7 @@ class OperationsTests(parameterized.TestCase):
         )
 
         # Use our wrapper instead.
-        ctm_op = genai_operation.CreateTunedModelOperation.from_core_operation(
-            operation
-        )
+        ctm_op = genai_operation.CreateTunedModelOperation.from_core_operation(operation)
 
         # Capture the stderr so we can check the wait-bar.
         f = io.StringIO()

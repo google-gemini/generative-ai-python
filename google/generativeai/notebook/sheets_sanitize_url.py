@@ -52,15 +52,11 @@ def sanitize_sheets_url(url: str) -> str:
     parse_result = parse.urlparse(url)
     if parse_result.scheme != "https":
         raise ValueError(
-            'Scheme for Sheets url must be "https", got "{}"'.format(
-                parse_result.scheme
-            )
+            'Scheme for Sheets url must be "https", got "{}"'.format(parse_result.scheme)
         )
     if parse_result.netloc not in ("docs.google.com", "sheets.googleapis.com"):
         raise ValueError(
-            'Domain for Sheets url must be "docs.google.com", got "{}"'.format(
-                parse_result.netloc
-            )
+            'Domain for Sheets url must be "docs.google.com", got "{}"'.format(parse_result.netloc)
         )
 
     # Path component.
@@ -68,15 +64,11 @@ def sanitize_sheets_url(url: str) -> str:
         for fragment in parse_result.path.split("/"):
             _validate_url_part(fragment)
     except ValueError as exc:
-        raise ValueError(
-            'Invalid path for Sheets url, got "{}"'.format(parse_result.path)
-        ) from exc
+        raise ValueError('Invalid path for Sheets url, got "{}"'.format(parse_result.path)) from exc
 
     # Params component.
     if parse_result.params:
-        raise ValueError(
-            'Params component must be empty, got "{}"'.format(parse_result.params)
-        )
+        raise ValueError('Params component must be empty, got "{}"'.format(parse_result.params))
 
     # Query component.
     try:

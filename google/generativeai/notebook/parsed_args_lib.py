@@ -62,13 +62,11 @@ class ParsedArgs:
     inputs: Sequence[llmfn_inputs_source.LLMFnInputsSource] = dataclasses.field(
         default_factory=list
     )
-    sheets_input_names: Sequence[
-        llmfn_inputs_source.LLMFnInputsSource
-    ] = dataclasses.field(default_factory=list)
-
-    outputs: Sequence[llmfn_outputs.LLMFnOutputsSink] = dataclasses.field(
+    sheets_input_names: Sequence[llmfn_inputs_source.LLMFnInputsSource] = dataclasses.field(
         default_factory=list
     )
+
+    outputs: Sequence[llmfn_outputs.LLMFnOutputsSink] = dataclasses.field(default_factory=list)
     sheets_output_names: Sequence[llmfn_outputs.LLMFnOutputsSink] = dataclasses.field(
         default_factory=list
     )
@@ -81,9 +79,7 @@ class ParsedArgs:
     rhs_name_and_fn: tuple[str, llm_function.LLMFunction] | None = None
 
     # For compare and eval commands.
-    compare_fn: Sequence[tuple[str, TextResultCompareFn]] = dataclasses.field(
-        default_factory=list
-    )
+    compare_fn: Sequence[tuple[str, TextResultCompareFn]] = dataclasses.field(default_factory=list)
 
     # For eval command.
     ground_truth: Sequence[str] = dataclasses.field(default_factory=list)

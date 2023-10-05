@@ -17,7 +17,15 @@ from __future__ import annotations
 
 import abc
 import dataclasses
-from typing import overload, Any, Callable, Iterable, Iterator, Mapping, Sequence
+from typing import (
+    overload,
+    Any,
+    Callable,
+    Iterable,
+    Iterator,
+    Mapping,
+    Sequence,
+)
 
 from google.generativeai.notebook.lib import llmfn_output_row
 from google.generativeai.notebook.lib import model as model_lib
@@ -89,9 +97,7 @@ class LLMFnOutputsBase(Sequence[LLMFnOutputEntry]):
         Args:
           outputs: The contents of this LLMFnOutputs instance.
         """
-        self._outputs: list[LLMFnOutputEntry] = (
-            list(outputs) if outputs is not None else []
-        )
+        self._outputs: list[LLMFnOutputEntry] = list(outputs) if outputs is not None else []
 
     # Needed for Iterable[LLMFnOutputEntry].
     def __iter__(self) -> Iterator[LLMFnOutputEntry]:
@@ -110,9 +116,7 @@ class LLMFnOutputsBase(Sequence[LLMFnOutputEntry]):
     def __getitem__(self, x: slice) -> Sequence[LLMFnOutputEntry]:
         ...
 
-    def __getitem__(
-        self, x: int | slice
-    ) -> LLMFnOutputEntry | Sequence[LLMFnOutputEntry]:
+    def __getitem__(self, x: int | slice) -> LLMFnOutputEntry | Sequence[LLMFnOutputEntry]:
         return self._outputs.__getitem__(x)
 
     # Convenience methods.
@@ -230,7 +234,11 @@ class LLMFnOutputs(LLMFnOutputsBase):
             # is set. This lets us fall back to a default implementation defined by
             # the notebook when `ipython_display_fn` is not set, instead of having to
             # provide our own default implementation.
-            setattr(self, "_ipython_display_", getattr(self, "_ipython_display_impl"))
+            setattr(
+                self,
+                "_ipython_display_",
+                getattr(self, "_ipython_display_impl"),
+            )
 
     def _ipython_display_impl(self):
         """Actual implementation of _ipython_display_.

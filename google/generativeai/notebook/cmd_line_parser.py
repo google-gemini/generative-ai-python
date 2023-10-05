@@ -67,9 +67,7 @@ def _resolve_compare_fn_var(
     """Resolves a value passed into --compare_fn."""
     fn = py_utils.get_py_var(name)
     if not isinstance(fn, Callable):
-        raise ValueError(
-            'Variable "{}" does not contain a Callable object'.format(name)
-        )
+        raise ValueError('Variable "{}" does not contain a Callable object'.format(name))
 
     return name, fn
 
@@ -80,19 +78,11 @@ def _resolve_ground_truth_var(name: str) -> Sequence[str]:
 
     # "str" and "bytes" are also Sequences but we want an actual Sequence of
     # strings, like a list.
-    if (
-        not isinstance(value, Sequence)
-        or isinstance(value, str)
-        or isinstance(value, bytes)
-    ):
-        raise ValueError(
-            'Variable "{}" does not contain a Sequence of strings'.format(name)
-        )
+    if not isinstance(value, Sequence) or isinstance(value, str) or isinstance(value, bytes):
+        raise ValueError('Variable "{}" does not contain a Sequence of strings'.format(name))
     for x in value:
         if not isinstance(x, str):
-            raise ValueError(
-                'Variable "{}" does not contain a Sequence of strings'.format(name)
-            )
+            raise ValueError('Variable "{}" does not contain a Sequence of strings'.format(name))
     return value
 
 
@@ -128,9 +118,7 @@ def _add_model_flags(
 
     def _check_is_greater_than_or_equal_to_zero(x: float) -> float:
         if x < 0:
-            raise ValueError(
-                "Value should be greater than or equal to zero, got {}".format(x)
-            )
+            raise ValueError("Value should be greater than or equal to zero, got {}".format(x))
         return x
 
     flag_def.SingleValueFlagDef(
@@ -154,8 +142,7 @@ def _add_model_flags(
         short_name="m",
         default_value=None,
         help_msg=(
-            "The name of the model to use. If not provided, a default model will"
-            " be used."
+            "The name of the model to use. If not provided, a default model will" " be used."
         ),
     ).add_argument_to_parser(parser)
 
@@ -315,9 +302,7 @@ def _create_compile_parser(
         return var_name
 
     save_name_help = "The name of a Python variable to save the compiled function to."
-    parser.add_argument(
-        "compile_save_name", help=save_name_help, type=_compile_save_name_fn
-    )
+    parser.add_argument("compile_save_name", help=save_name_help, type=_compile_save_name_fn)
     _add_model_flags(parser)
 
 
@@ -346,9 +331,7 @@ def _create_compare_parser(
         if not isinstance(fn, llm_function.LLMFunction):
             raise argparse.ArgumentError(
                 None,
-                '{} is not a function created with the "compile" command'.format(
-                    var_name
-                ),
+                '{} is not a function created with the "compile" command'.format(var_name),
             )
         return var_name, fn
 
@@ -356,12 +339,8 @@ def _create_compare_parser(
         "The name of a Python variable containing a function previously created"
         ' with the "compile" command.'
     )
-    parser.add_argument(
-        "lhs_name_and_fn", help=name_help, type=_resolve_llm_function_fn
-    )
-    parser.add_argument(
-        "rhs_name_and_fn", help=name_help, type=_resolve_llm_function_fn
-    )
+    parser.add_argument("lhs_name_and_fn", help=name_help, type=_resolve_llm_function_fn)
+    parser.add_argument("rhs_name_and_fn", help=name_help, type=_resolve_llm_function_fn)
 
     _add_input_flags(parser, placeholders)
     _add_output_flags(parser)
@@ -409,9 +388,7 @@ def _create_parser(
         subparsers.add_parser(parsed_args_lib.CommandName.RUN_CMD.value),
         placeholders,
     )
-    _create_compile_parser(
-        subparsers.add_parser(parsed_args_lib.CommandName.COMPILE_CMD.value)
-    )
+    _create_compile_parser(subparsers.add_parser(parsed_args_lib.CommandName.COMPILE_CMD.value))
     _create_compare_parser(
         subparsers.add_parser(parsed_args_lib.CommandName.COMPARE_CMD.value),
         placeholders,
@@ -471,9 +448,7 @@ class CmdLineParser:
             if start_idx is None:
                 start_idx = token_num
             if token == CmdLineParser.PIPE_OP:
-                split_tokens.append(
-                    tokens[start_idx:token_num] if start_idx is not None else []
-                )
+                split_tokens.append(tokens[start_idx:token_num] if start_idx is not None else [])
                 start_idx = None
 
         # Add the remaining tokens after the last PIPE_OP.
@@ -518,7 +493,9 @@ class CmdLineParser:
         candidate_count = parsed_results.pop("candidate_count", None)
 
         model_args = model_lib.ModelArguments(
-            model=model, temperature=temperature, candidate_count=candidate_count
+            model=model,
+            temperature=temperature,
+            candidate_count=candidate_count,
         )
         return parsed_results, model_args
 
@@ -556,9 +533,7 @@ class CmdLineParser:
             _, rhs_fn = parsed_args.rhs_name_and_fn
             parsed_args = self._get_parsed_args_from_cmd_line_tokens(
                 tokens=tokens,
-                placeholders=frozenset(lhs_fn.get_placeholders()).union(
-                    rhs_fn.get_placeholders()
-                ),
+                placeholders=frozenset(lhs_fn.get_placeholders()).union(rhs_fn.get_placeholders()),
             )
 
         _validate_parsed_args(parsed_args)

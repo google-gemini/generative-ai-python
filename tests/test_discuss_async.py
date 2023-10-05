@@ -37,7 +37,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             return glm.GenerateMessageResponse(
                 candidates=[
                     glm.Message(
-                        author="1", content="Why did the chicken cross the road?"
+                        author="1",
+                        content="Why did the chicken cross the road?",
                     )
                 ]
             )

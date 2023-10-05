@@ -28,9 +28,7 @@ PostProcessExecutionError = llmfn_post_process.PostProcessExecutionError
 LLMFnPostProcessReorderCommand = llmfn_post_process_cmds.LLMFnPostProcessReorderCommand
 LLMFnPostProcessAddCommand = llmfn_post_process_cmds.LLMFnPostProcessAddCommand
 LLMFnPostProcessReplaceCommand = llmfn_post_process_cmds.LLMFnPostProcessReplaceCommand
-LLMCompareFnPostProcessAddCommand = (
-    llmfn_post_process_cmds.LLMCompareFnPostProcessAddCommand
-)
+LLMCompareFnPostProcessAddCommand = llmfn_post_process_cmds.LLMCompareFnPostProcessAddCommand
 
 
 class LLMFnPostProcessCmdTest(absltest.TestCase):
@@ -151,9 +149,7 @@ class LLMFnPostProcessCmdTest(absltest.TestCase):
 
 class LLMCompareFnPostProcessTest(absltest.TestCase):
     def test_cmp_post_process_add_cmd(self):
-        def add_fn(
-            rows: Sequence[tuple[LLMFnOutputRowView, LLMFnOutputRowView]]
-        ) -> Sequence[int]:
+        def add_fn(rows: Sequence[tuple[LLMFnOutputRowView, LLMFnOutputRowView]]) -> Sequence[int]:
             return [x.result_value() + y.result_value() for x, y in rows]
 
         cmd = LLMCompareFnPostProcessAddCommand(name="sum", fn=add_fn)

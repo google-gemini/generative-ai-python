@@ -24,9 +24,7 @@ class ArgumentParserTest(absltest.TestCase):
     def test_help(self):
         """Verify that help messages raise ParserNormalExit."""
         parser = parser_lib.ArgumentParser()
-        with self.assertRaisesRegex(
-            parser_lib.ParserNormalExit, "show this help message and exit"
-        ):
+        with self.assertRaisesRegex(parser_lib.ParserNormalExit, "show this help message and exit"):
             parser.parse_args(["-h"])
 
     def test_parse_arg_errors(self):
@@ -42,9 +40,7 @@ class ArgumentParserTest(absltest.TestCase):
         with self.assertRaisesRegex(parser_lib.ParserError, "invalid int value"):
             new_parser().parse_args(["--value", "forty-two"])
 
-        with self.assertRaisesRegex(
-            parser_lib.ParserError, "the following arguments are required"
-        ):
+        with self.assertRaisesRegex(parser_lib.ParserError, "the following arguments are required"):
             new_parser().parse_args([])
 
         with self.assertRaisesRegex(parser_lib.ParserError, "expected one argument"):

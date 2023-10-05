@@ -33,9 +33,7 @@ class LLMFnInputsSource(abc.ABC):
         self._cached_inputs: NormalizedInputsList | None = None
         self._display_status_fn: Callable[[], None] = lambda: None
 
-    def to_normalized_inputs(
-        self, suppress_status_msgs: bool = False
-    ) -> NormalizedInputsList:
+    def to_normalized_inputs(self, suppress_status_msgs: bool = False) -> NormalizedInputsList:
         """Returns a sequence of normalized inputs.
 
         The return value is a sequence of dictionaries of (placeholder, value)

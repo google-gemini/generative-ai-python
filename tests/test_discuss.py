@@ -234,7 +234,10 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.parameters(
         {"prompt": {}, "context": "You are a cat."},
-        {"prompt": {"context": "You are a cat."}, "examples": ["hello", "meow"]},
+        {
+            "prompt": {"context": "You are a cat."},
+            "examples": ["hello", "meow"],
+        },
         {"prompt": {"examples": ["hello", "meow"]}, "messages": "hello"},
     )
     def test_make_generate_message_request_flat_prompt_conflict(
@@ -257,7 +260,12 @@ class UnitTests(parameterized.TestCase):
         {"kwargs": {"context": "You are a cat."}},
         {"kwargs": {"messages": "hello"}},
         {"kwargs": {"examples": [["a", "b"], ["c", "d"]]}},
-        {"kwargs": {"messages": ["hello"], "examples": [["a", "b"], ["c", "d"]]}},
+        {
+            "kwargs": {
+                "messages": ["hello"],
+                "examples": [["a", "b"], ["c", "d"]],
+            }
+        },
     )
     def test_reply(self, kwargs):
         response = genai.chat(**kwargs)
@@ -279,9 +287,7 @@ class UnitTests(parameterized.TestCase):
         self.mock_response = mock_response = glm.GenerateMessageResponse(
             candidates=[glm.Message(content="a", author="1")],
             filters=[
-                glm.ContentFilter(
-                    reason=safety_types.BlockedReason.SAFETY, message="unsafe"
-                ),
+                glm.ContentFilter(reason=safety_types.BlockedReason.SAFETY, message="unsafe"),
                 glm.ContentFilter(reason=safety_types.BlockedReason.OTHER),
             ],
         )
@@ -296,9 +302,7 @@ class UnitTests(parameterized.TestCase):
         self.mock_response = glm.GenerateMessageResponse(
             candidates=[glm.Message(content="a", author="1")],
             filters=[
-                glm.ContentFilter(
-                    reason=safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED
-                )
+                glm.ContentFilter(reason=safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED)
             ],
         )
 
@@ -307,7 +311,8 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(filters, 1)
         self.assertIsInstance(filters[0]["reason"], safety_types.BlockedReason)
         self.assertEqual(
-            filters[0]["reason"], safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED
+            filters[0]["reason"],
+            safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED,
         )
 
     def test_chat_citations(self):
@@ -332,18 +337,14 @@ class UnitTests(parameterized.TestCase):
         response = discuss.chat(messages="Do citations work?")
 
         self.assertEqual(
-            response.candidates[0]["citation_metadata"]["citation_sources"][0][
-                "start_index"
-            ],
+            response.candidates[0]["citation_metadata"]["citation_sources"][0]["start_index"],
             6,
         )
 
         response = response.reply("What about a second time?")
 
         self.assertEqual(
-            response.candidates[0]["citation_metadata"]["citation_sources"][0][
-                "start_index"
-            ],
+            response.candidates[0]["citation_metadata"]["citation_sources"][0]["start_index"],
             6,
         )
         self.assertLen(response.messages, 4)
@@ -355,7 +356,12 @@ class UnitTests(parameterized.TestCase):
         response.last = "Me too!"
         self.assertEqual(
             [msg["content"] for msg in response.messages],
-            ["Can you overwrite `.last`?", "yes", "glad to hear it!", "Me too!"],
+            [
+                "Can you overwrite `.last`?",
+                "yes",
+                "glad to hear it!",
+                "Me too!",
+            ],
         )
 
 

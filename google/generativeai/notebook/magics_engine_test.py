@@ -132,9 +132,7 @@ class MockGSpreadClient(gspread_client.GSpreadClient):
 
     def validate(self, sid: sheets_id.SheetsIdentifier):
         if sid.name() is None:
-            raise gspread_client.SpreadsheetNotFoundError(
-                "Sheets not found: {}".format(sid)
-            )
+            raise gspread_client.SpreadsheetNotFoundError("Sheets not found: {}".format(sid))
         pass
 
     def get_all_records(
@@ -310,9 +308,7 @@ class RunCmdEndToEndTests(EndToEndTests):
         )
 
         # --model_type should be parsed and passed to the ModelRegistry instance.
-        self.assertEqual(
-            model_registry.ModelName.ECHO_MODEL, mock_registry.get_model_name
-        )
+        self.assertEqual(model_registry.ModelName.ECHO_MODEL, mock_registry.get_model_name)
 
     def test_model_args_passed(self):
         mock_model = mock.create_autospec(model.EchoModel)
@@ -371,8 +367,7 @@ class RunCmdEndToEndTests(EndToEndTests):
 
     def test_inputs_passed(self):
         magic_line = (
-            "run --model_type=echo --inputs _INPUT_VAR_ONE _INPUT_VAR_TWO"
-            " _SHEETS_INPUT_VAR"
+            "run --model_type=echo --inputs _INPUT_VAR_ONE _INPUT_VAR_TWO" " _SHEETS_INPUT_VAR"
         )
         engine = magics_engine.MagicsEngine(registry=EchoModelRegistry())
         results = engine.execute_cell(magic_line, "quack {word}")
@@ -443,7 +438,8 @@ class RunCmdEndToEndTests(EndToEndTests):
             ),
         ):
             engine.execute_cell(
-                "run --model_type=echo --inputs _INPUT_VAR_ONE", "quack {not_word}"
+                "run --model_type=echo --inputs _INPUT_VAR_ONE",
+                "quack {not_word}",
             )
 
         with self.assertRaisesRegex(
@@ -454,7 +450,8 @@ class RunCmdEndToEndTests(EndToEndTests):
             ),
         ):
             engine.execute_cell(
-                "run --model_type=echo --inputs _INPUT_VAR_TWO", "quack {not_word}"
+                "run --model_type=echo --inputs _INPUT_VAR_TWO",
+                "quack {not_word}",
             )
 
         with self.assertRaisesRegex(
@@ -465,7 +462,8 @@ class RunCmdEndToEndTests(EndToEndTests):
             ),
         ):
             engine.execute_cell(
-                "run --model_type=echo --inputs _SHEETS_INPUT_VAR", "quack {not_word}"
+                "run --model_type=echo --inputs _SHEETS_INPUT_VAR",
+                "quack {not_word}",
             )
 
     def test_validate_sheets_inputs_against_placeholders(self):
@@ -484,9 +482,7 @@ class RunCmdEndToEndTests(EndToEndTests):
             )
 
     def test_post_process(self):
-        magic_line = (
-            "run --model_type=echo | add_length | repeat | add_length_decorated"
-        )
+        magic_line = "run --model_type=echo | add_length | repeat | add_length_decorated"
         engine = magics_engine.MagicsEngine(registry=EchoModelRegistry())
         results = engine.execute_cell(magic_line, "quack")
         self.assertIsInstance(results, pandas.DataFrame)
@@ -525,15 +521,15 @@ class RunCmdEndToEndTests(EndToEndTests):
         )
 
         self._assert_output_var_is_expected_results(
-            var=_output_var, expected_results=expected_results, fake_env=fake_env
+            var=_output_var,
+            expected_results=expected_results,
+            fake_env=fake_env,
         )
 
     def test_outputs_sink(self):
         # Include post-processing commands to make sure their results are exported
         # as well.
-        magic_line = (
-            "run --model_type=echo --outputs _output_sink_var | add_length | repeat"
-        )
+        magic_line = "run --model_type=echo --outputs _output_sink_var | add_length | repeat"
         engine = magics_engine.MagicsEngine(registry=EchoModelRegistry())
         results = engine.execute_cell(magic_line, "quack")
         self.assertIsNotNone(_output_sink_var.outputs)
@@ -587,9 +583,7 @@ class CompileCmdEndToEndTests(EndToEndTests):
         fake_env = FakeIPythonEnv()
         engine = magics_engine.MagicsEngine(registry=EchoModelRegistry(), env=fake_env)
 
-        _ = engine.execute_cell(
-            "compile _compiled_function --model_type=echo", "quack {word}"
-        )
+        _ = engine.execute_cell("compile _compiled_function --model_type=echo", "quack {word}")
 
         # The "compile" command produces a saved function.
         # Execute the saved function and check that it produces the expected output.
@@ -616,10 +610,12 @@ class CompareCmdEndToEndTests(EndToEndTests):
 
         # Create a pair of LLMFunctions to compare.
         _ = engine.execute_cell(
-            "compile _compiled_lhs_function --model_type=echo", "left quack {word}"
+            "compile _compiled_lhs_function --model_type=echo",
+            "left quack {word}",
         )
         _ = engine.execute_cell(
-            "compile _compiled_rhs_function --model_type=echo", "right quack {word}"
+            "compile _compiled_rhs_function --model_type=echo",
+            "right quack {word}",
         )
 
         # Run comparison.
@@ -652,7 +648,9 @@ class CompareCmdEndToEndTests(EndToEndTests):
         )
 
         self._assert_output_var_is_expected_results(
-            var=_output_var, expected_results=expected_results, fake_env=fake_env
+            var=_output_var,
+            expected_results=expected_results,
+            fake_env=fake_env,
         )
 
     def test_compare_cmd_with_custom_compare_fn(self):
@@ -661,10 +659,12 @@ class CompareCmdEndToEndTests(EndToEndTests):
 
         # Create a pair of LLMFunctions to compare.
         _ = engine.execute_cell(
-            "compile _compiled_lhs_function --model_type=echo", "left quack {word}"
+            "compile _compiled_lhs_function --model_type=echo",
+            "left quack {word}",
         )
         _ = engine.execute_cell(
-            "compile _compiled_rhs_function --model_type=echo", "right quack {word}"
+            "compile _compiled_rhs_function --model_type=echo",
+            "right quack {word}",
         )
 
         # Run comparison.
@@ -702,7 +702,9 @@ class CompareCmdEndToEndTests(EndToEndTests):
         )
 
         self._assert_output_var_is_expected_results(
-            var=_output_var, expected_results=expected_results, fake_env=fake_env
+            var=_output_var,
+            expected_results=expected_results,
+            fake_env=fake_env,
         )
 
 
@@ -744,7 +746,9 @@ class EvalCmdEndToEndTests(EndToEndTests):
         )
 
         self._assert_output_var_is_expected_results(
-            var=_output_var, expected_results=expected_results, fake_env=fake_env
+            var=_output_var,
+            expected_results=expected_results,
+            fake_env=fake_env,
         )
 
 

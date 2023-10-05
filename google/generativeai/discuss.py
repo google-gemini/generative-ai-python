@@ -39,7 +39,9 @@ def _make_message(content: discuss_types.MessageOptions) -> glm.Message:
         return glm.Message(content)
 
 
-def _make_messages(messages: discuss_types.MessagesOptions) -> List[glm.Message]:
+def _make_messages(
+    messages: discuss_types.MessagesOptions,
+) -> List[glm.Message]:
     """
     Creates a list of `glm.Message` objects from the provided messages.
 
@@ -146,7 +148,9 @@ def _make_examples_from_flat(
     return result
 
 
-def _make_examples(examples: discuss_types.ExamplesOptions) -> List[glm.Example]:
+def _make_examples(
+    examples: discuss_types.ExamplesOptions,
+) -> List[glm.Example]:
     """
     Creates a list of `glm.Example` objects from the provided examples.
 
@@ -223,9 +227,7 @@ def _make_message_prompt_dict(
             messages=messages,
         )
     else:
-        flat_prompt = (
-            (context is not None) or (examples is not None) or (messages is not None)
-        )
+        flat_prompt = (context is not None) or (examples is not None) or (messages is not None)
         if flat_prompt:
             raise ValueError(
                 "You can't set `prompt`, and its fields `(context, examples, messages)`"
@@ -446,9 +448,7 @@ else:
 @set_doc(discuss_types.ChatResponse.__doc__)
 @dataclasses.dataclass(**DATACLASS_KWARGS, init=False)
 class ChatResponse(discuss_types.ChatResponse):
-    _client: glm.DiscussServiceClient | None = dataclasses.field(
-        default=lambda: None, repr=False
-    )
+    _client: glm.DiscussServiceClient | None = dataclasses.field(default=lambda: None, repr=False)
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -469,13 +469,9 @@ class ChatResponse(discuss_types.ChatResponse):
         self.messages[-1] = message
 
     @set_doc(discuss_types.ChatResponse.reply.__doc__)
-    def reply(
-        self, message: discuss_types.MessageOptions
-    ) -> discuss_types.ChatResponse:
+    def reply(self, message: discuss_types.MessageOptions) -> discuss_types.ChatResponse:
         if isinstance(self._client, glm.DiscussServiceAsyncClient):
-            raise TypeError(
-                f"reply can't be called on an async client, use reply_async instead."
-            )
+            raise TypeError(f"reply can't be called on an async client, use reply_async instead.")
         if self.last is None:
             raise ValueError(
                 "The last response from the model did not return any candidates.\n"
@@ -532,9 +528,7 @@ def _build_chat_response(
     request.setdefault("temperature", None)
     request.setdefault("candidate_count", None)
 
-    return ChatResponse(
-        _client=client, **response, **request
-    )  # pytype: disable=missing-parameter
+    return ChatResponse(_client=client, **response, **request)  # pytype: disable=missing-parameter
 
 
 def _generate_response(
@@ -571,9 +565,7 @@ def count_message_tokens(
     client: glm.DiscussServiceAsyncClient | None = None,
 ):
     model = model_types.make_model_name(model)
-    prompt = _make_message_prompt(
-        prompt, context=context, examples=examples, messages=messages
-    )
+    prompt = _make_message_prompt(prompt, context=context, examples=examples, messages=messages)
 
     if client is None:
         client = get_default_discuss_client()

@@ -135,8 +135,7 @@ class LLMFunction(
 
     def __init__(
         self,
-        outputs_ipython_display_fn: Callable[[llmfn_outputs.LLMFnOutputs], None]
-        | None = None,
+        outputs_ipython_display_fn: Callable[[llmfn_outputs.LLMFnOutputs], None] | None = None,
     ):
         """Constructor.
 
@@ -145,9 +144,7 @@ class LLMFunction(
             override how the outputs of this LLMFunction will be displayed in a
             notebook (See further documentation in LLMFnOutputs.__init__().)
         """
-        self._post_process_cmds: list[
-            llmfn_post_process_cmds.LLMFnPostProcessCommand
-        ] = []
+        self._post_process_cmds: list[llmfn_post_process_cmds.LLMFnPostProcessCommand] = []
         self._outputs_ipython_display_fn = outputs_ipython_display_fn
 
     @abc.abstractmethod
@@ -224,8 +221,7 @@ class LLMFunctionImpl(LLMFunction):
         model: model_lib.AbstractModel,
         prompts: Sequence[str],
         model_args: model_lib.ModelArguments | None = None,
-        outputs_ipython_display_fn: Callable[[llmfn_outputs.LLMFnOutputs], None]
-        | None = None,
+        outputs_ipython_display_fn: Callable[[llmfn_outputs.LLMFnOutputs], None] | None = None,
     ):
         """Constructor.
 
@@ -240,16 +236,12 @@ class LLMFunctionImpl(LLMFunction):
         super().__init__(outputs_ipython_display_fn=outputs_ipython_display_fn)
         self._model = model
         self._prompts = prompts
-        self._model_args = (
-            model_lib.ModelArguments() if model_args is None else model_args
-        )
+        self._model_args = model_lib.ModelArguments() if model_args is None else model_args
 
         # Compute placeholders.
         self._placeholders = frozenset({})
         for prompt in self._prompts:
-            self._placeholders = self._placeholders.union(
-                prompt_utils.get_placeholders(prompt)
-            )
+            self._placeholders = self._placeholders.union(prompt_utils.get_placeholders(prompt))
 
     def _run_post_processing_cmds(
         self, results: Sequence[llmfn_output_row.LLMFnOutputRow]
@@ -267,9 +259,7 @@ class LLMFunctionImpl(LLMFunction):
                 raise
             except RuntimeError as e:
                 raise llmfn_post_process.PostProcessExecutionError(
-                    'Error executing "{}", got {}: {}'.format(
-                        cmd.name(), type(e).__name__, e
-                    )
+                    'Error executing "{}", got {}: {}'.format(cmd.name(), type(e).__name__, e)
                 )
         return results
 
@@ -321,8 +311,7 @@ class LLMCompareFunction(LLMFunction):
         lhs_name_and_fn: tuple[str, LLMFunction],
         rhs_name_and_fn: tuple[str, LLMFunction],
         compare_name_and_fns: Sequence[tuple[str, CompareFn]] | None = None,
-        outputs_ipython_display_fn: Callable[[llmfn_outputs.LLMFnOutputs], None]
-        | None = None,
+        outputs_ipython_display_fn: Callable[[llmfn_outputs.LLMFnOutputs], None] | None = None,
     ):
         """Constructor.
 
@@ -371,12 +360,8 @@ class LLMCompareFunction(LLMFunction):
             try:
                 if isinstance(cmd, llmfn_post_process_cmds.LLMFnImplPostProcessCommand):
                     results = cmd.run(results)
-                elif isinstance(
-                    cmd, llmfn_post_process_cmds.LLMCompareFnPostProcessCommand
-                ):
-                    results = cmd.run(
-                        list(zip(lhs_output_rows, rhs_output_rows, results))
-                    )
+                elif isinstance(cmd, llmfn_post_process_cmds.LLMCompareFnPostProcessCommand):
+                    results = cmd.run(list(zip(lhs_output_rows, rhs_output_rows, results)))
                 else:
                     raise RuntimeError(
                         "Unsupported post-process command type: {}".format(type(cmd))
@@ -385,9 +370,7 @@ class LLMCompareFunction(LLMFunction):
                 raise
             except RuntimeError as e:
                 raise llmfn_post_process.PostProcessExecutionError(
-                    'Error executing "{}", got {}: {}'.format(
-                        cmd.name(), type(e).__name__, e
-                    )
+                    'Error executing "{}", got {}: {}'.format(cmd.name(), type(e).__name__, e)
                 )
         return results
 
@@ -411,9 +394,7 @@ class LLMCompareFunction(LLMFunction):
                 )
             if lhs_entry.input_num != rhs_entry.input_num:
                 raise RuntimeError(
-                    "Input num mismatch: {} vs {}".format(
-                        lhs_entry.input_num, rhs_entry.input_num
-                    )
+                    "Input num mismatch: {} vs {}".format(lhs_entry.input_num, rhs_entry.input_num)
                 )
             if lhs_entry.prompt_vars != rhs_entry.prompt_vars:
                 raise RuntimeError(
@@ -425,9 +406,7 @@ class LLMCompareFunction(LLMFunction):
             # The two functions may have different numbers of results due to
             # options like candidate_count, so we can only compare up to the
             # minimum of the two.
-            num_output_rows = min(
-                len(lhs_entry.output_rows), len(rhs_entry.output_rows)
-            )
+            num_output_rows = min(len(lhs_entry.output_rows), len(rhs_entry.output_rows))
             lhs_output_rows = lhs_entry.output_rows[:num_output_rows]
             rhs_output_rows = rhs_entry.output_rows[:num_output_rows]
             output_rows: list[llmfn_output_row.LLMFnOutputRow] = []
@@ -444,18 +423,12 @@ class LLMCompareFunction(LLMFunction):
                 # RESULT_NUM entries and write our own.
                 row_data: dict[str, Any] = {
                     llmfn_outputs.ColumnNames.RESULT_NUM: result_num,
-                    self._result_name: self._result_compare_fn(
-                        lhs_output_row, rhs_output_row
-                    ),
+                    self._result_name: self._result_compare_fn(lhs_output_row, rhs_output_row),
                 }
-                output_row = llmfn_output_row.LLMFnOutputRow(
-                    data=row_data, result_type=Any
-                )
+                output_row = llmfn_output_row.LLMFnOutputRow(data=row_data, result_type=Any)
 
                 # Add the prompt vars.
-                output_row.add(
-                    llmfn_outputs.ColumnNames.PROMPT_VARS, lhs_entry.prompt_vars
-                )
+                output_row.add(llmfn_outputs.ColumnNames.PROMPT_VARS, lhs_entry.prompt_vars)
 
                 # Add the results from the left-hand side and right-hand side.
                 for name, row in [

@@ -47,9 +47,7 @@ class UnitTests(parameterized.TestCase):
         self.responses = {}
 
         @add_client_method
-        def get_model(
-            request: Union[glm.GetModelRequest, None] = None, *, name=None
-        ) -> glm.Model:
+        def get_model(request: Union[glm.GetModelRequest, None] = None, *, name=None) -> glm.Model:
             if request is None:
                 request = glm.GetModelRequest(name=name)
             self.assertIsInstance(request, glm.GetModelRequest)
@@ -80,9 +78,7 @@ class UnitTests(parameterized.TestCase):
             page_token=None,
         ) -> glm.ListModelsResponse:
             if request is None:
-                request = glm.ListModelsRequest(
-                    page_size=page_size, page_token=page_token
-                )
+                request = glm.ListModelsRequest(page_size=page_size, page_token=page_token)
             self.assertIsInstance(request, glm.ListModelsRequest)
             self.observed_requests.append(request)
             response = self.responses["list_models"][request.page_token]
@@ -96,9 +92,7 @@ class UnitTests(parameterized.TestCase):
             page_token=None,
         ) -> glm.ListModelsResponse:
             if request is None:
-                request = glm.ListTunedModelsRequest(
-                    page_size=page_size, page_token=page_token
-                )
+                request = glm.ListTunedModelsRequest(page_size=page_size, page_token=page_token)
             self.assertIsInstance(request, glm.ListTunedModelsRequest)
             self.observed_requests.append(request)
             response = self.responses["list_tuned_models"][request.page_token]
@@ -127,9 +121,7 @@ class UnitTests(parameterized.TestCase):
 
     def test_decode_tuned_model_time_round_trip(self):
         example_dt = datetime.datetime(2000, 1, 2, 3, 4, 5, 600_000, pytz.UTC)
-        tuned_model = glm.TunedModel(
-            name="tunedModels/house-mouse-001", create_time=example_dt
-        )
+        tuned_model = glm.TunedModel(name="tunedModels/house-mouse-001", create_time=example_dt)
         tuned_model = model_types.decode_tuned_model(tuned_model)
         self.assertEqual(tuned_model.create_time, example_dt)
 
@@ -226,9 +218,7 @@ class UnitTests(parameterized.TestCase):
         ],
     )
     def test_update_tuned_model_basics(self, tuned_model, updates):
-        self.responses["get_tuned_model"] = glm.TunedModel(
-            name="tunedModels/my-pig-001"
-        )
+        self.responses["get_tuned_model"] = glm.TunedModel(name="tunedModels/my-pig-001")
         # No self.responses['update_tuned_model'] the mock just returns the input.
         updated_model = models.update_tuned_model(tuned_model, updates)
         updated_model.description = "Trained on my data"
@@ -277,9 +267,7 @@ class UnitTests(parameterized.TestCase):
     )
     def test_delete_tuned_model(self, model):
         models.delete_tuned_model(model)
-        self.assertEqual(
-            self.observed_requests[0].name, "tunedModels/bipedal-pangolin-223"
-        )
+        self.assertEqual(self.observed_requests[0].name, "tunedModels/bipedal-pangolin-223")
 
     @parameterized.named_parameters(
         ["simple", "2000-01-01T01:01:01.123456Z", 123456],
@@ -323,9 +311,7 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(decoded.state, glm.TunedModel.State.CREATING)
         self.assertEqual(decoded.create_time.year, 2000)
         self.assertEqual(decoded.update_time.year, 2001)
-        self.assertIsInstance(
-            decoded.tuning_task.hyperparameters, model_types.Hyperparameters
-        )
+        self.assertIsInstance(decoded.tuning_task.hyperparameters, model_types.Hyperparameters)
         self.assertEqual(decoded.tuning_task.hyperparameters.batch_size, 72)
         self.assertIsInstance(decoded.tuning_task, model_types.TuningTask)
         self.assertEqual(decoded.tuning_task.start_time.year, 2002)
@@ -388,9 +374,7 @@ class UnitTests(parameterized.TestCase):
             operation.operations_pb2.Operation(), None, None, None
         )
         self.responses["get_tuned_model"] = tuned_source
-        models.create_tuned_model(
-            source_model="tunedModels/swim-fish-001", training_data=[]
-        )
+        models.create_tuned_model(source_model="tunedModels/swim-fish-001", training_data=[])
 
         self.assertEqual(
             self.observed_requests[-1].tuned_model.tuned_model_source.tuned_model,

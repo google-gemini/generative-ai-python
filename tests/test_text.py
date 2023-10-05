@@ -78,9 +78,7 @@ class UnitTests(parameterized.TestCase):
         ]
     )
     def test_make_generate_text_request(self, prompt):
-        x = text_service._make_generate_text_request(
-            model="models/chat-bison-001", prompt=prompt
-        )
+        x = text_service._make_generate_text_request(model="models/chat-bison-001", prompt=prompt)
         self.assertEqual("models/chat-bison-001", x.model)
         self.assertIsInstance(x, glm.GenerateTextRequest)
 
@@ -101,9 +99,7 @@ class UnitTests(parameterized.TestCase):
         emb = text_service.generate_embeddings(model=model, text=text)
 
         self.assertIsInstance(emb, dict)
-        self.assertEqual(
-            self.observed_request, glm.EmbedTextRequest(model=model, text=text)
-        )
+        self.assertEqual(self.observed_request, glm.EmbedTextRequest(model=model, text=text))
         self.assertIsInstance(emb["embedding"][0], float)
 
     @parameterized.named_parameters(
@@ -117,14 +113,18 @@ class UnitTests(parameterized.TestCase):
     )
     def test_generate_embeddings_batch(self, model, text):
         self.responses["batch_embed_text"] = glm.BatchEmbedTextResponse(
-            embeddings=[glm.Embedding(value=[1, 2, 3]), glm.Embedding(value=[4, 5, 6])]
+            embeddings=[
+                glm.Embedding(value=[1, 2, 3]),
+                glm.Embedding(value=[4, 5, 6]),
+            ]
         )
 
         emb = text_service.generate_embeddings(model=model, text=text)
 
         self.assertIsInstance(emb, dict)
         self.assertEqual(
-            self.observed_request, glm.BatchEmbedTextRequest(model=model, texts=text)
+            self.observed_request,
+            glm.BatchEmbedTextRequest(model=model, texts=text),
         )
         self.assertIsInstance(emb["embedding"][0], list)
 
@@ -162,9 +162,7 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(
             self.observed_request,
             glm.GenerateTextRequest(
-                model="models/text-bison-001",
-                prompt=glm.TextPrompt(text=prompt),
-                **kwargs
+                model="models/text-bison-001", prompt=glm.TextPrompt(text=prompt), **kwargs
             ),
         )
 
@@ -261,15 +259,16 @@ class UnitTests(parameterized.TestCase):
         self.responses["generate_text"] = glm.GenerateTextResponse(
             candidates=[{"output": "hello"}],
             filters=[
-                {"reason": safety_types.BlockedReason.SAFETY, "message": "not safe"}
+                {
+                    "reason": safety_types.BlockedReason.SAFETY,
+                    "message": "not safe",
+                }
             ],
         )
 
         response = text_service.generate_text(prompt="do filters work?")
         self.assertIsInstance(response.filters[0]["reason"], safety_types.BlockedReason)
-        self.assertEqual(
-            response.filters[0]["reason"], safety_types.BlockedReason.SAFETY
-        )
+        self.assertEqual(response.filters[0]["reason"], safety_types.BlockedReason.SAFETY)
 
     def test_safety_feedback(self):
         self.responses["generate_text"] = glm.GenerateTextResponse(
@@ -364,9 +363,7 @@ class UnitTests(parameterized.TestCase):
         )
         result = text_service.generate_text(prompt="Hi my name is Google")
         self.assertEqual(
-            result.candidates[0]["citation_metadata"]["citation_sources"][0][
-                "start_index"
-            ],
+            result.candidates[0]["citation_metadata"]["citation_sources"][0]["start_index"],
             6,
         )
 

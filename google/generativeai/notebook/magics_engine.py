@@ -46,18 +46,12 @@ class MagicsEngine:
         self._ipython_env = env
         models = registry or model_registry.ModelRegistry()
         self._cmd_handlers: dict[parsed_args_lib.CommandName, command.Command] = {
-            parsed_args_lib.CommandName.RUN_CMD: run_cmd.RunCommand(
-                models=models, env=env
-            ),
+            parsed_args_lib.CommandName.RUN_CMD: run_cmd.RunCommand(models=models, env=env),
             parsed_args_lib.CommandName.COMPILE_CMD: compile_cmd.CompileCommand(
                 models=models, env=env
             ),
-            parsed_args_lib.CommandName.COMPARE_CMD: compare_cmd.CompareCommand(
-                env=env
-            ),
-            parsed_args_lib.CommandName.EVAL_CMD: eval_cmd.EvalCommand(
-                models=models, env=env
-            ),
+            parsed_args_lib.CommandName.COMPARE_CMD: compare_cmd.CompareCommand(env=env),
+            parsed_args_lib.CommandName.EVAL_CMD: eval_cmd.EvalCommand(models=models, env=env),
         }
 
     def parse_line(
@@ -89,9 +83,7 @@ class MagicsEngine:
         parsed_args, post_processing_tokens = self.parse_line(line, placeholders)
         cmd_name = parsed_args.cmd
         handler = self._cmd_handlers[cmd_name]
-        post_processing_fns = handler.parse_post_processing_tokens(
-            post_processing_tokens
-        )
+        post_processing_fns = handler.parse_post_processing_tokens(post_processing_tokens)
         return handler, parsed_args, post_processing_fns
 
     def execute_cell(self, line: str, cell_content: str):
@@ -100,9 +92,7 @@ class MagicsEngine:
         placeholders = prompt_utils.get_placeholders(cell)
 
         try:
-            handler, parsed_args, post_processing_fns = self._get_handler(
-                line, placeholders
-            )
+            handler, parsed_args, post_processing_fns = self._get_handler(line, placeholders)
             return handler.execute(parsed_args, cell, post_processing_fns)
         except argument_parser.ParserNormalExit as e:
             if self._ipython_env is not None:

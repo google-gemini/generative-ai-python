@@ -34,9 +34,7 @@ class ModelRegistry:
 
     def __init__(self):
         self._model_cache: dict[ModelName, model_lib.AbstractModel] = {}
-        self._model_constructors: dict[
-            ModelName, Callable[[], model_lib.AbstractModel]
-        ] = {
+        self._model_constructors: dict[ModelName, Callable[[], model_lib.AbstractModel]] = {
             ModelName.ECHO_MODEL: model_lib.EchoModel,
             ModelName.TEXT_MODEL: text_model.TextModel,
         }

@@ -64,5 +64,6 @@ class EchoModel(AbstractModel):
         if candidate_count is None:
             candidate_count = 1
         return ModelResults(
-            model_input=model_input, text_results=[model_input] * candidate_count
+            model_input=model_input,
+            text_results=[model_input] * candidate_count,
         )

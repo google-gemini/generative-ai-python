@@ -81,9 +81,7 @@ class LLMFnPostProcessReorderCommand(LLMFnImplPostProcessCommand):
     as the model may produce more-than-one result for a prompt.
     """
 
-    def __init__(
-        self, name: str, fn: llmfn_post_process.LLMFnPostProcessBatchReorderFn
-    ):
+    def __init__(self, name: str, fn: llmfn_post_process.LLMFnPostProcessBatchReorderFn):
         self._name = name
         self._fn = fn
 
@@ -97,9 +95,7 @@ class LLMFnPostProcessReorderCommand(LLMFnImplPostProcessCommand):
         new_row_indices = self._fn(rows)
         if len(set(new_row_indices)) != len(new_row_indices):
             raise llmfn_post_process.PostProcessExecutionError(
-                'Error executing "{}": returned indices should be unique'.format(
-                    self._name
-                )
+                'Error executing "{}": returned indices should be unique'.format(self._name)
             )
 
         new_rows: list[llmfn_output_row.LLMFnOutputRow] = []
@@ -154,9 +150,7 @@ class LLMFnPostProcessAddCommand(LLMFnImplPostProcessCommand):
 class LLMFnPostProcessReplaceCommand(LLMFnImplPostProcessCommand):
     """A command that modifies the results in each row."""
 
-    def __init__(
-        self, name: str, fn: llmfn_post_process.LLMFnPostProcessBatchReplaceFn
-    ):
+    def __init__(self, name: str, fn: llmfn_post_process.LLMFnPostProcessBatchReplaceFn):
         self._name = name
         self._fn = fn
 
@@ -216,7 +210,9 @@ class LLMCompareFnPostProcessAddCommand(LLMCompareFnPostProcessCommand):
     """
 
     def __init__(
-        self, name: str, fn: llmfn_post_process.LLMCompareFnPostProcessBatchAddFn
+        self,
+        name: str,
+        fn: llmfn_post_process.LLMCompareFnPostProcessBatchAddFn,
     ):
         self._name = name
         self._fn = fn

@@ -48,9 +48,7 @@ class SpreadsheetNotFoundError(RuntimeError):
 
 
 def _get_import_error() -> Exception:
-    return RuntimeError(
-        '"gspread" module not imported, got: {}'.format(_gspread_import_error)
-    )
+    return RuntimeError('"gspread" module not imported, got: {}'.format(_gspread_import_error))
 
 
 class GSpreadClient(abc.ABC):
@@ -122,9 +120,7 @@ class GSpreadClientImpl(GSpreadClient):
             if sid.url():
                 return self._client.open_by_url(str(sid.url()))
         except GSpreadException as exc:
-            raise SpreadsheetNotFoundError(
-                "Unable to find Sheets with {}".format(sid)
-            ) from exc
+            raise SpreadsheetNotFoundError("Unable to find Sheets with {}".format(sid)) from exc
         raise SpreadsheetNotFoundError("Invalid sheets_id.SheetsIdentifier")
 
     def validate(self, sid: sheets_id.SheetsIdentifier) -> None:
@@ -154,11 +150,7 @@ class GSpreadClientImpl(GSpreadClient):
         else:
 
             def _display_fn():
-                print(
-                    "Reading inputs from worksheet {} in {}".format(
-                        worksheet.title, sheet.title
-                    )
-                )
+                print("Reading inputs from worksheet {} in {}".format(worksheet.title, sheet.title))
 
         return worksheet.get_all_records(), _display_fn
 
@@ -190,11 +182,7 @@ class GSpreadClientImpl(GSpreadClient):
                 )
             )
         else:
-            print(
-                "Results written to new worksheet {} in {}".format(
-                    worksheet.title, sheet.title
-                )
-            )
+            print("Results written to new worksheet {} in {}".format(worksheet.title, sheet.title))
 
 
 class NullGSpreadClient(GSpreadClient):
@@ -226,9 +214,7 @@ class NullGSpreadClient(GSpreadClient):
 _gspread_client: GSpreadClient | None = None
 
 
-def authorize(
-    creds: credentials.Credentials, env: ipython_env.IPythonEnv | None
-) -> None:
+def authorize(creds: credentials.Credentials, env: ipython_env.IPythonEnv | None) -> None:
     """Sets up credential for gspreads."""
     global _gspread_client
     if gspread is not None:

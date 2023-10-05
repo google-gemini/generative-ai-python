@@ -35,9 +35,7 @@ class LLMFnOutputRowTest(absltest.TestCase):
         row = LLMFnOutputRow(data={"result": "none"}, result_type=str)
         self.assertLen(row, self._test_is_mapping_impl(row))
 
-    def _test_is_output_row_view_impl(
-        self, view: llmfn_output_row.LLMFnOutputRowView
-    ) -> None:
+    def _test_is_output_row_view_impl(self, view: llmfn_output_row.LLMFnOutputRowView) -> None:
         self.assertEqual("result", view.result_key())
         self.assertEqual("none", view.result_value())
 
@@ -49,9 +47,7 @@ class LLMFnOutputRowTest(absltest.TestCase):
         with self.assertRaisesRegex(ValueError, "Must provide non-empty data"):
             LLMFnOutputRow(data={}, result_type=str)
 
-        with self.assertRaisesRegex(
-            ValueError, 'Value of last entry must be of type "str"'
-        ):
+        with self.assertRaisesRegex(ValueError, 'Value of last entry must be of type "str"'):
             LLMFnOutputRow(data={"result": 42}, result_type=str)
 
         # Non-strings are accepted for non-rightmost cell.

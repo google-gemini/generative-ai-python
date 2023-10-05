@@ -150,13 +150,9 @@ class CmdLineParserModelFlagsTest(CmdLineParserTestBase):
         parser = cmd_line_parser.CmdLineParser()
         # Test that the min and max values are accepted.
         results, _ = parser.parse_line("--candidate_count=1")
-        self.assertEqual(
-            model_lib.ModelArguments(candidate_count=1), results.model_args
-        )
+        self.assertEqual(model_lib.ModelArguments(candidate_count=1), results.model_args)
         results, _ = parser.parse_line("--candidate_count=8")
-        self.assertEqual(
-            model_lib.ModelArguments(candidate_count=8), results.model_args
-        )
+        self.assertEqual(model_lib.ModelArguments(candidate_count=8), results.model_args)
 
         # Test that values outside the min and max are rejected.
         with self.assertRaisesRegex(
@@ -245,7 +241,8 @@ class CmdLineParserRunTest(CmdLineParserTestBase):
             ),
         ):
             parser.parse_line(
-                "run --inputs _NOT_WORD_INPUT_VAR", placeholders=frozenset({"word"})
+                "run --inputs _NOT_WORD_INPUT_VAR",
+                placeholders=frozenset({"word"}),
             )
 
 
@@ -264,9 +261,7 @@ class CmdLineParserCompileTest(CmdLineParserTestBase):
 
     def test_parse_args_bad_save_name(self):
         parser = cmd_line_parser.CmdLineParser()
-        with self.assertRaisesRegex(
-            argument_parser.ParserError, "Invalid Python variable name"
-        ):
+        with self.assertRaisesRegex(argument_parser.ParserError, "Invalid Python variable name"):
             parser.parse_line("compile 1234")
 
     def test_parse_args_has_save_name(self):
@@ -295,9 +290,7 @@ class CmdLineParserCompareTest(CmdLineParserTestBase):
 
     def test_compare(self):
         parser = cmd_line_parser.CmdLineParser()
-        results, _ = parser.parse_line(
-            "compare _test_lhs_fn _test_rhs_fn --inputs _INPUT_VAR_ONE"
-        )
+        results, _ = parser.parse_line("compare _test_lhs_fn _test_rhs_fn --inputs _INPUT_VAR_ONE")
         self.assertEqual(("_test_lhs_fn", _test_lhs_fn), results.lhs_name_and_fn)
         self.assertEqual(("_test_rhs_fn", _test_rhs_fn), results.rhs_name_and_fn)
         self.assertEmpty(results.compare_fn)
@@ -321,9 +314,7 @@ class CmdLineParserCompareTest(CmdLineParserTestBase):
                 ' ValueError: Placeholder "word" not found in input'
             ),
         ):
-            parser.parse_line(
-                "compare _test_lhs_fn _test_rhs_fn --inputs _NOT_WORD_INPUT_VAR"
-            )
+            parser.parse_line("compare _test_lhs_fn _test_rhs_fn --inputs _NOT_WORD_INPUT_VAR")
 
 
 # `unittest discover` does not run via __main__, so patch this context in.

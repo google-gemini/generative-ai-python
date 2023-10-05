@@ -74,9 +74,7 @@ class TextModelTestCase(absltest.TestCase):
         self.assertIsNone(result.text_results[2])
         self.assertIsNone(result.text_results[3])
 
-        args = model_lib.ModelArguments(
-            model="model_name", temperature=0.42, candidate_count=5
-        )
+        args = model_lib.ModelArguments(model="model_name", temperature=0.42, candidate_count=5)
         result = model.call_model("prompt goes in", args)
         self.assertEqual(result.text_results[0], "prompt goes in_1")
         self.assertEqual(result.text_results[1], "model_name")

@@ -41,7 +41,9 @@ class TextModel(model_lib.AbstractModel):
         return text.generate_text(prompt=prompt, **kwargs)
 
     def call_model(
-        self, model_input: str, model_args: model_lib.ModelArguments | None = None
+        self,
+        model_input: str,
+        model_args: model_lib.ModelArguments | None = None,
     ) -> model_lib.ModelResults:
         if model_args is None:
             model_args = model_lib.ModelArguments()

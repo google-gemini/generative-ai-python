@@ -98,9 +98,7 @@ def create_llm_function(
         outputs_ipython_display_fn=llmfn_outputs_display_fn,
     )
     if parsed_args.unique:
-        llm_fn = llm_fn.add_post_process_reorder_fn(
-            name="unique", fn=unique_fn.unique_fn
-        )
+        llm_fn = llm_fn.add_post_process_reorder_fn(name="unique", fn=unique_fn.unique_fn)
     for fn in post_processing_fns:
         llm_fn = fn.add_to_llm_function(llm_fn)
 
@@ -126,9 +124,7 @@ def create_llm_compare_function(
     llm_cmp_fn = llm_function.LLMCompareFunction(
         lhs_name_and_fn=parsed_args.lhs_name_and_fn,
         rhs_name_and_fn=parsed_args.rhs_name_and_fn,
-        compare_name_and_fns=[
-            _convert_simple_compare_fn(x) for x in parsed_args.compare_fn
-        ],
+        compare_name_and_fns=[_convert_simple_compare_fn(x) for x in parsed_args.compare_fn],
         outputs_ipython_display_fn=llmfn_outputs_display_fn,
     )
     for fn in post_processing_fns:
@@ -161,9 +157,7 @@ def create_llm_eval_function(
     llm_cmp_fn = llm_function.LLMCompareFunction(
         lhs_name_and_fn=("actual", llm_fn),
         rhs_name_and_fn=("ground_truth", ground_truth_fn),
-        compare_name_and_fns=[
-            _convert_simple_compare_fn(x) for x in parsed_args.compare_fn
-        ],
+        compare_name_and_fns=[_convert_simple_compare_fn(x) for x in parsed_args.compare_fn],
         outputs_ipython_display_fn=llmfn_outputs_display_fn,
     )
 
