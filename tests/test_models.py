@@ -29,7 +29,8 @@ from google.api_core import operation
 from google.generativeai import models
 from google.generativeai import client
 from google.generativeai.types import model_types
-from google.protobuf import field_mask_pb2
+
+import pandas as pd
 
 
 class UnitTests(parameterized.TestCase):
@@ -384,6 +385,59 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests[-1].tuned_model.tuned_model_source.base_model,
             "models/swim-fish-000",
         )
+
+    @parameterized.named_parameters(
+        [
+            "glm",
+            glm.Dataset(
+                examples=glm.TuningExamples(
+                    examples=[
+                        {"text_input": "a", "output": "1"},
+                        {"text_input": "b", "output": "2"},
+                        {"text_input": "c", "output": "3"},
+                    ]
+                )
+            ),
+        ],
+        [
+            "list",
+            [
+                ("a", "1"),
+                {"text_input": "b", "output": "2"},
+                glm.TuningExample({"text_input": "c", "output": "3"}),
+            ],
+        ],
+        ["dict", {"text_input": ["a", "b", "c"], "output": ["1", "2", "3"]}],
+        [
+            "dict_custom_keys",
+            {"my_inputs": ["a", "b", "c"], "my_outputs": ["1", "2", "3"]},
+            "my_inputs",
+            "my_outputs",
+        ],
+        [
+            "pd.DataFrame",
+            pd.DataFrame(
+                [
+                    {"text_input": "a", "output": "1"},
+                    {"text_input": "b", "output": "2"},
+                    {"text_input": "c", "output": "3"},
+                ]
+            ),
+        ],
+    )
+    def test_create_dataset(self, data, ik="text_input", ok="output"):
+        ds = model_types.encode_tuning_data(data, input_key=ik, output_key=ok)
+
+        expect = glm.Dataset(
+            examples=glm.TuningExamples(
+                examples=[
+                    {"text_input": "a", "output": "1"},
+                    {"text_input": "b", "output": "2"},
+                    {"text_input": "c", "output": "3"},
+                ]
+            )
+        )
+        self.assertEqual(expect, ds)
 
 
 if __name__ == "__main__":

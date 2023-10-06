@@ -189,15 +189,24 @@ TuningDataOptions = Union[
 ]  # TODO(markdaoust): csv, json, pandas, np
 
 
-def encode_tuning_data(data: TuningDataOptions) -> glm.Dataset:
+def encode_tuning_data(
+    data: TuningDataOptions, input_key="text_input", output_key="output"
+) -> glm.Dataset:
     if isinstance(data, glm.Dataset):
         return data
-
-    new_data = list()
-    for example in data:
-        example = encode_tuning_example(example)
-        new_data.append(example)
-    return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
+    elif hasattr(data, "keys"):
+        new_data = list()
+        inputs = data[input_key]
+        outputs = data[output_key]
+        for i, o in zip(inputs, outputs):
+            new_data.append(glm.TuningExample({"text_input": i, "output": o}))
+        return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
+    else:
+        new_data = list()
+        for example in data:
+            example = encode_tuning_example(example)
+            new_data.append(example)
+        return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
 
 
 def encode_tuning_example(example: TuningExampleOptions):

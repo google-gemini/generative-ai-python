@@ -219,6 +219,8 @@ def create_tuned_model(
     epoch_count: int | None = None,
     batch_size: int | None = None,
     learning_rate: float | None = None,
+    input_key: str = "text_input",
+    output_key: str = "output",
     client: glm.ModelServiceClient | None = None,
 ) -> operations.CreateTunedModelOperation:
     """Launches a tuning job to create a TunedModel.
@@ -287,7 +289,9 @@ def create_tuned_model(
     else:
         ValueError(f"Not understood: `{source_model=}`")
 
-    training_data = model_types.encode_tuning_data(training_data)
+    training_data = model_types.encode_tuning_data(
+        training_data, input_key=input_key, output_key=output_key
+    )
 
     hyperparameters = glm.Hyperparameters(
         epoch_count=epoch_count,
