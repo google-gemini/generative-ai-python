@@ -214,18 +214,14 @@ class _SingleValueStoreAction(argparse.Action):
             has_default=hasattr(self, "default"),
             default_value=getattr(self, "default"),
         ):
-            raise argparse.ArgumentError(
-                self, "Cannot set {} more than once".format(option_string)
-            )
+            raise argparse.ArgumentError(self, "Cannot set {} more than once".format(option_string))
 
         try:
             converted_value = self._parse_to_dest_type_fn(values[0])
         except Exception as e:
             raise argparse.ArgumentError(
                 self,
-                'Error with value "{}", got {}: {}'.format(
-                    values[0], _get_type_name(type(e)), e
-                ),
+                'Error with value "{}", got {}: {}'.format(values[0], _get_type_name(type(e)), e),
             )
 
         if not isinstance(converted_value, self._dest_type):
@@ -269,9 +265,7 @@ class _MultiValuesAppendAction(argparse.Action):
 
         curr_value = getattr(namespace, self.dest)
         if curr_value:
-            raise argparse.ArgumentError(
-                self, "Cannot set {} more than once".format(option_string)
-            )
+            raise argparse.ArgumentError(self, "Cannot set {} more than once".format(option_string))
 
         for value in values:
             try:
@@ -291,9 +285,7 @@ class _MultiValuesAppendAction(argparse.Action):
                     )
                 )
             if converted_value in curr_value:
-                raise argparse.ArgumentError(
-                    self, 'Duplicate values "{}"'.format(value)
-                )
+                raise argparse.ArgumentError(self, 'Duplicate values "{}"'.format(value))
 
             curr_value.append(converted_value)
 
@@ -327,9 +319,7 @@ class _BooleanValueStoreAction(argparse.Action):
             has_default=True,
             default_value=False,
         ):
-            raise argparse.ArgumentError(
-                self, "Cannot set {} more than once".format(option_string)
-            )
+            raise argparse.ArgumentError(self, "Cannot set {} more than once".format(option_string))
 
         setattr(namespace, self.dest, True)
 
@@ -398,9 +388,7 @@ class SingleValueFlagDef(FlagDef):
 
         if self._has_default_value() and self.default_value is not None:
             if not isinstance(self.default_value, self._get_dest_type()):
-                raise ValueError(
-                    "Default value must be of the same type as the destination type"
-                )
+                raise ValueError("Default value must be of the same type as the destination type")
 
 
 class EnumFlagDef(SingleValueFlagDef):
@@ -420,15 +408,11 @@ class EnumFlagDef(SingleValueFlagDef):
 
         # These properties are set by "enum_type" so don"t let the caller set them.
         if "parse_type" in kwargs:
-            raise ValueError(
-                'Cannot set "parse_type" for EnumFlagDef; set "enum_type" instead'
-            )
+            raise ValueError('Cannot set "parse_type" for EnumFlagDef; set "enum_type" instead')
         kwargs["parse_type"] = str
 
         if "dest_type" in kwargs:
-            raise ValueError(
-                'Cannot set "dest_type" for EnumFlagDef; set "enum_type" instead'
-            )
+            raise ValueError('Cannot set "dest_type" for EnumFlagDef; set "enum_type" instead')
         kwargs["dest_type"] = enum_type
 
         if "choices" in kwargs:
@@ -437,9 +421,7 @@ class EnumFlagDef(SingleValueFlagDef):
                 try:
                     enum_type(x)
                 except ValueError:
-                    raise ValueError(
-                        'Invalid value in "choices": "{}"'.format(x)
-                    ) from None
+                    raise ValueError('Invalid value in "choices": "{}"'.format(x)) from None
         else:
             kwargs["choices"] = [x.value for x in enum_type]
 

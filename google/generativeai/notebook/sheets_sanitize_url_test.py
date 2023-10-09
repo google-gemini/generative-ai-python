@@ -38,10 +38,7 @@ class SheetsSanitizeURLTest(absltest.TestCase):
         """Domain must be docs.google.com."""
         with self.assertRaisesRegex(
             ValueError,
-            (
-                'Domain for Sheets url must be "docs.google.com", got'
-                ' "sheets.google.com"'
-            ),
+            ('Domain for Sheets url must be "docs.google.com", got' ' "sheets.google.com"'),
         ):
             sanitize_sheets_url("https://sheets.google.com")
 
@@ -51,9 +48,7 @@ class SheetsSanitizeURLTest(absltest.TestCase):
 
     def test_params_must_be_docs_google_com(self):
         """Params component must be empty."""
-        with self.assertRaisesRegex(
-            ValueError, 'Params component must be empty, got "hello"'
-        ):
+        with self.assertRaisesRegex(ValueError, 'Params component must be empty, got "hello"'):
             sanitize_sheets_url("https://docs.google.com/;hello")
 
         # URL without params goes through.
@@ -79,27 +74,20 @@ class SheetsSanitizeURLTest(absltest.TestCase):
             sanitize_sheets_url("https://docs.google.com/?a=b&key=sheets.php")
 
         # Valid query goes through.
-        url = sanitize_sheets_url(
-            "https://docs.google.com/?k1=abc&k2=DEF&k3=123&k4=-_-"
-        )
-        self.assertEqual(
-            "https://docs.google.com/?k1=abc&k2=DEF&k3=123&k4=-_-", str(url)
-        )
+        url = sanitize_sheets_url("https://docs.google.com/?k1=abc&k2=DEF&k3=123&k4=-_-")
+        self.assertEqual("https://docs.google.com/?k1=abc&k2=DEF&k3=123&k4=-_-", str(url))
 
     def test_fragment_must_be_limited_character_set(self):
         """Fragment can only contain a limited character set."""
         with self.assertRaisesRegex(
-            ValueError, 'Invalid fragment for Sheets url, got "a=b&key=sheets.php"'
+            ValueError,
+            'Invalid fragment for Sheets url, got "a=b&key=sheets.php"',
         ):
             sanitize_sheets_url("https://docs.google.com/#a=b&key=sheets.php")
 
         # Valid fragment goes through.
-        url = sanitize_sheets_url(
-            "https://docs.google.com/#k1=abc&k2=DEF&k3=123&k4=-_-"
-        )
-        self.assertEqual(
-            "https://docs.google.com/#k1=abc&k2=DEF&k3=123&k4=-_-", str(url)
-        )
+        url = sanitize_sheets_url("https://docs.google.com/#k1=abc&k2=DEF&k3=123&k4=-_-")
+        self.assertEqual("https://docs.google.com/#k1=abc&k2=DEF&k3=123&k4=-_-", str(url))
 
 
 if __name__ == "__main__":

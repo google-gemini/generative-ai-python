@@ -58,9 +58,7 @@ class CompileCommand(command.Command):
         )
 
         py_utils.set_py_var(parsed_args.compile_save_name, llm_fn)
-        return "Saved function to Python variable: {}".format(
-            parsed_args.compile_save_name
-        )
+        return "Saved function to Python variable: {}".format(parsed_args.compile_save_name)
 
     def parse_post_processing_tokens(
         self, tokens: Sequence[Sequence[str]]

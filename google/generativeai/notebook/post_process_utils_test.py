@@ -20,7 +20,9 @@ from unittest import mock
 
 from absl.testing import absltest
 from google.generativeai.notebook import post_process_utils
-from google.generativeai.notebook import post_process_utils_test_helper as helper
+from google.generativeai.notebook import (
+    post_process_utils_test_helper as helper,
+)
 from google.generativeai.notebook.lib import llm_function
 from google.generativeai.notebook.lib import llmfn_output_row
 from google.generativeai.notebook.lib import model as model_lib
@@ -54,14 +56,10 @@ class PostProcessUtilsResolveTest(absltest.TestCase):
 
     def test_cannot_resolve_multiword_expression(self):
         with self.assertRaisesRegex(PostProcessParseError, "should be a single token"):
-            post_process_utils._resolve_one_post_processing_expression(
-                ["hello", "world"]
-            )
+            post_process_utils._resolve_one_post_processing_expression(["hello", "world"])
 
     def test_cannot_resolve_invalid_module(self):
-        with self.assertRaisesRegex(
-            PostProcessParseError, 'Unable to resolve "invalid_module"'
-        ):
+        with self.assertRaisesRegex(PostProcessParseError, 'Unable to resolve "invalid_module"'):
             post_process_utils._resolve_one_post_processing_expression(
                 ["invalid_module.add_length"]
             )
@@ -70,14 +68,10 @@ class PostProcessUtilsResolveTest(absltest.TestCase):
         with self.assertRaisesRegex(
             PostProcessParseError, 'Unable to resolve "helper.invalid_function"'
         ):
-            post_process_utils._resolve_one_post_processing_expression(
-                ["helper.invalid_function"]
-            )
+            post_process_utils._resolve_one_post_processing_expression(["helper.invalid_function"])
 
     def test_resolve_undecorated_function(self):
-        name, expr = post_process_utils._resolve_one_post_processing_expression(
-            ["add_length"]
-        )
+        name, expr = post_process_utils._resolve_one_post_processing_expression(["add_length"])
         self.assertEqual("add_length", name)
         self.assertEqual(add_length, expr)
         self.assertEqual(11, expr("hello_world"))
@@ -91,24 +85,18 @@ class PostProcessUtilsResolveTest(absltest.TestCase):
         self.assertIsInstance(expr, post_process_utils._ParsedPostProcessAddExpr)
         self.assertEqual(
             [11],
-            expr(
-                [LLMFnOutputRow(data={"text_result": "hello_world"}, result_type=str)]
-            ),
+            expr([LLMFnOutputRow(data={"text_result": "hello_world"}, result_type=str)]),
         )
 
     def test_resolve_decorated_replace_function(self):
         # Test to_upper().
-        name, expr = post_process_utils._resolve_one_post_processing_expression(
-            ["to_upper"]
-        )
+        name, expr = post_process_utils._resolve_one_post_processing_expression(["to_upper"])
         self.assertEqual("to_upper", name)
         self.assertEqual(to_upper, expr)
         self.assertIsInstance(expr, post_process_utils._ParsedPostProcessReplaceExpr)
         self.assertEqual(
             ["HELLO_WORLD"],
-            expr(
-                [LLMFnOutputRow(data={"text_result": "hello_world"}, result_type=str)]
-            ),
+            expr([LLMFnOutputRow(data={"text_result": "hello_world"}, result_type=str)]),
         )
 
     def test_resolve_module_undecorated_function(self):
@@ -128,23 +116,17 @@ class PostProcessUtilsResolveTest(absltest.TestCase):
         self.assertIsInstance(expr, post_process_utils._ParsedPostProcessAddExpr)
         self.assertEqual(
             [11],
-            expr(
-                [LLMFnOutputRow(data={"text_result": "hello_world"}, result_type=str)]
-            ),
+            expr([LLMFnOutputRow(data={"text_result": "hello_world"}, result_type=str)]),
         )
 
     def test_resolve_module_decorated_replace_function(self):
-        name, expr = post_process_utils._resolve_one_post_processing_expression(
-            ["helper.to_upper"]
-        )
+        name, expr = post_process_utils._resolve_one_post_processing_expression(["helper.to_upper"])
         self.assertEqual("helper.to_upper", name)
         self.assertEqual(helper.to_upper, expr)
         self.assertIsInstance(expr, post_process_utils._ParsedPostProcessReplaceExpr)
         self.assertEqual(
             ["HELLO_WORLD"],
-            expr(
-                [LLMFnOutputRow(data={"text_result": "hello_world"}, result_type=str)]
-            ),
+            expr([LLMFnOutputRow(data={"text_result": "hello_world"}, result_type=str)]),
         )
 
 
@@ -152,9 +134,7 @@ class PostProcessUtilsResolveTest(absltest.TestCase):
 @mock.patch.dict(sys.modules, {"__main__": sys.modules[__name__]})
 class PostProcessUtilsTest(absltest.TestCase):
     def test_must_be_callable(self):
-        with self.assertRaisesRegex(
-            PostProcessParseError, "NOT_A_FUNCTION is not callable"
-        ):
+        with self.assertRaisesRegex(PostProcessParseError, "NOT_A_FUNCTION is not callable"):
             post_process_utils.resolve_post_processing_tokens([["NOT_A_FUNCTION"]])
 
     def test_parsed_post_process_add_fn(self):
@@ -165,12 +145,8 @@ class PostProcessUtilsTest(absltest.TestCase):
             ]
         )
         self.assertLen(parsed_exprs, 1)
-        self.assertIsInstance(
-            parsed_exprs[0], post_process_utils._ParsedPostProcessAddExpr
-        )
-        llm_fn = llm_function.LLMFunctionImpl(
-            model=model_lib.EchoModel(), prompts=["hello"]
-        )
+        self.assertIsInstance(parsed_exprs[0], post_process_utils._ParsedPostProcessAddExpr)
+        llm_fn = llm_function.LLMFunctionImpl(model=model_lib.EchoModel(), prompts=["hello"])
         parsed_exprs[0].add_to_llm_function(llm_fn)
         results = llm_fn()
         self.assertEqual(
@@ -192,12 +168,8 @@ class PostProcessUtilsTest(absltest.TestCase):
             ]
         )
         self.assertLen(parsed_exprs, 1)
-        self.assertIsInstance(
-            parsed_exprs[0], post_process_utils._ParsedPostProcessReplaceExpr
-        )
-        llm_fn = llm_function.LLMFunctionImpl(
-            model=model_lib.EchoModel(), prompts=["hello"]
-        )
+        self.assertIsInstance(parsed_exprs[0], post_process_utils._ParsedPostProcessReplaceExpr)
+        llm_fn = llm_function.LLMFunctionImpl(model=model_lib.EchoModel(), prompts=["hello"])
         parsed_exprs[0].add_to_llm_function(llm_fn)
         results = llm_fn()
         self.assertEqual(
@@ -226,9 +198,7 @@ class PostProcessUtilsTest(absltest.TestCase):
         for fn in parsed_exprs:
             self.assertIsInstance(fn, post_process_utils.ParsedPostProcessExpr)
 
-        llm_fn = llm_function.LLMFunctionImpl(
-            model=model_lib.EchoModel(), prompts=["hello"]
-        )
+        llm_fn = llm_function.LLMFunctionImpl(model=model_lib.EchoModel(), prompts=["hello"])
         for expr in parsed_exprs:
             expr.add_to_llm_function(llm_fn)
 

@@ -210,9 +210,7 @@ def _generate_response(
     response["safety_feedback"] = safety_types.convert_safety_feedback_to_enums(
         response["safety_feedback"]
     )
-    response["candidates"] = safety_types.convert_candidate_enums(
-        response["candidates"]
-    )
+    response["candidates"] = safety_types.convert_candidate_enums(response["candidates"])
 
     return Completion(_client=client, **response)
 

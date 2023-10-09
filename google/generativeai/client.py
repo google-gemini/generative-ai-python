@@ -78,9 +78,7 @@ def configure(
 
     if had_api_key_value:
         if api_key is not None:
-            raise ValueError(
-                "You can't set both `api_key` and `client_options['api_key']`."
-            )
+            raise ValueError("You can't set both `api_key` and `client_options['api_key']`.")
     else:
         if api_key is None:
             # If no key is provided explicitly, attempt to load one from the
@@ -107,9 +105,7 @@ def configure(
     }
 
     new_default_client_config = {
-        key: value
-        for key, value in new_default_client_config.items()
-        if value is not None
+        key: value for key, value in new_default_client_config.items() if value is not None
     }
 
     default_client_config = new_default_client_config
@@ -147,9 +143,7 @@ def get_default_discuss_async_client() -> glm.DiscussServiceAsyncClient:
         # Attempt to configure using defaults.
         if not default_client_config:
             configure()
-        default_discuss_async_client = glm.DiscussServiceAsyncClient(
-            **default_client_config
-        )
+        default_discuss_async_client = glm.DiscussServiceAsyncClient(**default_client_config)
 
     return default_discuss_async_client
 

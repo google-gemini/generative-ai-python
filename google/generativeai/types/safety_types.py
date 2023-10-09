@@ -137,7 +137,9 @@ class ContentFilterDict(TypedDict):
     __doc__ = docstring_utils.strip_oneof(glm.ContentFilter.__doc__)
 
 
-def convert_filters_to_enums(filters: Iterable[dict]) -> List[ContentFilterDict]:
+def convert_filters_to_enums(
+    filters: Iterable[dict],
+) -> List[ContentFilterDict]:
     result = []
     for f in filters:
         f = f.copy()
@@ -192,7 +194,10 @@ def normalize_safety_settings(
         return None
     if isinstance(settings, Mapping):
         return [
-            {"category": to_harm_category(key), "threshold": to_block_threshold(value)}
+            {
+                "category": to_harm_category(key),
+                "threshold": to_block_threshold(value),
+            }
             for key, value in settings.items()
         ]
     return [
@@ -236,8 +241,6 @@ def convert_candidate_enums(candidates):
     result = []
     for candidate in candidates:
         candidate = candidate.copy()
-        candidate["safety_ratings"] = convert_ratings_to_enum(
-            candidate["safety_ratings"]
-        )
+        candidate["safety_ratings"] = convert_ratings_to_enum(candidate["safety_ratings"])
         result.append(candidate)
     return result

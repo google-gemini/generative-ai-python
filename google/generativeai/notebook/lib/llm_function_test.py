@@ -39,11 +39,11 @@ class _MockModel(model_lib.AbstractModel):
         self._mock_results = mock_results
 
     def call_model(
-        self, model_input: str, model_args: model_lib.ModelArguments | None = None
+        self,
+        model_input: str,
+        model_args: model_lib.ModelArguments | None = None,
     ) -> model_lib.ModelResults:
-        return model_lib.ModelResults(
-            model_input=model_input, text_results=self._mock_results
-        )
+        return model_lib.ModelResults(model_input=model_input, text_results=self._mock_results)
 
 
 class _MockInputsSource(llmfn_inputs_source.LLMFnInputsSource):
@@ -207,9 +207,7 @@ class LLMFunctionPostProcessTest(absltest.TestCase):
         def add_fn(rows: Sequence[LLMFnOutputRowView]) -> Sequence[int]:
             return [len(row.result_value()) for row in rows]
 
-        results = llm_fn.add_post_process_add_fn(name="length", fn=add_fn)(
-            {"word": ["hot"]}
-        )
+        results = llm_fn.add_post_process_add_fn(name="length", fn=add_fn)({"word": ["hot"]})
         expected_results = {
             "Prompt Num": [0, 0, 0],
             "Input Num": [0, 0, 0],
@@ -387,14 +385,10 @@ class LLMCompareFunctionTest(absltest.TestCase):
         # of LLMFnOutputRowView to make sure the typechecker allows this
         # as well.
         # Note that this function returns a non-string as well.
-        def _is_length_less_than(
-            lhs: Mapping[str, Any], rhs: Mapping[str, Any]
-        ) -> bool:
+        def _is_length_less_than(lhs: Mapping[str, Any], rhs: Mapping[str, Any]) -> bool:
             return lhs["length"] < rhs["length"]
 
-        def _is_length_greater_than(
-            lhs: Mapping[str, Any], rhs: Mapping[str, Any]
-        ) -> bool:
+        def _is_length_greater_than(lhs: Mapping[str, Any], rhs: Mapping[str, Any]) -> bool:
             return lhs["length"] > rhs["length"]
 
         # Batch-based comparison function for post-processing.

@@ -66,9 +66,7 @@ url = "https://github.com/google/generative-ai-python"
 readme = (package_root / "README.md").read_text()
 
 packages = [
-    package
-    for package in setuptools.PEP420PackageFinder.find()
-    if package.startswith("google")
+    package for package in setuptools.PEP420PackageFinder.find() if package.startswith("google")
 ]
 
 namespaces = ["google"]

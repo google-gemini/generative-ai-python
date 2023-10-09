@@ -59,9 +59,7 @@ class SingleValueFlagDefTest(absltest.TestCase):
         with self.assertRaisesRegex(
             argument_parser.ParserError, "Cannot set --value more than once"
         ):
-            _new_parser(flag).parse_args(
-                ["--value", "forty-one", "--value", "forty-two"]
-            )
+            _new_parser(flag).parse_args(["--value", "forty-one", "--value", "forty-two"])
 
         results = _new_parser(flag).parse_args(["--value", "forty-one"])
         self.assertEqual("forty-one", results.value)
@@ -86,9 +84,7 @@ class SingleValueFlagDefTest(absltest.TestCase):
 
     def test_optional(self):
         # Optional flags should have a default value
-        with self.assertRaisesRegex(
-            ValueError, "Optional flags must have a default value"
-        ):
+        with self.assertRaisesRegex(ValueError, "Optional flags must have a default value"):
             flag_def.SingleValueFlagDef(
                 name="value",
                 parse_type=str,
@@ -158,9 +154,7 @@ class SingleValueFlagDefTest(absltest.TestCase):
         )
 
         # Parser should not accept a value of the wrong type.
-        with self.assertRaisesRegex(
-            argument_parser.ParserError, "invalid int value: 'forty-two'"
-        ):
+        with self.assertRaisesRegex(argument_parser.ParserError, "invalid int value: 'forty-two'"):
             _new_parser(int_flag_def).parse_args(["--value", "forty-two"])
 
         results = _new_parser(int_flag_def).parse_args(["--value", "42"])
@@ -195,26 +189,21 @@ class ColorsEnum(enum.Enum):
 class EnumFlagDefTest(absltest.TestCase):
     def test_construction(self):
         # "enum_type" must be provided.
-        with self.assertRaisesRegex(
-            TypeError, "missing 1 required keyword-only argument"
-        ):
+        with self.assertRaisesRegex(TypeError, "missing 1 required keyword-only argument"):
             # pylint: disable-next=missing-kwoa
             flag_def.EnumFlagDef(name="color", required=True)  # type: ignore
 
         # "parse_type" cannot be provided.
-        with self.assertRaisesRegex(
-            ValueError, 'Cannot set "parse_type" for EnumFlagDef'
-        ):
+        with self.assertRaisesRegex(ValueError, 'Cannot set "parse_type" for EnumFlagDef'):
             flag_def.EnumFlagDef(
-                name="color", required=True, enum_type=ColorsEnum, parse_type=int
+                name="color",
+                required=True,
+                enum_type=ColorsEnum,
+                parse_type=int,
             )
         # "dest_type" cannot be provided.
-        with self.assertRaisesRegex(
-            ValueError, 'Cannot set "dest_type" for EnumFlagDef'
-        ):
-            flag_def.EnumFlagDef(
-                name="color", required=True, enum_type=ColorsEnum, dest_type=str
-            )
+        with self.assertRaisesRegex(ValueError, 'Cannot set "dest_type" for EnumFlagDef'):
+            flag_def.EnumFlagDef(name="color", required=True, enum_type=ColorsEnum, dest_type=str)
         # This should succeed.
         flag_def.EnumFlagDef(name="color", required=True, enum_type=ColorsEnum)
 
@@ -227,9 +216,7 @@ class EnumFlagDefTest(absltest.TestCase):
         )
 
         # "teal" is not one of the enum values.
-        with self.assertRaisesRegex(
-            argument_parser.ParserError, "invalid choice: 'teal'"
-        ):
+        with self.assertRaisesRegex(argument_parser.ParserError, "invalid choice: 'teal'"):
             _new_parser(flag).parse_args(["--color=teal"])
 
         results = _new_parser(flag).parse_args(["--color=red"])
@@ -258,9 +245,7 @@ class EnumFlagDefTest(absltest.TestCase):
         )
 
         # "blue" is no longer one of the choices.
-        with self.assertRaisesRegex(
-            argument_parser.ParserError, "invalid choice: 'blue'"
-        ):
+        with self.assertRaisesRegex(argument_parser.ParserError, "invalid choice: 'blue'"):
             _new_parser(flag).parse_args(["--color=blue"])
 
         results = _new_parser(flag).parse_args(["--color=red"])
@@ -273,9 +258,7 @@ class MultiValuesFlagDefTest(absltest.TestCase):
     def test_basic(self):
         # Default value is not needed even if optional; the value would just be the
         # empty list.
-        flag = flag_def.MultiValuesFlagDef(
-            name="colors", parse_type=str, required=False
-        )
+        flag = flag_def.MultiValuesFlagDef(name="colors", parse_type=str, required=False)
 
         # Default value is the empty list.
         results = _new_parser(flag).parse_args([])
@@ -320,9 +303,7 @@ class MultiValuesFlagDefTest(absltest.TestCase):
         flag = flag_def.MultiValuesFlagDef(name="colors")
 
         # Cannot specify "red" more than once.
-        with self.assertRaisesRegex(
-            argument_parser.ParserError, 'Duplicate values "red"'
-        ):
+        with self.assertRaisesRegex(argument_parser.ParserError, 'Duplicate values "red"'):
             _new_parser(flag).parse_args(["--colors", "red", "green", "red"])
 
     def test_cardinality(self):
@@ -333,9 +314,7 @@ class MultiValuesFlagDefTest(absltest.TestCase):
         )
 
         # Must have at least one argument.
-        with self.assertRaisesRegex(
-            argument_parser.ParserError, "expected at least one argument"
-        ):
+        with self.assertRaisesRegex(argument_parser.ParserError, "expected at least one argument"):
             _new_parser(flag).parse_args(["--colors"])
 
         # Cannot specify "--colors" more than once.
@@ -354,9 +333,7 @@ class MultiValuesFlagDefTest(absltest.TestCase):
         )
 
         # "fuschia" is not a valid value for enum.
-        with self.assertRaisesRegex(
-            argument_parser.ParserError, "invalid choice: 'fuschia'"
-        ):
+        with self.assertRaisesRegex(argument_parser.ParserError, "invalid choice: 'fuschia'"):
             _new_parser(flag).parse_args(["--colors", "fuschia"])
 
         # Results are converted to a list of enums.
@@ -394,17 +371,13 @@ class BooleanFlagDefTest(absltest.TestCase):
 
     def test_constructor(self):
         """Check that invalid constructor arguments are rejected."""
-        with self.assertRaisesRegex(
-            ValueError, "dest_type cannot be set for BooleanFlagDef"
-        ):
+        with self.assertRaisesRegex(ValueError, "dest_type cannot be set for BooleanFlagDef"):
             flag_def.BooleanFlagDef(name="unique", dest_type=bool)
         with self.assertRaisesRegex(
             ValueError, "parse_to_dest_type_fn cannot be set for BooleanFlagDef"
         ):
             flag_def.BooleanFlagDef(name="unique", parse_to_dest_type_fn=lambda x: True)
-        with self.assertRaisesRegex(
-            ValueError, "choices cannot be set for BooleanFlagDef"
-        ):
+        with self.assertRaisesRegex(ValueError, "choices cannot be set for BooleanFlagDef"):
             flag_def.BooleanFlagDef(name="unique", choices=[True])
 
     def test_cardinality(self):

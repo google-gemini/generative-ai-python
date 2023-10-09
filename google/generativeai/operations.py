@@ -146,6 +146,8 @@ def from_gapic(
         operations_client.get_operation, operation.name, metadata=grpc_metadata
     )
     cancel = functools.partial(
-        operations_client.cancel_operation, operation.name, metadata=grpc_metadata
+        operations_client.cancel_operation,
+        operation.name,
+        metadata=grpc_metadata,
     )
     return cls(operation, refresh, cancel, result_type, metadata_type, **kwargs)

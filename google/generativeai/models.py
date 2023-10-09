@@ -53,9 +53,7 @@ def get_model(
         raise ValueError("Model names must start with `models/` or `tunedModels/`")
 
 
-def get_base_model(
-    name: model_types.BaseModelNameOptions, *, client=None
-) -> model_types.Model:
+def get_base_model(name: model_types.BaseModelNameOptions, *, client=None) -> model_types.Model:
     """Get the `types.Model` for the given base model name.
 
     ```
@@ -133,9 +131,7 @@ def _list_tuned_models_next_page(page_size, page_token, client):
     )
     result = result._response
     result = type(result).to_dict(result)
-    result["models"] = [
-        model_types.decode_tuned_model(mod) for mod in result.pop("tuned_models")
-    ]
+    result["models"] = [model_types.decode_tuned_model(mod) for mod in result.pop("tuned_models")]
     result["page_size"] = page_size
     result["page_token"] = result.pop("next_page_token")
     result["client"] = client
@@ -154,13 +150,9 @@ def _list_models_iter_pages(
     page_token = None
     while True:
         if select == "base":
-            result = _list_base_models_next_page(
-                page_size, page_token=page_token, client=client
-            )
+            result = _list_base_models_next_page(page_size, page_token=page_token, client=client)
         elif select == "tuned":
-            result = _list_tuned_models_next_page(
-                page_size, page_token=page_token, client=client
-            )
+            result = _list_tuned_models_next_page(page_size, page_token=page_token, client=client)
         yield from result["models"]
         page_token = result["page_token"]
         if page_token == "":
@@ -168,7 +160,9 @@ def _list_models_iter_pages(
 
 
 def list_models(
-    *, page_size: int | None = None, client: glm.ModelServiceClient | None = None
+    *,
+    page_size: int | None = None,
+    client: glm.ModelServiceClient | None = None,
 ) -> model_types.ModelsIterable:
     """Lists available models.
 
@@ -190,7 +184,9 @@ def list_models(
 
 
 def list_tuned_models(
-    *, page_size: int | None = None, client: glm.ModelServiceClient | None = None
+    *,
+    page_size: int | None = None,
+    client: glm.ModelServiceClient | None = None,
 ) -> model_types.TunedModelsIterable:
     """Lists available models.
 
@@ -294,7 +290,9 @@ def create_tuned_model(
     training_data = model_types.encode_tuning_data(training_data)
 
     hyperparameters = glm.Hyperparameters(
-        epoch_count=epoch_count, batch_size=batch_size, learning_rate=learning_rate
+        epoch_count=epoch_count,
+        batch_size=batch_size,
+        learning_rate=learning_rate,
     )
     tuning_task = glm.TuningTask(
         training_data=training_data,
@@ -310,9 +308,7 @@ def create_tuned_model(
         top_k=top_k,
         tuning_task=tuning_task,
     )
-    operation = client.create_tuned_model(
-        dict(tuned_model_id=id, tuned_model=tuned_model)
-    )
+    operation = client.create_tuned_model(dict(tuned_model_id=id, tuned_model=tuned_model))
 
     return operations.CreateTunedModelOperation.from_core_operation(operation)
 

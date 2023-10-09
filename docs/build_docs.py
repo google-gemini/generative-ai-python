@@ -115,9 +115,7 @@ _SEARCH_HINTS = flags.DEFINE_bool(
     "search_hints", True, "Include metadata search hints in the generated files"
 )
 
-_SITE_PATH = flags.DEFINE_string(
-    "site_path", "/api/python", "Path prefix in the _toc.yaml"
-)
+_SITE_PATH = flags.DEFINE_string("site_path", "/api/python", "Path prefix in the _toc.yaml")
 
 _CODE_URL_PREFIX = flags.DEFINE_string(
     "code_url_prefix",
@@ -139,9 +137,7 @@ class MyFilter:
     def __call__(self, path, parent, children):
         if any("generativelanguage" in part for part in path) or "generativeai" in path:
             children = self.filter_base_dirs(path, parent, children)
-            children = public_api.explicit_package_contents_filter(
-                path, parent, children
-            )
+            children = public_api.explicit_package_contents_filter(path, parent, children)
 
         if any("generativelanguage" in part for part in path):
             if "ServiceClient" in path[-1] or "ServiceAsyncClient" in path[-1]:
@@ -159,9 +155,7 @@ class MyDocGenerator(generate_lib.DocGenerator):
             public_api.add_proto_fields,
             public_api.filter_builtin_modules,
             public_api.filter_private_symbols,
-            MyFilter(
-                self._base_dir
-            ),  # Replaces: public_api.FilterBaseDirs(self._base_dir),
+            MyFilter(self._base_dir),  # Replaces: public_api.FilterBaseDirs(self._base_dir),
             public_api.FilterPrivateMap(self._private_map),
             public_api.filter_doc_controls_skip,
             public_api.ignore_typing,
@@ -229,9 +223,7 @@ def gen_api_docs():
         new_content = re.sub(r".*?`oneof`_ ``_.*?\n", "", new_content, re.MULTILINE)
         new_content = re.sub(r"\.\. code-block:: python.*?\n", "", new_content)
 
-        new_content = re.sub(
-            r"generativelanguage_\w+.types", "generativelanguage", new_content
-        )
+        new_content = re.sub(r"generativelanguage_\w+.types", "generativelanguage", new_content)
 
         if new_content != old_content:
             fpath.write_text(new_content)

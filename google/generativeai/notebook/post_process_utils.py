@@ -36,9 +36,7 @@ class ParsedPostProcessExpr(abc.ABC):
         """Returns the name of this expression."""
 
     @abc.abstractmethod
-    def add_to_llm_function(
-        self, llm_fn: llm_function.LLMFunction
-    ) -> llm_function.LLMFunction:
+    def add_to_llm_function(self, llm_fn: llm_function.LLMFunction) -> llm_function.LLMFunction:
         """Adds this parsed expression to `llm_fn` as a post-processing command."""
 
 
@@ -62,14 +60,10 @@ class _ParsedPostProcessAddExpr(
     def name(self) -> str:
         return self._name
 
-    def __call__(
-        self, rows: Sequence[llmfn_output_row.LLMFnOutputRowView]
-    ) -> Sequence[Any]:
+    def __call__(self, rows: Sequence[llmfn_output_row.LLMFnOutputRowView]) -> Sequence[Any]:
         return [self._fn(row.result_value()) for row in rows]
 
-    def add_to_llm_function(
-        self, llm_fn: llm_function.LLMFunction
-    ) -> llm_function.LLMFunction:
+    def add_to_llm_function(self, llm_fn: llm_function.LLMFunction) -> llm_function.LLMFunction:
         return llm_fn.add_post_process_add_fn(name=self._name, fn=self)
 
 
@@ -91,14 +85,10 @@ class _ParsedPostProcessReplaceExpr(
     def name(self) -> str:
         return self._name
 
-    def __call__(
-        self, rows: Sequence[llmfn_output_row.LLMFnOutputRowView]
-    ) -> Sequence[str]:
+    def __call__(self, rows: Sequence[llmfn_output_row.LLMFnOutputRowView]) -> Sequence[str]:
         return [self._fn(row.result_value()) for row in rows]
 
-    def add_to_llm_function(
-        self, llm_fn: llm_function.LLMFunction
-    ) -> llm_function.LLMFunction:
+    def add_to_llm_function(self, llm_fn: llm_function.LLMFunction) -> llm_function.LLMFunction:
         return llm_fn.add_post_process_replace_fn(name=self._name, fn=self)
 
 
@@ -117,9 +107,7 @@ def validate_one_post_processing_expression(
     if not tokens:
         raise PostProcessParseError("Cannot have empty post-processing expression")
     if len(tokens) > 1:
-        raise PostProcessParseError(
-            "Post-processing expression should be a single token"
-        )
+        raise PostProcessParseError("Post-processing expression should be a single token")
 
 
 def _resolve_one_post_processing_expression(

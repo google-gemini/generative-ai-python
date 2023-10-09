@@ -25,31 +25,21 @@ class SheetsIdentifierTest(absltest.TestCase):
         self.assertEqual("name=hello", str(sid))
         sid = sheets_id.SheetsIdentifier(key=sheets_id.SheetsKey("hello"))
         self.assertEqual("key=hello", str(sid))
-        sid = sheets_id.SheetsIdentifier(
-            url=sheets_id.SheetsURL("https://docs.google.com/")
-        )
+        sid = sheets_id.SheetsIdentifier(url=sheets_id.SheetsURL("https://docs.google.com/"))
         self.assertEqual("url=https://docs.google.com/", str(sid))
 
     def test_constructor_error(self):
-        with self.assertRaisesRegex(
-            ValueError, "Must set exactly one of name, key or url"
-        ):
+        with self.assertRaisesRegex(ValueError, "Must set exactly one of name, key or url"):
             sheets_id.SheetsIdentifier()
 
         # Empty "name" is also considered an invalid name.
-        with self.assertRaisesRegex(
-            ValueError, "Must set exactly one of name, key or url"
-        ):
+        with self.assertRaisesRegex(ValueError, "Must set exactly one of name, key or url"):
             sheets_id.SheetsIdentifier(name="")
 
-        with self.assertRaisesRegex(
-            ValueError, "Must set exactly one of name, key or url"
-        ):
+        with self.assertRaisesRegex(ValueError, "Must set exactly one of name, key or url"):
             sheets_id.SheetsIdentifier(name="hello", key=sheets_id.SheetsKey("hello"))
 
-        with self.assertRaisesRegex(
-            ValueError, "Must set exactly one of name, key or url"
-        ):
+        with self.assertRaisesRegex(ValueError, "Must set exactly one of name, key or url"):
             sheets_id.SheetsIdentifier(
                 name="hello",
                 key=sheets_id.SheetsKey("hello"),
