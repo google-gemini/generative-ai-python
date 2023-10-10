@@ -33,7 +33,7 @@ class UnitTests(parameterized.TestCase):
     def setUp(self):
         self.client = unittest.mock.MagicMock()
 
-        client.default_discuss_client = self.client
+        client._client_manager.discuss_client = self.client
 
         self.observed_request = None
 
