@@ -17,7 +17,8 @@ from __future__ import annotations
 from typing import Optional, List
 
 from google.ai import generativelanguage as glm
-from google.generativeai import docstring_utils
+from google.generativeai import string_utils
+
 from typing import TypedDict
 
 __all__ = [
@@ -32,10 +33,10 @@ class CitationSourceDict(TypedDict):
     uri: str | None
     license: str | None
 
-    __doc__ = docstring_utils.strip_oneof(glm.CitationSource.__doc__)
+    __doc__ = string_utils.strip_oneof(glm.CitationSource.__doc__)
 
 
 class CitationMetadataDict(TypedDict):
     citation_sources: List[CitationSourceDict | None]
 
-    __doc__ = docstring_utils.strip_oneof(glm.CitationMetadata.__doc__)
+    __doc__ = string_utils.strip_oneof(glm.CitationMetadata.__doc__)

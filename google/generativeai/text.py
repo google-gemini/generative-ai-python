@@ -21,6 +21,7 @@ from typing import Iterable, overload
 import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_text_client
+from google.generativeai import string_utils
 from google.generativeai.types import text_types
 from google.generativeai.types import model_types
 from google.generativeai.types import safety_types
@@ -175,6 +176,7 @@ def generate_text(
     return _generate_response(client=client, request=request)
 
 
+@string_utils.prettyprint
 @dataclasses.dataclass(init=False)
 class Completion(text_types.Completion):
     def __init__(self, **kwargs):
