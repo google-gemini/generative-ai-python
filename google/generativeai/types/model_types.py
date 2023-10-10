@@ -18,6 +18,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 import dataclasses
 import datetime
+import json
+import pathlib
 import re
 from typing import Any, Iterable, TypedDict, Union
 
@@ -184,35 +186,81 @@ class TuningExampleDict(TypedDict):
     output: str
 
 
-TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, str]]
+TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, str], list[str]]
 TuningDataOptions = Union[
-    glm.Dataset, Mapping[str, Iterable[str]], Iterable[TuningExampleOptions]
-]  # TODO(markdaoust): csv, drive
+    pathlib.Path | str | glm.Dataset, Mapping[str, Iterable[str]], Iterable[TuningExampleOptions]
+]
 
 
 def encode_tuning_data(
     data: TuningDataOptions, input_key="text_input", output_key="output"
 ) -> glm.Dataset:
+    if isinstance(data, str):
+        # Strings are either URLs or system paths.
+        if re.match("^\w+://\S+$", data):
+            data = _normalize_url(data)
+        else:
+            # Normalize system paths to use pathlib
+            data = pathlib.Path(data)
+
+    if isinstance(data, pathlib.Path):
+        if data.suffix.lower() == ".json":
+            with open(data) as f:
+                data = json.load(f)
+
+    if isinstance(data, (str, pathlib.Path)):
+        import pandas as pd
+        data = pd.read_csv(data)
+
     if isinstance(data, glm.Dataset):
         return data
     elif hasattr(data, "keys"):
-        new_data = list()
-        inputs = data[input_key]
-        outputs = data[output_key]
-        for i, o in zip(inputs, outputs):
-            new_data.append(glm.TuningExample({"text_input": i, "output": o}))
-        return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
+        return _convert_dict(data, input_key, output_key)
     else:
-        new_data = list()
-        for example in data:
-            example = encode_tuning_example(example)
-            new_data.append(example)
-        return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
+        return _convert_iterable(data)
+
+
+def _normalize_url(url: str) -> str:
+    sheet_base = "https://docs.google.com/spreadsheets"
+    if url.startswith(sheet_base):
+        # Normalize google-sheets URLs to download the csv.
+        match = re.match(f"{sheet_base}/d/[^/]+", url)
+        if match is None:
+            raise ValueError("Incomplete Google Sheets URL: {data}")
+        url = f"{match.group(0)}/export?format=csv"
+    return url
+
+
+def _convert_dict(data, input_key, output_key):
+    new_data = list()
+
+    try:
+        inputs = data[input_key]
+    except KeyError as e:
+        raise KeyError(f'input_key is "{input_key}", but data has keys: {sorted(data.keys())}')
+
+    try:
+        outputs = data[output_key]
+    except KeyError as e:
+        raise KeyError(f'output_key is "{output_key}", but data has keys: {sorted(data.keys())}')
+
+    for i, o in zip(inputs, outputs):
+        new_data.append(glm.TuningExample({"text_input": str(i), "output": str(o)}))
+    return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
+
+
+def _convert_iterable(data):
+    new_data = list()
+    for example in data:
+        example = encode_tuning_example(example)
+        new_data.append(example)
+    return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
 
 
 def encode_tuning_example(example: TuningExampleOptions):
-    if isinstance(example, tuple):
-        example = glm.TuningExample(text_input=example[0], output=example[1])
+    if isinstance(example, (tuple, list)):
+        a, b = example
+        example = glm.TuningExample(text_input=a, output=b)
     else:  # dict or  glm.TuningExample
         example = glm.TuningExample(example)
     return example

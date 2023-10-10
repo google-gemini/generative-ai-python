@@ -15,6 +15,7 @@
 import copy
 import datetime
 import dataclasses
+import pathlib
 import pytz
 from typing import Any, Union
 import unittest
@@ -31,6 +32,8 @@ from google.generativeai import client
 from google.generativeai.types import model_types
 
 import pandas as pd
+
+HERE = pathlib.Path(__file__).parent
 
 
 class UnitTests(parameterized.TestCase):
@@ -423,6 +426,19 @@ class UnitTests(parameterized.TestCase):
                     {"text_input": "c", "output": "3"},
                 ]
             ),
+        ],
+        ["csv-path-string", str(HERE / "test.csv")],
+        ["csv-path", HERE / "test.csv"],
+        ["json-file-1", HERE / "test1.json"],
+        ["json-file-2", HERE / "test2.json"],
+        ["json-file-3", HERE / "test3.json"],
+        [
+            "sheet-share",
+            "https://docs.google.com/spreadsheets/d/1OffcVSqN6X-RYdWLGccDF3KtnKoIpS7O_9cZbicKK4A/edit?usp=sharing",
+        ],
+        [
+            "sheet-export-csv",
+            "https://docs.google.com/spreadsheets/d/1OffcVSqN6X-RYdWLGccDF3KtnKoIpS7O_9cZbicKK4A/export?format=csv",
         ],
     )
     def test_create_dataset(self, data, ik="text_input", ok="output"):
