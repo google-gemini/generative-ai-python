@@ -219,8 +219,8 @@ def _generate_response(
 def count_text_tokens(
     model: model_types.AnyModelNameOptions,
     prompt: str,
-    client: glm.TextServiceClient = None,
-):
+    client: glm.TextServiceClient | None = None,
+) -> text_types.TokenCount:
     base_model = models.get_base_model_name(model)
 
     if client is None:

@@ -438,7 +438,10 @@ class UnitTests(parameterized.TestCase):
 
         response = text_service.count_text_tokens(model, "Tell me a story about a magic backpack.")
         self.assertEqual({"token_count": 7}, response)
-        if len(self.observed_requests) > 1:
+
+        should_look_up_model = isinstance(model, str) and model.startswith("tunedModels/")
+        if should_look_up_model:
+            self.assertLen(self.observed_requests, 2)
             self.assertEqual(
                 self.observed_requests[0],
                 glm.GetTunedModelRequest(name="tunedModels/bipedal-pangolin-001"),

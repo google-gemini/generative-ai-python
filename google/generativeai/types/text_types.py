@@ -25,6 +25,10 @@ from google.generativeai.types import citation_types
 __all__ = ["Completion"]
 
 
+class TokenCount(TypedDict):
+    token_count: int
+
+
 class EmbeddingDict(TypedDict):
     embedding: list[float]
 
