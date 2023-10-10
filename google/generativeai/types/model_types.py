@@ -15,6 +15,7 @@
 """Type definitions for the models service."""
 from __future__ import annotations
 
+from collections.abc import Mapping
 import dataclasses
 import datetime
 import re
@@ -185,8 +186,8 @@ class TuningExampleDict(TypedDict):
 
 TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, str]]
 TuningDataOptions = Union[
-    glm.Dataset, Iterable[TuningExampleOptions]
-]  # TODO(markdaoust): csv, json, pandas, np
+    glm.Dataset, Mapping[str, Iterable[str]], Iterable[TuningExampleOptions]
+]  # TODO(markdaoust): csv, drive
 
 
 def encode_tuning_data(
