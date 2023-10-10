@@ -21,6 +21,7 @@ import re
 from typing import Any, Iterable, TypedDict, Union
 
 import google.ai.generativelanguage as glm
+from google.generativeai import string_utils
 
 __all__ = [
     "Model",
@@ -65,6 +66,7 @@ def to_tuned_model_state(x: TunedModelStateOptions) -> TunedModelState:
     return _TUNED_MODEL_STATES[x]
 
 
+@string_utils.prettyprint
 @dataclasses.dataclass
 class Model:
     """A dataclass representation of a `glm.Model`.
@@ -152,6 +154,7 @@ def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedM
     return TunedModel(**tuned_model)
 
 
+@string_utils.prettyprint
 @dataclasses.dataclass
 class TunedModel:
     """A dataclass representation of a `glm.TunedModel`."""
@@ -170,6 +173,7 @@ class TunedModel:
     tuning_task: TuningTask | None = None
 
 
+@string_utils.prettyprint
 @dataclasses.dataclass
 class TuningTask:
     start_time: datetime.datetime | None = None
@@ -208,6 +212,7 @@ def encode_tuning_example(example: TuningExampleOptions):
     return example
 
 
+@string_utils.prettyprint
 @dataclasses.dataclass
 class TuningSnapshot:
     step: int
@@ -216,6 +221,7 @@ class TuningSnapshot:
     compute_time: datetime.datetime
 
 
+@string_utils.prettyprint
 @dataclasses.dataclass
 class Hyperparameters:
     epoch_count: int = 0
@@ -246,6 +252,7 @@ ModelsIterable = Iterable[Model]
 TunedModelsIterable = Iterable[TunedModel]
 
 
+@string_utils.prettyprint
 @dataclasses.dataclass
 class TokenCount:
     """A dataclass representation of a `glm.TokenCountResponse`.

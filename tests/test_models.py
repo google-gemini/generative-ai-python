@@ -36,7 +36,7 @@ class UnitTests(parameterized.TestCase):
     def setUp(self):
         self.client = unittest.mock.MagicMock()
 
-        client.default_model_client = self.client
+        client._client_manager.model_client = self.client
 
         def add_client_method(f):
             name = f.__name__

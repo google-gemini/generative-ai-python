@@ -17,7 +17,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from google.ai import generativelanguage as glm
-from google.generativeai import docstring_utils
+from google.generativeai import string_utils
+
 import typing
 from typing import Iterable, Dict, Iterable, List, TypedDict, Union
 
@@ -134,7 +135,7 @@ class ContentFilterDict(TypedDict):
     reason: BlockedReason
     message: str
 
-    __doc__ = docstring_utils.strip_oneof(glm.ContentFilter.__doc__)
+    __doc__ = string_utils.strip_oneof(glm.ContentFilter.__doc__)
 
 
 def convert_filters_to_enums(
@@ -153,7 +154,7 @@ class SafetyRatingDict(TypedDict):
     category: HarmCategory
     probability: HarmProbability
 
-    __doc__ = docstring_utils.strip_oneof(glm.SafetyRating.__doc__)
+    __doc__ = string_utils.strip_oneof(glm.SafetyRating.__doc__)
 
 
 def convert_rating_to_enum(rating: dict) -> SafetyRatingDict:
@@ -174,7 +175,7 @@ class SafetySettingDict(TypedDict):
     category: HarmCategory
     threshold: HarmBlockThreshold
 
-    __doc__ = docstring_utils.strip_oneof(glm.SafetySetting.__doc__)
+    __doc__ = string_utils.strip_oneof(glm.SafetySetting.__doc__)
 
 
 class LooseSafetySettingDict(TypedDict):
@@ -220,7 +221,7 @@ class SafetyFeedbackDict(TypedDict):
     rating: SafetyRatingDict
     setting: SafetySettingDict
 
-    __doc__ = docstring_utils.strip_oneof(glm.SafetyFeedback.__doc__)
+    __doc__ = string_utils.strip_oneof(glm.SafetyFeedback.__doc__)
 
 
 def convert_safety_feedback_to_enums(
