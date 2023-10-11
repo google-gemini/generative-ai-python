@@ -188,8 +188,8 @@ class TuningExampleDict(TypedDict):
 
 TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, str], list[str]]
 TuningDataOptions = Union[
-    pathlib.Path | str | glm.Dataset, Mapping[str, Iterable[str]], Iterable[TuningExampleOptions]
-]
+    pathlib.Path, str, glm.Dataset, Mapping[str, Iterable[str]], Iterable[TuningExampleOptions]
+]  # TODO(markdaoust): json-URLS, gs:// URLS .. use etils.epath?
 
 
 def encode_tuning_data(
@@ -210,6 +210,7 @@ def encode_tuning_data(
 
     if isinstance(data, (str, pathlib.Path)):
         import pandas as pd
+
         data = pd.read_csv(data)
 
     if isinstance(data, glm.Dataset):
