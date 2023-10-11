@@ -24,6 +24,7 @@ from google.generativeai.client import get_default_text_client
 from google.generativeai import string_utils
 from google.generativeai.types import text_types
 from google.generativeai.types import model_types
+from google.generativeai import models
 from google.generativeai.types import safety_types
 
 DEFAULT_TEXT_MODEL = "models/text-bison-001"
@@ -215,6 +216,23 @@ def _generate_response(
     response["candidates"] = safety_types.convert_candidate_enums(response["candidates"])
 
     return Completion(_client=client, **response)
+
+
+def count_text_tokens(
+    model: model_types.AnyModelNameOptions,
+    prompt: str,
+    client: glm.TextServiceClient | None = None,
+) -> text_types.TokenCount:
+    base_model = models.get_base_model_name(model)
+
+    if client is None:
+        client = get_default_text_client()
+
+    result = client.count_text_tokens(
+        glm.CountTextTokensRequest(model=base_model, prompt={"text": prompt})
+    )
+
+    return type(result).to_dict(result)
 
 
 @overload

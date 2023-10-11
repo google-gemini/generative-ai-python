@@ -39,6 +39,10 @@ __all__ = [
 ]
 
 
+class TokenCount(TypedDict):
+    token_count: int
+
+
 class MessageDict(TypedDict):
     """A dict representation of a `glm.Message`."""
 

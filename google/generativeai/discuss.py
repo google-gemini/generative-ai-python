@@ -565,7 +565,7 @@ def count_message_tokens(
     messages: discuss_types.MessagesOptions | None = None,
     model: model_types.AnyModelNameOptions = DEFAULT_DISCUSS_MODEL,
     client: glm.DiscussServiceAsyncClient | None = None,
-):
+) -> discuss_types.TokenCount:
     model = model_types.make_model_name(model)
     prompt = _make_message_prompt(prompt, context=context, examples=examples, messages=messages)
 

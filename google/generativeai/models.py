@@ -74,7 +74,7 @@ def get_base_model(name: model_types.BaseModelNameOptions, *, client=None) -> mo
 
     name = model_types.make_model_name(name)
     if not name.startswith("models/"):
-        raise ValueError("Base model names must start with `models/`")
+        raise ValueError(f"Base model names must start with `models/`, got: {name}")
 
     result = client.get_model(name=name)
     result = type(result).to_dict(result)
@@ -110,6 +110,31 @@ def get_tuned_model(
     result = client.get_tuned_model(name=name)
 
     return model_types.decode_tuned_model(result)
+
+
+def get_base_model_name(
+    model: model_types.AnyModelNameOptions, client: glm.ModelServiceClient | None = None
+):
+    if isinstance(model, str):
+        if model.startswith("tunedModels/"):
+            model = get_model(model, client=client)
+            base_model = model.base_model
+        else:
+            base_model = model
+    elif isinstance(model, model_types.TunedModel):
+        base_model = model.base_model
+    elif isinstance(model, model_types.Model):
+        base_model = model.name
+    elif isinstance(model, glm.Model):
+        base_model = model.name
+    elif isinstance(model, glm.TunedModel):
+        base_model = getattr(model, "base_model", None)
+        if not base_model:
+            base_model = model.tuned_model_source.base_model
+    else:
+        raise TypeError(f"Cannot understand model: {model}")
+
+    return base_model
 
 
 def _list_base_models_next_page(page_size, page_token, client):
@@ -270,18 +295,14 @@ def create_tuned_model(
         client = get_default_model_client()
 
     source_model_name = model_types.make_model_name(source_model)
+    base_model_name = get_base_model_name(source_model)
     if source_model_name.startswith("models/"):
         source_model = {"base_model": source_model_name}
     elif source_model_name.startswith("tunedModels/"):
-        source_model = client.get_tuned_model(name=source_model_name)
-        base_model = source_model.base_model
-        if not base_model:
-            base_model = source_model.tuned_model_source.base_model
-
         source_model = {
             "tuned_model_source": {
                 "tuned_model": source_model_name,
-                "base_model": base_model,
+                "base_model": base_model_name,
             }
         }
     else:

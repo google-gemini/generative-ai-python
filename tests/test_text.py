@@ -12,8 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import os
+import copy
 import unittest
 import unittest.mock as mock
 
@@ -22,6 +21,7 @@ import google.ai.generativelanguage as glm
 from google.generativeai import text as text_service
 from google.generativeai import client
 from google.generativeai.types import safety_types
+from google.generativeai.types import model_types
 from absl.testing import absltest
 from absl.testing import parameterized
 
@@ -31,8 +31,9 @@ class UnitTests(parameterized.TestCase):
         self.client = unittest.mock.MagicMock()
 
         client._client_manager.text_client = self.client
+        client._client_manager.model_client = self.client
 
-        self.observed_request = None
+        self.observed_requests = []
 
         self.responses = {}
 
@@ -45,22 +46,36 @@ class UnitTests(parameterized.TestCase):
         def generate_text(
             request: glm.GenerateTextRequest,
         ) -> glm.GenerateTextResponse:
-            self.observed_request = request
+            self.observed_requests.append(request)
             return self.responses["generate_text"]
 
         @add_client_method
         def embed_text(
             request: glm.EmbedTextRequest,
         ) -> glm.EmbedTextResponse:
-            self.observed_request = request
+            self.observed_requests.append(request)
             return self.responses["embed_text"]
 
         @add_client_method
         def batch_embed_text(
             request: glm.EmbedTextRequest,
         ) -> glm.EmbedTextResponse:
-            self.observed_request = request
+            self.observed_requests.append(request)
             return self.responses["batch_embed_text"]
+
+        @add_client_method
+        def count_text_tokens(
+            request: glm.CountTextTokensRequest,
+        ) -> glm.CountTextTokensResponse:
+            self.observed_requests.append(request)
+            return self.responses["count_text_tokens"]
+
+        @add_client_method
+        def get_tuned_model(name) -> glm.TunedModel:
+            request = glm.GetTunedModelRequest(name=name)
+            self.observed_requests.append(request)
+            response = copy.copy(self.responses["get_tuned_model"])
+            return response
 
     @parameterized.named_parameters(
         [
@@ -99,7 +114,7 @@ class UnitTests(parameterized.TestCase):
         emb = text_service.generate_embeddings(model=model, text=text)
 
         self.assertIsInstance(emb, dict)
-        self.assertEqual(self.observed_request, glm.EmbedTextRequest(model=model, text=text))
+        self.assertEqual(self.observed_requests[-1], glm.EmbedTextRequest(model=model, text=text))
         self.assertIsInstance(emb["embedding"][0], float)
 
     @parameterized.named_parameters(
@@ -123,8 +138,7 @@ class UnitTests(parameterized.TestCase):
 
         self.assertIsInstance(emb, dict)
         self.assertEqual(
-            self.observed_request,
-            glm.BatchEmbedTextRequest(model=model, texts=text),
+            self.observed_requests[-1], glm.BatchEmbedTextRequest(model=model, texts=text)
         )
         self.assertIsInstance(emb["embedding"][0], list)
 
@@ -160,7 +174,7 @@ class UnitTests(parameterized.TestCase):
         complete = text_service.generate_text(prompt=prompt, **kwargs)
 
         self.assertEqual(
-            self.observed_request,
+            self.observed_requests[-1],
             glm.GenerateTextRequest(
                 model="models/text-bison-001", prompt=glm.TextPrompt(text=prompt), **kwargs
             ),
@@ -188,7 +202,7 @@ class UnitTests(parameterized.TestCase):
         complete = text_service.generate_text(prompt="Hello", stop_sequences="stop")
 
         self.assertEqual(
-            self.observed_request,
+            self.observed_requests[-1],
             glm.GenerateTextRequest(
                 model="models/text-bison-001",
                 prompt=glm.TextPrompt(text="Hello"),
@@ -196,7 +210,7 @@ class UnitTests(parameterized.TestCase):
             ),
         )
         # Just make sure it made it into the request object.
-        self.assertEqual(self.observed_request.stop_sequences, ["stop"])
+        self.assertEqual(self.observed_requests[-1].stop_sequences, ["stop"])
 
     @parameterized.named_parameters(
         [
@@ -251,7 +265,7 @@ class UnitTests(parameterized.TestCase):
         )
 
         self.assertEqual(
-            self.observed_request.safety_settings[0].category,
+            self.observed_requests[-1].safety_settings[0].category,
             safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
         )
 
@@ -366,6 +380,72 @@ class UnitTests(parameterized.TestCase):
             result.candidates[0]["citation_metadata"]["citation_sources"][0]["start_index"],
             6,
         )
+
+    @parameterized.named_parameters(
+        [
+            dict(testcase_name="base-name", model="models/text-bison-001"),
+            dict(testcase_name="tuned-name", model="tunedModels/bipedal-pangolin-001"),
+            dict(
+                testcase_name="model",
+                model=model_types.Model(
+                    name="models/text-bison-001",
+                    base_model_id="text-bison-001",
+                    version="001",
+                    display_name="🦬",
+                    description="🦬🦬🦬🦬🦬🦬🦬🦬🦬🦬🦬",
+                    input_token_limit=8000,
+                    output_token_limit=4000,
+                    supported_generation_methods=["GenerateText"],
+                ),
+            ),
+            dict(
+                testcase_name="tuned_model",
+                model=model_types.TunedModel(
+                    name="tunedModels/bipedal-pangolin-001",
+                    base_model="models/text-bison-001",
+                ),
+            ),
+            dict(
+                testcase_name="glm_model",
+                model=glm.Model(
+                    name="models/text-bison-001",
+                ),
+            ),
+            dict(
+                testcase_name="glm_tuned_model",
+                model=glm.TunedModel(
+                    name="tunedModels/bipedal-pangolin-001",
+                    base_model="models/text-bison-001",
+                ),
+            ),
+            dict(
+                testcase_name="glm_tuned_model_nested",
+                model=glm.TunedModel(
+                    name="tunedModels/bipedal-pangolin-002",
+                    tuned_model_source={
+                        "tuned_model": "tunedModels/bipedal-pangolin-002",
+                        "base_model": "models/text-bison-001",
+                    },
+                ),
+            ),
+        ]
+    )
+    def test_count_message_tokens(self, model):
+        self.responses["get_tuned_model"] = glm.TunedModel(
+            name="tunedModels/bipedal-pangolin-001", base_model="models/text-bison-001"
+        )
+        self.responses["count_text_tokens"] = glm.CountTextTokensResponse(token_count=7)
+
+        response = text_service.count_text_tokens(model, "Tell me a story about a magic backpack.")
+        self.assertEqual({"token_count": 7}, response)
+
+        should_look_up_model = isinstance(model, str) and model.startswith("tunedModels/")
+        if should_look_up_model:
+            self.assertLen(self.observed_requests, 2)
+            self.assertEqual(
+                self.observed_requests[0],
+                glm.GetTunedModelRequest(name="tunedModels/bipedal-pangolin-001"),
+            )
 
 
 if __name__ == "__main__":
