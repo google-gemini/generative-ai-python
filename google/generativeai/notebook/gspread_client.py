@@ -29,14 +29,10 @@ from google.generativeai.notebook import sheets_id
 _gspread_import_error: Exception | None = None
 try:
     # pylint: disable-next=g-import-not-at-top
-    from gspread import gspread
-except (ImportError, ModuleNotFoundError):
-    try:
-        # pylint: disable-next=g-import-not-at-top
-        import gspread
-    except ImportError as e:
-        _gspread_import_error = e
-        gspread = None
+    import gspread
+except ImportError as e:
+    _gspread_import_error = e
+    gspread = None
 
 # Base class of exceptions that  gspread.open(), open_by_url() and open_by_key()
 # may throw.
