@@ -448,6 +448,10 @@ class UnitTests(parameterized.TestCase):
             "sheet-export-csv",
             "https://docs.google.com/spreadsheets/d/1OffcVSqN6X-RYdWLGccDF3KtnKoIpS7O_9cZbicKK4A/export?format=csv",
         ],
+        [
+            "sheet-with-tab",
+            "https://docs.google.com/spreadsheets/d/118LXTS3RIkS4yAO68c-cMPP4PwLFTxKYj4R43R7dU0E/edit#gid=1526779134",
+        ],
     )
     def test_create_dataset(self, data, ik="text_input", ok="output"):
         ds = model_types.encode_tuning_data(data, input_key=ik, output_key=ok)
