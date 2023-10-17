@@ -66,10 +66,6 @@ class UnitTests(parameterized.TestCase):
             response = copy.copy(self.responses["get_tuned_model"])
             return response
 
-        @dataclasses.dataclass
-        class ListWrapper:
-            _response: Any
-
         @add_client_method
         def list_models(
             request: Union[glm.ListModelsRequest, None] = None,
@@ -81,8 +77,8 @@ class UnitTests(parameterized.TestCase):
                 request = glm.ListModelsRequest(page_size=page_size, page_token=page_token)
             self.assertIsInstance(request, glm.ListModelsRequest)
             self.observed_requests.append(request)
-            response = self.responses["list_models"][request.page_token]
-            return ListWrapper(response)
+            response = self.responses["list_models"]
+            return (item for item in response)
 
         @add_client_method
         def list_tuned_models(
@@ -95,8 +91,8 @@ class UnitTests(parameterized.TestCase):
                 request = glm.ListTunedModelsRequest(page_size=page_size, page_token=page_token)
             self.assertIsInstance(request, glm.ListTunedModelsRequest)
             self.observed_requests.append(request)
-            response = self.responses["list_tuned_models"][request.page_token]
-            return ListWrapper(response)
+            response = self.responses["list_tuned_models"]
+            return (item for item in response)
 
         @add_client_method
         def update_tuned_model(request: glm.UpdateTunedModelRequest):
@@ -152,24 +148,16 @@ class UnitTests(parameterized.TestCase):
             model = models.get_model(name)
 
     def test_list_models(self):
+        # The low level lib wraps the response in an iterable, so this is a fair test.
         self.responses = {
-            "list_models": {
-                # The first request doesn't pass a page token
-                "": glm.ListModelsResponse(
-                    models=[
-                        glm.Model(name="models/fake-bison-001"),
-                        glm.Model(name="models/fake-bison-002"),
-                    ],
-                    next_page_token="page1",
-                ),
-                "page1": glm.ListModelsResponse(
-                    models=[
-                        glm.Model(name="models/fake-bison-003"),
-                    ],
-                    # The last page returns an empty page token.
-                    next_page_token="",
-                ),
-            }
+            "list_models": (
+                m
+                for m in [
+                    glm.Model(name="models/fake-bison-001"),
+                    glm.Model(name="models/fake-bison-002"),
+                    glm.Model(name="models/fake-bison-003"),
+                ]
+            )
         }
 
         found_models = list(models.list_models())
@@ -178,24 +166,17 @@ class UnitTests(parameterized.TestCase):
             self.assertIsInstance(m, model_types.Model)
 
     def test_list_tuned_models(self):
+
         self.responses = {
-            "list_tuned_models": {
-                # The first request doesn't pass a page token
-                "": glm.ListTunedModelsResponse(
-                    tuned_models=[
-                        glm.TunedModel(name="tunedModels/my-pig-001"),
-                        glm.TunedModel(name="tunedModels/my-pig-002"),
-                    ],
-                    next_page_token="page1",
-                ),
-                "page1": glm.ListTunedModelsResponse(
-                    tuned_models=[
-                        glm.TunedModel(name="tunedModels/my-pig-003"),
-                    ],
-                    # The last page returns an empty page token.
-                    next_page_token="",
-                ),
-            }
+            # The low level lib wraps the response in an iterable, so this is a fair test.
+            "list_tuned_models": (
+                m
+                for m in [
+                    glm.TunedModel(name="tunedModels/my-pig-001"),
+                    glm.TunedModel(name="tunedModels/my-pig-002"),
+                    glm.TunedModel(name="tunedModels/my-pig-003"),
+                ]
+            )
         }
         found_models = list(models.list_tuned_models())
         self.assertLen(found_models, 3)
