@@ -433,6 +433,14 @@ class UnitTests(parameterized.TestCase):
         ["json-file-2", HERE / "test2.json"],
         ["json-file-3", HERE / "test3.json"],
         [
+            "json-url",
+            "https://storage.googleapis.com/generativeai-downloads/data/test1.json",
+        ],
+        [
+            "csv-url",
+            "https://storage.googleapis.com/generativeai-downloads/data/test.csv",
+        ],
+        [
             "sheet-share",
             "https://docs.google.com/spreadsheets/d/1OffcVSqN6X-RYdWLGccDF3KtnKoIpS7O_9cZbicKK4A/edit?usp=sharing",
         ],

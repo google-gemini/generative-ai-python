@@ -16,12 +16,14 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+import csv
 import dataclasses
 import datetime
 import json
 import pathlib
 import re
 from typing import Any, Iterable, TypedDict, Union
+import urllib.request
 
 import google.ai.generativelanguage as glm
 
@@ -73,17 +75,18 @@ class Model:
     """A dataclass representation of a `glm.Model`.
 
     Attributes:
-        name: The resource name of the `Model`. Format: `models/{model}` with a `{model}` naming convention of:
-          "{base_model_id}-{version}". For example: `models/chat-bison-001`.
+        name: The resource name of the `Model`. Format: `models/{model}` with a `{model}` naming
+           convention of: "{base_model_id}-{version}". For example: `models/chat-bison-001`.
         base_model_id: The base name of the model. For example: `chat-bison`.
         version:  The major version number of the model. For example: `001`.
-        display_name: The human-readable name of the model. E.g. `"Chat Bison"`. The name can be up to 128 characters
-           long and can consist of any UTF-8 characters.
+        display_name: The human-readable name of the model. E.g. `"Chat Bison"`. The name can be up
+           to 128 characters long and can consist of any UTF-8 characters.
         description: A short description of the model.
         input_token_limit: Maximum number of input tokens allowed for this model.
         output_token_limit: Maximum number of output tokens available for this model.
-        supported_generation_methods: lists which methods are supported by the model. The method names are defined as
-           Pascal case strings, such as `generateMessage` which correspond to API methods.
+        supported_generation_methods: lists which methods are supported by the model. The method
+          names are defined as Pascal case strings, such as `generateMessage` which correspond to
+          API methods.
     """
 
     name: str
@@ -187,14 +190,23 @@ class TuningExampleDict(TypedDict):
 
 
 TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, str], list[str]]
+
+# TODO(markdaoust): gs:// URLS? File-type argument for files without extension?
 TuningDataOptions = Union[
-    pathlib.Path, str, glm.Dataset, Mapping[str, Iterable[str]], Iterable[TuningExampleOptions]
-]  # TODO(markdaoust): json-URLS, gs:// URLS .. use etils.epath?
+    pathlib.Path,
+    str,
+    glm.Dataset,
+    Mapping[str, Iterable[str]],
+    Iterable[TuningExampleOptions],
+]
 
 
 def encode_tuning_data(
     data: TuningDataOptions, input_key="text_input", output_key="output"
 ) -> glm.Dataset:
+    if isinstance(data, glm.Dataset):
+        return data
+
     if isinstance(data, str):
         # Strings are either URLs or system paths.
         if re.match("^\w+://\S+$", data):
@@ -203,22 +215,27 @@ def encode_tuning_data(
             # Normalize system paths to use pathlib
             data = pathlib.Path(data)
 
-    if isinstance(data, pathlib.Path):
-        if data.suffix.lower() == ".json":
-            with open(data) as f:
-                data = json.load(f)
-
     if isinstance(data, (str, pathlib.Path)):
-        import pandas as pd
+        if isinstance(data, str):
+            f = urllib.request.urlopen(data)
+            # csv needs strings, json does not.
+            content = (line.decode("utf-8") for line in f)
+        else:
+            f = data.open("r")
+            content = f
 
-        data = pd.read_csv(data)
+        if str(data).lower().endswith(".json"):
+            with f:
+                data = json.load(f)
+        else:
+            with f:
+                data = csv.DictReader(content)
+                return _convert_iterable(data, input_key, output_key)
 
-    if isinstance(data, glm.Dataset):
-        return data
-    elif hasattr(data, "keys"):
+    if hasattr(data, "keys"):
         return _convert_dict(data, input_key, output_key)
     else:
-        return _convert_iterable(data)
+        return _convert_iterable(data, input_key, output_key)
 
 
 def _normalize_url(url: str) -> str:
@@ -250,20 +267,22 @@ def _convert_dict(data, input_key, output_key):
     return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
 
 
-def _convert_iterable(data):
+def _convert_iterable(data, input_key, output_key):
     new_data = list()
     for example in data:
-        example = encode_tuning_example(example)
+        example = encode_tuning_example(example, input_key, output_key)
         new_data.append(example)
     return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
 
 
-def encode_tuning_example(example: TuningExampleOptions):
-    if isinstance(example, (tuple, list)):
+def encode_tuning_example(example: TuningExampleOptions, input_key, output_key):
+    if isinstance(example, glm.TuningExample):
+        return example
+    elif isinstance(example, (tuple, list)):
         a, b = example
         example = glm.TuningExample(text_input=a, output=b)
-    else:  # dict or  glm.TuningExample
-        example = glm.TuningExample(example)
+    else:  # dict
+        example = glm.TuningExample(text_input=example[input_key], output=example[output_key])
     return example
 
 
