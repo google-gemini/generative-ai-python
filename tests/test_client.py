@@ -26,13 +26,27 @@ from google.generativeai import client
 
 class ClientTests(parameterized.TestCase):
     def setUp(self):
+
+
+
         super().setUp()
+
+
+
         client._client_manager = client._ClientManager()
 
     def test_api_key_passed_directly(self):
+
+
+
         client.configure(api_key="AIzA_direct")
 
+
+
         client_opts = client._client_manager.client_config["client_options"]
+
+
+
         self.assertEqual(client_opts.api_key, "AIzA_direct")
 
     def test_api_key_passed_via_client_options(self):
