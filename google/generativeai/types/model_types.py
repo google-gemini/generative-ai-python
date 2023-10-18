@@ -214,7 +214,7 @@ def encode_tuning_data(
 
     if isinstance(data, str):
         # Strings are either URLs or system paths.
-        if re.match("^\w+://\S+$", data):
+        if re.match(r"^\w+://\S+$", data):
             data = _normalize_url(data)
         else:
             # Normalize system paths to use pathlib
@@ -247,10 +247,17 @@ def _normalize_url(url: str) -> str:
     sheet_base = "https://docs.google.com/spreadsheets"
     if url.startswith(sheet_base):
         # Normalize google-sheets URLs to download the csv.
-        match = re.match(f"{sheet_base}/d/[^/]+", url)
-        if match is None:
+        id_match = re.match(f"{sheet_base}/d/[^/]+", url)
+        if id_match is None:
             raise ValueError("Incomplete Google Sheets URL: {data}")
-        url = f"{match.group(0)}/export?format=csv"
+
+        if tab_match := re.search(r"gid=(\d+)", url):
+            tab_param = f"&gid={tab_match.group(1)}"
+        else:
+            tab_param = ""
+
+        url = f"{id_match.group(0)}/export?format=csv{tab_param}"
+
     return url
 
 
