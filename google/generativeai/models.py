@@ -244,16 +244,18 @@ def create_tuned_model(
     epoch_count: int | None = None,
     batch_size: int | None = None,
     learning_rate: float | None = None,
+    input_key: str = "text_input",
+    output_key: str = "output",
     client: glm.ModelServiceClient | None = None,
 ) -> operations.CreateTunedModelOperation:
     """Launches a tuning job to create a TunedModel.
 
     Since tuning a model can take significant time, this API doesn't wait for the tuning to complete.
-    Instead, it returns a `google.api_core.operation.Operation` object that lets you check on the status
-    of the tuning job, or wait for it to complete, and check the result.
+    Instead, it returns a `google.api_core.operation.Operation` object that lets you check on the
+    status of the tuning job, or wait for it to complete, and check the result.
 
-    After the job completes you can either find the resulting `TunedModel` object in `Operation.result()`
-    or `palm.list_tuned_models` or `palm.get_tuned_model(model_id)`.
+    After the job completes you can either find the resulting `TunedModel` object in
+    `Operation.result()` or `palm.list_tuned_models` or `palm.get_tuned_model(model_id)`.
 
     ```
     my_id = "my-tuned-model-id"
@@ -275,6 +277,16 @@ def create_tuned_model(
             *`glm.TuningExample`,
             * {'text_input': text_input, 'output': output} dicts, or
             * `(text_input, output)` tuples.
+          * A `Mapping` of `Iterable[str]` - use `input_key` and `output_key` to choose which
+            columns to use as the input/output
+          * A csv file (will be read with `pd.read_csv` and handles as a `Mapping`
+            above). This can be:
+            * A local path as a `str` or `pathlib.Path`.
+            * A url for a csv file.
+            * The url of a Google Sheets file.
+          * A JSON file - Its contents will be handled either as an `Iterable` or `Mapping`
+            above. This can be:
+            * A local path as a `str` or `pathlib.Path`.
         id: The model identifier, used to refer to the model in the API
           `tunedModels/{id}`. Must be unique.
         display_name: A human-readable name for display.
@@ -308,7 +320,9 @@ def create_tuned_model(
     else:
         ValueError(f"Not understood: `{source_model=}`")
 
-    training_data = model_types.encode_tuning_data(training_data)
+    training_data = model_types.encode_tuning_data(
+        training_data, input_key=input_key, output_key=output_key
+    )
 
     hyperparameters = glm.Hyperparameters(
         epoch_count=epoch_count,
