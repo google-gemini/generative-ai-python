@@ -30,6 +30,7 @@ from google.generativeai import string_utils
 
 __all__ = [
     "Model",
+    "ModelNameOptions",
     "AnyModelNameOptions",
     "BaseModelNameOptions",
     "TunedModelNameOptions",
@@ -310,6 +311,7 @@ class Hyperparameters:
 BaseModelNameOptions = Union[str, Model, glm.Model]
 TunedModelNameOptions = Union[str, TunedModel, glm.TunedModel]
 AnyModelNameOptions = Union[str, Model, glm.Model, TunedModel, glm.TunedModel]
+ModelNameOptions = AnyModelNameOptions
 
 
 def make_model_name(name: AnyModelNameOptions):
