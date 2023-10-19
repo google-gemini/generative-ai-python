@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import copy
+import math
 import unittest
 import unittest.mock as mock
 
@@ -61,7 +62,10 @@ class UnitTests(parameterized.TestCase):
             request: glm.EmbedTextRequest,
         ) -> glm.EmbedTextResponse:
             self.observed_requests.append(request)
-            return self.responses["batch_embed_text"]
+
+            return glm.BatchEmbedTextResponse(
+                embeddings=[glm.Embedding(value=[1, 2, 3])] * len(request.texts)
+            )
 
         @add_client_method
         def count_text_tokens(
@@ -120,27 +124,46 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         [
             dict(
-                testcase_name="basic_model",
+                testcase_name="small-2",
                 model="models/chat-lamda-001",
                 text=["Who are you?", "Who am I?"],
-            )
+            ),
+            dict(
+                testcase_name="even-batch",
+                model="models/chat-lamda-001",
+                text=["Who are you?"] * 100,
+            ),
+            dict(
+                testcase_name="even-batch-plus-one",
+                model="models/chat-lamda-001",
+                text=["Who are you?"] * 101,
+            ),
+            dict(
+                testcase_name="odd-batch",
+                model="models/chat-lamda-001",
+                text=["Who are you?"] * 237,
+            ),
         ]
     )
     def test_generate_embeddings_batch(self, model, text):
-        self.responses["batch_embed_text"] = glm.BatchEmbedTextResponse(
-            embeddings=[
-                glm.Embedding(value=[1, 2, 3]),
-                glm.Embedding(value=[4, 5, 6]),
-            ]
-        )
-
         emb = text_service.generate_embeddings(model=model, text=text)
 
         self.assertIsInstance(emb, dict)
-        self.assertEqual(
-            self.observed_requests[-1], glm.BatchEmbedTextRequest(model=model, texts=text)
-        )
+
+        # Check first and last requests.
+        self.assertEqual(self.observed_requests[-1].model, model)
+        self.assertEqual(self.observed_requests[-1].texts[-1], text[-1])
+        self.assertEqual(self.observed_requests[0].texts[0], text[0])
+
+        # Check that the list has the right length.
         self.assertIsInstance(emb["embedding"][0], list)
+        self.assertLen(emb["embedding"], len(text))
+
+        # Check that the right number of requests were sent.
+        self.assertLen(
+            self.observed_requests,
+            math.ceil(len(text) / text_service.EMBEDDING_MAX_BATCH_SIZE),
+        )
 
     @parameterized.named_parameters(
         [
