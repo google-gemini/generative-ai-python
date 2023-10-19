@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import copy
+from collections.abc import Iterable
 import datetime
-import dataclasses
 import pytz
 from typing import Any, Union
 import unittest
@@ -29,7 +29,6 @@ from google.api_core import operation
 from google.generativeai import models
 from google.generativeai import client
 from google.generativeai.types import model_types
-from google.protobuf import field_mask_pb2
 
 
 class UnitTests(parameterized.TestCase):
@@ -38,6 +37,8 @@ class UnitTests(parameterized.TestCase):
 
         client._client_manager.model_client = self.client
 
+        # TODO(markdaoust): Check if typechecking works better if wee define this as a
+        #                   subclass of `glm.ModelServiceClient`, would pyi files for `glm` help?
         def add_client_method(f):
             name = f.__name__
             setattr(self.client, name, f)
@@ -86,7 +87,7 @@ class UnitTests(parameterized.TestCase):
             *,
             page_size=None,
             page_token=None,
-        ) -> glm.ListModelsResponse:
+        ) -> Iterable[glm.TunedModel]:
             if request is None:
                 request = glm.ListTunedModelsRequest(page_size=page_size, page_token=page_token)
             self.assertIsInstance(request, glm.ListTunedModelsRequest)
@@ -95,7 +96,7 @@ class UnitTests(parameterized.TestCase):
             return (item for item in response)
 
         @add_client_method
-        def update_tuned_model(request: glm.UpdateTunedModelRequest):
+        def update_tuned_model(request: glm.UpdateTunedModelRequest) -> glm.TunedModel:
             self.observed_requests.append(request)
             response = self.responses.get("update_tuned_model", None)
             if response is None:
@@ -150,14 +151,11 @@ class UnitTests(parameterized.TestCase):
     def test_list_models(self):
         # The low level lib wraps the response in an iterable, so this is a fair test.
         self.responses = {
-            "list_models": (
-                m
-                for m in [
-                    glm.Model(name="models/fake-bison-001"),
-                    glm.Model(name="models/fake-bison-002"),
-                    glm.Model(name="models/fake-bison-003"),
-                ]
-            )
+            "list_models": [
+                glm.Model(name="models/fake-bison-001"),
+                glm.Model(name="models/fake-bison-002"),
+                glm.Model(name="models/fake-bison-003"),
+            ]
         }
 
         found_models = list(models.list_models())
@@ -166,17 +164,13 @@ class UnitTests(parameterized.TestCase):
             self.assertIsInstance(m, model_types.Model)
 
     def test_list_tuned_models(self):
-
         self.responses = {
             # The low level lib wraps the response in an iterable, so this is a fair test.
-            "list_tuned_models": (
-                m
-                for m in [
-                    glm.TunedModel(name="tunedModels/my-pig-001"),
-                    glm.TunedModel(name="tunedModels/my-pig-002"),
-                    glm.TunedModel(name="tunedModels/my-pig-003"),
-                ]
-            )
+            "list_tuned_models": [
+                glm.TunedModel(name="tunedModels/my-pig-001"),
+                glm.TunedModel(name="tunedModels/my-pig-002"),
+                glm.TunedModel(name="tunedModels/my-pig-003"),
+            ]
         }
         found_models = list(models.list_tuned_models())
         self.assertLen(found_models, 3)
