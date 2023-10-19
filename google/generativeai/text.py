@@ -15,8 +15,9 @@
 from __future__ import annotations
 
 import dataclasses
-from collections.abc import Sequence
-from typing import Iterable, overload
+from collections.abc import Iterable, Sequence
+import itertools
+from typing import Iterable, overload, TypeVar
 
 import google.ai.generativelanguage as glm
 
@@ -28,6 +29,26 @@ from google.generativeai import models
 from google.generativeai.types import safety_types
 
 DEFAULT_TEXT_MODEL = "models/text-bison-001"
+EMBEDDING_MAX_BATCH_SIZE = 100
+
+try:
+    # python 3.12+
+    _batched = itertools.batched  # type: ignore
+except AttributeError:
+    T = TypeVar("T")
+
+    def _batched(iterable: Iterable[T], n: int) -> Iterable[list[T]]:
+        if n < 1:
+            raise ValueError(f"Batch size `n` must be >1, got: {n}")
+        batch = []
+        for item in iterable:
+            batch.append(item)
+            if len(batch) == n:
+                yield batch
+                batch = []
+
+        if batch:
+            yield batch
 
 
 def _make_text_prompt(prompt: str | dict[str, str]) -> glm.TextPrompt:
@@ -282,9 +303,13 @@ def generate_embeddings(
         embedding_dict = type(embedding_response).to_dict(embedding_response)
         embedding_dict["embedding"] = embedding_dict["embedding"]["value"]
     else:
-        embedding_request = glm.BatchEmbedTextRequest(model=model, texts=text)
-        embedding_response = client.batch_embed_text(embedding_request)
-        embedding_dict = type(embedding_response).to_dict(embedding_response)
-        embedding_dict["embedding"] = [e["value"] for e in embedding_dict["embeddings"]]
+        result = {"embedding": []}
+        for batch in _batched(text, EMBEDDING_MAX_BATCH_SIZE):
+            # TODO(markdaoust): This could use an option for returning an iterator or wait-bar.
+            embedding_request = glm.BatchEmbedTextRequest(model=model, texts=batch)
+            embedding_response = client.batch_embed_text(embedding_request)
+            embedding_dict = type(embedding_response).to_dict(embedding_response)
+            result["embedding"].extend(e["value"] for e in embedding_dict["embeddings"])
+        return result
 
     return embedding_dict

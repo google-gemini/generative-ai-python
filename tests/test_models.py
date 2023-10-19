@@ -15,6 +15,8 @@
 import copy
 from collections.abc import Iterable
 import datetime
+import dataclasses
+import pathlib
 import pytz
 from typing import Any, Union
 import unittest
@@ -29,6 +31,10 @@ from google.api_core import operation
 from google.generativeai import models
 from google.generativeai import client
 from google.generativeai.types import model_types
+
+import pandas as pd
+
+HERE = pathlib.Path(__file__).parent
 
 
 class UnitTests(parameterized.TestCase):
@@ -359,6 +365,84 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests[-1].tuned_model.tuned_model_source.base_model,
             "models/swim-fish-000",
         )
+
+    @parameterized.named_parameters(
+        [
+            "glm",
+            glm.Dataset(
+                examples=glm.TuningExamples(
+                    examples=[
+                        {"text_input": "a", "output": "1"},
+                        {"text_input": "b", "output": "2"},
+                        {"text_input": "c", "output": "3"},
+                    ]
+                )
+            ),
+        ],
+        [
+            "list",
+            [
+                ("a", "1"),
+                {"text_input": "b", "output": "2"},
+                glm.TuningExample({"text_input": "c", "output": "3"}),
+            ],
+        ],
+        ["dict", {"text_input": ["a", "b", "c"], "output": ["1", "2", "3"]}],
+        [
+            "dict_custom_keys",
+            {"my_inputs": ["a", "b", "c"], "my_outputs": ["1", "2", "3"]},
+            "my_inputs",
+            "my_outputs",
+        ],
+        [
+            "pd.DataFrame",
+            pd.DataFrame(
+                [
+                    {"text_input": "a", "output": "1"},
+                    {"text_input": "b", "output": "2"},
+                    {"text_input": "c", "output": "3"},
+                ]
+            ),
+        ],
+        ["csv-path-string", str(HERE / "test.csv")],
+        ["csv-path", HERE / "test.csv"],
+        ["json-file-1", HERE / "test1.json"],
+        ["json-file-2", HERE / "test2.json"],
+        ["json-file-3", HERE / "test3.json"],
+        [
+            "json-url",
+            "https://storage.googleapis.com/generativeai-downloads/data/test1.json",
+        ],
+        [
+            "csv-url",
+            "https://storage.googleapis.com/generativeai-downloads/data/test.csv",
+        ],
+        [
+            "sheet-share",
+            "https://docs.google.com/spreadsheets/d/1OffcVSqN6X-RYdWLGccDF3KtnKoIpS7O_9cZbicKK4A/edit?usp=sharing",
+        ],
+        [
+            "sheet-export-csv",
+            "https://docs.google.com/spreadsheets/d/1OffcVSqN6X-RYdWLGccDF3KtnKoIpS7O_9cZbicKK4A/export?format=csv",
+        ],
+        [
+            "sheet-with-tab",
+            "https://docs.google.com/spreadsheets/d/118LXTS3RIkS4yAO68c-cMPP4PwLFTxKYj4R43R7dU0E/edit#gid=1526779134",
+        ],
+    )
+    def test_create_dataset(self, data, ik="text_input", ok="output"):
+        ds = model_types.encode_tuning_data(data, input_key=ik, output_key=ok)
+
+        expect = glm.Dataset(
+            examples=glm.TuningExamples(
+                examples=[
+                    {"text_input": "a", "output": "1"},
+                    {"text_input": "b", "output": "2"},
+                    {"text_input": "c", "output": "3"},
+                ]
+            )
+        )
+        self.assertEqual(expect, ds)
 
 
 if __name__ == "__main__":
