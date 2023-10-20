@@ -12,6 +12,19 @@ on:
   workflow_dispatch:
 
 jobs:
+  test3_12:
+    name: Test Py3.12
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    - name: Run tests
+      run: |
+        python --version
+        pip install -q -e .[dev]
+        python -m unittest discover --pattern '*test*.py'
   test3_11:
     name: Test Py3.11
     runs-on: ubuntu-latest
