@@ -30,7 +30,7 @@ __all__ = [
 class CitationSourceDict(TypedDict):
     start_index: int | None
     end_index: int | None
-    uri: str | None
+    url: str | None
     license: str | None
 
     __doc__ = string_utils.strip_oneof(glm.CitationSource.__doc__)

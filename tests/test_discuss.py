@@ -326,7 +326,7 @@ class UnitTests(parameterized.TestCase):
                             {
                                 "start_index": 6,
                                 "end_index": 12,
-                                "uri": "https://google.com",
+                                "url": "https://google.com",
                             }
                         ]
                     },
