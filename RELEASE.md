@@ -1,6 +1,5 @@
 ## v0.2.2
 
-- Add Python 3.12 support.
 - Handle maximum batch size for `embed_text`.
 - Restore `types.ModelNameOptions`.
 - Update tuning to handle more dataset types (json, pandas, urls, google-sheets).
