@@ -176,9 +176,7 @@ def gen_api_docs():
 
     doc_generator = MyDocGenerator(
         root_title=PROJECT_FULL_NAME,
-        # Replace `tensorflow_docs.api_generator` with your module, here.
         py_modules=[("google", google)],
-        # Replace `tensorflow_docs.api_generator` with your module, here.
         base_dir=(
             pathlib.Path(palm.__file__).parent,
             pathlib.Path(glm.__file__).parent.parent,
@@ -223,7 +221,7 @@ def gen_api_docs():
         new_content = re.sub(r".*?`oneof`_ ``_.*?\n", "", new_content, re.MULTILINE)
         new_content = re.sub(r"\.\. code-block:: python.*?\n", "", new_content)
 
-        new_content = re.sub(r"generativelanguage_\w+.types", "generativelanguage", new_content)
+        new_content = re.sub(r"generativelanguage_\w+\.types", "generativelanguage", new_content)
 
         if new_content != old_content:
             fpath.write_text(new_content)
