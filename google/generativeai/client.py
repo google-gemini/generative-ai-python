@@ -168,8 +168,10 @@ class _ClientManager:
             model_client = self.get_default_client("Model")
             client = model_client._transport.operations_client
             self.clients["operations"] = client
-
         return client
+
+
+_client_manager = _ClientManager()
 
 
 def configure(
@@ -244,3 +246,7 @@ def get_default_operations_client() -> operations_v1.OperationsClient:
 
 def get_default_model_client() -> glm.ModelServiceAsyncClient:
     return _client_manager.get_default_client("model")
+
+
+def get_default_retriever_client() -> glm.RetrieverClient:
+    return _client_manager.get_default_client("retriever")

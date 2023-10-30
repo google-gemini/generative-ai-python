@@ -24,6 +24,7 @@ from google.generativeai.types import model_types
 from google.api_core import operation
 from google.api_core import protobuf_helpers
 from google.protobuf import field_mask_pb2
+from google.generativeai.utils import _flatten_update_paths
 
 
 def get_model(
@@ -377,18 +378,6 @@ def update_tuned_model(
         glm.UpdateTunedModelRequest(tuned_model=tuned_model, update_mask=field_mask)
     )
     return model_types.decode_tuned_model(result)
-
-
-def _flatten_update_paths(updates):
-    new_updates = {}
-    for key, value in updates.items():
-        if isinstance(value, dict):
-            for sub_key, sub_value in _flatten_update_paths(value).items():
-                new_updates[f"{key}.{sub_key}"] = sub_value
-        else:
-            new_updates[key] = value
-
-    return new_updates
 
 
 def _apply_update(thing, path, value):
