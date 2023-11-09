@@ -64,7 +64,7 @@ class OperationsTests(parameterized.TestCase):
 
         # Create the operation with the `initial_pb` but when it asks for an update
         # return the `final_pb`.
-        def refresh():
+        def refresh(*_, **__):
             return final_pb
 
         # This is the base Operation class
@@ -133,7 +133,7 @@ class OperationsTests(parameterized.TestCase):
         ops = gen_operations()
         initial_pb = next(ops)
 
-        def refresh():
+        def refresh(*_, **__):
             """get the next status on each refresh"""
             return next(ops)
 
