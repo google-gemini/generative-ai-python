@@ -31,8 +31,8 @@ class UnitTests(parameterized.TestCase):
     def setUp(self):
         self.client = unittest.mock.MagicMock()
 
-        client._client_manager.text_client = self.client
-        client._client_manager.model_client = self.client
+        client._client_manager.clients["text"] = self.client
+        client._client_manager.clients["model"] = self.client
 
         self.observed_requests = []
 

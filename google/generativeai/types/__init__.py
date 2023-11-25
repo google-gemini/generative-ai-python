@@ -18,6 +18,8 @@ from google.generativeai.types.discuss_types import *
 from google.generativeai.types.model_types import *
 from google.generativeai.types.text_types import *
 from google.generativeai.types.citation_types import *
+from google.generativeai.types.content_types import *
+from google.generativeai.types.generation_types import *
 from google.generativeai.types.safety_types import *
 
 del discuss_types
