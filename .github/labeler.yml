@@ -1,2 +1,5 @@
 'status:awaiting review':
 - '**/*'
+
+'component:python sdk':
+- '**/*'
