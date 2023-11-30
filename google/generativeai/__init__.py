@@ -75,6 +75,8 @@ from google.generativeai.discuss import chat
 from google.generativeai.discuss import chat_async
 from google.generativeai.discuss import count_message_tokens
 
+from google.generativeai.embedding import embed_content
+
 from google.generativeai.generative_models import GenerativeModel
 
 from google.generativeai.text import generate_text

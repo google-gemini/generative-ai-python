@@ -85,11 +85,13 @@ _NEW_HARM_CATEGORIES = {
     9: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
     HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
     "harm_category_sexually_explicit": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "harm_category_sexual": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
     "sexual": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
     "sex": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
 
     10: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
     HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "harm_category_dangerous_content": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
     "harm_category_dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
     "dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
     "danger": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,

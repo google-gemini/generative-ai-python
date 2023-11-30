@@ -160,7 +160,6 @@ class UnitTests(parameterized.TestCase):
                 "role": "assistant",
             },
             "finish_reason": 1,
-            "finish_message": "",
             "citation_metadata": {
                 "citation_sources": [
                     {
@@ -316,7 +315,6 @@ class UnitTests(parameterized.TestCase):
                 ],
                 "role": "assistant",
             },
-            "finish_message": "",
             "citation_metadata": {"citation_sources": []},
             "index": 0,
             "finish_reason": 0,
@@ -330,7 +328,6 @@ class UnitTests(parameterized.TestCase):
                 "role": "assistant",
             },
             "index": 1,
-            "finish_message": "",
             "citation_metadata": {"citation_sources": []},
             "finish_reason": 0,
             "safety_ratings": [],
@@ -351,7 +348,6 @@ class UnitTests(parameterized.TestCase):
                 "role": "assistant",
             },
             "index": 2,
-            "finish_message": "",
             "citation_metadata": {
                 "citation_sources": [
                     {
@@ -402,7 +398,6 @@ class UnitTests(parameterized.TestCase):
                             "blocked": False,
                         }
                     ],
-                    "block_reason_message": "",
                 },
             },
         )

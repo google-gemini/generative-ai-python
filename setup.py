@@ -43,7 +43,7 @@ else:
     release_status = "Development Status :: 5 - Production/Stable"
 
 dependencies = [
-    "google-ai-generativelanguage==0.3.3",
+    # "google-ai-generativelanguage==0.3.3",
     "google-auth",
     "google-api-core",
     "protobuf",
@@ -58,6 +58,8 @@ extras_require = {
         "pandas",
         "pytype",
         "pyyaml",
+        "Pillow",
+        "ipython"
     ],
 }
 

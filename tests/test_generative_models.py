@@ -226,7 +226,6 @@ class CUJTests(parameterized.TestCase):
             glm.GenerateContentResponse(
                 {
                     "prompt_feedback": {"block_reason": "SAFETY"},
-                    "usage_metadata": {"prompt_token_count": 7},
                 }
             )
         ]
@@ -244,8 +243,6 @@ class CUJTests(parameterized.TestCase):
             for chunk in response:
                 pass
 
-        self.assertEqual(response.usage_metadata.prompt_token_count, 7)
-
     def test_stream_prompt_feedback_not_blocked(self):
         chunks = [
             glm.GenerateContentResponse(
@@ -258,19 +255,11 @@ class CUJTests(parameterized.TestCase):
                             }
                         ]
                     },
-                    "usage_metadata": {
-                        "prompt_token_count": 7,
-                        "candidates_token_count": 3,
-                    },
                     "candidates": [{"content": {"parts": [{"text": "first"}]}}],
                 }
             ),
             glm.GenerateContentResponse(
                 {
-                    "usage_metadata": {
-                        "prompt_token_count": 7,
-                        "candidates_token_count": 17,
-                    },
                     "candidates": [{"content": {"parts": [{"text": " second"}]}}],
                 }
             ),
@@ -287,8 +276,6 @@ class CUJTests(parameterized.TestCase):
 
         text = "".join(chunk.text for chunk in response)
         self.assertEqual(text, "first second")
-
-        self.assertEqual(response.usage_metadata.candidates_token_count, 17)
 
     def test_chat(self):
         # Multi turn chat
@@ -331,7 +318,7 @@ class CUJTests(parameterized.TestCase):
         response = chat.send_message("hello?")
         history = chat.history
         self.assertEqual(history[0].role, "user")
-        self.assertEqual(history[1].role, "assistant")
+        self.assertEqual(history[1].role, "model")
 
     def test_chat_streaming_basic(self):
         # Chat streaming
@@ -448,9 +435,9 @@ class CUJTests(parameterized.TestCase):
         self.assertLen(chat1.history, 4)
         expected = [
             {"role": "user", "parts": ["hello1"]},
-            {"role": "assistant", "parts": ["first"]},
+            {"role": "model", "parts": ["first"]},
             {"role": "user", "parts": ["hello3"]},
-            {"role": "assistant", "parts": ["third"]},
+            {"role": "model", "parts": ["third"]},
         ]
         for content, ex in zip(chat1.history, expected):
             self.assertEqual(content, content_types.to_content(ex))
@@ -458,9 +445,9 @@ class CUJTests(parameterized.TestCase):
         self.assertLen(chat2.history, 4)
         expected = [
             {"role": "user", "parts": ["hello1"]},
-            {"role": "assistant", "parts": ["first"]},
+            {"role": "model", "parts": ["first"]},
             {"role": "user", "parts": ["hello2"]},
-            {"role": "assistant", "parts": ["second"]},
+            {"role": "model", "parts": ["second"]},
         ]
         for content, ex in zip(chat2.history, expected):
             self.assertEqual(content, content_types.to_content(ex))
@@ -520,7 +507,6 @@ class CUJTests(parameterized.TestCase):
             glm.GenerateContentResponse(
                 {
                     "prompt_feedback": {"block_reason": "SAFETY"},
-                    "usage_metadata": {"prompt_token_count": 7},
                 }
             )
         ]

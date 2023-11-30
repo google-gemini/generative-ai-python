@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import collections
 from collections.abc import Iterable
 import dataclasses
 import itertools
 import textwrap
-from typing import TypedDict
+from typing import TypedDict, Union
 
 from google.ai import generativelanguage as glm
 
@@ -15,7 +17,6 @@ __all__ = [
     "GenerationConfigDict",
     "GenerationConfigType",
     "GenerationConfig",
-    "UsageMetadata",
     "GenerateContentResponse",
 ]
 
@@ -52,7 +53,7 @@ class GenerationConfig:
     temperature: float | None = 0.0
 
 
-GenerationConfigType = glm.GenerationConfig | GenerationConfigDict | GenerationConfig
+GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
 
 
 def to_generation_config_dict(generation_config: GenerationConfigType):
@@ -143,7 +144,6 @@ def _join_candidates(candidates: Iterable[glm.Candidate]):
         index=index,
         content=_join_contents([c.content for c in candidates]),
         finish_reason=candidates[-1].finish_reason,
-        finish_message=candidates[-1].finish_message,
         safety_ratings=_join_safety_ratings_lists([c.safety_ratings for c in candidates]),
         citation_metadata=_join_citation_metadatas([c.citation_metadata for c in candidates]),
     )
@@ -151,7 +151,7 @@ def _join_candidates(candidates: Iterable[glm.Candidate]):
 
 def _join_candidate_lists(candidate_lists: Iterable[list[glm.Candidate]]):
     # Assuming that is a candidate ends, it is no longer returnecd in the list of
-    # candidates and that's why candidates ahave an index
+    # candidates and that's why candidates have an index
     candidates = collections.defaultdict(list)
     for candidate_list in candidate_lists:
         for candidate in candidate_list:
@@ -171,32 +171,16 @@ def _join_prompt_feedbacks(
     return next(iter(prompt_feedbacks))
 
 
-def _join_usage_metadata(
-    usage_metadatas: Iterable[glm.GenerateContentResponse.UsageMetadata],
-):
-    for usage_metadata in usage_metadatas:
-        pass
-    return usage_metadata
-
-
 def _join_chunks(chunks: Iterable[glm.GenerateContentResponse]):
     return glm.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
-        usage_metadata=_join_usage_metadata(c.usage_metadata for c in chunks),
     )
 
 
 _INCOMPLETE_ITERATION_MESSAGE = """\
 Please let the response complete iteration before accessing the final accumulated
 attributes (or call `response.resolve()`)"""
-
-
-@dataclasses.dataclass
-class UsageMetadata:
-    prompt_token_count: int
-    candidates_token_count: int
-    total_token_count: int
 
 
 class GenerateContentResponse:

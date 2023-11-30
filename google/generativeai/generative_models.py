@@ -104,7 +104,7 @@ class GenerativeModel:
 
 class ChatSession:
     _USER_ROLE = "user"
-    _MODEL_ROLE = "assistant"
+    _MODEL_ROLE = "model"
 
     def __init__(
         self,

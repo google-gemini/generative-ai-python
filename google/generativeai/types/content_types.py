@@ -30,15 +30,13 @@ __all__ = [
     "ContentsType",
 ]
 
+# TODO(markdaoust): merge into blob types to avoind the empty union.
 IMAGE_TYPES = ()
 if PIL is not None:
     IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
 
 if IPython is not None:
     IMAGE_TYPES = IMAGE_TYPES + (IPython.display.Image,)
-
-ImageType = Union[IMAGE_TYPES]
-
 
 def pil_to_png_bytes(img):
     bytesio = io.BytesIO()
@@ -103,7 +101,7 @@ def _convert_dict(d: Mapping) -> glm.Content | glm.Part | glm.Blob:
         )
 
 
-BlobType = glm.Blob | BlobDict | ImageType
+BlobType = Union[(glm.Blob, BlobDict) + IMAGE_TYPES]
 
 
 def is_blob_dict(d):
@@ -137,7 +135,7 @@ class PartDict(TypedDict):
 
 
 # When you need a `Part` accept a part object, part-dict, blob or string
-PartType = glm.Part | PartDict | BlobType | str
+PartType = Union[glm.Part, PartDict, BlobType, str]
 
 
 def is_part_dict(d):
@@ -168,10 +166,10 @@ def is_content_dict(d):
 
 # When you need a message accept a `Content` object or dict, a list of parts,
 # or a single part
-ContentType = glm.Content | ContentDict | Iterable[PartType] | PartType
+ContentType = Union[glm.Content, ContentDict, Iterable[PartType], PartType]
 
 # For generate_content, we're not guessing roles for [[parts],[parts],[parts]] yet.
-StrictContentType = glm.Content | ContentDict
+StrictContentType = Union[glm.Content, ContentDict]
 
 
 def to_content(content: ContentType):
@@ -201,7 +199,7 @@ def strict_to_content(content: StrictContentType):
         )
 
 
-ContentsType = ContentType | Iterable[StrictContentType] | None
+ContentsType = Union[ContentType, Iterable[StrictContentType], None]
 
 
 def to_contents(contents: ContentsType) -> list[glm.Content]:

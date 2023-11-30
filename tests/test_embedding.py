@@ -20,6 +20,7 @@ import unittest.mock as mock
 import google.ai.generativelanguage as glm
 
 from google.generativeai import embedding
+
 from google.generativeai import client
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -58,7 +59,7 @@ class UnitTests(parameterized.TestCase):
             )
 
     def test_embed_content(self):
-        text="What are you?"
+        text = "What are you?"
         emb = embedding.embed_content(model=DEFAULT_EMB_MODEL, content=text)
 
         self.assertIsInstance(emb, dict)
@@ -84,7 +85,7 @@ class UnitTests(parameterized.TestCase):
         ]
     )
     def test_batch_embed_contents(self, batch_size):
-        text=["What are you?"]
+        text = ["What are you?"]
         texts = text * batch_size
         emb = embedding.embed_content(model=DEFAULT_EMB_MODEL, content=texts)
 
@@ -101,7 +102,7 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_embed_content_title_and_task_1(self):
-        text="What are you?"
+        text = "What are you?"
         emb = embedding.embed_content(
             model=DEFAULT_EMB_MODEL,
             content=text,

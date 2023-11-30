@@ -22,11 +22,9 @@ from typing import Iterable, overload, TypeVar, Union, Mapping
 import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_generative_client
-from google.generativeai import string_utils
+
 from google.generativeai.types import text_types
 from google.generativeai.types import model_types
-from google.generativeai import models
-from google.generativeai.types import safety_types
 from google.generativeai.types import content_types
 
 DEFAULT_EMB_MODEL = "models/embedding-001"
