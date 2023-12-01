@@ -38,6 +38,7 @@ if PIL is not None:
 if IPython is not None:
     IMAGE_TYPES = IMAGE_TYPES + (IPython.display.Image,)
 
+
 def pil_to_png_bytes(img):
     bytesio = io.BytesIO()
     img.save(bytesio, format="PNG")

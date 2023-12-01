@@ -6,12 +6,11 @@ import unittest.mock
 from absl.testing import absltest
 from absl.testing import parameterized
 import google.ai.generativelanguage as glm
-import google.generativeai as genai
 from google.generativeai import client as client_lib
 from google.generativeai import generative_models
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
-from google.generativeai.types import safety_types
+
 import PIL.Image
 
 HERE = pathlib.Path(__file__).parent
@@ -568,6 +567,44 @@ class CUJTests(parameterized.TestCase):
         # about the problem. "hello2" is never added, the `rewind` removes `hello1`.
         chat.rewind()
         self.assertLen(chat.history, 0)
+
+    @parameterized.named_parameters(
+        [
+            "GenerateContentResponse",
+            generation_types.GenerateContentResponse,
+            generation_types.AsyncGenerateContentResponse,
+        ],
+        [
+            "GenerativeModel.generate_response",
+            generative_models.GenerativeModel.generate_content,
+            generative_models.GenerativeModel.generate_content_async,
+        ],
+        [
+            "GenerativeModel.count_tokens",
+            generative_models.GenerativeModel.count_tokens,
+            generative_models.GenerativeModel.count_tokens_async,
+        ],
+        [
+            "ChatSession.send_message",
+            generative_models.ChatSession.send_message,
+            generative_models.ChatSession.send_message_async,
+        ],
+    )
+    def test_async_code_match(self, obj, aobj):
+        import inspect
+
+        source = inspect.getsource(obj)
+        asource = inspect.getsource(aobj)
+
+        asource = (
+            asource.replace("anext", "next")
+            .replace("aiter", "iter")
+            .replace("_async", "")
+            .replace("async ", "")
+            .replace("await ", "")
+            .replace("Async", "")
+        )
+        self.assertEqual(source, asource)
 
 
 if __name__ == "__main__":

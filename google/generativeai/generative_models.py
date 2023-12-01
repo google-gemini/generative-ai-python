@@ -30,8 +30,8 @@ class GenerativeModel:
             safety_settings, harm_category_set="new"
         )
         self._generation_config = generation_types.to_generation_config_dict(generation_config)
-        self._client = client.get_default_generative_client()
-        # self._async_client = client.get_default_generative_async_client()
+        self._client = None
+        self._async_client = None
 
     @property
     def model_name(self):
@@ -43,9 +43,10 @@ class GenerativeModel:
     def _prepare_request(
         self,
         *,
-        contents: (content_types.ContentOptions | Iterable[content_types.StrictContentOptions]),
+        contents: content_types.ContentsType,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
+        **kwargs
     ) -> glm.GenerateContentRequest:
         if not contents:
             raise TypeError("contents must not be empty")
@@ -66,21 +67,26 @@ class GenerativeModel:
             contents=contents,
             generation_config=merged_gc,
             safety_settings=merged_ss,
+            **kwargs
         )
 
     def generate_content(
         self,
-        contents: (content_types.ContentOptions | Iterable[content_types.StrictContentOptions]),
+        contents: content_types.ContentsType,
         *,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
+        **kwargs
     ) -> generation_types.GenerateContentResponse:
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
             safety_settings=safety_settings,
+            **kwargs
         )
+        if self._client is None:
+            self._client = client.get_default_generative_client()
 
         if stream:
             iterator = self._client.stream_generate_content(request)
@@ -89,10 +95,43 @@ class GenerativeModel:
             response = self._client.generate_content(request)
             return generation_types.GenerateContentResponse.from_response(response)
 
+    async def generate_content_async(
+        self,
+        contents: content_types.ContentsType,
+        *,
+        generation_config: generation_types.GenerationConfigType | None = None,
+        safety_settings: safety_types.SafetySettingOptions | None = None,
+        stream: bool = False,
+        **kwargs
+    ) -> generation_types.AsyncGenerateContentResponse:
+        request = self._prepare_request(
+            contents=contents,
+            generation_config=generation_config,
+            safety_settings=safety_settings,
+            **kwargs
+        )
+        if self._async_client is None:
+            self._async_client = client.get_default_generative_async_client()
+
+        if stream:
+            iterator = await self._async_client.stream_generate_content(request)
+            return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
+        else:
+            response = await self._async_client.generate_content(request)
+            return generation_types.AsyncGenerateContentResponse.from_response(response)
+
+    def count_tokens(self, contents: content_types.ContentsType) -> glm.CountTokensResponse:
+        contents = content_types.to_contents(contents)
+        return self._client.count_tokens(self.model_name, contents)
+
+    async def count_tokens_async(self, contents: content_types.ContentsType) -> glm.CountTokensResponse:
+        contents = content_types.to_contents(contents)
+        return await self._client.count_tokens(self.model_name, contents)
+
     def start_chat(
         self,
         *,
-        history: Iterable[content_types.StrictContentOptions] | None = None,
+        history: Iterable[content_types.StrictContentType] | None = None,
     ) -> ChatSession:
         if self._generation_config.get("candidate_count", 1) > 1:
             raise ValueError("Can't chat with `candidate_count > 1`")
@@ -109,16 +148,16 @@ class ChatSession:
     def __init__(
         self,
         model: GenerativeModel,
-        history: Iterable[content_types.StrictContentOptions] | None = None,
+        history: Iterable[content_types.StrictContentType] | None = None,
     ):
         self.model: GenerativeModel = model
         self._history: list[glm.Content] = content_types.to_contents(history)
         self._last_sent: glm.Content | None = None
-        self._last_received: generation_types.GenerateContentResponse | None = None
+        self._last_received: generation_types.BaseGenerateContentResponse | None = None
 
     def send_message(
         self,
-        content: content_types.ContentOptions,
+        content: content_types.ContentType,
         *,
         generation_config: generation_types.GenerationConfigType = None,
         safety_settings: safety_types.SafetySettingOptions = None,
@@ -134,6 +173,46 @@ class ChatSession:
         if generation_config.get("candidate_count", 1) > 1:
             raise ValueError("Can't chat with `candidate_count > 1`")
         response = self.model.generate_content(
+            contents=history,
+            generation_config=generation_config,
+            safety_settings=safety_settings,
+            stream=stream,
+        )
+
+        if response.prompt_feedback.block_reason:
+            raise generation_types.BlockedPromptException(response.prompt_feedback)
+
+        if not stream:
+            if response.candidates[0].finish_reason not in (
+                glm.Candidate.FinishReason.FINISH_REASON_UNSPECIFIED,
+                glm.Candidate.FinishReason.STOP,
+                glm.Candidate.FinishReason.MAX_TOKENS,
+            ):
+                raise generation_types.StopCandidateException(response.candidates[0])
+
+        self._last_sent = content
+        self._last_received = response
+
+        return response
+
+    async def send_message_async(
+        self,
+        content: content_types.ContentType,
+        *,
+        generation_config: generation_types.GenerationConfigType = None,
+        safety_settings: safety_types.SafetySettingOptions = None,
+        stream: bool = False,
+    ) -> generation_types.AsyncGenerateContentResponse:
+        content = content_types.to_content(content)
+        if not content.role:
+            content.role = self._USER_ROLE
+        history = self.history[:]
+        history.append(content)
+
+        generation_config = generation_types.to_generation_config_dict(generation_config)
+        if generation_config.get("candidate_count", 1) > 1:
+            raise ValueError("Can't chat with `candidate_count > 1`")
+        response = await self.model.generate_content_async(
             contents=history,
             generation_config=generation_config,
             safety_settings=safety_settings,

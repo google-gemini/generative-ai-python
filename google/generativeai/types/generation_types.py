@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import collections
-from collections.abc import Iterable
+from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
 import textwrap
@@ -183,97 +183,24 @@ Please let the response complete iteration before accessing the final accumulate
 attributes (or call `response.resolve()`)"""
 
 
-class GenerateContentResponse:
+class BaseGenerateContentResponse:
     def __init__(
         self,
         done: bool,
-        iterator: Iterable[glm.GenerateContentResponse],
+        iterator: None
+        | Iterable[glm.GenerateContentResponse]
+        | AsyncIterable[glm.GenerateContentResponse],
         result: glm.GenerateContentResponse,
-        chunks: list[glm.GenerateContentResponse],
+        chunks: Iterable[glm.GenerateContentResponse],
     ):
         self._done = done
         self._iterator = iterator
         self._result = result
-        self._chunks = chunks
+        self._chunks = list(chunks)
         if result.prompt_feedback.block_reason:
             self._error = BlockedPromptException(result)
         else:
             self._error = None
-
-    def __str__(self):
-        return textwrap.dedent(
-            """
-            genai.GenerateContentResponse(
-                prompt_feedback=...,
-                usage_metadata=...,
-                candidates=...,
-            )"""[
-                1:
-            ]
-        )
-
-    @classmethod
-    def from_iterator(cls, iterator: Iterable[glm.GenerateContentResponse]):
-        iterator = iter(iterator)
-        response = next(iterator)
-
-        return cls(
-            done=False,
-            iterator=iterator,
-            result=response,
-            chunks=[response],
-        )
-
-    @classmethod
-    def from_response(cls, response: glm.GenerateContentResponse):
-        return cls(
-            done=True,
-            iterator=iter([]),
-            result=response,
-            chunks=[response],
-        )
-
-    def __iter__(self):
-        # This is not thread safe.
-        if self._done:
-            yield from (GenerateContentResponse.from_response(item) for item in self._chunks)
-
-        # Always have the next chunk available.
-        if len(self._chunks) == 0:
-            self._chunks.append(next(self._iterator))
-
-        for n in itertools.count():
-            if self._error:
-                raise self._error
-
-            if n >= len(self._chunks) - 1:
-                # Look ahead for a new item, so that you know the stream is done
-                # when you yield the last item.
-                if self._done:
-                    return
-
-                try:
-                    item = next(self._iterator)
-                except StopIteration:
-                    self._done = True
-                except Exception as e:
-                    self._error = e
-                    self._done = True
-                else:
-                    self._chunks.append(item)
-                    self._result = _join_chunks([self._result, item])
-
-            item = self._chunks[n]
-
-            item = GenerateContentResponse.from_response(item)
-            yield item
-
-    def resolve(self):
-        if self._done:
-            return
-
-        for _ in self:
-            pass
 
     @property
     def candidates(self):
@@ -313,26 +240,139 @@ class GenerateContentResponse:
         return parts[0].text
 
     @property
-    def is_text(self):
-        candidates = self.candidates
-        if len(candidates) != 1:
-            return False
-        candidate = candidates[0]
-
-        parts = candidate.parts
-        if len(parts) != 1:
-            return False
-        part = parts[0]
-
-        if "text" not in part:
-            return False
-
-        return True
-
-    @property
     def prompt_feedback(self):
         return self._result.prompt_feedback
 
-    @property
-    def usage_metadata(self):
-        return self._result.usage_metadata
+
+class GenerateContentResponse(BaseGenerateContentResponse):
+    @classmethod
+    def from_iterator(cls, iterator: Iterable[glm.GenerateContentResponse]):
+        iterator = iter(iterator)
+        response = next(iterator)
+
+        return cls(
+            done=False,
+            iterator=iterator,
+            result=response,
+            chunks=[response],
+        )
+
+    @classmethod
+    def from_response(cls, response: glm.GenerateContentResponse):
+        return cls(
+            done=True,
+            iterator=None,
+            result=response,
+            chunks=[response],
+        )
+
+    def __iter__(self):
+        # This is not thread safe.
+        if self._done:
+            for chunk in self._chunks:
+                yield GenerateContentResponse.from_response(chunk)
+            return
+
+        # Always have the next chunk available.
+        if len(self._chunks) == 0:
+            self._chunks.append(next(self._iterator))
+
+        for n in itertools.count():
+            if self._error:
+                raise self._error
+
+            if n >= len(self._chunks) - 1:
+                # Look ahead for a new item, so that you know the stream is done
+                # when you yield the last item.
+                if self._done:
+                    return
+
+                try:
+                    item = next(self._iterator)
+                except StopIteration:
+                    self._done = True
+                except Exception as e:
+                    self._error = e
+                    self._done = True
+                else:
+                    self._chunks.append(item)
+                    self._result = _join_chunks([self._result, item])
+
+            item = self._chunks[n]
+
+            item = GenerateContentResponse.from_response(item)
+            yield item
+
+    def resolve(self):
+        if self._done:
+            return
+
+        for _ in self:
+            pass
+
+
+class AsyncGenerateContentResponse(BaseGenerateContentResponse):
+    @classmethod
+    async def from_aiterator(cls, iterator: AsyncIterable[glm.GenerateContentResponse]):
+        iterator = aiter(iterator)
+        response = await anext(iterator)
+
+        return cls(
+            done=False,
+            iterator=iterator,
+            result=response,
+            chunks=[response],
+        )
+
+    @classmethod
+    def from_response(cls, response: glm.GenerateContentResponse):
+        return cls(
+            done=True,
+            iterator=None,
+            result=response,
+            chunks=[response],
+        )
+
+    async def __aiter__(self):
+        # This is not thread safe.
+        if self._done:
+            for chunk in self._chunks:
+                yield GenerateContentResponse.from_response(chunk)
+            return
+
+        # Always have the next chunk available.
+        if len(self._chunks) == 0:
+            self._chunks.append(await anext(self._iterator))
+
+        for n in itertools.count():
+            if self._error:
+                raise self._error
+
+            if n >= len(self._chunks) - 1:
+                # Look ahead for a new item, so that you know the stream is done
+                # when you yield the last item.
+                if self._done:
+                    return
+
+                try:
+                    item = await anext(self._iterator)
+                except StopAsyncIteration:
+                    self._done = True
+                except Exception as e:
+                    self._error = e
+                    self._done = True
+                else:
+                    self._chunks.append(item)
+                    self._result = _join_chunks([self._result, item])
+
+            item = self._chunks[n]
+
+            item = GenerateContentResponse.from_response(item)
+            yield item
+
+    def resolve(self):
+        if self._done:
+            return
+
+        for _ in self:
+            pass

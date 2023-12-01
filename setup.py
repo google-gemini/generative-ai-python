@@ -51,16 +51,7 @@ dependencies = [
 ]
 
 extras_require = {
-    "dev": [
-        "absl-py",
-        "black",
-        "nose2",
-        "pandas",
-        "pytype",
-        "pyyaml",
-        "Pillow",
-        "ipython"
-    ],
+    "dev": ["absl-py", "black", "nose2", "pandas", "pytype", "pyyaml", "Pillow", "ipython"],
 }
 
 url = "https://github.com/google/generative-ai-python"
