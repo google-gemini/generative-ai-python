@@ -5,9 +5,9 @@ name: Presubmit checks
 on:
   # Relevant PRs
   pull_request:
-    # paths:
-    # - "google/**"
-    # - "tests/**"
+    paths:
+    - "google/**"
+    - "tests/**"
   # Allow manual runs
   workflow_dispatch:
 
