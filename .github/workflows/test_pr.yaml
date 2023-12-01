@@ -5,9 +5,9 @@ name: Presubmit checks
 on:
   # Relevant PRs
   pull_request:
-    paths:
-    - "google/**"
-    - "tests/**"
+    # paths:
+    # - "google/**"
+    # - "tests/**"
   # Allow manual runs
   workflow_dispatch:
 
@@ -46,6 +46,19 @@ jobs:
     - uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+    - name: Run tests
+      run: |
+        python --version
+        pip install -q -e .[dev]
+        python -m unittest discover --pattern '*test*.py'
+  test3_8:
+    name: Test Py3.8
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
     - name: Run tests
       run: |
         python --version
