@@ -20,6 +20,7 @@ import re
 import reprlib
 import textwrap
 
+
 def set_doc(doc):
     """A decorator to set the docstring of a function."""
 

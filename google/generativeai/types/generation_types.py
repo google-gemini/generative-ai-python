@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import collections
+import contextlib
 from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
 import textwrap
 from typing import TypedDict, Union
 
+import google.protobuf.json_format
+import google.api_core.exceptions
 from google.ai import generativelanguage as glm
 
 __all__ = [
@@ -77,11 +80,8 @@ def to_generation_config_dict(generation_config: GenerationConfigType):
 def _join_citation_metadatas(
     citation_metadatas: Iterable[glm.CitationMetadata],
 ):
-    citation_sources = []
-    for citation_metadata in citation_metadatas:
-        citation_sources.extend(citation_metadata.citation_sources)
-
-    return glm.CitationMetadata(citation_sources=citation_sources)
+    citation_metadatas = list(citation_metadatas)
+    return citation_metadatas[-1]
 
 
 def _join_safety_ratings_lists(
@@ -108,8 +108,11 @@ def _join_safety_ratings_lists(
 
 def _join_contents(contents: Iterable[glm.Content]):
     contents = tuple(contents)
-    role = contents[0].role
-    assert all(c.role == role for c in contents)
+    roles = [c.role for c in contents if c.role]
+    if roles:
+        role = roles[0]
+    else:
+        role = ""
 
     parts = []
     for content in contents:
@@ -138,8 +141,7 @@ def _join_contents(contents: Iterable[glm.Content]):
 def _join_candidates(candidates: Iterable[glm.Candidate]):
     candidates = tuple(candidates)
 
-    index = candidates[0].index
-    assert all(c.index == index for c in candidates)
+    index = candidates[0].index  # These should all be the same.
 
     return glm.Candidate(
         index=index,
@@ -151,7 +153,7 @@ def _join_candidates(candidates: Iterable[glm.Candidate]):
 
 
 def _join_candidate_lists(candidate_lists: Iterable[list[glm.Candidate]]):
-    # Assuming that is a candidate ends, it is no longer returnecd in the list of
+    # Assuming that is a candidate ends, it is no longer returned in the list of
     # candidates and that's why candidates have an index
     candidates = collections.defaultdict(list)
     for candidate_list in candidate_lists:
@@ -245,11 +247,23 @@ class BaseGenerateContentResponse:
         return self._result.prompt_feedback
 
 
+@contextlib.contextmanager
+def rewrite_stream_error():
+    try:
+        yield
+    except (google.protobuf.json_format.ParseError, AttributeError) as e:
+        raise google.api_core.exceptions.BadRequest(
+            "Unknown error trying to retrieve streaming response. "
+            "Please retry with `stream=False` for more details."
+        )
+
+
 class GenerateContentResponse(BaseGenerateContentResponse):
     @classmethod
     def from_iterator(cls, iterator: Iterable[glm.GenerateContentResponse]):
         iterator = iter(iterator)
-        response = next(iterator)
+        with rewrite_stream_error():
+            response = next(iterator)
 
         return cls(
             done=False,
@@ -316,7 +330,8 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
     @classmethod
     async def from_aiterator(cls, iterator: AsyncIterable[glm.GenerateContentResponse]):
         iterator = aiter(iterator)
-        response = await anext(iterator)
+        with rewrite_stream_error():
+            response = await anext(iterator)
 
         return cls(
             done=False,

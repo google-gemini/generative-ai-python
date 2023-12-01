@@ -112,6 +112,22 @@ class ClientTests(parameterized.TestCase):
         text_client.classm()
         self.assertTrue(ClientTests.DummyClient.called_classm)
 
+    def test_same_config(self):
+        cm1 = client._ClientManager()
+        cm1.configure(api_key="abc")
+
+        cm2 = client._ClientManager()
+        cm2.configure(client_options=dict(api_key="abc"))
+
+        self.assertEqual(
+            cm1.client_config["client_info"].__dict__, cm2.client_config["client_info"].__dict__
+        )
+        self.assertEqual(
+            cm1.client_config["client_options"].__dict__,
+            cm2.client_config["client_options"].__dict__,
+        )
+        self.assertEqual(cm1.default_metadata, cm2.default_metadata)
+
 
 if __name__ == "__main__":
     absltest.main()

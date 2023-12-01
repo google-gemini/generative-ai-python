@@ -88,6 +88,7 @@ class GenerativeModel:
          generation_config: A `genai.GenerationConfig` setting the default generation parameters to
              use.
     """
+
     def __init__(
         self,
         model_name: str = "gemini-m",
@@ -109,20 +110,24 @@ class GenerativeModel:
         return self._model_name
 
     def __str__(self):
-        return textwrap.dedent(f""" \
+        return textwrap.dedent(
+            f""" \
             genai.GenerativeModel(
                model_name='{self.model_name}',
                generation_config={self._generation_config}.
                safety_settings={self._safety_settings}
-            )""")
+            )"""
+        )
+
     __repr__ = __str__
+
     def _prepare_request(
         self,
         *,
         contents: content_types.ContentsType,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
-        **kwargs
+        **kwargs,
     ) -> glm.GenerateContentRequest:
         """Creates a `glm.GenerateContentRequest` from raw inputs."""
         if not contents:
@@ -144,9 +149,8 @@ class GenerativeModel:
             contents=contents,
             generation_config=merged_gc,
             safety_settings=merged_ss,
-            **kwargs
+            **kwargs,
         )
-
 
     @string_utils.set_doc(_GENERATE_CONTENT_DOC)
     def generate_content(
@@ -156,19 +160,20 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
-        **kwargs
+        **kwargs,
     ) -> generation_types.GenerateContentResponse:
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
             safety_settings=safety_settings,
-            **kwargs
+            **kwargs,
         )
         if self._client is None:
             self._client = client.get_default_generative_client()
 
         if stream:
-            iterator = self._client.stream_generate_content(request)
+            with generation_types.rewrite_stream_error():
+                iterator = self._client.stream_generate_content(request)
             return generation_types.GenerateContentResponse.from_iterator(iterator)
         else:
             response = self._client.generate_content(request)
@@ -182,31 +187,38 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
-        **kwargs
+        **kwargs,
     ) -> generation_types.AsyncGenerateContentResponse:
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
             safety_settings=safety_settings,
-            **kwargs
+            **kwargs,
         )
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
 
         if stream:
-            iterator = await self._async_client.stream_generate_content(request)
+            with generation_types.rewrite_stream_error():
+                iterator = await self._async_client.stream_generate_content(request)
             return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
         else:
             response = await self._async_client.generate_content(request)
             return generation_types.AsyncGenerateContentResponse.from_response(response)
 
-    def count_tokens(self, contents: content_types.ContentsType) -> glm.CountTokensResponse:
+    # fmt: off
+    def count_tokens(
+        self, contents: content_types.ContentsType
+    ) -> glm.CountTokensResponse:
         contents = content_types.to_contents(contents)
         return self._client.count_tokens(self.model_name, contents)
 
-    async def count_tokens_async(self, contents: content_types.ContentsType) -> glm.CountTokensResponse:
+    async def count_tokens_async(
+        self, contents: content_types.ContentsType
+    ) -> glm.CountTokensResponse:
         contents = content_types.to_contents(contents)
         return await self._client.count_tokens(self.model_name, contents)
+    # fmt: on
 
     def start_chat(
         self,
@@ -242,6 +254,7 @@ class ChatSession:
         generation_config: generation_types.GenerationConfigType = None,
         safety_settings: safety_types.SafetySettingOptions = None,
         stream: bool = False,
+        **kwargs,
     ) -> generation_types.GenerateContentResponse:
         content = content_types.to_content(content)
         if not content.role:
@@ -257,6 +270,7 @@ class ChatSession:
             generation_config=generation_config,
             safety_settings=safety_settings,
             stream=stream,
+            **kwargs,
         )
 
         if response.prompt_feedback.block_reason:
@@ -282,6 +296,7 @@ class ChatSession:
         generation_config: generation_types.GenerationConfigType = None,
         safety_settings: safety_types.SafetySettingOptions = None,
         stream: bool = False,
+        **kwargs,
     ) -> generation_types.AsyncGenerateContentResponse:
         content = content_types.to_content(content)
         if not content.role:
@@ -297,6 +312,7 @@ class ChatSession:
             generation_config=generation_config,
             safety_settings=safety_settings,
             stream=stream,
+            **kwargs,
         )
 
         if response.prompt_feedback.block_reason:

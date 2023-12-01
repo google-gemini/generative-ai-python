@@ -34,6 +34,7 @@ class UnitTests(parameterized.TestCase):
             ),
             glm.CitationMetadata(
                 citation_sources=[
+                    glm.CitationSource(start_index=3, end_index=33, uri="https://google.com"),
                     glm.CitationSource(start_index=55, end_index=92, uri="https://google.com"),
                 ]
             ),
@@ -43,7 +44,7 @@ class UnitTests(parameterized.TestCase):
 
         expected = {
             "citation_sources": [
-                {"start_index": 3, "end_index": 21, "uri": "https://google.com"},
+                {"start_index": 3, "end_index": 33, "uri": "https://google.com"},
                 {"start_index": 55, "end_index": 92, "uri": "https://google.com"},
             ]
         }
@@ -125,7 +126,7 @@ class UnitTests(parameterized.TestCase):
                 ),
                 citation_metadata=glm.CitationMetadata(
                     citation_sources=[
-                        glm.CitationSource(start_index=55, end_index=92, uri="https://google.com"),
+                        glm.CitationSource(start_index=55, end_index=85, uri="https://google.com"),
                     ]
                 ),
             ),
@@ -137,6 +138,7 @@ class UnitTests(parameterized.TestCase):
                 ),
                 citation_metadata=glm.CitationMetadata(
                     citation_sources=[
+                        glm.CitationSource(start_index=55, end_index=92, uri="https://google.com"),
                         glm.CitationSource(start_index=3, end_index=21, uri="https://google.com"),
                     ]
                 ),
@@ -146,6 +148,12 @@ class UnitTests(parameterized.TestCase):
                 content=glm.Content(
                     role="assistant",
                     parts=[glm.Part(inline_data=glm.Blob(mime_type="image/png", data=b"DATA!"))],
+                ),
+                citation_metadata=glm.CitationMetadata(
+                    citation_sources=[
+                        glm.CitationSource(start_index=55, end_index=92, uri="https://google.com"),
+                        glm.CitationSource(start_index=3, end_index=21, uri="https://google.com"),
+                    ]
                 ),
                 finish_reason="STOP",
             ),
@@ -230,15 +238,7 @@ class UnitTests(parameterized.TestCase):
                     "role": "assistant",
                 },
                 "index": 2,
-                "citation_metadata": {
-                    "citation_sources": [
-                        {
-                            "start_index": 3,
-                            "end_index": 21,
-                            "uri": "https://google.com",
-                        }
-                    ]
-                },
+                "citation_metadata": {"citation_sources": []},
                 "finish_reason": 0,
                 "safety_ratings": [],
                 "token_count": 0,
@@ -296,6 +296,15 @@ class UnitTests(parameterized.TestCase):
                     "role": "assistant",
                 },
                 "index": 2,
+                "citation_metadata": {
+                    "citation_sources": [
+                        {
+                            "start_index": 3,
+                            "end_index": 21,
+                            "uri": "https://google.com",
+                        }
+                    ]
+                },
                 "finish_reason": 0,
                 "safety_ratings": [],
                 "token_count": 0,
@@ -351,11 +360,6 @@ class UnitTests(parameterized.TestCase):
             "index": 2,
             "citation_metadata": {
                 "citation_sources": [
-                    {
-                        "start_index": 3,
-                        "end_index": 21,
-                        "uri": "https://google.com",
-                    },
                     {
                         "start_index": 3,
                         "end_index": 21,
