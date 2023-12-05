@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import textwrap
 
 # pylint: disable=bad-continuation, line-too-long
 
@@ -11,12 +12,82 @@ from collections.abc import Iterable
 
 from google.ai import generativelanguage as glm
 from google.generativeai import client
+from google.generativeai import string_utils
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
 from google.generativeai.types import safety_types
 
+_GENERATE_CONTENT_DOC = """A multipurpose function to generate `glm.Content` responses.
+
+This `GenerativeModel.generate_content` method can handle multimodal input, and multiturn
+conversations.
+
+While the underlying API strictly expects a list of `glm.Content` objects, this method
+will convert to user input into the correct type. The hierarchy of types that can be
+converted is below. Any of these objects can be passed as an equivalent `dict`.
+
+* `Iterable[glm.Content]`
+* `glm.Content`
+* `Iterable[glm.Part]`
+* `glm.Part`
+* `str`, `Image`, or `glm.Blob`
+
+In an `Iterable[glm.Content]` each `content` is a separate message.
+But note that an `Iterable[glm.Part]` is taken as the parts of a single message.
+
+Arguments:
+    contents: The contents serving as the model's prompt.
+    generation_config: `genai.GenerationConfig` or equivalent `dict` setting the
+        generation configuration.
+    safety_settings: Configure what prompts and responses are/aren't blocked.
+"""
+
 
 class GenerativeModel:
+    """
+    The `genai.GenerativeModel` class wraps default parameters for calls to
+    `GenerativeModel.generate_message`, `GenerativeModel.count_tokens`, and
+    `GenerativeModel.start_chat`.
+
+    This family of functionality is designed to support multi-turn conversations, and multimodal
+    requests. What media-types are supported for input and output is model-dependant.
+
+    >>> import google.generativeai as genai
+    >>> import PIL.Image
+    >>> genai.configure(api_key='YOUR_API_KEY')
+    >>> model = genai.GenerativeModel('models/gemini-pro')
+    >>> result = model.generate_content('Tell me a story about a magic backpack')
+    >>> response.text
+    "In the quaint little town of Lakeside, there lived a young girl named Lily..."
+
+    Multimodal input:
+
+    >>> model = genai.GenerativeModel('models/gemini-pro')
+    >>> result = model.generate_content([
+    ...     "Give me a recipe for these:", PIL.Image.open('scones.jpeg')])
+    >>> response.text
+    "**Blueberry Scones** ..."
+
+    Multi-turn conversation:
+
+    >>> chat = model.start_chat()
+    >>> response = chat.send_message("Hi, I have some questions for you.")
+    >>> response.text
+    "Sure, I'll do my best to answer your questions..."
+
+    To list the compatible model names use:
+
+    >>> for m in genai.list_models():
+    ...     if 'generateContent' in m.supported_generation_methods:
+    ...         print(m.name)
+
+    Arguments:
+         model_name: The name of the model to query. To list compatible models use
+         safety_settings: Sets the default safety filters. This controls which content is blocked
+             by the api before being returned.
+         generation_config: A `genai.GenerationConfig` setting the default generation parameters to
+             use.
+    """
     def __init__(
         self,
         model_name: str = "gemini-m",
@@ -38,8 +109,13 @@ class GenerativeModel:
         return self._model_name
 
     def __str__(self):
-        return f"genai.GenerativeModel(model_name='{self.model_name}', ...)"
-
+        return textwrap.dedent(f""" \
+            genai.GenerativeModel(
+               model_name='{self.model_name}',
+               generation_config={self._generation_config}.
+               safety_settings={self._safety_settings}
+            )""")
+    __repr__ = __str__
     def _prepare_request(
         self,
         *,
@@ -48,6 +124,7 @@ class GenerativeModel:
         safety_settings: safety_types.SafetySettingOptions | None = None,
         **kwargs
     ) -> glm.GenerateContentRequest:
+        """Creates a `glm.GenerateContentRequest` from raw inputs."""
         if not contents:
             raise TypeError("contents must not be empty")
 
@@ -70,6 +147,8 @@ class GenerativeModel:
             **kwargs
         )
 
+
+    @string_utils.set_doc(_GENERATE_CONTENT_DOC)
     def generate_content(
         self,
         contents: content_types.ContentsType,
@@ -95,6 +174,7 @@ class GenerativeModel:
             response = self._client.generate_content(request)
             return generation_types.GenerateContentResponse.from_response(response)
 
+    @string_utils.set_doc(_GENERATE_CONTENT_DOC)
     async def generate_content_async(
         self,
         contents: content_types.ContentsType,

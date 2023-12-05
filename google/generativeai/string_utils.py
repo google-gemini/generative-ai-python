@@ -20,6 +20,15 @@ import re
 import reprlib
 import textwrap
 
+def set_doc(doc):
+    """A decorator to set the docstring of a function."""
+
+    def inner(f):
+        f.__doc__ = doc
+        return f
+
+    return inner
+
 
 def strip_oneof(docstring):
     lines = docstring.splitlines()
