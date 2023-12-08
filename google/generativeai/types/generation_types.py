@@ -10,6 +10,7 @@ from typing import TypedDict, Union
 from google.ai import generativelanguage as glm
 
 __all__ = [
+    "AsyncGenerateContentResponse",
     "BlockedPromptException",
     "StopCandidateException",
     "IncompleteIterationError",
