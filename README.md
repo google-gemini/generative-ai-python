@@ -32,9 +32,10 @@ print(response.result)  # cold.
 Use [`palm.chat`](https://developers.generativeai.google/api/python/google/generativeai/chat)
 to have a discussion with a model.
 ```python
-response = palm.chat(messages=["Hello."])
+chat = palm.chat(messages=["Hello."])
 print(response.last) #  'Hello! What can I help you with?'
-response.reply("Can you tell me a joke?")
+chat = chat.reply("Can you tell me a joke?")
+print(response.last)
 ```
 
 ## Documentation
