@@ -207,12 +207,22 @@ class BaseGenerateContentResponse:
 
     @property
     def candidates(self):
+        """The list of candidate responses.
+
+        Raises:
+            IncompleteIterationError: With `stream=True` if iteration over the stream was not completed.
+        """
         if not self._done:
             raise IncompleteIterationError(_INCOMPLETE_ITERATION_MESSAGE)
         return self._result.candidates
 
     @property
     def parts(self):
+        """A quick accessor equivalent to `self.candidates[0].parts`
+
+        Raises:
+            ValueError: If the candidate list does not contain exactly one candidate.
+        """
         candidates = self.candidates
         if not candidates:
             raise ValueError(
@@ -230,6 +240,11 @@ class BaseGenerateContentResponse:
 
     @property
     def text(self):
+        """A quick accessor equivalent to `self.candidates[0].parts[0].text`
+
+        Raises:
+            ValueError: If the candidate list or parts list does not contain exactly one entry.
+        """
         parts = self.parts
         if len(parts) > 1 or "text" not in parts[0]:
             raise ValueError(
@@ -259,6 +274,30 @@ def rewrite_stream_error():
 
 
 class GenerateContentResponse(BaseGenerateContentResponse):
+    """Instances of this class manage the response of the `generate_content` method.
+
+    These are returned by `GenerativeModel.generate_content` and `ChatSession.send_message`.
+    This object is based on the low level `glm.GenerateContentResponse` class which just has `prompt_feedback`
+    and `candidates` attributes. This class adds several quick accessors for common use cases.
+
+    The same object type is returned for both `stream=True/False`.
+
+    ### Streaming
+
+    When you pass `stream=True` to `GenerativeModel.generate_content` or `ChatSession.send_message`,
+    iterate over this object to receive chunks of the response:
+
+    ```
+    response = model.generate_content(..., stream=True):
+    for chunk in response:
+      print(chunk.text)
+    ```
+
+    `GenerateContentResponse.prompt_feedback` is available immediately but
+    `GenerateContentResponse.candidates`, and all the attributes derived from them (`.text`, `.parts`),
+    are only available after the iteration is complete.
+    """
+
     @classmethod
     def from_iterator(cls, iterator: Iterable[glm.GenerateContentResponse]):
         iterator = iter(iterator)
@@ -327,6 +366,30 @@ class GenerateContentResponse(BaseGenerateContentResponse):
 
 
 class AsyncGenerateContentResponse(BaseGenerateContentResponse):
+    """Instances of this class manage the response of the `generate_content_async` method.
+
+    These are returned by `GenerativeModel.generate_content_async` and `ChatSession.send_message_async`.
+    This object is based on the low level `glm.GenerateContentResponse` class which just has `prompt_feedback`
+    and `candidates` attributes. This class adds several quick accessors for common use cases.
+
+    The same object type is returned for both `stream=True/False`.
+
+    ### Streaming
+
+    When you pass `stream=True` to `GenerativeModel.generate_content_async` or `ChatSession.send_message_async`,
+    iterate over this object to receive chunks of the response:
+
+    ```
+    response = model.generate_content_async(..., stream=True):
+    async for chunk in response:
+      print(chunk.text)
+    ```
+
+    `AsyncGenerateContentResponse.prompt_feedback` is available immediately but
+    `AsyncGenerateContentResponse.candidates`, and all the attributes derived from them (`.text`, `.parts`),
+    are only available after the iteration is complete.
+    """
+
     @classmethod
     async def from_aiterator(cls, iterator: AsyncIterable[glm.GenerateContentResponse]):
         iterator = aiter(iterator)
