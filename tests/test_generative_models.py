@@ -603,6 +603,7 @@ class CUJTests(parameterized.TestCase):
             .replace("async ", "")
             .replace("await ", "")
             .replace("Async", "")
+            .replace("ASYNC_", "")
         )
         self.assertEqual(source, asource)
 

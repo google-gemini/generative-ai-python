@@ -69,8 +69,8 @@ def to_generation_config_dict(generation_config: GenerationConfigType):
         return type(generation_config).to_dict(generation_config)
     elif isinstance(generation_config, GenerationConfig):
          generation_config = dataclasses.asdict(generation_config)
-         generation_config = {key: value for key, value in generation_config
-                              if value is not None}
+         return {key: value for key, value in generation_config.items()
+                 if value is not None}
     elif hasattr(generation_config, "keys"):
         return dict(generation_config)
     else:
