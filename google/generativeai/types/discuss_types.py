@@ -24,6 +24,7 @@ from google.generativeai import string_utils
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
 
+"Hello"
 __all__ = [
     "MessageDict",
     "MessageOptions",

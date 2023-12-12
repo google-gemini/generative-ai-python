@@ -23,7 +23,9 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install -q -e .[dev]
+        pip install -e .[dev]
+        pip show google-ai-generativelanguage
+        pip show google-generativeai
         python -m unittest discover --pattern '*test*.py'
   test3_10:
     name: Test Py3.10
@@ -36,7 +38,9 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install -q -e .[dev]
+        pip install -e .[dev]
+        pip show google-ai-generativelanguage
+        pip show google-generativeai
         python -m unittest discover --pattern '*test*.py'
   test3_9:
     name: Test Py3.9
@@ -49,7 +53,9 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install -q -e .[dev]
+        pip install -e .[dev]
+        pip show google-ai-generativelanguage
+        pip show google-generativeai
         python -m unittest discover --pattern '*test*.py'
   pytype3_10:
     name: pytype 3.10
@@ -62,8 +68,10 @@ jobs:
     - name: Run pytype
       run: |
         python --version
-        pip install -q -e .[dev]
-        pip install -q gspread ipython
+        pip install -e .[dev]
+        pip show google-ai-generativelanguage
+        pip show google-generativeai
+        pip install gspread ipython
         pytype
   format:
     name: Check format with black
@@ -76,7 +84,6 @@ jobs:
     - name: Check format
       run: |
         python --version
-        pip install -q -e .
-        pip install -q black
+        pip install black
         black . --check
 
