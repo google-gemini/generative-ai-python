@@ -23,7 +23,7 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install .[dev]
+        pip install -e .[dev]
         pip show google-ai-generativelanguage
         pip show google-generativeai
         python -m unittest discover --pattern '*test*.py'
@@ -38,7 +38,7 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install .[dev]
+        pip install -e .[dev]
         pip show google-ai-generativelanguage
         pip show google-generativeai
         python -m unittest discover --pattern '*test*.py'
@@ -53,7 +53,7 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install .[dev]
+        pip install -e .[dev]
         pip show google-ai-generativelanguage
         pip show google-generativeai
         python -m unittest discover --pattern '*test*.py'
@@ -68,7 +68,7 @@ jobs:
     - name: Run pytype
       run: |
         python --version
-        pip install .[dev]
+        pip install -e .[dev]
         pip show google-ai-generativelanguage
         pip show google-generativeai
         pip install gspread ipython
