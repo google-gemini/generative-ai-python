@@ -51,10 +51,12 @@ class GenerationConfigDict(TypedDict):
 
 @dataclasses.dataclass
 class GenerationConfig:
-    candidate_count: int | None = 0
-    stop_sequences: Iterable[str] | None = dataclasses.field(default_factory=list)
-    max_output_tokens: int | None = 0
-    temperature: float | None = 0.0
+    candidate_count: int | None = None
+    stop_sequences: Iterable[str] | None = None
+    max_output_tokens: int | None = None
+    temperature: float | None = None
+    top_p: float | None = None
+    top_k: int | None = None
 
 
 GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
@@ -66,7 +68,9 @@ def to_generation_config_dict(generation_config: GenerationConfigType):
     elif isinstance(generation_config, glm.GenerationConfig):
         return type(generation_config).to_dict(generation_config)
     elif isinstance(generation_config, GenerationConfig):
-        return dataclasses.asdict(generation_config)
+         generation_config = dataclasses.asdict(generation_config)
+         generation_config = {key: value for key, value in generation_config
+                              if value is not None}
     elif hasattr(generation_config, "keys"):
         return dict(generation_config)
     else:

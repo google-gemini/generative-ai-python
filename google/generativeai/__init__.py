@@ -69,8 +69,11 @@ for model in palm.list_models():
 """
 from __future__ import annotations
 
-from google.generativeai import types
 from google.generativeai import version
+
+from google.generativeai import types
+from google.generativeai.types import GenerationConfig
+
 
 from google.generativeai.discuss import chat
 from google.generativeai.discuss import chat_async
