@@ -23,7 +23,7 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install -q -e .[dev]
+        pip install -e .[dev]
         python -m unittest discover --pattern '*test*.py'
   test3_10:
     name: Test Py3.10
@@ -49,7 +49,7 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install -q -e .[dev]
+        pip install -e .[dev]
         python -m unittest discover --pattern '*test*.py'
   pytype3_10:
     name: pytype 3.10
@@ -62,7 +62,7 @@ jobs:
     - name: Run pytype
       run: |
         python --version
-        pip install -q -e .[dev]
+        pip install -e .[dev]
         pip install -q gspread ipython
         pytype
   format:
