@@ -301,16 +301,6 @@ def _make_generate_message_request(
     )
 
 
-def set_doc(doc):
-    """A decorator to set the docstring of a function."""
-
-    def inner(f):
-        f.__doc__ = doc
-        return f
-
-    return inner
-
-
 DEFAULT_DISCUSS_MODEL = "models/chat-bison-001"
 
 
@@ -411,7 +401,7 @@ def chat(
     return _generate_response(client=client, request=request)
 
 
-@set_doc(chat.__doc__)
+@string_utils.set_doc(chat.__doc__)
 async def chat_async(
     *,
     model: model_types.AnyModelNameOptions | None = "models/chat-bison-001",
@@ -447,7 +437,7 @@ else:
 
 
 @string_utils.prettyprint
-@set_doc(discuss_types.ChatResponse.__doc__)
+@string_utils.set_doc(discuss_types.ChatResponse.__doc__)
 @dataclasses.dataclass(**DATACLASS_KWARGS, init=False)
 class ChatResponse(discuss_types.ChatResponse):
     _client: glm.DiscussServiceClient | None = dataclasses.field(default=lambda: None, repr=False)
@@ -457,7 +447,7 @@ class ChatResponse(discuss_types.ChatResponse):
             setattr(self, key, value)
 
     @property
-    @set_doc(discuss_types.ChatResponse.last.__doc__)
+    @string_utils.set_doc(discuss_types.ChatResponse.last.__doc__)
     def last(self) -> str | None:
         if self.messages[-1]:
             return self.messages[-1]["content"]
@@ -470,7 +460,7 @@ class ChatResponse(discuss_types.ChatResponse):
         message = type(message).to_dict(message)
         self.messages[-1] = message
 
-    @set_doc(discuss_types.ChatResponse.reply.__doc__)
+    @string_utils.set_doc(discuss_types.ChatResponse.reply.__doc__)
     def reply(self, message: discuss_types.MessageOptions) -> discuss_types.ChatResponse:
         if isinstance(self._client, glm.DiscussServiceAsyncClient):
             raise TypeError(f"reply can't be called on an async client, use reply_async instead.")
@@ -489,7 +479,7 @@ class ChatResponse(discuss_types.ChatResponse):
         request = _make_generate_message_request(**request)
         return _generate_response(request=request, client=self._client)
 
-    @set_doc(discuss_types.ChatResponse.reply.__doc__)
+    @string_utils.set_doc(discuss_types.ChatResponse.reply.__doc__)
     async def reply_async(
         self, message: discuss_types.MessageOptions
     ) -> discuss_types.ChatResponse:

@@ -108,7 +108,9 @@ def _make_generate_text_request(
     """
     model = model_types.make_model_name(model)
     prompt = _make_text_prompt(prompt=prompt)
-    safety_settings = safety_types.normalize_safety_settings(safety_settings)
+    safety_settings = safety_types.normalize_safety_settings(
+        safety_settings, harm_category_set="old"
+    )
     if isinstance(stop_sequences, str):
         stop_sequences = [stop_sequences]
     if stop_sequences:

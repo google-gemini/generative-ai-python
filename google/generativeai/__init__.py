@@ -42,9 +42,10 @@ print(response.result) #  'cold.'
 Use the `palm.chat` function to have a discussion with a model:
 
 ```
-response = palm.chat(messages=["Hello."])
-print(response.last) #  'Hello! What can I help you with?'
-response.reply("Can you tell me a joke?")
+chat = palm.chat(messages=["Hello."])
+print(chat.last) #  'Hello! What can I help you with?'
+chat = chat.reply("Can you tell me a joke?")
+print(chat.last) #  'Why did the chicken cross the road?'
 ```
 
 ## Models
@@ -68,12 +69,19 @@ for model in palm.list_models():
 """
 from __future__ import annotations
 
-from google.generativeai import types
 from google.generativeai import version
+
+from google.generativeai import types
+from google.generativeai.types import GenerationConfig
+
 
 from google.generativeai.discuss import chat
 from google.generativeai.discuss import chat_async
 from google.generativeai.discuss import count_message_tokens
+
+from google.generativeai.embedding import embed_content
+
+from google.generativeai.generative_models import GenerativeModel
 
 from google.generativeai.text import generate_text
 from google.generativeai.text import generate_embeddings
