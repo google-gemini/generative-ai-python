@@ -15,22 +15,20 @@ if typing.TYPE_CHECKING:
 
     IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
 else:
+    IMAGE_TYPES = ()
     try:
         import PIL.Image
+
+        IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
     except ImportError:
         PIL = None
 
     try:
         import IPython.display
+
+        IMAGE_TYPES = IMAGE_TYPES + (IPython.display.Image,)
     except ImportError:
         IPython = None
-
-    IMAGE_TYPES = ()
-    if PIL is not None:
-        IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
-
-    if IPython is not None:
-        IMAGE_TYPES = IMAGE_TYPES + (IPython.display.Image,)
 
 
 __all__ = [
@@ -43,8 +41,6 @@ __all__ = [
     "StrictContentType",
     "ContentsType",
 ]
-
-IMAGE_TYPES = ()
 
 
 def pil_to_png_bytes(img):

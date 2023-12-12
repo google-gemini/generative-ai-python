@@ -11,7 +11,9 @@ from typing import TypedDict, Union
 
 import google.protobuf.json_format
 import google.api_core.exceptions
+
 from google.ai import generativelanguage as glm
+from google.generativeai import string_utils
 
 __all__ = [
     "AsyncGenerateContentResponse",
@@ -277,10 +279,9 @@ def rewrite_stream_error():
         )
 
 
-class GenerateContentResponse(BaseGenerateContentResponse):
-    """Instances of this class manage the response of the `generate_content` method.
+GENERATE_CONTENT_RESPONSE_DOC = """Instances of this class manage the response of the `generate_content_async` method.
 
-    These are returned by `GenerativeModel.generate_content` and `ChatSession.send_message`.
+    These are returned by `GenerativeModel.generate_content_async` and `ChatSession.send_message_async`.
     This object is based on the low level `glm.GenerateContentResponse` class which just has `prompt_feedback`
     and `candidates` attributes. This class adds several quick accessors for common use cases.
 
@@ -288,20 +289,27 @@ class GenerateContentResponse(BaseGenerateContentResponse):
 
     ### Streaming
 
-    When you pass `stream=True` to `GenerativeModel.generate_content` or `ChatSession.send_message`,
+    When you pass `stream=True` to `GenerativeModel.generate_content_async` or `ChatSession.send_message_async`,
     iterate over this object to receive chunks of the response:
 
     ```
-    response = model.generate_content(..., stream=True):
-    for chunk in response:
+    response = model.generate_content_async(..., stream=True):
+    async for chunk in response:
       print(chunk.text)
     ```
 
-    `GenerateContentResponse.prompt_feedback` is available immediately but
-    `GenerateContentResponse.candidates`, and all the attributes derived from them (`.text`, `.parts`),
+    `AsyncGenerateContentResponse.prompt_feedback` is available immediately but
+    `AsyncGenerateContentResponse.candidates`, and all the attributes derived from them (`.text`, `.parts`),
     are only available after the iteration is complete.
     """
 
+ASYNC_GENERATE_CONTENT_RESPONSE_DOC = (
+    """This is the async version of `genai.GenerateContentResponse`."""
+)
+
+
+@string_utils.set_doc(GENERATE_CONTENT_RESPONSE_DOC)
+class GenerateContentResponse(BaseGenerateContentResponse):
     @classmethod
     def from_iterator(cls, iterator: Iterable[glm.GenerateContentResponse]):
         iterator = iter(iterator)
@@ -369,36 +377,10 @@ class GenerateContentResponse(BaseGenerateContentResponse):
             pass
 
 
+@string_utils.set_doc(ASYNC_GENERATE_CONTENT_RESPONSE_DOC)
 class AsyncGenerateContentResponse(BaseGenerateContentResponse):
-    """Instances of this class manage the response of the `generate_content_async` method.
-
-    These are returned by `GenerativeModel.generate_content_async` and `ChatSession.send_message_async`.
-    This object is based on the low level `glm.GenerateContentResponse` class which just has `prompt_feedback`
-    and `candidates` attributes. This class adds several quick accessors for common use cases.
-
-    The same object type is returned for both `stream=True/False`.
-
-    ### Streaming
-
-    When you pass `stream=True` to `GenerativeModel.generate_content_async` or `ChatSession.send_message_async`,
-    iterate over this object to receive chunks of the response:
-
-    ```
-    response = model.generate_content_async(..., stream=True):
-    async for chunk in response:
-      print(chunk.text)
-    ```
-
-    `AsyncGenerateContentResponse.prompt_feedback` is available immediately but
-    `AsyncGenerateContentResponse.candidates`, and all the attributes derived from them (`.text`, `.parts`),
-    are only available after the iteration is complete.
-    """
-
     @classmethod
     async def from_aiterator(cls, iterator: AsyncIterable[glm.GenerateContentResponse]):
-        if (sys.version_info.major, sys.version_info.minor) < (3, 10):
-            raise RuntimeError("__aiter__ requires python 3.10+")
-
         iterator = aiter(iterator)  # type: ignore
         with rewrite_stream_error():
             response = await anext(iterator)  # type: ignore

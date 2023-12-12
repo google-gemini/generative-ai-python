@@ -588,6 +588,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_async_code_match(self, obj, aobj):
         import inspect
+        import re
 
         source = inspect.getsource(obj)
         asource = inspect.getsource(aobj)
@@ -601,6 +602,8 @@ class CUJTests(parameterized.TestCase):
             .replace("Async", "")
             .replace("ASYNC_", "")
         )
+
+        asource = re.sub(" *?# type: ignore", "", asource)
         self.assertEqual(source, asource)
 
 
