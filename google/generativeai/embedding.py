@@ -90,9 +90,9 @@ except AttributeError:
 def embed_content(
     model: model_types.BaseModelNameOptions,
     content: content_types.ContentType,
-    task_type: EmbeddingTaskTypeOptions,
-    title: str | None,
-    client: glm.GenerativeServiceClient = None,
+    task_type: EmbeddingTaskTypeOptions | None = None,
+    title: str | None = None,
+    client: glm.GenerativeServiceClient | None = None,
 ) -> text_types.EmbeddingDict:
     ...
 
@@ -101,9 +101,9 @@ def embed_content(
 def embed_content(
     model: model_types.BaseModelNameOptions,
     content: Iterable[content_types.ContentType],
-    task_type: EmbeddingTaskTypeOptions,
-    title: str | None,
-    client: glm.GenerativeServiceClient = None,
+    task_type: EmbeddingTaskTypeOptions | None = None,
+    title: str | None = None,
+    client: glm.GenerativeServiceClient | None = None,
 ) -> text_types.BatchEmbeddingDict:
     ...
 

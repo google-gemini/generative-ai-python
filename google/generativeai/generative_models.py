@@ -432,7 +432,7 @@ class ChatSession:
             return result
 
     @property
-    def last(self) -> generation_types.GenerateContentResponse | None:
+    def last(self) -> generation_types.BaseGenerateContentResponse | None:
         """returns the last received `genai.GenerateContentResponse`"""
         return self._last_received
 

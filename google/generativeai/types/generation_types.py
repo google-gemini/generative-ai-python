@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import contextlib
+import sys
 from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
@@ -66,7 +67,7 @@ def to_generation_config_dict(generation_config: GenerationConfigType):
     if generation_config is None:
         return {}
     elif isinstance(generation_config, glm.GenerationConfig):
-        return type(generation_config).to_dict(generation_config)
+        return type(generation_config).to_dict(generation_config)  # pytype: disable=attribute-error
     elif isinstance(generation_config, GenerationConfig):
         generation_config = dataclasses.asdict(generation_config)
         return {key: value for key, value in generation_config.items() if value is not None}
@@ -395,9 +396,12 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
 
     @classmethod
     async def from_aiterator(cls, iterator: AsyncIterable[glm.GenerateContentResponse]):
-        iterator = aiter(iterator)
+        if (sys.version_info.major, sys.version_info.minor) < (3, 10):
+            raise RuntimeError("__aiter__ requires python 3.10+")
+
+        iterator = aiter(iterator)  # type: ignore
         with rewrite_stream_error():
-            response = await anext(iterator)
+            response = await anext(iterator)  # type: ignore
 
         return cls(
             done=False,
@@ -424,7 +428,7 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
 
         # Always have the next chunk available.
         if len(self._chunks) == 0:
-            self._chunks.append(await anext(self._iterator))
+            self._chunks.append(await anext(self._iterator))  # type: ignore
 
         for n in itertools.count():
             if self._error:
@@ -437,7 +441,7 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
                     return
 
                 try:
-                    item = await anext(self._iterator)
+                    item = await anext(self._iterator)  # type: ignore
                 except StopAsyncIteration:
                     self._done = True
                 except Exception as e:
@@ -452,9 +456,9 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
             item = GenerateContentResponse.from_response(item)
             yield item
 
-    def resolve(self):
+    async def resolve(self):
         if self._done:
             return
 
-        for _ in self:
+        async for _ in self:
             pass

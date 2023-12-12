@@ -4,19 +4,33 @@ from collections.abc import Iterable, Mapping
 import io
 import mimetypes
 import pathlib
-from typing import TypedDict, Union
+import typing
+from typing import Any, TypedDict, Union
 
 from google.ai import generativelanguage as glm
 
-try:
+if typing.TYPE_CHECKING:
     import PIL.Image
-except ImportError:
-    PIL = None
-
-try:
     import IPython.display
-except ImportError:
-    IPython = None
+
+    IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
+else:
+    try:
+        import PIL.Image
+    except ImportError:
+        PIL = None
+
+    try:
+        import IPython.display
+    except ImportError:
+        IPython = None
+
+    IMAGE_TYPES = ()
+    if PIL is not None:
+        IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
+
+    if IPython is not None:
+        IMAGE_TYPES = IMAGE_TYPES + (IPython.display.Image,)
 
 
 __all__ = [
@@ -30,13 +44,7 @@ __all__ = [
     "ContentsType",
 ]
 
-# TODO(markdaoust): merge into blob types to avoind the empty union.
 IMAGE_TYPES = ()
-if PIL is not None:
-    IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
-
-if IPython is not None:
-    IMAGE_TYPES = IMAGE_TYPES + (IPython.display.Image,)
 
 
 def pil_to_png_bytes(img):
@@ -46,7 +54,7 @@ def pil_to_png_bytes(img):
     return bytesio.read()
 
 
-def image_to_blob(image: ImageType) -> glm.Blob:
+def image_to_blob(image) -> glm.Blob:
     if PIL is not None:
         if isinstance(image, PIL.Image.Image):
             return glm.Blob(mime_type="image/png", data=pil_to_png_bytes(image))
@@ -102,11 +110,16 @@ def _convert_dict(d: Mapping) -> glm.Content | glm.Part | glm.Blob:
         )
 
 
-BlobType = Union[(glm.Blob, BlobDict) + IMAGE_TYPES]
-
-
 def is_blob_dict(d):
     return "mime_type" in d and "data" in d
+
+
+if typing.TYPE_CHECKING:
+    BlobType = Union[
+        glm.Blob, BlobDict, PIL.Image.Image, IPython.display.Image
+    ]  # Any for the images
+else:
+    BlobType = Union[glm.Blob, BlobDict, Any]
 
 
 def to_blob(blob: BlobType) -> glm.Blob:

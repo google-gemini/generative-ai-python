@@ -43,8 +43,6 @@ class CUJTests(parameterized.TestCase):
         def generate_content(
             request: glm.GenerateContentRequest,
         ) -> glm.GenerateContentResponse:
-            if request is None:
-                request = glm.GetModelRequest(name=name)
             self.assertIsInstance(request, glm.GenerateContentRequest)
             self.observed_requests.append(request)
             response = self.responses["generate_content"].pop(0)
@@ -54,8 +52,6 @@ class CUJTests(parameterized.TestCase):
         def stream_generate_content(
             request: glm.GetModelRequest,
         ) -> Iterable[glm.GenerateContentResponse]:
-            if request is None:
-                request = glm.GetModelRequest(name=name)
             self.observed_requests.append(request)
             response = self.responses["stream_generate_content"].pop(0)
             return response
