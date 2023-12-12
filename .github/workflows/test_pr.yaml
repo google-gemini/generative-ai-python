@@ -24,7 +24,7 @@ jobs:
       run: |
         python --version
         pip install .[dev]
-        python -m unittest discover --pattern '*test*.py'
+        python -m unittest
   test3_10:
     name: Test Py3.10
     runs-on: ubuntu-latest
@@ -37,7 +37,7 @@ jobs:
       run: |
         python --version
         pip install -q .[dev]
-        python -m unittest discover --pattern '*test*.py'
+        python -m unittest
   test3_9:
     name: Test Py3.9
     runs-on: ubuntu-latest
@@ -50,7 +50,7 @@ jobs:
       run: |
         python --version
         pip install .[dev]
-        python -m unittest discover --pattern '*test*.py'
+        python -m unittest
   pytype3_10:
     name: pytype 3.10
     runs-on: ubuntu-latest
