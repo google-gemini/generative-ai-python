@@ -30,7 +30,7 @@ class _ClientManager:
 
     discuss_client: glm.DiscussServiceClient | None = None
     discuss_async_client: glm.DiscussServiceAsyncClient | None = None
-    clients: dict[str:Any] = dataclasses.field(default_factory=dict)
+    clients: dict[str, Any] = dataclasses.field(default_factory=dict)
 
     def configure(
         self,

@@ -106,6 +106,7 @@ Arguments:
      stream: If True, yield response chunks as they are generated.
 """
 
+
 class GenerativeModel:
     """
     The `genai.GenerativeModel` class wraps default parameters for calls to
@@ -312,6 +313,7 @@ class ChatSession:
         model: The model to use in the chat.
         history: A chat history to initialize the object with.
     """
+
     _USER_ROLE = "user"
     _MODEL_ROLE = "model"
 
