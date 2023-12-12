@@ -22,7 +22,13 @@ import datetime
 import json
 import pathlib
 import re
-from typing import Any, Iterable, TypedDict, Union
+import sys
+from typing import Any, Iterable, Union
+
+if sys.version < "3.11":
+    from typing_extensions import TypedDict
+else:
+    from typing import TypedDict
 import urllib.request
 
 import google.ai.generativelanguage as glm
@@ -266,12 +272,12 @@ def _convert_dict(data, input_key, output_key):
 
     try:
         inputs = data[input_key]
-    except KeyError as e:
+    except KeyError:
         raise KeyError(f'input_key is "{input_key}", but data has keys: {sorted(data.keys())}')
 
     try:
         outputs = data[output_key]
-    except KeyError as e:
+    except KeyError:
         raise KeyError(f'output_key is "{output_key}", but data has keys: {sorted(data.keys())}')
 
     for i, o in zip(inputs, outputs):

@@ -14,9 +14,15 @@
 # limitations under the License.
 """Type definitions for the discuss service."""
 
+import sys
 import abc
 import dataclasses
-from typing import Any, Dict, TypedDict, Union, Iterable, Optional, Tuple, List
+from typing import Any, Dict, Union, Iterable, Optional, Tuple, List
+
+if sys.version < "3.11":
+    from typing_extensions import TypedDict
+else:
+    from typing import TypedDict
 
 import google.ai.generativelanguage as glm
 from google.generativeai import string_utils
