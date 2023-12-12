@@ -192,7 +192,7 @@ def configure(
     *,
     api_key: str | None = None,
     credentials: ga_credentials.Credentials | dict | None = None,
-    # The user can pass a string to choose `rest` or `grpc` or 'grpc_asyncio'.
+    # The user can pass a string to choose `rest` or `grpc` or 'grpc_asyncio' .
     # See `_transport_registry` in `DiscussServiceClientMeta`.
     # Since the transport classes align with the client classes it wouldn't make
     # sense to accept a `Transport` object here even though the client classes can.
