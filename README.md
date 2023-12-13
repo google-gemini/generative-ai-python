@@ -26,7 +26,6 @@ cookie_picture = [{
 prompt = "Give me a recipe for this:"
 
 response = model.generate_content(
-    model="gemini-pro-vision",
     content=[prompt, cookie_picture]
 )
 print(response.text)
@@ -42,25 +41,30 @@ Install from PyPI.
 [Obtain an API key from AI Studio](https://makersuite.google.com/app/apikey),
 then configure it here.
 
+Import the SDK and load a model.
+
 ```
 import google.generativeai as genai
 
 genai.configure(api_key=os.environ["API_KEY"])
+
+model = genai.GenerativeModel('gemini-pro')
 ```
 
-Use `palm.generate_text` to have the model complete some initial text.
+Use `GenerativeModel.generate_content` to have the model complete some initial text.
 
 ```
-response = palm.generate_text(prompt="The opposite of hot is")
-print(response.result)  # cold.
+response = model.generate_content("The opposite of hot is")
+print(response.text)  # cold.
 ```
 
-Use `palm.chat` to have a discussion with a model.
+Use `GenerativeModel.start_chat` to have a discussion with a model.
 
 ```
-response = palm.chat(messages=["Hello."])
-print(response.last) #  'Hello! What can I help you with?'
-response.reply("Can you tell me a joke?")
+chat = model.start_chat()
+response = chat.send_message('Hello, what should I have for dinner?')
+print(response.text) #  'Here are some suggestions...'
+response = chat.send_message("How do I cook the first one?")
 ```
 
 
