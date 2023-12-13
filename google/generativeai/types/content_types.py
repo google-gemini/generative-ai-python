@@ -55,6 +55,7 @@ def pil_to_blob(img):
     data = bytesio.read()
     return glm.Blob(mime_type=mime_type, data=data)
 
+
 def image_to_blob(image) -> glm.Blob:
     if PIL is not None:
         if isinstance(image, PIL.Image.Image):
