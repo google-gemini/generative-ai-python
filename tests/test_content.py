@@ -13,26 +13,40 @@ import PIL.Image
 
 
 HERE = pathlib.Path(__file__).parent
-TEST_IMAGE_PATH = HERE / "test_img.png"
-TEST_IMAGE_URL = "https://storage.googleapis.com/generativeai-downloads/data/test_img.png"
-TEST_IMAGE_DATA = TEST_IMAGE_PATH.read_bytes()
+TEST_PNG_PATH = HERE / "test_img.png"
+TEST_PNG_URL = "https://storage.googleapis.com/generativeai-downloads/data/test_img.png"
+TEST_PNG_DATA = TEST_PNG_PATH.read_bytes()
+
+TEST_JPG_PATH = HERE / "test_img.jpg"
+TEST_JPG_URL = "https://storage.googleapis.com/generativeai-downloads/data/test_img.jpg"
+TEST_JPG_DATA = TEST_JPG_PATH.read_bytes()
 
 
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
-        ["PIL", PIL.Image.open(TEST_IMAGE_PATH)],
-        ["IPython", IPython.display.Image(filename=TEST_IMAGE_PATH)],
+        ["PIL", PIL.Image.open(TEST_PNG_PATH)],
+        ["IPython", IPython.display.Image(filename=TEST_PNG_PATH)],
     )
-    def test_image_to_blob(self, image):
+    def test_png_to_blob(self, image):
         blob = content_types.image_to_blob(image)
         self.assertIsInstance(blob, glm.Blob)
         self.assertEqual(blob.mime_type, "image/png")
         self.assertStartsWith(blob.data, b"\x89PNG")
 
     @parameterized.named_parameters(
-        ["BlobDict", {"mime_type": "image/png", "data": TEST_IMAGE_DATA}],
-        ["glm.Blob", glm.Blob(mime_type="image/png", data=TEST_IMAGE_DATA)],
-        ["Image", IPython.display.Image(filename=TEST_IMAGE_PATH)],
+        ["PIL", PIL.Image.open(TEST_JPG_PATH)],
+        ["IPython", IPython.display.Image(filename=TEST_JPG_PATH)],
+    )
+    def test_jpg_to_blob(self, image):
+        blob = content_types.image_to_blob(image)
+        self.assertIsInstance(blob, glm.Blob)
+        self.assertEqual(blob.mime_type, "image/jpeg")
+        self.assertStartsWith(blob.data, b"\xff\xd8\xff\xe0\x00\x10JFIF")
+
+    @parameterized.named_parameters(
+        ["BlobDict", {"mime_type": "image/png", "data": TEST_PNG_DATA}],
+        ["glm.Blob", glm.Blob(mime_type="image/png", data=TEST_PNG_DATA)],
+        ["Image", IPython.display.Image(filename=TEST_PNG_PATH)],
     )
     def test_to_blob(self, example):
         blob = content_types.to_blob(example)
@@ -51,11 +65,11 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(part.text, "Hello world!")
 
     @parameterized.named_parameters(
-        ["Image", IPython.display.Image(filename=TEST_IMAGE_PATH)],
-        ["BlobDict", {"mime_type": "image/png", "data": TEST_IMAGE_DATA}],
+        ["Image", IPython.display.Image(filename=TEST_PNG_PATH)],
+        ["BlobDict", {"mime_type": "image/png", "data": TEST_PNG_DATA}],
         [
             "PartDict",
-            {"inline_data": {"mime_type": "image/png", "data": TEST_IMAGE_DATA}},
+            {"inline_data": {"mime_type": "image/png", "data": TEST_PNG_DATA}},
         ],
     )
     def test_img_to_part(self, example):
@@ -83,9 +97,9 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(part.text, "Hello world!")
 
     @parameterized.named_parameters(
-        ["ContentDict", {"parts": [PIL.Image.open(TEST_IMAGE_PATH)]}],
-        ["list[Image]", [PIL.Image.open(TEST_IMAGE_PATH)]],
-        ["Image", PIL.Image.open(TEST_IMAGE_PATH)],
+        ["ContentDict", {"parts": [PIL.Image.open(TEST_PNG_PATH)]}],
+        ["list[Image]", [PIL.Image.open(TEST_PNG_PATH)]],
+        ["Image", PIL.Image.open(TEST_PNG_PATH)],
     )
     def test_img_to_content(self, example):
         content = content_types.to_content(example)
@@ -140,10 +154,10 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         [
             "ContentDict",
-            [{"parts": [{"inline_data": PIL.Image.open(TEST_IMAGE_PATH)}]}],
+            [{"parts": [{"inline_data": PIL.Image.open(TEST_PNG_PATH)}]}],
         ],
-        ["ContentDict-unwraped", [{"parts": [PIL.Image.open(TEST_IMAGE_PATH)]}]],
-        ["Image", PIL.Image.open(TEST_IMAGE_PATH)],
+        ["ContentDict-unwraped", [{"parts": [PIL.Image.open(TEST_PNG_PATH)]}]],
+        ["Image", PIL.Image.open(TEST_PNG_PATH)],
     )
     def test_img_to_contents(self, example):
         contents = content_types.to_contents(example)
