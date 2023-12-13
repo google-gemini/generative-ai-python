@@ -111,6 +111,7 @@ class GenerationConfig:
             `Model.top_k` attribute of the `Model` returned the
             `genai.get_model` function.
     """
+
     candidate_count: int | None = None
     stop_sequences: Iterable[str] | None = None
     max_output_tokens: int | None = None
