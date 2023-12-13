@@ -82,6 +82,7 @@ from google.generativeai.discuss import count_message_tokens
 from google.generativeai.embedding import embed_content
 
 from google.generativeai.generative_models import GenerativeModel
+from google.generativeai.generative_models import ChatSession
 
 from google.generativeai.text import generate_text
 from google.generativeai.text import generate_embeddings

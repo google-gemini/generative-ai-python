@@ -24,6 +24,9 @@ import os
 import pathlib
 import re
 import textwrap
+import typing
+
+typing.TYPE_CHECKING = True
 
 from absl import app
 from absl import flags

@@ -43,17 +43,23 @@ __all__ = [
 ]
 
 
-def pil_to_png_bytes(img):
+def pil_to_blob(img):
     bytesio = io.BytesIO()
-    img.save(bytesio, format="PNG")
+    if isinstance(img, PIL.PngImagePlugin.PngImageFile):
+        img.save(bytesio, format="PNG")
+        mime_type = "image/png"
+    else:
+        img.save(bytesio, format="JPEG")
+        mime_type = "image/jpeg"
     bytesio.seek(0)
-    return bytesio.read()
+    data = bytesio.read()
+    return glm.Blob(mime_type=mime_type, data=data)
 
 
 def image_to_blob(image) -> glm.Blob:
     if PIL is not None:
         if isinstance(image, PIL.Image.Image):
-            return glm.Blob(mime_type="image/png", data=pil_to_png_bytes(image))
+            return pil_to_blob(image)
 
     if IPython is not None:
         if isinstance(image, IPython.display.Image):
@@ -71,7 +77,7 @@ def image_to_blob(image) -> glm.Blob:
             return glm.Blob(mime_type=mime_type, data=image.data)
 
     raise TypeError(
-        "Could not convert image. epected an `Image` type"
+        "Could not convert image. expected an `Image` type"
         "(`PIL.Image.Image` or `IPython.display.Image`).\n"
         f"Got a: {type(image)}\n"
         f"Value: {image}"
