@@ -19,7 +19,7 @@ from unittest import mock
 from absl.testing import absltest
 
 from google.api_core import exceptions
-from google.generativeai import text
+from google.generativeai.types import generation_types
 from google.generativeai.notebook import text_model
 from google.generativeai.notebook.lib import model as model_lib
 
@@ -29,20 +29,23 @@ def _fake_generator(
     model: str | None = None,
     temperature: float | None = None,
     candidate_count: int | None = None,
-) -> text.Completion:
-    return text.Completion(
-        prompt=prompt,
-        model=model,
-        temperature=temperature,
-        candidate_count=candidate_count,
-        # Smuggle the parameters as text output, so we can make assertions.
-        candidates=[
-            {"output": f"{prompt}_1"},
-            {"output": model},
-            {"output": temperature},
-            {"output": candidate_count},
-        ],
-    )
+):
+    def make_candidate(txt):
+        c = mock.Mock()
+        p = mock.Mock()
+        p.text = str(txt)
+        c.content.parts = [p]
+        return c
+
+    response = mock.Mock()
+    # Smuggle the parameters as text output, so we can make assertions.
+    response.candidates = [
+        make_candidate(f"{prompt}_1"),
+        make_candidate(model),
+        make_candidate(temperature),
+        make_candidate(candidate_count),
+    ]
+    return response
 
 
 class TestModel(text_model.TextModel):
@@ -55,7 +58,7 @@ class TestModel(text_model.TextModel):
         temperature: float | None = None,
         candidate_count: int | None = None,
         **kwargs,
-    ) -> text.Completion:
+    ) -> generation_types.GenerateContentResponse:
         return _fake_generator(
             prompt=prompt,
             model=model,

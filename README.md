@@ -142,10 +142,15 @@ response.reply("Can you tell me a joke?")
 
 ### Colab magics
 
-Once installed, use the Python client via the `%%palm` Colab magic. Read the [full guide](https://github.com/google/generative-ai-docs/blob/main/site/en/palm_docs/notebook_magic.ipynb).
-
 ```
-%%palm
+%pip install -q google-generativeai
+%load_ext google.generativeai.notebook
+```
+
+Once installed, use the Python client via the `%%llm` Colab magic. Read the full guide [here](https://developers.generativeai.google/tools/notebook_magic).
+
+```python
+%%llm
 The best thing since sliced bread is
 ```
 
