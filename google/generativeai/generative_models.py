@@ -17,11 +17,11 @@ from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
 from google.generativeai.types import safety_types
 
-_GENERATE_CONTENT_ASYNC_DOC = """The async version of `Model.generate_content`."""
+_GENERATE_CONTENT_ASYNC_DOC = """The async version of `GenerativeModel.generate_content`."""
 
 _GENERATE_CONTENT_DOC = """A multipurpose function to generate responses from the model.
 
-This `GenerativeModel.generate_content` method can handle multimodal input, and multiturn
+This `GenerativeModel.generate_content` method can handle multimodal input, and multi-turn
 conversations.
 
 >>> model = genai.GenerativeModel('models/gemini-pro')
@@ -289,6 +289,15 @@ class GenerativeModel:
         *,
         history: Iterable[content_types.StrictContentType] | None = None,
     ) -> ChatSession:
+        """Returns a `genai.ChatSession` attached to this model.
+
+        >>> model = genai.GenerativeModel()
+        >>> chat = model.start_chat(history=[...])
+        >>> response = chat.send_message("Hello?")
+
+        Arguments:
+            history: An iterable of `glm.Content` objects, or equvalents to initialize the session.
+        """
         if self._generation_config.get("candidate_count", 1) > 1:
             raise ValueError("Can't chat with `candidate_count > 1`")
         return ChatSession(
