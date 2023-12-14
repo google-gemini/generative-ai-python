@@ -19,10 +19,10 @@ capabilities to generate text from text-and-image input:
 ```
 model = genai.GenerativeModel('gemini-pro-vision')
 
-cookie_picture = [{
+cookie_picture = {
     'mime_type': 'image/png',
     'data': Path('cookie.png').read_bytes()
-}]
+}
 prompt = "Give me a recipe for this:"
 
 response = model.generate_content(
