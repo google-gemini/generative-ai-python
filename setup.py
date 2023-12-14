@@ -17,7 +17,6 @@ import io
 import os
 import pathlib
 
-
 import setuptools  # type: ignore
 
 package_root = pathlib.Path(__file__).parent.resolve()
@@ -44,7 +43,7 @@ else:
 
 dependencies = [
     "google-ai-generativelanguage==0.4.0",
-    "google-auth",
+    "google-auth==2.25.2",
     "google-api-core",
     "protobuf",
     "tqdm",
