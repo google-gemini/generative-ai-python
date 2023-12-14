@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 import dataclasses
 import textwrap
+from typing import Union
 
 # pylint: disable=bad-continuation, line-too-long
 
-
-from collections.abc import Iterable
 
 from google.ai import generativelanguage as glm
 from google.generativeai import client
@@ -70,6 +70,7 @@ Arguments:
     generation_config: Overrides for the model's generation config.
     safety_settings: Overrides for the model's safety settings.
     stream: If True, yield response chunks as they are generated. 
+    tools: `glm.Tools` more info coming soon.
 """
 
 _SEND_MESSAGE_ASYNC_DOC = """The async version of `ChatSession.send_message`."""
@@ -158,6 +159,7 @@ class GenerativeModel:
         model_name: str = "gemini-m",
         safety_settings: safety_types.SafetySettingOptions | None = None,
         generation_config: generation_types.GenerationConfigType | None = None,
+        tools: content_types.ToolsType = None,
     ):
         if "/" not in model_name:
             model_name = "models/" + model_name
@@ -166,6 +168,8 @@ class GenerativeModel:
             safety_settings, harm_category_set="new"
         )
         self._generation_config = generation_types.to_generation_config_dict(generation_config)
+        self._tools = content_types.to_tools(tools)
+
         self._client = None
         self._async_client = None
 
@@ -213,6 +217,7 @@ class GenerativeModel:
             contents=contents,
             generation_config=merged_gc,
             safety_settings=merged_ss,
+            tools=self._tools,
             **kwargs,
         )
 

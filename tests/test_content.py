@@ -169,6 +169,48 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(blob.mime_type, "image/png")
         self.assertStartsWith(blob.data, b"\x89PNG")
 
+    @parameterized.named_parameters(
+        [
+            "OneTool",
+            glm.Tool(
+                function_declarations=[
+                    glm.FunctionDeclaration(
+                        name="datetime", description="Returns the current UTC date and time."
+                    )
+                ]
+            ),
+        ],
+        [
+            "ToolDict",
+            dict(
+                function_declarations=[
+                    dict(name="datetime", description="Returns the current UTC date and time.")
+                ]
+            ),
+        ],
+        [
+            "ListOfTools",
+            [
+                glm.Tool(
+                    function_declarations=[
+                        glm.FunctionDeclaration(
+                            name="datetime",
+                            description="Returns the current UTC date and time.",
+                        )
+                    ]
+                )
+            ],
+        ],
+    )
+    def test_img_to_contents(self, tools):
+        tools = content_types.to_tools(tools)
+        expected = dict(
+            function_declarations=[
+                dict(name="datetime", description="Returns the current UTC date and time.")
+            ]
+        )
+        self.assertEqual(type(tools[0]).to_dict(tools[0]), expected)
+
 
 if __name__ == "__main__":
     absltest.main()
