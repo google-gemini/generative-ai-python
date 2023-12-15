@@ -8,6 +8,8 @@ on:
     paths:
     - "google/**"
     - "tests/**"
+    - "pyproject.toml"
+    - "setup.py"
   # Allow manual runs
   workflow_dispatch:
 
