@@ -27,6 +27,21 @@ __all__ = [
     "GenerateContentResponse",
 ]
 
+if sys.version_info < (3,10):
+    def aiter(obj):
+        yield  obj.__next__()
+
+    async def anext(obj, default=None):
+        try:
+            return obj.__anext__()
+        except StopAsyncIteration:
+            if default is not None:
+                return default
+            else:
+                raise StopAsyncIteration("stop iteration") from None
+        except Exception as e:
+            return obj.__next__()
+
 
 class BlockedPromptException(Exception):
     pass
