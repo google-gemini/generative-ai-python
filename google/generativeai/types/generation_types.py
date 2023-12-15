@@ -27,9 +27,10 @@ __all__ = [
     "GenerateContentResponse",
 ]
 
-if sys.version_info < (3,10):
+if sys.version_info < (3, 10):
+
     def aiter(obj):
-        yield  obj.__next__()
+        yield obj.__next__()
 
     async def anext(obj, default=None):
         try:
