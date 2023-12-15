@@ -56,6 +56,14 @@ class CUJTests(parameterized.TestCase):
             response = self.responses["stream_generate_content"].pop(0)
             return response
 
+        @add_client_method
+        def count_tokens(
+            request: glm.CountTokensRequest,
+        ) -> Iterable[glm.GenerateContentResponse]:
+            self.observed_requests.append(request)
+            response = self.responses["count_tokens"].pop(0)
+            return response
+
     def test_hello(self):
         # Generate text from text prompt
         model = generative_models.GenerativeModel(model_name="gemini-m")
@@ -563,6 +571,21 @@ class CUJTests(parameterized.TestCase):
         # about the problem. "hello2" is never added, the `rewind` removes `hello1`.
         chat.rewind()
         self.assertLen(chat.history, 0)
+
+    @parameterized.named_parameters(
+        ["basic", "Hello"],
+        ["list", ["Hello"]],
+        [
+            "list2",
+            [{"text": "Hello"}, {"inline_data": {"data": b"PNG!", "mime_type": "image/png"}}],
+        ],
+        ["contents", [{"role": "user", "parts": ["hello"]}]],
+    )
+    def test_count_tokens_smoke(self, contents):
+        self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
+        model = generative_models.GenerativeModel("gemini-mm-m")
+        response = model.count_tokens(contents)
+        self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
 
     @parameterized.named_parameters(
         [

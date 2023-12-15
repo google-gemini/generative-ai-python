@@ -62,6 +62,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             response = self.responses["stream_generate_content"].pop(0)
             return response
 
+        @add_client_method
+        async def count_tokens(
+            request: glm.CountTokensRequest,
+        ) -> Iterable[glm.GenerateContentResponse]:
+            self.observed_requests.append(request)
+            response = self.responses["count_tokens"].pop(0)
+            return response
+
     async def test_basic(self):
         # Generate text from text prompt
         model = generative_models.GenerativeModel(model_name="gemini-m")
@@ -97,6 +105,21 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             self.assertEqual(chunk.text, c)
 
         self.assertEqual(response.text, "world!")
+
+    @parameterized.named_parameters(
+        ["basic", "Hello"],
+        ["list", ["Hello"]],
+        [
+            "list2",
+            [{"text": "Hello"}, {"inline_data": {"data": b"PNG!", "mime_type": "image/png"}}],
+        ],
+        ["contents", [{"role": "user", "parts": ["hello"]}]],
+    )
+    async def test_count_tokens_smoke(self, contents):
+        self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
+        model = generative_models.GenerativeModel("gemini-mm-m")
+        response = await model.count_tokens_async(contents)
+        self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
 
 
 if __name__ == "__main__":
