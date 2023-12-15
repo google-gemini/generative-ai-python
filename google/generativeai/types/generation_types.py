@@ -435,13 +435,32 @@ class GenerateContentResponse(BaseGenerateContentResponse):
             pass
 
 
+async def compatible_aiter(async_iterable):
+    # aiter for Python < 3.10
+    if hasattr(async_iterable, '__aiter__'):
+        return async_iterable.__aiter__()
+    else:
+        return aiter(async_iterable)  # Python 3.10 or later
+
+
+async def compatible_anext(aiterator):
+    try:
+        if hasattr(aiterator, '__anext__'):
+            # anext for Python < 3.10
+            return await aiterator.__anext__()
+        else:
+            return await anext(aiterator)  # Python 3.10 or later
+    except StopAsyncIteration:
+        raise RuntimeError("Async iterator yielded no values") from None
+        
+
 @string_utils.set_doc(ASYNC_GENERATE_CONTENT_RESPONSE_DOC)
 class AsyncGenerateContentResponse(BaseGenerateContentResponse):
     @classmethod
     async def from_aiterator(cls, iterator: AsyncIterable[glm.GenerateContentResponse]):
-        iterator = aiter(iterator)  # type: ignore
+        iterator = await compatible_aiter(iterator)  # type: ignore
         with rewrite_stream_error():
-            response = await anext(iterator)  # type: ignore
+            response = await compatible_anext(iterator)  # type: ignore
 
         return cls(
             done=False,
