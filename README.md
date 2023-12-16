@@ -134,7 +134,7 @@ response.reply("Can you tell me a joke?")
 
 - [General PaLM documentation](https://ai.google.dev/docs/palm_api_overview)
 
-- [Text quickstart](https://github.com/google/generative-ai-docs/blob/main/site/en/palm_docs/notebook_magic.ipynb)
+- [Text quickstart](https://github.com/google/generative-ai-docs/blob/main/site/en/palm_docs/text_quickstart.ipynb)
 
 - [Chat quickstart](https://github.com/google/generative-ai-docs/blob/main/site/en/palm_docs/chat_quickstart.ipynb)
 
@@ -142,7 +142,7 @@ response.reply("Can you tell me a joke?")
 
 ### Colab magics
 
-Once installed, use the Python client via the `%%palm` Colab magic. Read the [full guide](https://github.com/google/generative-ai-docs/blob/main/site/en/palm_docs/tuning_quickstart_python.ipynb).
+Once installed, use the Python client via the `%%palm` Colab magic. Read the [full guide](https://github.com/google/generative-ai-docs/blob/main/site/en/palm_docs/notebook_magic.ipynb).
 
 ```
 %%palm
