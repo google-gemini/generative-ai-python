@@ -346,6 +346,8 @@ class ChatSession:
         stream: bool = False,
         **kwargs,
     ) -> generation_types.GenerateContentResponse:
+        if not contents:
+            raise TypeError("contents must not be empty")
         content = content_types.to_content(content)
         if not content.role:
             content.role = self._USER_ROLE
