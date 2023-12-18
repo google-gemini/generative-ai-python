@@ -572,6 +572,34 @@ class CUJTests(parameterized.TestCase):
         chat.rewind()
         self.assertLen(chat.history, 0)
 
+    def test_tools(self):
+        tools = dict(
+            function_declarations=[
+                dict(name="datetime", description="Returns the current UTC date and time.")
+            ]
+        )
+        model = generative_models.GenerativeModel("gemini-mm-m", tools=tools)
+
+        self.responses["generate_content"] = [
+            simple_response("a"),
+            simple_response("b"),
+        ]
+
+        response = model.generate_content("Hello")
+
+        chat = model.start_chat()
+        response = chat.send_message("Hello")
+
+        expect_tools = dict(
+            function_declarations=[
+                dict(name="datetime", description="Returns the current UTC date and time.")
+            ]
+        )
+
+        for obr in self.observed_requests:
+            self.assertLen(obr.tools, 1)
+            self.assertEqual(type(obr.tools[0]).to_dict(obr.tools[0]), tools)
+
     @parameterized.named_parameters(
         ["basic", "Hello"],
         ["list", ["Hello"]],

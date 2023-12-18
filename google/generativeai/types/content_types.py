@@ -40,6 +40,7 @@ __all__ = [
     "ContentType",
     "StrictContentType",
     "ContentsType",
+    "ToolsType",
 ]
 
 
@@ -234,3 +235,17 @@ def to_contents(contents: ContentsType) -> list[glm.Content]:
 
     contents = [to_content(contents)]
     return contents
+
+
+ToolsType = Union[Iterable[glm.Tool], glm.Tool, dict[str, Any], None]
+
+
+def to_tools(tools: ToolsType) -> list[glm.Tool]:
+    if tools is None:
+        return []
+    elif isinstance(tools, Mapping):
+        return [glm.Tool(tools)]
+    elif isinstance(tools, Iterable):
+        return [glm.Tool(t) for t in tools]
+    else:
+        return [glm.Tool(tools)]
