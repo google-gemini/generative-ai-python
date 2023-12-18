@@ -274,14 +274,18 @@ class GenerativeModel:
     def count_tokens(
         self, contents: content_types.ContentsType
     ) -> glm.CountTokensResponse:
+        if self._client is None:
+            self._client = client.get_default_generative_client()
         contents = content_types.to_contents(contents)
-        return self._client.count_tokens(model=self.model_name, contents=contents)
+        return self._client.count_tokens(glm.CountTokensRequest(model=self.model_name, contents=contents))
 
     async def count_tokens_async(
         self, contents: content_types.ContentsType
     ) -> glm.CountTokensResponse:
+        if self._async_client is None:
+            self._async_client = client.get_default_generative_async_client()
         contents = content_types.to_contents(contents)
-        return await self._client.count_tokens(model=self.model_name, contents=contents)
+        return await self._async_client.count_tokens(glm.CountTokensRequest(model=self.model_name, contents=contents))
     # fmt: on
 
     def start_chat(

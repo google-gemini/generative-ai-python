@@ -30,7 +30,7 @@ import os
 
 genai.configure(api_key=os.environ['API_KEY'])
 
-model = genai.Model(name='gemini-pro')
+model = genai.GenerativeModel(name='gemini-pro')
 response = model.generate_content('Please summarise this document: ...')
 
 print(response.text)
