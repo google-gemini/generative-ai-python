@@ -24,7 +24,7 @@ Follow either of the two links above to access the appropriate CLA and
 instructions for how to sign and return it. Once we receive it, we'll be able to
 accept your pull requests.
 
-## Contributing A Patch
+## Contributing a Patch
 
 1.  Submit an issue describing your proposed change to the repo in question.
 1.  The repo owner will respond to your issue promptly.
@@ -45,7 +45,7 @@ accept your pull requests.
 1.  [Set up authentication with a service account][auth] so you can access the
     API from your local workstation.
 
-You can use an API-key, but remember never to same it in your source files.
+You can use an API-key, but remember never to save it in your source files.
 
 
 ## Development
