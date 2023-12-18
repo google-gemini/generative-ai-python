@@ -91,7 +91,7 @@ documentation: https://ai.google.dev/docs
 
 ## Contributing
 
-See [Contributing](https://github.com/google/generative-ai-python/blob/main/CONTRIBUTING.md) for more information on contributing to the Google AI JavaScript SDK.
+See [Contributing](https://github.com/google/generative-ai-python/blob/main/CONTRIBUTING.md) for more information on contributing to the Google AI Python SDK.
 
 ## Developers who use the PaLM API
 
