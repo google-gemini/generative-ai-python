@@ -121,7 +121,7 @@ class GenerativeModel:
     >>> genai.configure(api_key='YOUR_API_KEY')
     >>> model = genai.GenerativeModel('models/gemini-pro')
     >>> result = model.generate_content('Tell me a story about a magic backpack')
-    >>> reuslt.text
+    >>> result.text
     "In the quaint little town of Lakeside, there lived a young girl named Lily..."
 
     Multimodal input:
