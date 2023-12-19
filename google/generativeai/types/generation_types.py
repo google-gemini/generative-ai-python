@@ -351,9 +351,9 @@ def rewrite_stream_error():
         )
 
 
-GENERATE_CONTENT_RESPONSE_DOC = """Instances of this class manage the response of the `generate_content_async` method.
+GENERATE_CONTENT_RESPONSE_DOC = """Instances of this class manage the response of the `generate_content` method.
 
-    These are returned by `GenerativeModel.generate_content_async` and `ChatSession.send_message_async`.
+    These are returned by `GenerativeModel.generate_content` and `ChatSession.send_message`.
     This object is based on the low level `glm.GenerateContentResponse` class which just has `prompt_feedback`
     and `candidates` attributes. This class adds several quick accessors for common use cases.
 
@@ -361,17 +361,17 @@ GENERATE_CONTENT_RESPONSE_DOC = """Instances of this class manage the response o
 
     ### Streaming
 
-    When you pass `stream=True` to `GenerativeModel.generate_content_async` or `ChatSession.send_message_async`,
+    When you pass `stream=True` to `GenerativeModel.generate_content` or `ChatSession.send_message`,
     iterate over this object to receive chunks of the response:
 
     ```
-    response = model.generate_content_async(..., stream=True):
-    async for chunk in response:
+    response = model.generate_content(..., stream=True):
+    for chunk in response:
       print(chunk.text)
     ```
 
-    `AsyncGenerateContentResponse.prompt_feedback` is available immediately but
-    `AsyncGenerateContentResponse.candidates`, and all the attributes derived from them (`.text`, `.parts`),
+    `GenerateContentResponse.prompt_feedback` is available immediately but
+    `GenerateContentResponse.candidates`, and all the attributes derived from them (`.text`, `.parts`),
     are only available after the iteration is complete.
     """
 
