@@ -83,10 +83,6 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(response.text, "world!")
 
-    @unittest.skipIf(
-        sys.version_info.major == 3 and sys.version_info.minor < 10,
-        "streaming async requires python 3.10+",
-    )
     async def test_streaming(self):
         # Generate text from text prompt
         model = generative_models.GenerativeModel(model_name="gemini-m")
