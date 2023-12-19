@@ -122,7 +122,7 @@ class GenerativeModel:
     >>> genai.configure(api_key='YOUR_API_KEY')
     >>> model = genai.GenerativeModel('models/gemini-pro')
     >>> result = model.generate_content('Tell me a story about a magic backpack')
-    >>> response.text
+    >>> result.text
     "In the quaint little town of Lakeside, there lived a young girl named Lily..."
 
     Multimodal input:
@@ -130,7 +130,7 @@ class GenerativeModel:
     >>> model = genai.GenerativeModel('models/gemini-pro')
     >>> result = model.generate_content([
     ...     "Give me a recipe for these:", PIL.Image.open('scones.jpeg')])
-    >>> response.text
+    >>> result.text
     "**Blueberry Scones** ..."
 
     Multi-turn conversation:
