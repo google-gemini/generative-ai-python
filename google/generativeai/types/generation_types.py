@@ -324,7 +324,7 @@ class BaseGenerateContentResponse:
             ValueError: If the candidate list or parts list does not contain exactly one entry.
         """
         parts = self.parts
-        if len(parts) > 1 or "text" not in parts[0]:
+        if len(parts) > 1 or not parts or "text" not in parts[0]:
             raise ValueError(
                 "The `response.text` quick accessor only works for "
                 "simple (single-`Part`) text responses. This response "
