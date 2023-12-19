@@ -327,11 +327,10 @@ class BaseGenerateContentResponse:
         if len(parts) != 1 or "text" not in parts[0]:
             raise ValueError(
                 "The `response.text` quick accessor only works for "
-                "simple (single-`Part`) text responses. This response "
-                "contains multiple `Parts`. Use the `result.parts` "
-                "accessor or the full "
+                "simple (single-`Part`) text responses. This response is not simple text."
+                "Use the `result.parts` accessor or the full "
                 "`result.candidates[index].content.parts` lookup "
-                "instead"
+                "instead."
             )
         return parts[0].text
 
