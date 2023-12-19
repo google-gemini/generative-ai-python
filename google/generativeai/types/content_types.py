@@ -190,7 +190,7 @@ StrictContentType = Union[glm.Content, ContentDict]
 
 def to_content(content: ContentType):
     if not content:
-        raise TypeError("content must not be empty")
+        raise ValueError("content must not be empty")
 
     if isinstance(content, Mapping):
         content = _convert_dict(content)
