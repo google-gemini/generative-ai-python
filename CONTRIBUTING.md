@@ -65,7 +65,7 @@ This "editable" mode lets you edit the source without needing to reinstall the p
 Use the builtin unittest package:
 
 ```
- python -m unittest discover --pattern '*test*.py'
+ python -m unittest
 ```
 
 Or to debug, use:
