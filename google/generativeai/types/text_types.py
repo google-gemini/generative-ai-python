@@ -19,14 +19,10 @@ import abc
 import dataclasses
 from typing import Any, Dict, List
 
-if sys.version < "3.11":
-    from typing_extensions import TypedDict
-else:
-    from typing import TypedDict
-
 from google.generativeai import string_utils
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
+from google.generativeai.types.shims import TypedDict
 
 
 __all__ = ["Completion"]

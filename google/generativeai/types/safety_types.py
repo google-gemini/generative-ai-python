@@ -15,17 +15,13 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-import sys
 from google.ai import generativelanguage as glm
 from google.generativeai import string_utils
+from google.generativeai.types.shims import TypedDict
 
 import typing
-from typing import Iterable, Dict, Iterable, List, Union
+from typing import Dict, Iterable, List, Union
 
-if sys.version < "3.11":
-    from typing_extensions import TypedDict
-else:
-    from typing import TypedDict
 
 __all__ = [
     "HarmCategory",
