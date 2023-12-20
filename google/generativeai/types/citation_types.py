@@ -15,10 +15,10 @@
 from __future__ import annotations
 from typing import List
 
+from typing_extensions import TypedDict
+
 from google.ai import generativelanguage as glm
 from google.generativeai import string_utils
-
-from google.generativeai.types.shims import TypedDict
 
 
 __all__ = [

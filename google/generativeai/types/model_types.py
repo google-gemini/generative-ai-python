@@ -22,14 +22,15 @@ import datetime
 import json
 import pathlib
 import re
-import sys
+
 from typing import Any, Iterable, Union
 
 import urllib.request
+from typing_extensions import TypedDict
 
 import google.ai.generativelanguage as glm
 from google.generativeai import string_utils
-from google.generativeai.types.shims import TypedDict
+
 
 __all__ = [
     "Model",

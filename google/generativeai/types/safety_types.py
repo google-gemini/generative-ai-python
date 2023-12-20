@@ -15,12 +15,15 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from google.ai import generativelanguage as glm
-from google.generativeai import string_utils
-from google.generativeai.types.shims import TypedDict
 
 import typing
 from typing import Dict, Iterable, List, Union
+
+from typing_extensions import TypedDict
+
+
+from google.ai import generativelanguage as glm
+from google.generativeai import string_utils
 
 
 __all__ = [
