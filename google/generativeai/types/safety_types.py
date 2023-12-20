@@ -2,11 +2,15 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
+import typing
+from typing import Dict, Iterable, List, Union
+
+from typing_extensions import TypedDict
+
+
 from google.ai import generativelanguage as glm
 from google.generativeai import string_utils
 
-import typing
-from typing import Iterable, Dict, Iterable, List, TypedDict, Union
 
 __all__ = [
     "HarmCategory",

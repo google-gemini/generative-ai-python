@@ -46,6 +46,7 @@ dependencies = [
     "google-ai-generativelanguage==0.4.0",
     "google-auth",
     "google-api-core",
+    "typing-extensions",
     "protobuf",
     "tqdm",
 ]
