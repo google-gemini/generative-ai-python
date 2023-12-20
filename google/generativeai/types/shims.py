@@ -15,7 +15,7 @@
 
 import sys
 
-if sys.version_info.maor <= 3 and sys.version_info.minor < 11:
+if sys.version_info.major <= 3 and sys.version_info.minor < 11:
     from typing_extensions import TypedDict
 else:
     from typing import TypedDict
