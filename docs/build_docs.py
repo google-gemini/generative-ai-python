@@ -26,15 +26,16 @@ import re
 import textwrap
 import typing
 
-# For showing the conditional imports and types in `content_types.py`
-typing.TYPE_CHECKING = True
 
 from absl import app
 from absl import flags
 
 import google
-from google import generativeai as palm
 from google.ai import generativelanguage as glm
+
+# For showing the conditional imports and types in `content_types.py`
+typing.TYPE_CHECKING = True
+from google import generativeai as palm
 
 from tensorflow_docs.api_generator import generate_lib
 from tensorflow_docs.api_generator import public_api
