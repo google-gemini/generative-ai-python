@@ -25,7 +25,7 @@ This `GenerativeModel.generate_content` method can handle multimodal input, and 
 conversations.
 
 >>> model = genai.GenerativeModel('models/gemini-pro')
->>> result = model.generate_content('Tell me a story about a magic backpack')
+>>> response = model.generate_content('Tell me a story about a magic backpack')
 >>> response.text
 
 ### Streaming
@@ -33,7 +33,7 @@ conversations.
 This method supports streaming with the `stream=True`. The result has the same type as the non streaming case,
 but you can iterate over the response chunks as they become available:
 
->>> result = model.generate_content('Tell me a story about a magic backpack', stream=True)
+>>> response = model.generate_content('Tell me a story about a magic backpack', stream=True)
 >>> for chunk in response:
 ...   print(chunk.text)
 
