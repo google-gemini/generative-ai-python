@@ -43,7 +43,7 @@ else:
 
 dependencies = [
     "google-ai-generativelanguage==0.4.0",
-    "google-auth==2.25.2",
+    "google-auth>=2.15.0",  # 2.15 adds API key auth support
     "google-api-core",
     "protobuf",
     "tqdm",
