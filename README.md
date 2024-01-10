@@ -16,7 +16,7 @@ supports use cases like:
 For example, with just a few lines of code, you can access Gemini's multimodal
 capabilities to generate text from text-and-image input:
 
-```
+```python
 model = genai.GenerativeModel('gemini-pro-vision')
 
 cookie_picture = {
@@ -43,7 +43,7 @@ then configure it here.
 
 Import the SDK and load a model.
 
-```
+```python
 import google.generativeai as genai
 
 genai.configure(api_key=os.environ["API_KEY"])
@@ -53,14 +53,14 @@ model = genai.GenerativeModel('gemini-pro')
 
 Use `GenerativeModel.generate_content` to have the model complete some initial text.
 
-```
+```python
 response = model.generate_content("The opposite of hot is")
 print(response.text)  # cold.
 ```
 
 Use `GenerativeModel.start_chat` to have a discussion with a model.
 
-```
+```python
 chat = model.start_chat()
 response = chat.send_message('Hello, what should I have for dinner?')
 print(response.text) #  'Here are some suggestions...'
@@ -109,7 +109,7 @@ Install from PyPI.
 [Obtain an API key from AI Studio](https://makersuite.google.com/app/apikey), then
 configure it here.
 
-```
+```python
 import google.generativeai as palm
 
 palm.configure(api_key=os.environ["PALM_API_KEY"])
@@ -117,14 +117,14 @@ palm.configure(api_key=os.environ["PALM_API_KEY"])
 
 Use `palm.generate_text` to have the model complete some initial text.
 
-```
+```python
 response = palm.generate_text(prompt="The opposite of hot is")
 print(response.result)  # cold.
 ```
 
 Use `palm.chat` to have a discussion with a model.
 
-```
+```python
 response = palm.chat(messages=["Hello."])
 print(response.last) #  'Hello! What can I help you with?'
 response.reply("Can you tell me a joke?")
