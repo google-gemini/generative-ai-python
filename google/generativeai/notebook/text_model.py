@@ -16,13 +16,15 @@
 from __future__ import annotations
 
 from google.api_core import retry
-from google.generativeai import text
-from google.generativeai.types import text_types
+import google.generativeai as genai
+from google.generativeai.types import generation_types
 from google.generativeai.notebook.lib import model as model_lib
+
+_DEFAULT_MODEL = "models/gemini-pro"
 
 
 class TextModel(model_lib.AbstractModel):
-    """Concrete model that uses the Text service."""
+    """Concrete model that uses the generate_content service."""
 
     def _generate_text(
         self,
@@ -30,15 +32,16 @@ class TextModel(model_lib.AbstractModel):
         model: str | None = None,
         temperature: float | None = None,
         candidate_count: int | None = None,
-        **kwargs,
-    ) -> text_types.Completion:
-        if model is not None:
-            kwargs["model"] = model
+    ) -> generation_types.GenerateContentResponse:
+        gen_config = {}
         if temperature is not None:
-            kwargs["temperature"] = temperature
+            gen_config["temperature"] = temperature
         if candidate_count is not None:
-            kwargs["candidate_count"] = candidate_count
-        return text.generate_text(prompt=prompt, **kwargs)
+            gen_config["candidate_count"] = candidate_count
+
+        model_name = model or _DEFAULT_MODEL
+        gen_model = genai.GenerativeModel(model_name=model_name)
+        return gen_model.generate_content(prompt, generation_config=gen_config)
 
     def call_model(
         self,
@@ -58,7 +61,11 @@ class TextModel(model_lib.AbstractModel):
             candidate_count=model_args.candidate_count,
         )
 
+        text_outputs = []
+        for c in response.candidates:
+            text_outputs.append("".join(p.text for p in c.content.parts))
+
         return model_lib.ModelResults(
             model_input=model_input,
-            text_results=[x["output"] for x in response.candidates],
+            text_results=text_outputs,
         )

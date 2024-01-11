@@ -368,7 +368,7 @@ def _create_parser(
     placeholders: AbstractSet[str] | None,
 ) -> argparse.ArgumentParser:
     """Create the full parser."""
-    system_name = "palm"
+    system_name = "llm"
     description = "A system for interacting with LLMs."
     epilog = ""
 

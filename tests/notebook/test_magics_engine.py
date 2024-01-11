@@ -248,7 +248,7 @@ class HelpEndToEndTests(EndToEndTests):
 
         # Should not raise an exception.
         results = engine.execute_cell(magic_line, "ignored")
-        self.assertRegex(str(results), "usage: palm run")
+        self.assertRegex(str(results), "usage: llm run")
 
     def test_error(self):
         mock_registry = EchoModelRegistry()

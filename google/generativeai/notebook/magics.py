@@ -14,14 +14,14 @@
 # limitations under the License.
 """Colab Magics class.
 
-Installs %%palm magics.
+Installs %%llm magics.
 """
 from __future__ import annotations
 
 import abc
 
 from google.auth import credentials
-from google.generativeai import client as palm
+from google.generativeai import client as genai
 from google.generativeai.notebook import gspread_client
 from google.generativeai.notebook import ipython_env
 from google.generativeai.notebook import ipython_env_impl
@@ -34,9 +34,9 @@ from IPython.core import magic
 
 
 # Set the UA to distinguish the magic from the client. Do this at import-time
-# so that a user can still call `palm.configure()`, and both their settings
+# so that a user can still call `genai.configure()`, and both their settings
 # and this are honored.
-palm.USER_AGENT = "genai-py-magic"
+genai.USER_AGENT = "genai-py-magic"
 
 SheetsInputs = sheets_utils.SheetsInputs
 SheetsOutputs = sheets_utils.SheetsOutputs
@@ -72,7 +72,7 @@ class AbstractMagics(abc.ABC):
     """Defines interface to Magics class."""
 
     @abc.abstractmethod
-    def palm(self, cell_line: str | None, cell_body: str | None):
+    def llm(self, cell_line: str | None, cell_body: str | None):
         """Perform various LLM-related operations.
 
         Args:
@@ -92,7 +92,7 @@ class MagicsImpl(AbstractMagics):
     def __init__(self):
         self._engine = magics_engine.MagicsEngine(env=_get_ipython_env())
 
-    def palm(self, cell_line: str | None, cell_body: str | None):
+    def llm(self, cell_line: str | None, cell_body: str | None):
         """Perform various LLM-related operations.
 
         Args:
@@ -126,7 +126,7 @@ class Magics(magic.Magics):
         return cls._instance
 
     @magic.line_cell_magic
-    def palm(self, cell_line: str | None, cell_body: str | None):
+    def llm(self, cell_line: str | None, cell_body: str | None):
         """Perform various LLM-related operations.
 
         Args:
@@ -136,7 +136,15 @@ class Magics(magic.Magics):
         Returns:
           Results from running MagicsEngine.
         """
-        return Magics.get_instance().palm(cell_line=cell_line, cell_body=cell_body)
+        return Magics.get_instance().llm(cell_line=cell_line, cell_body=cell_body)
+
+    @magic.line_cell_magic
+    def palm(self, cell_line: str | None, cell_body: str | None):
+        return self.llm(cell_line, cell_body)
+
+    @magic.line_cell_magic
+    def gemini(self, cell_line: str | None, cell_body: str | None):
+        return self.llm(cell_line, cell_body)
 
 
 IPython.get_ipython().register_magics(Magics)
