@@ -134,7 +134,7 @@ def _make_generate_answer_request(
     contents = content_types.to_contents(contents)
 
     if safety_settings:
-        safety_settings = safety_types.normalize_safety_settings(safety_settings)
+        safety_settings = safety_types.normalize_safety_settings(safety_settings, harm_category_set="new")
 
     grounding_source = _make_grounding_passages(grounding_source)
 
