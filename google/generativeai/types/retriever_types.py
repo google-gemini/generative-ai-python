@@ -416,7 +416,7 @@ class Document(abc.ABC):
                 name=name, data={"string_value": data}, custom_metadata=custom_metadata, state=state
             )
         elif "chunks/" not in name:
-            chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, name)
+            chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
             chunk = glm.Chunk(
                 name=chunk_name,
                 data={"string_value": data},
