@@ -147,15 +147,15 @@ class Condition:
 @dataclasses.dataclass
 class CustomMetadata:
     key: str
-    string_value: Optional[str]
-    string_list_value: Optional[list[str]]
-    numeric_value: Optional[float]
+    string_value: str
+    string_list_value: list[str]
+    numeric_value: float
 
 
 @string_utils.prettyprint
 @dataclasses.dataclass
 class ChunkData:
-    string_value: Optional[str]
+    string_value: str
 
 
 @string_utils.prettyprint
@@ -770,11 +770,11 @@ class Chunk(abc.ABC):
         state: State,
     ):
         self.name = name
-        self.data = ChunkData(**data)
+        self.data = ChunkData(*data)
         if custom_metadata is None:
             self.custom_metadata = []
         else:
-            self.custom_metadata = [CustomMetadata(**cm) for cm in custom_metadata]
+            self.custom_metadata = [CustomMetadata(*cm) for cm in custom_metadata]
         self.state = state
 
     def _apply_update(self, path, value):
