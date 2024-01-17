@@ -29,7 +29,7 @@ from google.generativeai import string_utils
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
 from google.generativeai.types.model_types import idecode_time
-from google.generativeai.utils import _flatten_update_paths
+from google.generativeai.utils import flatten_update_paths
 
 
 _DOCUMENT_NAME_REGEX = re.compile(r"^corpora/([^/]+?)(/documents/([^/]+?))")
