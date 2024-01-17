@@ -250,3 +250,7 @@ def get_default_model_client() -> glm.ModelServiceAsyncClient:
 
 def get_default_retriever_client() -> glm.RetrieverClient:
     return _client_manager.get_default_client("retriever")
+
+
+def get_default_retriever_async_client() -> glm.RetrieverAsyncClient:
+    return _client_manager.get_default_client("retriever_async")

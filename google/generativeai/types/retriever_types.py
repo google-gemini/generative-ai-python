@@ -18,12 +18,13 @@ import re
 import string
 import abc
 import dataclasses
-from typing import Any, overload, TypedDict, Optional, Union, Iterable, Mapping
+from typing import Any, Optional, Union, Iterable, Mapping
 
 import google.ai.generativelanguage as glm
 
 from google.protobuf import field_mask_pb2
 from google.generativeai.client import get_default_retriever_client
+from google.generativeai.client import get_default_retriever_async_client
 from google.generativeai import string_utils
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
@@ -220,6 +221,44 @@ class Corpus:
         response = Document(**response)
         return response
 
+    @string_utils.set_doc(create_document.__doc__)
+    async def create_document_async(
+        self,
+        name: Optional[str] = None,
+        display_name: Optional[str] = None,
+        custom_metadata: Optional[list[CustomMetadata]] = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ) -> Document:
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        if not name and not display_name:
+            raise ValueError("Either the document name or display name must be specified.")
+
+        document = None
+        if name:
+            if re.match(_DOCUMENT_NAME_REGEX, name):
+                document = glm.Document(
+                    name=name, display_name=display_name, custom_metadata=custom_metadata
+                )
+            elif f"corpora/{self.name}/documents/" not in name:
+                document_name = f"{self.name}/documents/" + re.sub(_PATTERN, "", name)
+                document = glm.Document(
+                    name=document_name, display_name=display_name, custom_metadata=custom_metadata
+                )
+            else:
+                raise ValueError(
+                    f"Document name must be formatted as {self.name}/document/<document_name>."
+                )
+
+        request = glm.CreateDocumentRequest(parent=self.name, document=document)
+        response = await client.create_document(request)
+        response = type(response).to_dict(response)
+        idecode_time(response, "create_time")
+        idecode_time(response, "update_time")
+        response = Document(**response)
+        return response
+
     def get_document(
         self,
         name: str,
@@ -239,6 +278,23 @@ class Corpus:
 
         request = glm.GetDocumentRequest(name=name)
         response = client.get_document(request)
+        response = type(response).to_dict(response)
+        idecode_time(response, "create_time")
+        idecode_time(response, "update_time")
+        response = Document(**response)
+        return response
+
+    @string_utils.set_doc(get_document.__doc__)
+    async def get_document_async(
+        self,
+        name: str,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ) -> Document:
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        request = glm.GetDocumentRequest(name=name)
+        response = await client.get_document(request)
         response = type(response).to_dict(response)
         idecode_time(response, "create_time")
         idecode_time(response, "update_time")
@@ -302,6 +358,19 @@ class Corpus:
         request = glm.DeleteDocumentRequest(name=name, force=force)
         response = client.delete_document(request)
 
+    @string_utils.set_doc(delete_document.__doc__)
+    async def delete_document_async(
+        self,
+        name: str,
+        force: Optional[bool] = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        request = glm.DeleteDocumentRequest(name=name, force=force)
+        response = await client.delete_document(request)
+
     def list_documents(
         self,
         page_size: Optional[int] = None,
@@ -326,6 +395,22 @@ class Corpus:
             parent=self.name, page_size=page_size, page_token=page_token
         )
         response = client.list_documents(request)
+        return response
+
+    @string_utils.set_doc(list_documents.__doc__)
+    async def list_documents_async(
+        self,
+        page_size: Optional[int] = None,
+        page_token: Optional[str] = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ) -> list[Document]:
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        request = glm.ListDocumentsRequest(
+            parent=self.name, page_size=page_size, page_token=page_token
+        )
+        response = await client.list_documents(request)
         return response
 
     def query(
@@ -360,6 +445,32 @@ class Corpus:
             results_count=results_count,
         )
         response = client.query_corpus(request)
+        response = type(response).to_dict(response)
+
+        return response
+
+    @string_utils.set_doc(query.__doc__)
+    async def query_async(
+        self,
+        query: str,
+        metadata_filters: Optional[list[str]] = None,
+        results_count: Optional[int] = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        if results_count:
+            if results_count < 0 or results_count >= 100:
+                raise ValueError("Number of results returned must be between 1 and 100.")
+
+        request = glm.QueryCorpusRequest(
+            name=self.name,
+            query=query,
+            metadata_filters=metadata_filters,
+            results_count=results_count,
+        )
+        response = await client.query_corpus(request)
         response = type(response).to_dict(response)
 
         return response
@@ -428,6 +539,45 @@ class Document(abc.ABC):
 
         request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
         response = client.create_chunk(request)
+        response = type(response).to_dict(response)
+        idecode_time(response, "create_time")
+        idecode_time(response, "update_time")
+        response = Chunk(**response)
+        return response
+
+    @string_utils.set_doc(create_chunk.__doc__)
+    async def create_chunk_async(
+        self,
+        name: str,
+        data: ChunkData,
+        custom_metadata: Optional[list[CustomMetadata]] = None,
+        state: Optional[State] = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ) -> Chunk:
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        if len(name) == 0:
+            raise ValueError("Chunk name must be specified.")
+
+        chunk = None
+        if re.match(_CHUNK_NAME_REGEX, name):
+            chunk = glm.Chunk(
+                name=name, data={"string_value": data}, custom_metadata=custom_metadata, state=state
+            )
+        elif "chunks/" not in name:
+            chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
+            chunk = glm.Chunk(
+                name=chunk_name,
+                data={"string_value": data},
+                custom_metadata=custom_metadata,
+                state=state,
+            )
+        else:
+            raise ValueError(f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>.")
+
+        request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
+        response = await client.create_chunk(request)
         response = type(response).to_dict(response)
         idecode_time(response, "create_time")
         idecode_time(response, "update_time")
@@ -512,6 +662,76 @@ class Document(abc.ABC):
         response = type(response).to_dict(response)
         return response
 
+    @string_utils.set_doc(batch_create_chunks.__doc__)
+    async def batch_create_chunks_async(
+        self,
+        chunks: BatchCreateChunkOptions,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        if isinstance(chunks, glm.BatchCreateChunksRequest):
+            response = await client.batch_update_chunks(chunks)
+            response = type(response).to_dict(response)
+            return response
+
+        _requests = []
+        name, data, custom_metadata = None, None, None
+        if isinstance(chunks, Iterable):
+            for chunk in chunks:
+                if isinstance(chunk, glm.CreateChunkRequest):
+                    _requests.append(chunk)
+                elif isinstance(chunk, str):
+                    c = glm.CreateChunkRequest(
+                        parent=self.name, chunk=glm.Chunk(data={"string_value": chunk})
+                    )
+                    _requests.append(c)
+                elif isinstance(chunk, Mapping):
+                    for key, value in chunk.items():
+                        if re.match(_CHUNK_NAME_REGEX, value):
+                            name = value
+                        elif not re.match(_CHUNK_NAME_REGEX, value) and isinstance(value, str):
+                            data = chunk[key]
+                        elif isinstance(value, Iterable):
+                            custom_metadata = value
+                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
+                            parent=self.name,
+                            chunk=glm.Chunk(
+                                name=name,
+                                data={"string_value": data},
+                                custom_metadata=custom_metadata,
+                            ),
+                        )
+                        _requests.append(c)
+                elif isinstance(chunk, tuple):
+                    for item in chunk:
+                        if re.match(_CHUNK_NAME_REGEX, item):
+                            name = item
+                        elif not re.match(_CHUNK_NAME_REGEX, item) and isinstance(item, str):
+                            data = item
+                        elif isinstance(item, Iterable):
+                            custom_metadata = item
+                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
+                            parent=self.name,
+                            chunk=glm.Chunk(
+                                name=name,
+                                data={"string_value": data},
+                                custom_metadata=custom_metadata,
+                            ),
+                        )
+
+                else:
+                    raise TypeError(
+                        "Batched chunk requests must be in the format of a dictionary or tuple,"
+                        "with the name as the key and the data as the value."
+                    )
+
+        request = glm.BatchCreateChunksRequest(parent=self.name, requests=_requests)
+        response = await client.batch_create_chunks(request)
+        response = type(response).to_dict(response)
+        return response
+
     def get_chunk(
         self,
         name: str,
@@ -531,6 +751,23 @@ class Document(abc.ABC):
 
         request = glm.GetChunkRequest(name=name)
         response = client.get_chunk(request)
+        response = type(response).to_dict(response)
+        idecode_time(response, "create_time")
+        idecode_time(response, "update_time")
+        response = Chunk(**response)
+        return response
+
+    @string_utils.set_doc(get_chunk.__doc__)
+    async def get_chunk_async(
+        self,
+        name: str,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        request = glm.GetChunkRequest(name=name)
+        response = await client.get_chunk(request)
         response = type(response).to_dict(response)
         idecode_time(response, "create_time")
         idecode_time(response, "update_time")
@@ -560,6 +797,22 @@ class Document(abc.ABC):
             parent=self.name, page_size=page_size, page_token=page_token
         )
         response = client.list_chunks(request)
+        return response
+
+    @string_utils.set_doc(list_chunks.__doc__)
+    async def list_chunks_async(
+        self,
+        page_size: Optional[int] = None,
+        page_token: Optional[str] = None,
+        client: glm.RetrieverServiceClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        request = glm.ListChunksRequest(
+            parent=self.name, page_size=page_size, page_token=page_token
+        )
+        response = await client.list_chunks(request)
         return response
 
     def _apply_update(self, path, value):
@@ -679,6 +932,16 @@ class Document(abc.ABC):
         request = glm.DeleteChunkRequest(name=name)
         response = client.delete_chunk(request)
 
+    @string_utils.set_doc(delete_chunk.__doc__)
+    async def delete_chunk_async(
+        self, name: str, client: glm.RetrieverServiceAsyncClient | None = None
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        request = glm.DeleteChunkRequest(name=name)
+        response = await client.delete_chunk(request)
+
     def batch_delete_chunks(
         self,
         chunks: BatchDeleteChunkOptions,
@@ -707,7 +970,30 @@ class Document(abc.ABC):
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `glm.DeleteChunkRequest`s."
             )
 
-    def query_document(
+    @string_utils.set_doc(batch_delete_chunks.__doc__)
+    async def batch_delete_chunks_async(
+        self,
+        chunks: BatchDeleteChunkOptions,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        if all(isinstance(x, glm.DeleteChunkRequest) for x in chunks):
+            request = glm.BatchDeleteChunksRequest(parent=self.name, requests=chunks)
+            response = await client.batch_delete_chunks(request)
+        elif isinstance(chunks, Iterable):
+            _request_list = []
+            for chunk_name in chunks:
+                _request_list.append(glm.DeleteChunkRequest(name=chunk_name))
+            request = glm.BatchDeleteChunksRequest(parent=self.name, requests=_request_list)
+            response = await client.batch_delete_chunks(request)
+        else:
+            raise ValueError(
+                "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `glm.DeleteChunkRequest`s."
+            )
+
+    def query(
         self,
         query: str,
         results_count: Optional[int] = None,
@@ -737,6 +1023,29 @@ class Document(abc.ABC):
         )
 
         response = client.query_document(request)
+        response = type(response).to_dict(response)
+
+        return response
+
+    @string_utils.set_doc(query.__doc__)
+    async def query_async(
+        self,
+        query: str,
+        results_count: Optional[int] = None,
+        metadata_filters: Optional[list[MetadataFilters]] = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        request = glm.QueryDocumentRequest(
+            name=self.name,
+            query=query,
+            results_count=results_count,
+            metadata_filters=metadata_filters,
+        )
+
+        response = await client.query_document(request)
         response = type(response).to_dict(response)
 
         return response

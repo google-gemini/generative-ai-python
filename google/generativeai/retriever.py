@@ -17,12 +17,12 @@ from __future__ import annotations
 import re
 import string
 import dataclasses
-from collections.abc import Iterable, Sequence
-from typing import Iterable, overload, TypeVar, Union, Mapping, Optional
+from typing import Optional
 
 import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_retriever_client
+from google.generativeai.client import get_default_retriever_async_client
 from google.generativeai import string_utils
 from google.generativeai.types import retriever_types
 from google.generativeai.types import model_types
@@ -95,6 +95,37 @@ def create_corpus(
     return response
 
 
+@string_utils.set_doc(create_corpus.__doc__)
+async def create_corpus_async(
+    name: Optional[str] = None,
+    display_name: Optional[str] = None,
+    client: glm.RetrieverServiceAsyncClient | None = None,
+) -> Corpus:
+    if client is None:
+        client = get_default_retriever_async_client()
+
+    if not name and not display_name:
+        raise ValueError("Either the corpus name or display name must be specified.")
+
+    corpus = None
+    if name:
+        if re.match(_CORPORA_NAME_REGEX, name):
+            corpus = glm.Corpus(name=name, display_name=display_name)
+        elif "corpora/" not in name:
+            corpus_name = "corpora/" + re.sub(_PATTERN, "", name)
+            corpus = glm.Corpus(name=corpus_name, display_name=display_name)
+        else:
+            raise ValueError("Corpus name must be formatted as corpora/<corpus_name>.")
+
+    request = glm.CreateCorpusRequest(corpus=corpus)
+    response = await client.create_corpus(request)
+    response = type(response).to_dict(response)
+    idecode_time(response, "create_time")
+    idecode_time(response, "update_time")
+    response = Corpus(**response)
+    return response
+
+
 def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> Corpus:
     """
     Get information about a specific `Corpus`.
@@ -117,6 +148,22 @@ def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> C
     return response
 
 
+@string_utils.set_doc(get_corpus.__doc__)
+async def get_corpus_async(
+    name: str, client: glm.RetrieverServiceAsyncClient | None = None
+) -> Corpus:
+    if client is None:
+        client = get_default_retriever_async_client()
+
+    request = glm.GetCorpusRequest(name=name)
+    response = await client.get_corpus(request)
+    response = type(response).to_dict(response)
+    idecode_time(response, "create_time")
+    idecode_time(response, "update_time")
+    response = Corpus(**response)
+    return response
+
+
 def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | None = None):
     """
     Delete a `Corpus`.
@@ -130,6 +177,17 @@ def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | N
 
     request = glm.DeleteCorpusRequest(name=name, force=force)
     response = client.delete_corpus(request)
+
+
+@string_utils.set_doc(delete_corpus.__doc__)
+async def delete_corpus_async(
+    name: str, force: bool, client: glm.RetrieverServiceAsyncClient | None = None
+):
+    if client is None:
+        client = get_default_retriever_async_client()
+
+    request = glm.DeleteCorpusRequest(name=name, force=force)
+    response = await client.delete_corpus(request)
 
 
 def list_corpora(
@@ -153,4 +211,19 @@ def list_corpora(
 
     request = glm.ListCorporaRequest(page_size=page_size, page_token=page_token)
     response = client.list_corpora(request)
+    return response
+
+
+@string_utils.set_doc(list_corpora.__doc__)
+async def list_corpora_async(
+    *,
+    page_size: Optional[int] = None,
+    page_token: Optional[str] = None,
+    client: glm.RetrieverServiceClient | None = None,
+) -> list[Corpus]:
+    if client is None:
+        client = get_default_retriever_async_client()
+
+    request = glm.ListCorporaRequest(page_size=page_size, page_token=page_token)
+    response = await client.list_corpora(request)
     return response

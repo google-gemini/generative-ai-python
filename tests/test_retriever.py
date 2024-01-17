@@ -255,6 +255,19 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual("demo_corpus", x.display_name)
         self.assertEqual("corpora/demo_corpus", x.name)
 
+    @parameterized.named_parameters(
+        [
+            dict(testcase_name="match_corpora_regex", name="corpora/demo_corpus"),
+            dict(testcase_name="no_corpora", name="demo_corpus"),
+            dict(testcase_name="with_punctuation", name="corpora/demo_corpus*(*)"),
+            dict(testcase_name="dash_at_start", name="-demo_corpus"),
+        ]
+    )
+    def test_create_corpus_names(self, name):
+        x = retriever.create_corpus(name=name)
+        self.assertEqual("demo_corpus", x.display_name)
+        self.assertEqual("corpora/demo_corpus", x.name)
+
     def test_get_corpus(self, display_name="demo_corpus"):
         x = retriever.create_corpus(display_name=display_name)
         c = retriever.get_corpus(name=x.name)
@@ -308,6 +321,24 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(x, retriever_service.Document)
         self.assertEqual("demo_doc", x.display_name)
 
+    @parameterized.named_parameters(
+        [
+            dict(
+                testcase_name="match_document_regex", name="corpora/demo_corpus/documents/demo_doc"
+            ),
+            dict(testcase_name="no_document", name="corpora/demo_corpus/demo_document"),
+            dict(
+                testcase_name="with_punctuation", name="corpora/demo_corpus*(*)/documents/demo_doc"
+            ),
+            dict(testcase_name="dash_at_start", name="-demo_doc"),
+        ]
+    )
+    def test_create_document_name(self, name):
+        demo_corpus = retriever.create_corpus(display_name="demo_corpus")
+        x = demo_corpus.create_document(name=name)
+        self.assertEqual("corpora/demo_corpus/documents/demo_doc", x.name)
+        self.assertEqual("demo_doc", x.display_name)
+
     def test_get_document(self, display_name="demo_doc"):
         demo_corpus = retriever.create_corpus(display_name="demo_corpus")
         x = demo_corpus.create_document(display_name=display_name)
@@ -340,7 +371,7 @@ class UnitTests(parameterized.TestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        q = demo_document.query_document(query="What kind of chunk is this?")
+        q = demo_document.query(query="What kind of chunk is this?")
         self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
@@ -369,6 +400,29 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(x, retriever_service.Chunk)
         self.assertEqual("corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk", x.name)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
+
+    @parameterized.named_parameters(
+        [
+            dict(
+                testcase_name="match_chunk_regex",
+                name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+            ),
+            dict(testcase_name="no_chunk", name="corpora/demo_corpus/demo_document/demo_chunk"),
+            dict(
+                testcase_name="with_punctuation",
+                name="corpora/demo_corpus*(*)/documents/demo_doc/chunks*****/demo_chunk",
+            ),
+            dict(testcase_name="dash_at_start", name="-demo_chunk"),
+        ]
+    )
+    def test_create_chunk_name(self, name):
+        demo_corpus = retriever.create_corpus(display_name="demo_corpus")
+        demo_document = demo_corpus.create_document(display_name="demo_doc")
+        x = demo_document.create_chunk(
+            name=name,
+            data="This is a demo chunk.",
+        )
+        self.assertEqual("corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk", x.name)
 
     @parameterized.named_parameters(
         [
