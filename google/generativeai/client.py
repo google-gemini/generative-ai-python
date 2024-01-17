@@ -171,7 +171,6 @@ class _ClientManager:
         return client
 
 
-_client_manager = _ClientManager()
 
 
 def configure(
