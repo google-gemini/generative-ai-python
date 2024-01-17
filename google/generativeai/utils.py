@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 
-def _flatten_update_paths(updates):
+def flatten_update_paths(updates):
     new_updates = {}
     for key, value in updates.items():
         if isinstance(value, dict):
