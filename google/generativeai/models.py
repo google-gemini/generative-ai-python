@@ -24,7 +24,7 @@ from google.generativeai.types import model_types
 from google.api_core import operation
 from google.api_core import protobuf_helpers
 from google.protobuf import field_mask_pb2
-from google.generativeai.utils import _flatten_update_paths
+from google.generativeai.utils import flatten_update_paths
 
 
 def get_model(
