@@ -176,7 +176,7 @@ def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | N
         client = get_default_retriever_client()
 
     request = glm.DeleteCorpusRequest(name=name, force=force)
-    response = client.delete_corpus(request)
+    client.delete_corpus(request)
 
 
 @string_utils.set_doc(delete_corpus.__doc__)
@@ -187,7 +187,7 @@ async def delete_corpus_async(
         client = get_default_retriever_async_client()
 
     request = glm.DeleteCorpusRequest(name=name, force=force)
-    response = await client.delete_corpus(request)
+    await client.delete_corpus(request)
 
 
 def list_corpora(

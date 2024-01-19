@@ -171,8 +171,6 @@ class _ClientManager:
         return client
 
 
-
-
 def configure(
     *,
     api_key: str | None = None,

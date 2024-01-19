@@ -19,7 +19,7 @@ def flatten_update_paths(updates):
     new_updates = {}
     for key, value in updates.items():
         if isinstance(value, dict):
-            for sub_key, sub_value in _flatten_update_paths(value).items():
+            for sub_key, sub_value in flatten_update_paths(value).items():
                 new_updates[f"{key}.{sub_key}"] = sub_value
         else:
             new_updates[key] = value

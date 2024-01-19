@@ -324,7 +324,7 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
-        updates = _flatten_update_paths(updates)
+        updates = flatten_update_paths(updates)
         field_mask = field_mask_pb2.FieldMask()
 
         for path in updates.keys():
@@ -334,6 +334,30 @@ class Corpus:
 
         request = glm.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
         response = client.update_corpus(request)
+        response = type(response).to_dict(response)
+        idecode_time(response, "create_time")
+        idecode_time(response, "update_time")
+        return self
+
+    @string_utils.set_doc(update.__doc__)
+    async def update(
+        self,
+        updates: dict[str, Any],
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        updates = flatten_update_paths(updates)
+        field_mask = field_mask_pb2.FieldMask()
+
+        for path in updates.keys():
+            field_mask.paths.append(path)
+        for path, value in updates.items():
+            self._apply_update(path, value)
+
+        request = glm.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
+        response = await client.update_corpus(request)
         response = type(response).to_dict(response)
         idecode_time(response, "create_time")
         idecode_time(response, "update_time")
@@ -356,7 +380,7 @@ class Corpus:
             client = get_default_retriever_client()
 
         request = glm.DeleteDocumentRequest(name=name, force=force)
-        response = client.delete_document(request)
+        client.delete_document(request)
 
     @string_utils.set_doc(delete_document.__doc__)
     async def delete_document_async(
@@ -369,7 +393,7 @@ class Corpus:
             client = get_default_retriever_async_client()
 
         request = glm.DeleteDocumentRequest(name=name, force=force)
-        response = await client.delete_document(request)
+        await client.delete_document(request)
 
     def list_documents(
         self,
@@ -413,7 +437,7 @@ class Corpus:
         response = await client.list_documents(request)
         return response
 
-    def query(
+    def query_document(
         self,
         query: str,
         metadata_filters: Optional[list[str]] = None,
@@ -449,8 +473,8 @@ class Corpus:
 
         return response
 
-    @string_utils.set_doc(query.__doc__)
-    async def query_async(
+    @string_utils.set_doc(query_document.__doc__)
+    async def query_document_async(
         self,
         query: str,
         metadata_filters: Optional[list[str]] = None,
@@ -838,7 +862,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        updates = _flatten_update_paths(updates)
+        updates = flatten_update_paths(updates)
         field_mask = field_mask_pb2.FieldMask()
         for path in updates.keys():
             field_mask.paths.append(path)
@@ -880,7 +904,7 @@ class Document(abc.ABC):
             # Key is name of chunk, value is a dictionary of updates
             for key, value in chunks.items():
                 c = self.get_chunk(name=key)
-                updates = _flatten_update_paths(value)
+                updates = flatten_update_paths(value)
                 field_mask = field_mask_pb2.FieldMask()
                 for path in updates.keys():
                     field_mask.paths.append(path)
@@ -898,7 +922,7 @@ class Document(abc.ABC):
                 elif isinstance(chunk, tuple):
                     # First element is name of chunk, second element contains updates
                     c = self.get_chunk(name=chunk[0])
-                    updates = _flatten_update_paths(chunk[1])
+                    updates = flatten_update_paths(chunk[1])
                     field_mask = field_mask_pb2.FieldMask()
                     for path in updates.keys():
                         field_mask.paths.append(path)
@@ -912,6 +936,61 @@ class Document(abc.ABC):
                     )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = client.batch_update_chunks(request)
+            response = type(response).to_dict(response)
+            return response
+
+    @string_utils.set_doc(batch_update_chunks.__doc__)
+    async def batch_update_chunks_async(
+        self,
+        chunks: BatchUpdateChunksOptions,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        # TODO (@snkancharla): Add idecode_time here in each conditional loop?
+        if isinstance(chunks, glm.BatchUpdateChunksRequest):
+            response = await client.batch_update_chunks(chunks)
+            response = type(response).to_dict(response)
+            return response
+
+        _requests = []
+        if isinstance(chunks, Mapping):
+            # Key is name of chunk, value is a dictionary of updates
+            for key, value in chunks.items():
+                c = self.get_chunk(name=key)
+                updates = flatten_update_paths(value)
+                field_mask = field_mask_pb2.FieldMask()
+                for path in updates.keys():
+                    field_mask.paths.append(path)
+                for path, value in updates.items():
+                    c._apply_update(path, value)
+                _requests.append(glm.UpdateChunkRequest(chunk=c.to_dict(), update_mask=field_mask))
+            request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
+            response = await client.batch_update_chunks(request)
+            response = type(response).to_dict(response)
+            return response
+        if isinstance(chunks, Iterable) and not isinstance(chunks, Mapping):
+            for chunk in chunks:
+                if isinstance(chunk, glm.UpdateChunkRequest):
+                    _requests.append(chunk)
+                elif isinstance(chunk, tuple):
+                    # First element is name of chunk, second element contains updates
+                    c = self.get_chunk(name=chunk[0])
+                    updates = flatten_update_paths(chunk[1])
+                    field_mask = field_mask_pb2.FieldMask()
+                    for path in updates.keys():
+                        field_mask.paths.append(path)
+                    for path, value in updates.items():
+                        c._apply_update(path, value)
+                    _requests.append({"chunk": c.to_dict(), "update_mask": field_mask})
+                else:
+                    raise TypeError(
+                        "The `chunks` parameter must be a list of glm.UpdateChunkRequests,"
+                        "dictionaries, or tuples of dictionaries."
+                    )
+            request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
+            response = await client.batch_update_chunks(request)
             response = type(response).to_dict(response)
             return response
 
@@ -930,7 +1009,7 @@ class Document(abc.ABC):
             client = get_default_retriever_client()
 
         request = glm.DeleteChunkRequest(name=name)
-        response = client.delete_chunk(request)
+        client.delete_chunk(request)
 
     @string_utils.set_doc(delete_chunk.__doc__)
     async def delete_chunk_async(
@@ -940,7 +1019,7 @@ class Document(abc.ABC):
             client = get_default_retriever_async_client()
 
         request = glm.DeleteChunkRequest(name=name)
-        response = await client.delete_chunk(request)
+        await client.delete_chunk(request)
 
     def batch_delete_chunks(
         self,
@@ -958,13 +1037,13 @@ class Document(abc.ABC):
 
         if all(isinstance(x, glm.DeleteChunkRequest) for x in chunks):
             request = glm.BatchDeleteChunksRequest(parent=self.name, requests=chunks)
-            response = client.batch_delete_chunks(request)
+            client.batch_delete_chunks(request)
         elif isinstance(chunks, Iterable):
             _request_list = []
             for chunk_name in chunks:
                 _request_list.append(glm.DeleteChunkRequest(name=chunk_name))
             request = glm.BatchDeleteChunksRequest(parent=self.name, requests=_request_list)
-            response = client.batch_delete_chunks(request)
+            client.batch_delete_chunks(request)
         else:
             raise ValueError(
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `glm.DeleteChunkRequest`s."
@@ -981,19 +1060,19 @@ class Document(abc.ABC):
 
         if all(isinstance(x, glm.DeleteChunkRequest) for x in chunks):
             request = glm.BatchDeleteChunksRequest(parent=self.name, requests=chunks)
-            response = await client.batch_delete_chunks(request)
+            await client.batch_delete_chunks(request)
         elif isinstance(chunks, Iterable):
             _request_list = []
             for chunk_name in chunks:
                 _request_list.append(glm.DeleteChunkRequest(name=chunk_name))
             request = glm.BatchDeleteChunksRequest(parent=self.name, requests=_request_list)
-            response = await client.batch_delete_chunks(request)
+            await client.batch_delete_chunks(request)
         else:
             raise ValueError(
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `glm.DeleteChunkRequest`s."
             )
 
-    def query(
+    def query_document(
         self,
         query: str,
         results_count: Optional[int] = None,
@@ -1027,8 +1106,8 @@ class Document(abc.ABC):
 
         return response
 
-    @string_utils.set_doc(query.__doc__)
-    async def query_async(
+    @string_utils.set_doc(query_document.__doc__)
+    async def query_document_async(
         self,
         query: str,
         results_count: Optional[int] = None,
@@ -1109,7 +1188,7 @@ class Chunk(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        updates = _flatten_update_paths(updates)
+        updates = flatten_update_paths(updates)
         field_mask = field_mask_pb2.FieldMask()
         for path in updates.keys():
             field_mask.paths.append(path)
@@ -1117,6 +1196,30 @@ class Chunk(abc.ABC):
             self._apply_update(path, value)
         request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
         response = client.update_chunk(request)
+        response = type(response).to_dict(response)
+
+        idecode_time(response, "create_time")
+        idecode_time(response, "update_time")
+
+        return self
+
+    @string_utils.set_doc(update_chunk.__doc__)
+    async def update_chunk_async(
+        self,
+        updates: dict[str, Any],
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        updates = flatten_update_paths(updates)
+        field_mask = field_mask_pb2.FieldMask()
+        for path in updates.keys():
+            field_mask.paths.append(path)
+        for path, value in updates.items():
+            self._apply_update(path, value)
+        request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
+        response = await client.update_chunk(request)
         response = type(response).to_dict(response)
 
         idecode_time(response, "create_time")
