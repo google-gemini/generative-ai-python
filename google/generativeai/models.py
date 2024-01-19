@@ -352,7 +352,7 @@ def update_tuned_model(
             )
         tuned_model = client.get_tuned_model(name=name)
 
-        updates = _flatten_update_paths(updates)
+        updates = flatten_update_paths(updates)
         field_mask = field_mask_pb2.FieldMask()
         for path in updates.keys():
             field_mask.paths.append(path)

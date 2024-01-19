@@ -500,7 +500,8 @@ class UnitTests(parameterized.TestCase):
             updates={"data": {"string_value": "This is an updated demo chunk."}}
         )
         self.assertEqual(
-            retriever_service.ChunkData("This is an updated demo chunk."), update_request.string_value
+            retriever_service.ChunkData("This is an updated demo chunk."),
+            update_request.string_value,
         )
 
     @parameterized.named_parameters(
