@@ -521,7 +521,6 @@ class Document(abc.ABC):
         name: str,
         data: ChunkData,
         custom_metadata: Optional[list[CustomMetadata]] = None,
-        state: Optional[State] = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> Chunk:
         """
@@ -548,7 +547,7 @@ class Document(abc.ABC):
         chunk = None
         if re.match(_CHUNK_NAME_REGEX, name):
             chunk = glm.Chunk(
-                name=name, data={"string_value": data}, custom_metadata=custom_metadata, state=state
+                name=name, data={"string_value": data}, custom_metadata=custom_metadata
             )
         elif "chunks/" not in name:
             chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
@@ -556,7 +555,6 @@ class Document(abc.ABC):
                 name=chunk_name,
                 data={"string_value": data},
                 custom_metadata=custom_metadata,
-                state=state,
             )
         else:
             raise ValueError(f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>.")
@@ -575,7 +573,6 @@ class Document(abc.ABC):
         name: str,
         data: ChunkData,
         custom_metadata: Optional[list[CustomMetadata]] = None,
-        state: Optional[State] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Chunk:
         if client is None:
@@ -587,15 +584,12 @@ class Document(abc.ABC):
         chunk = None
         if re.match(_CHUNK_NAME_REGEX, name):
             chunk = glm.Chunk(
-                name=name, data={"string_value": data}, custom_metadata=custom_metadata, state=state
+                name=name, data={"string_value": data}, custom_metadata=custom_metadata
             )
         elif "chunks/" not in name:
             chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
             chunk = glm.Chunk(
-                name=chunk_name,
-                data={"string_value": data},
-                custom_metadata=custom_metadata,
-                state=state,
+                name=chunk_name, data={"string_value": data}, custom_metadata=custom_metadata
             )
         else:
             raise ValueError(f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>.")
@@ -626,7 +620,7 @@ class Document(abc.ABC):
             client = get_default_retriever_client()
 
         if isinstance(chunks, glm.BatchCreateChunksRequest):
-            response = client.batch_update_chunks(chunks)
+            response = client.batch_create_chunks(chunks)
             response = type(response).to_dict(response)
             return response
 
@@ -871,6 +865,29 @@ class Document(abc.ABC):
 
         request = glm.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
         response = client.update_document(request)
+        response = type(response).to_dict(response)
+        idecode_time(response, "create_time")
+        idecode_time(response, "update_time")
+        return self
+
+    @string_utils.set_doc(update_document.__doc__)
+    async def update_document_async(
+        self,
+        updates: dict[str, Any],
+        client: glm.RetrieverServiceAsynclient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        updates = flatten_update_paths(updates)
+        field_mask = field_mask_pb2.FieldMask()
+        for path in updates.keys():
+            field_mask.paths.append(path)
+        for path, value in updates.items():
+            self._apply_update(path, value)
+
+        request = glm.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
+        response = await client.update_document(request)
         response = type(response).to_dict(response)
         idecode_time(response, "create_time")
         idecode_time(response, "update_time")

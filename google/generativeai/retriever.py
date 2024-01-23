@@ -54,8 +54,7 @@ def create_corpus(
     client: glm.RetrieverServiceClient | None = None,
 ) -> Corpus:
     """
-    Create a Corpus object. Users can specify either a name or display_name. Users can
-    create up to 5 corpora.
+    Create a Corpus object. Users can specify either a name or display_name.
 
     Args:
         name: The corpus resource name (ID). The name must be alphanumeric and fewer

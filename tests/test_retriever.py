@@ -399,7 +399,7 @@ class UnitTests(parameterized.TestCase):
         )
         self.assertIsInstance(x, retriever_service.Chunk)
         self.assertEqual("corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk", x.name)
-        self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.string_value)
+        self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
 
     @parameterized.named_parameters(
         [
@@ -472,7 +472,7 @@ class UnitTests(parameterized.TestCase):
             data="This is a demo chunk.",
         )
         ch = demo_document.get_chunk(name=x.name)
-        self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), ch.string_value)
+        self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), ch.data)
 
     def test_list_chunks(self):
         demo_corpus = retriever.create_corpus(display_name="demo_corpus")
@@ -501,7 +501,7 @@ class UnitTests(parameterized.TestCase):
         )
         self.assertEqual(
             retriever_service.ChunkData("This is an updated demo chunk."),
-            update_request.string_value,
+            update_request.data,
         )
 
     @parameterized.named_parameters(
