@@ -67,3 +67,180 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                 glm.Corpus(name="corpora/demo_corpus_1", display_name="demo_corpus_1"),
                 glm.Corpus(name="corpora/demo_corpus_2", display_name="demo_corpus_2"),
             ]
+        
+        @add_client_method
+        async def query_corpus(
+            request: glm.QueryCorpusRequest,
+        ) -> glm.QueryCorpusResponse:
+            self.observed_requests.append(request)
+            return glm.QueryCorpusResponse(
+                relevant_chunks=[
+                    glm.RelevantChunk(
+                        chunk_relevance_score=0.08,
+                        chunk=glm.Chunk(
+                            name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                            data={"string_value": "This is a demo chunk."},
+                        ),
+                    )
+                ]
+            )
+        
+        @add_client_method
+        async def delete_corpus(request: glm.DeleteCorpusRequest) -> None:
+            self.observed_requests.append(request)
+
+        @add_client_method
+        async def create_document(
+            request: glm.CreateDocumentRequest,
+        ) -> retriever_service.Document:
+            self.observed_requests.append(request)
+            return glm.Document(
+                name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc"
+            )
+        
+        @add_client_method
+        async def get_document(
+            request: glm.GetDocumentRequest,
+        ) -> retriever_service.Document:
+            self.observed_requests.append(request)
+            return glm.Document(
+                name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc"
+            )
+
+        @add_client_method
+        async def update_document(
+            request: glm.UpdateDocumentRequest,
+        ) -> glm.Document:
+            self.observed_requests.append(request)
+            return glm.Document(
+                name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc_1"
+            )
+        
+        @add_client_method
+        async def list_documents(
+            request: glm.ListDocumentsRequest,
+        ) -> glm.ListDocumentsResponse:
+            self.observed_requests.append(request)
+            return [
+                glm.Document(
+                    name="corpora/demo_corpus/documents/demo_doc_1", display_name="demo_doc_1"
+                ),
+                glm.Document(
+                    name="corpora/demo_corpus/documents/demo_doc_2", display_name="demo_doc_2"
+                ),
+            ]
+
+        @add_client_method
+        async def delete_document(
+            request: glm.DeleteDocumentRequest,
+        ) -> None:
+            self.observed_requests.append(request)
+
+        @add_client_method
+        async def query_document(
+            request: glm.QueryDocumentRequest,
+        ) -> glm.QueryDocumentResponse:
+            self.observed_requests.append(request)
+            return glm.QueryCorpusResponse(
+                relevant_chunks=[
+                    glm.RelevantChunk(
+                        chunk_relevance_score=0.08,
+                        chunk=glm.Chunk(
+                            name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                            data={"string_value": "This is a demo chunk."},
+                        ),
+                    )
+                ]
+            )
+
+        @add_client_method
+        async def create_chunk(
+            request: glm.CreateChunkRequest,
+        ) -> retriever_service.Chunk:
+            self.observed_requests.append(request)
+            return glm.Chunk(
+                name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                data={"string_value": "This is a demo chunk."},
+            )
+        
+        @add_client_method
+        async def batch_create_chunks(
+            request: glm.BatchCreateChunksRequest,
+        ) -> glm.BatchCreateChunksResponse:
+            self.observed_requests.append(request)
+            return glm.BatchCreateChunksResponse(
+                chunks=[
+                    glm.Chunk(
+                        name="corpora/demo_corpus/documents/demo_doc/chunks/dc",
+                        data={"string_value": "This is a demo chunk."},
+                    ),
+                    glm.Chunk(
+                        name="corpora/demo_corpus/documents/demo_doc/chunks/dc1",
+                        data={"string_value": "This is another demo chunk."},
+                    ),
+                ]
+            )
+
+        @add_client_method
+        async def get_chunk(
+            request: glm.GetChunkRequest,
+        ) -> retriever_service.Chunk:
+            self.observed_requests.append(request)
+            return glm.Chunk(
+                name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                data={"string_value": "This is a demo chunk."},
+            )
+        
+        @add_client_method
+        async def list_chunks(
+            request: glm.ListChunksRequest,
+        ) -> glm.ListChunksResponse:
+            self.observed_requests.append(request)
+            return [
+                glm.Chunk(
+                    name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                    data={"string_value": "This is a demo chunk."},
+                ),
+                glm.Chunk(
+                    name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
+                    data={"string_value": "This is another demo chunk."},
+                ),
+            ]
+
+        @add_client_method
+        async def update_chunk(request: glm.UpdateChunkRequest) -> glm.Chunk:
+            self.observed_requests.append(request)
+            return glm.Chunk(
+                name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                data={"string_value": "This is an updated demo chunk."},
+            )
+        
+        @add_client_method
+        async def batch_update_chunks(
+            request: glm.BatchUpdateChunksRequest,
+        ) -> glm.BatchUpdateChunksResponse:
+            self.observed_requests.append(request)
+            return glm.BatchUpdateChunksResponse(
+                chunks=[
+                    glm.Chunk(
+                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        data={"string_value": "This is an updated chunk."},
+                    ),
+                    glm.Chunk(
+                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
+                        data={"string_value": "This is another updated chunk."},
+                    ),
+                ]
+            )
+        
+        @add_client_method
+        async def delete_chunk(
+            request: glm.DeleteChunkRequest,
+        ) -> None:
+            self.observed_requests.append(request)
+
+        @add_client_method
+        async def batch_delete_chunks(
+            request: glm.BatchDeleteChunksRequest,
+        ) -> None:
+            self.observed_requests.append(request)
