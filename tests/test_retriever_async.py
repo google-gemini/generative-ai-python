@@ -286,7 +286,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        q = retriever.query_async(name="corpora/demo_corpus", query="What kind of chunk is this?")
+        q = await retriever.query_async(name="corpora/demo_corpus", query="What kind of chunk is this?")
         self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
@@ -453,9 +453,9 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ]
     )
     async def test_batch_create_chunks(self, chunks):
-        demo_corpus = retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        creation_req = demo_document.batch_create_chunks(chunks=chunks)
+        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document(display_name="demo_doc")
+        creation_req = await demo_document.batch_create_chunks(chunks=chunks)
         self.assertIsInstance(self.observed_requests[-1], glm.BatchCreateChunksRequest)
         self.assertEqual("This is a demo chunk.", creation_req["chunks"][0]["data"]["string_value"])
         self.assertEqual(
