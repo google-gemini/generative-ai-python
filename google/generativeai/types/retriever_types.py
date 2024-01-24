@@ -340,7 +340,7 @@ class Corpus:
         return self
 
     @string_utils.set_doc(update.__doc__)
-    async def update(
+    async def update_async(
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceAsyncClient | None = None,
@@ -435,68 +435,6 @@ class Corpus:
             parent=self.name, page_size=page_size, page_token=page_token
         )
         response = await client.list_documents(request)
-        return response
-
-    def query_document(
-        self,
-        query: str,
-        metadata_filters: Optional[list[str]] = None,
-        results_count: Optional[int] = None,
-        client: glm.RetrieverServiceClient | None = None,
-    ):
-        """
-        Query a corpus for information.
-
-        Args:
-            query: Query string to perform semantic search.
-            metadata_filters: Filter for `Chunk` metadata.
-            results_count: The maximum number of `Chunk`s to return.
-
-        Returns:
-            List of relevant chunks.
-        """
-        if client is None:
-            client = get_default_retriever_client()
-
-        if results_count:
-            if results_count < 0 or results_count >= 100:
-                raise ValueError("Number of results returned must be between 1 and 100.")
-
-        request = glm.QueryCorpusRequest(
-            name=self.name,
-            query=query,
-            metadata_filters=metadata_filters,
-            results_count=results_count,
-        )
-        response = client.query_corpus(request)
-        response = type(response).to_dict(response)
-
-        return response
-
-    @string_utils.set_doc(query_document.__doc__)
-    async def query_document_async(
-        self,
-        query: str,
-        metadata_filters: Optional[list[str]] = None,
-        results_count: Optional[int] = None,
-        client: glm.RetrieverServiceAsyncClient | None = None,
-    ):
-        if client is None:
-            client = get_default_retriever_async_client()
-
-        if results_count:
-            if results_count < 0 or results_count >= 100:
-                raise ValueError("Number of results returned must be between 1 and 100.")
-
-        request = glm.QueryCorpusRequest(
-            name=self.name,
-            query=query,
-            metadata_filters=metadata_filters,
-            results_count=results_count,
-        )
-        response = await client.query_corpus(request)
-        response = type(response).to_dict(response)
-
         return response
 
     def to_dict(self) -> dict[str, Any]:
@@ -817,6 +755,68 @@ class Document(abc.ABC):
         response = client.list_chunks(request)
         return response
 
+    def query(
+        self,
+        query: str,
+        metadata_filters: Optional[list[str]] = None,
+        results_count: Optional[int] = None,
+        client: glm.RetrieverServiceClient | None = None,
+    ):
+        """
+        Query a `Document` in the `Corpus` for information.
+
+        Args:
+            query: Query string to perform semantic search.
+            metadata_filters: Filter for `Chunk` metadata.
+            results_count: The maximum number of `Chunk`s to return.
+
+        Returns:
+            List of relevant chunks.
+        """
+        if client is None:
+            client = get_default_retriever_client()
+
+        if results_count:
+            if results_count < 0 or results_count >= 100:
+                raise ValueError("Number of results returned must be between 1 and 100.")
+
+        request = glm.QueryDocumentRequest(
+            name=self.name,
+            query=query,
+            metadata_filters=metadata_filters,
+            results_count=results_count,
+        )
+        response = client.query_document(request)
+        response = type(response).to_dict(response)
+
+        return response
+
+    @string_utils.set_doc(query.__doc__)
+    async def query_async(
+        self,
+        query: str,
+        metadata_filters: Optional[list[str]] = None,
+        results_count: Optional[int] = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        if results_count:
+            if results_count < 0 or results_count >= 100:
+                raise ValueError("Number of results returned must be between 1 and 100.")
+
+        request = glm.QueryDocumentRequest(
+            name=self.name,
+            query=query,
+            metadata_filters=metadata_filters,
+            results_count=results_count,
+        )
+        response = await client.query_document(request)
+        response = type(response).to_dict(response)
+
+        return response
+
     @string_utils.set_doc(list_chunks.__doc__)
     async def list_chunks_async(
         self,
@@ -839,7 +839,7 @@ class Document(abc.ABC):
             self = getattr(self, part)
         setattr(self, parts[-1], value)
 
-    def update_document(
+    def update(
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceClient | None = None,
@@ -870,8 +870,8 @@ class Document(abc.ABC):
         idecode_time(response, "update_time")
         return self
 
-    @string_utils.set_doc(update_document.__doc__)
-    async def update_document_async(
+    @string_utils.set_doc(update.__doc__)
+    async def update_async(
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceAsynclient | None = None,
@@ -1089,7 +1089,7 @@ class Document(abc.ABC):
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `glm.DeleteChunkRequest`s."
             )
 
-    def query_document(
+    def query(
         self,
         query: str,
         results_count: Optional[int] = None,
@@ -1123,8 +1123,8 @@ class Document(abc.ABC):
 
         return response
 
-    @string_utils.set_doc(query_document.__doc__)
-    async def query_document_async(
+    @string_utils.set_doc(query.__doc__)
+    async def query_async(
         self,
         query: str,
         results_count: Optional[int] = None,
@@ -1170,12 +1170,15 @@ class Chunk(abc.ABC):
     def __init__(
         self,
         name: str,
-        data: ChunkData,
+        data: str,
         custom_metadata: list[CustomMetadata] | None,
         state: State,
     ):
         self.name = name
-        self.data = ChunkData(*data)
+        if isinstance(data, str):
+            self.data = ChunkData(string_value=data)
+        elif isinstance(data, dict):
+            self.data = ChunkData(string_value=data["string_value"])
         if custom_metadata is None:
             self.custom_metadata = []
         else:
@@ -1188,7 +1191,7 @@ class Chunk(abc.ABC):
             self = getattr(self, part)
         setattr(self, parts[-1], value)
 
-    def update_chunk(
+    def update(
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceClient | None = None,
@@ -1220,8 +1223,8 @@ class Chunk(abc.ABC):
 
         return self
 
-    @string_utils.set_doc(update_chunk.__doc__)
-    async def update_chunk_async(
+    @string_utils.set_doc(update.__doc__)
+    async def update_async(
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceAsyncClient | None = None,

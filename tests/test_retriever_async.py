@@ -67,7 +67,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                 glm.Corpus(name="corpora/demo_corpus_1", display_name="demo_corpus_1"),
                 glm.Corpus(name="corpora/demo_corpus_2", display_name="demo_corpus_2"),
             ]
-        
+
         @add_client_method
         async def query_corpus(
             request: glm.QueryCorpusRequest,
@@ -84,7 +84,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                     )
                 ]
             )
-        
+
         @add_client_method
         async def delete_corpus(request: glm.DeleteCorpusRequest) -> None:
             self.observed_requests.append(request)
@@ -97,7 +97,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             return glm.Document(
                 name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc"
             )
-        
+
         @add_client_method
         async def get_document(
             request: glm.GetDocumentRequest,
@@ -115,7 +115,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             return glm.Document(
                 name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc_1"
             )
-        
+
         @add_client_method
         async def list_documents(
             request: glm.ListDocumentsRequest,
@@ -162,7 +162,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                 name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                 data={"string_value": "This is a demo chunk."},
             )
-        
+
         @add_client_method
         async def batch_create_chunks(
             request: glm.BatchCreateChunksRequest,
@@ -190,7 +190,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                 name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                 data={"string_value": "This is a demo chunk."},
             )
-        
+
         @add_client_method
         async def list_chunks(
             request: glm.ListChunksRequest,
@@ -214,7 +214,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                 name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                 data={"string_value": "This is an updated demo chunk."},
             )
-        
+
         @add_client_method
         async def batch_update_chunks(
             request: glm.BatchUpdateChunksRequest,
@@ -232,7 +232,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                     ),
                 ]
             )
-        
+
         @add_client_method
         async def delete_chunk(
             request: glm.DeleteChunkRequest,
@@ -244,7 +244,6 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             request: glm.BatchDeleteChunksRequest,
         ) -> None:
             self.observed_requests.append(request)
-
 
     async def test_create_corpus(self, display_name="demo_corpus"):
         x = await retriever.create_corpus(display_name=display_name)

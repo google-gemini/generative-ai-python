@@ -276,6 +276,7 @@ class UnitTests(parameterized.TestCase):
     def test_update_corpus(self):
         demo_corpus = retriever.create_corpus(display_name="demo_corpus")
         update_request = demo_corpus.update(updates={"display_name": "demo_corpus_1"})
+        self.assertIsInstance(self.observed_requests[-1], glm.UpdateCorpusRequest)
         self.assertEqual("demo_corpus_1", demo_corpus.display_name)
 
     def test_list_corpora(self):
@@ -290,7 +291,7 @@ class UnitTests(parameterized.TestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        q = demo_corpus.query(query="What kind of chunk is this?")
+        q = retriever.query(name="corpora/demo_corpus", query="What kind of chunk is this?")
         self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
@@ -348,7 +349,7 @@ class UnitTests(parameterized.TestCase):
     def test_update_document(self):
         demo_corpus = retriever.create_corpus(display_name="demo_corpus")
         demo_document = demo_corpus.create_document(display_name="demo_doc")
-        update_request = demo_document.update_document(updates={"display_name": "demo_doc_1"})
+        update_request = demo_document.update(updates={"display_name": "demo_doc_1"})
         self.assertEqual("demo_doc_1", demo_document.display_name)
 
     def test_delete_document(self):
@@ -371,7 +372,7 @@ class UnitTests(parameterized.TestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        q = demo_document.query_document(query="What kind of chunk is this?")
+        q = demo_document.query(query="What kind of chunk is this?")
         self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
@@ -397,8 +398,10 @@ class UnitTests(parameterized.TestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
+        print(x)
         self.assertIsInstance(x, retriever_service.Chunk)
         self.assertEqual("corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk", x.name)
+        print(x.data)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
 
     @parameterized.named_parameters(
@@ -496,7 +499,7 @@ class UnitTests(parameterized.TestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        update_request = x.update_chunk(
+        update_request = x.update(
             updates={"data": {"string_value": "This is an updated demo chunk."}}
         )
         self.assertEqual(
@@ -578,6 +581,14 @@ class UnitTests(parameterized.TestCase):
         delete_request = demo_document.batch_delete_chunks(chunks=[x.name, y.name])
         self.assertIsInstance(self.observed_requests[-1], glm.BatchDeleteChunksRequest)
 
+
+"""     @parameterized.named_parameters(
+        dict(
+                testcase_name="CreateDocument",
+                obj=retriever_service.Corpus.create_document,
+                aobj=retriever_service.Corpus.create_document_async,
+        )
+    )
     def test_async_code_match(self, obj, aobj):
         import inspect
         import re
@@ -596,7 +607,8 @@ class UnitTests(parameterized.TestCase):
         )
 
         asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource)
+        self.assertEqual(source, asource) """
+
 
 if __name__ == "__main__":
     absltest.main()

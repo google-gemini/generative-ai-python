@@ -226,3 +226,68 @@ async def list_corpora_async(
     request = glm.ListCorporaRequest(page_size=page_size, page_token=page_token)
     response = await client.list_corpora(request)
     return response
+
+
+def query(
+    name: str,
+    query: str,
+    metadata_filters: Optional[list[str]] = None,
+    results_count: Optional[int] = None,
+    client: glm.RetrieverServiceClient | None = None,
+):
+    """
+    Query a corpus for information.
+
+    Args:
+        name: Name of the `Corpus` to query.
+        query: Query string to perform semantic search.
+        metadata_filters: Filter for `Chunk` metadata.
+        results_count: The maximum number of `Chunk`s to return.
+
+    Returns:
+        List of relevant chunks.
+    """
+    if client is None:
+        client = get_default_retriever_client()
+
+    if results_count:
+        if results_count < 0 or results_count >= 100:
+            raise ValueError("Number of results returned must be between 1 and 100.")
+
+    request = glm.QueryCorpusRequest(
+        name=name,
+        query=query,
+        metadata_filters=metadata_filters,
+        results_count=results_count,
+    )
+    response = client.query_corpus(request)
+    response = type(response).to_dict(response)
+
+    return response
+
+
+@string_utils.set_doc(query.__doc__)
+async def query_async(
+    name: str,
+    query: str,
+    metadata_filters: Optional[list[str]] = None,
+    results_count: Optional[int] = None,
+    client: glm.RetrieverServiceAsyncClient | None = None,
+):
+    if client is None:
+        client = get_default_retriever_client()
+
+    if results_count:
+        if results_count < 0 or results_count >= 100:
+            raise ValueError("Number of results returned must be between 1 and 100.")
+
+    request = glm.QueryCorpusRequest(
+        name=name,
+        query=query,
+        metadata_filters=metadata_filters,
+        results_count=results_count,
+    )
+    response = await client.query_corpus(request)
+    response = type(response).to_dict(response)
+
+    return response
