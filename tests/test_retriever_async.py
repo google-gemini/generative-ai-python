@@ -286,7 +286,9 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        q = await retriever.query_async(query="What kind of chunk is this?")
+        q = await retriever.query_async(
+            name="corpora/demo_corpus", query="What kind of chunk is this?"
+        )
         self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
@@ -344,9 +346,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
     async def test_update_document(self):
         demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
         demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
-        update_request = await demo_document.update_document_async(
-            updates={"display_name": "demo_doc_1"}
-        )
+        update_request = await demo_document.update_async(updates={"display_name": "demo_doc_1"})
         self.assertEqual("demo_doc_1", demo_document.display_name)
 
     async def test_delete_document(self):
@@ -496,7 +496,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        update_request = await x.update_chunk_async(
+        update_request = await x.update_async(
             updates={"data": {"string_value": "This is an updated demo chunk."}}
         )
         self.assertEqual(
@@ -554,7 +554,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
     async def test_delete_chunk(self):
         demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document_async(display_name="demo_doc")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
         x = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
