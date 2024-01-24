@@ -578,6 +578,25 @@ class UnitTests(parameterized.TestCase):
         delete_request = demo_document.batch_delete_chunks(chunks=[x.name, y.name])
         self.assertIsInstance(self.observed_requests[-1], glm.BatchDeleteChunksRequest)
 
+    def test_async_code_match(self, obj, aobj):
+        import inspect
+        import re
+
+        source = inspect.getsource(obj)
+        asource = inspect.getsource(aobj)
+
+        asource = (
+            asource.replace("anext", "next")
+            .replace("aiter", "iter")
+            .replace("_async", "")
+            .replace("async ", "")
+            .replace("await ", "")
+            .replace("Async", "")
+            .replace("ASYNC_", "")
+        )
+
+        asource = re.sub(" *?# type: ignore", "", asource)
+        self.assertEqual(source, asource)
 
 if __name__ == "__main__":
     absltest.main()
