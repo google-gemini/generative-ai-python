@@ -32,7 +32,7 @@ from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
 
 
-_DOCUMENT_NAME_REGEX = re.compile(r"^corpora/([^/]+?)(/documents/([^/]+?))")
+_DOCUMENT_NAME_REGEX = re.compile(r"^corpora/[a-z0-9-]+/documents/[a-z0-9-]+$")
 _CHUNK_NAME_REGEX = re.compile(r"^corpora/([^/]+?)(/documents/([^/]+?)(/chunks/([^/]+?))?)?$")
 _REMOVE = string.punctuation
 _REMOVE = _REMOVE.replace("-", "")  # Don't remove hyphens
@@ -363,6 +363,68 @@ class Corpus:
         idecode_time(response, "update_time")
         return self
 
+    def query(
+        self,
+        query: str,
+        metadata_filters: Optional[list[str]] = None,
+        results_count: Optional[int] = None,
+        client: glm.RetrieverServiceClient | None = None,
+    ):
+        """
+        Query a corpus for information.
+
+        Args:
+            query: Query string to perform semantic search.
+            metadata_filters: Filter for `Chunk` metadata.
+            results_count: The maximum number of `Chunk`s to return.
+
+        Returns:
+            List of relevant chunks.
+        """
+        if client is None:
+            client = get_default_retriever_client()
+
+        if results_count:
+            if results_count < 0 or results_count >= 100:
+                raise ValueError("Number of results returned must be between 1 and 100.")
+
+        request = glm.QueryCorpusRequest(
+            name=self.name,
+            query=query,
+            metadata_filters=metadata_filters,
+            results_count=results_count,
+        )
+        response = client.query_corpus(request)
+        response = type(response).to_dict(response)
+
+        return response
+
+    @string_utils.set_doc(query.__doc__)
+    async def query_async(
+        self,
+        query: str,
+        metadata_filters: Optional[list[str]] = None,
+        results_count: Optional[int] = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
+    ):
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        if results_count:
+            if results_count < 0 or results_count >= 100:
+                raise ValueError("Number of results returned must be between 1 and 100.")
+
+        request = glm.QueryCorpusRequest(
+            name=self.name,
+            query=query,
+            metadata_filters=metadata_filters,
+            results_count=results_count,
+        )
+        response = await client.query_corpus(request)
+        response = type(response).to_dict(response)
+
+        return response
+
     def delete_document(
         self,
         name: str,
@@ -577,7 +639,7 @@ class Document(abc.ABC):
                     for key, value in chunk.items():
                         if re.match(_CHUNK_NAME_REGEX, value):
                             name = value
-                        elif not re.match(_CHUNK_NAME_REGEX, value) and isinstance(value, str):
+                        elif isinstance(value, str):
                             data = chunk[key]
                         elif isinstance(value, Iterable):
                             custom_metadata = value
@@ -594,7 +656,7 @@ class Document(abc.ABC):
                     for item in chunk:
                         if re.match(_CHUNK_NAME_REGEX, item):
                             name = item
-                        elif not re.match(_CHUNK_NAME_REGEX, item) and isinstance(item, str):
+                        elif isinstance(item, str):
                             data = item
                         elif isinstance(item, Iterable):
                             custom_metadata = item
@@ -647,7 +709,7 @@ class Document(abc.ABC):
                     for key, value in chunk.items():
                         if re.match(_CHUNK_NAME_REGEX, value):
                             name = value
-                        elif not re.match(_CHUNK_NAME_REGEX, value) and isinstance(value, str):
+                        elif isinstance(value, str):
                             data = chunk[key]
                         elif isinstance(value, Iterable):
                             custom_metadata = value
@@ -664,7 +726,7 @@ class Document(abc.ABC):
                     for item in chunk:
                         if re.match(_CHUNK_NAME_REGEX, item):
                             name = item
-                        elif not re.match(_CHUNK_NAME_REGEX, item) and isinstance(item, str):
+                        elif isinstance(item, str):
                             data = item
                         elif isinstance(item, Iterable):
                             custom_metadata = item

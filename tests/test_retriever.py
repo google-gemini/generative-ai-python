@@ -291,7 +291,7 @@ class UnitTests(parameterized.TestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        q = retriever.query(name="corpora/demo_corpus", query="What kind of chunk is this?")
+        q = demo_corpus.query(query="What kind of chunk is this?")
         self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
