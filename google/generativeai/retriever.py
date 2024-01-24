@@ -275,7 +275,7 @@ async def query_async(
     client: glm.RetrieverServiceAsyncClient | None = None,
 ):
     if client is None:
-        client = get_default_retriever_client()
+        client = get_default_retriever_async_client()
 
     if results_count:
         if results_count < 0 or results_count >= 100:

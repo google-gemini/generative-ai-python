@@ -286,9 +286,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        q = await retriever.query_async(
-            name="corpora/demo_corpus", query="What kind of chunk is this?"
-        )
+        q = retriever.query_async(name="corpora/demo_corpus", query="What kind of chunk is this?")
         self.assertIsInstance(q, dict)
         self.assertEqual(
             q,

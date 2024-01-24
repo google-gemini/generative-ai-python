@@ -398,10 +398,8 @@ class UnitTests(parameterized.TestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        print(x)
         self.assertIsInstance(x, retriever_service.Chunk)
         self.assertEqual("corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk", x.name)
-        print(x.data)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
 
     @parameterized.named_parameters(
