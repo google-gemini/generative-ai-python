@@ -21,7 +21,7 @@ import unittest.mock as mock
 import google.ai.generativelanguage as glm
 
 from google.generativeai import retriever
-from google.generativeai import client
+from google.generativeai import client as client_lib
 from google.generativeai.types import retriever_types as retriever_service
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -29,9 +29,9 @@ from absl.testing import parameterized
 
 class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        self.client = unittest.mock.MagicMock()
+        self.client = unittest.mock.AsyncMock()
 
-        client._client_manager.clients["retriever_async"] = self.client
+        client_lib._client_manager.clients["retriever_async"] = self.client
 
         def add_client_method(f):
             name = f.__name__
@@ -246,7 +246,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             self.observed_requests.append(request)
 
     async def test_create_corpus(self, display_name="demo_corpus"):
-        x = await retriever.create_corpus(display_name=display_name)
+        x = await retriever.create_corpus_async(display_name=display_name)
         self.assertIsInstance(x, retriever_service.Corpus)
         self.assertEqual("demo_corpus", x.display_name)
         self.assertEqual("corpora/demo_corpus", x.name)
@@ -260,33 +260,33 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ]
     )
     async def test_create_corpus_names(self, name):
-        x = await retriever.create_corpus(name=name)
+        x = await retriever.create_corpus_async(name=name)
         self.assertEqual("demo_corpus", x.display_name)
         self.assertEqual("corpora/demo_corpus", x.name)
 
     async def test_get_corpus(self, display_name="demo_corpus"):
-        x = await retriever.create_corpus(display_name=display_name)
-        c = await retriever.get_corpus(name=x.name)
+        x = await retriever.create_corpus_async(display_name=display_name)
+        c = await retriever.get_corpus_async(name=x.name)
         self.assertEqual("demo_corpus", c.display_name)
 
     async def test_update_corpus(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        update_request = demo_corpus.update(updates={"display_name": "demo_corpus_1"})
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        update_request = await demo_corpus.update_async(updates={"display_name": "demo_corpus_1"})
         self.assertEqual("demo_corpus_1", demo_corpus.display_name)
 
     async def test_list_corpora(self):
-        x = await retriever.list_corpora(page_size=1)
+        x = await retriever.list_corpora_async(page_size=1)
         self.assertIsInstance(x, list)
         self.assertEqual(len(x), 2)
 
     async def test_query_corpus(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        demo_chunk = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        demo_chunk = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        q = demo_corpus.query(query="What kind of chunk is this?")
+        q = await retriever.query_async(query="What kind of chunk is this?")
         self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
@@ -306,14 +306,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_delete_corpus(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        delete_request = await retriever.delete_corpus(name="corpora/demo_corpus", force=True)
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        delete_request = await retriever.delete_corpus_async(name="corpora/demo_corpus", force=True)
         self.assertIsInstance(self.observed_requests[-1], glm.DeleteCorpusRequest)
 
     async def test_create_document(self, display_name="demo_doc"):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        x = demo_corpus.create_document(display_name=display_name)
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        x = await demo_corpus.create_document_async(display_name=display_name)
         self.assertIsInstance(x, retriever_service.Document)
         self.assertEqual("demo_doc", x.display_name)
 
@@ -330,44 +330,48 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ]
     )
     async def test_create_document_name(self, name):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        x = demo_corpus.create_document(name=name)
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        x = await demo_corpus.create_document_async(name=name)
         self.assertEqual("corpora/demo_corpus/documents/demo_doc", x.name)
         self.assertEqual("demo_doc", x.display_name)
 
     async def test_get_document(self, display_name="demo_doc"):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        x = demo_corpus.create_document(display_name=display_name)
-        d = demo_corpus.get_document(name=x.name)
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        x = await demo_corpus.create_document_async(display_name=display_name)
+        d = await demo_corpus.get_document_async(name=x.name)
         self.assertEqual("demo_doc", d.display_name)
 
     async def test_update_document(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        update_request = demo_document.update_document(updates={"display_name": "demo_doc_1"})
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        update_request = await demo_document.update_document_async(
+            updates={"display_name": "demo_doc_1"}
+        )
         self.assertEqual("demo_doc_1", demo_document.display_name)
 
     async def test_delete_document(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        demo_doc2 = demo_corpus.create_document(display_name="demo_doc_2")
-        delete_request = demo_corpus.delete_document(name="corpora/demo_corpus/documents/demo_doc")
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        demo_doc2 = await demo_corpus.create_document_async(display_name="demo_doc_2")
+        delete_request = await demo_corpus.delete_document_async(
+            name="corpora/demo_corpus/documents/demo_doc"
+        )
         self.assertIsInstance(self.observed_requests[-1], glm.DeleteDocumentRequest)
 
     async def test_list_documents(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        demo_doc2 = demo_corpus.create_document(display_name="demo_doc_2")
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        demo_doc2 = await demo_corpus.create_document_async(display_name="demo_doc_2")
         self.assertLen(demo_corpus.list_documents(), 2)
 
     async def test_query_document(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        demo_chunk = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        demo_chunk = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        q = demo_document.query_document(query="What kind of chunk is this?")
+        q = await demo_document.query_async(query="What kind of chunk is this?")
         self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
@@ -387,9 +391,9 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_create_chunk(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        x = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        x = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
@@ -412,9 +416,9 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ]
     )
     async def test_create_chunk_name(self, name):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        x = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        x = await demo_document.create_chunk_async(
             name=name,
             data="This is a demo chunk.",
         )
@@ -451,7 +455,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ]
     )
     async def test_batch_create_chunks(self, chunks):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
+        demo_corpus = retriever.create_corpus(display_name="demo_corpus")
         demo_document = demo_corpus.create_document(display_name="demo_doc")
         creation_req = demo_document.batch_create_chunks(chunks=chunks)
         self.assertIsInstance(self.observed_requests[-1], glm.BatchCreateChunksRequest)
@@ -461,38 +465,38 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_get_chunk(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        x = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        x = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        ch = demo_document.get_chunk(name=x.name)
+        ch = await demo_document.get_chunk_async(name=x.name)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), ch.data)
 
     async def test_list_chunks(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        x = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        x = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        y = demo_document.create_chunk(
+        y = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
             data="This is another demo chunk.",
         )
-        list_req = demo_document.list_chunks()
+        list_req = await demo_document.list_chunks_async()
         self.assertIsInstance(self.observed_requests[-1], glm.ListChunksRequest)
         self.assertLen(list_req, 2)
 
     async def test_update_chunk(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        x = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        x = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        update_request = x.update_chunk(
+        update_request = await x.update_chunk_async(
             updates={"data": {"string_value": "This is an updated demo chunk."}}
         )
         self.assertEqual(
@@ -529,17 +533,17 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ],
     )
     async def test_batch_update_chunks_data_structures(self, updates):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        x = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        x = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        y = demo_document.create_chunk(
+        y = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
             data="This is another demo chunk.",
         )
-        update_request = demo_document.batch_update_chunks(chunks=updates)
+        update_request = await demo_document.batch_update_chunks_async(chunks=updates)
         self.assertIsInstance(self.observed_requests[-1], glm.BatchUpdateChunksRequest)
         self.assertEqual(
             "This is an updated chunk.", update_request["chunks"][0]["data"]["string_value"]
@@ -549,27 +553,31 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_delete_chunk(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        x = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = demo_corpus.create_document_async(display_name="demo_doc")
+        x = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        delete_request = demo_document.delete_chunk(
+        delete_request = await demo_document.delete_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk"
         )
         self.assertIsInstance(self.observed_requests[-1], glm.DeleteChunkRequest)
 
     async def test_batch_delete_chunks(self):
-        demo_corpus = await retriever.create_corpus(display_name="demo_corpus")
-        demo_document = demo_corpus.create_document(display_name="demo_doc")
-        x = demo_document.create_chunk(
+        demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
+        demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
+        x = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        y = demo_document.create_chunk(
+        y = await demo_document.create_chunk_async(
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is another demo chunk.",
         )
-        delete_request = demo_document.batch_delete_chunks(chunks=[x.name, y.name])
+        delete_request = await demo_document.batch_delete_chunks_async(chunks=[x.name, y.name])
         self.assertIsInstance(self.observed_requests[-1], glm.BatchDeleteChunksRequest)
+
+
+if __name__ == "__main__":
+    absltest.main()
