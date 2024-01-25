@@ -66,7 +66,7 @@ class CUJTests(parameterized.TestCase):
 
     def test_hello(self):
         # Generate text from text prompt
-        model = generative_models.GenerativeModel(model_name="gemini-m")
+        model = generative_models.GenerativeModel(model_name="gemini-pro")
 
         self.responses["generate_content"].append(simple_response("world!"))
 
@@ -89,7 +89,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_image(self, content):
         # Generate text from image
-        model = generative_models.GenerativeModel("gemini-m")
+        model = generative_models.GenerativeModel("gemini-pro")
 
         cat = "It's a cat"
         self.responses["generate_content"].append(simple_response(cat))
@@ -123,7 +123,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_generation_config_overwrite(self, config1, config2):
         # Generation config
-        model = generative_models.GenerativeModel("gemini-m", generation_config=config1)
+        model = generative_models.GenerativeModel("gemini-pro", generation_config=config1)
 
         self.responses["generate_content"] = [
             simple_response(" world!"),
@@ -168,7 +168,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_safety_overwrite(self, safe1, safe2):
         # Safety
-        model = generative_models.GenerativeModel("gemini-m", safety_settings={"danger": "low"})
+        model = generative_models.GenerativeModel("gemini-pro", safety_settings={"danger": "low"})
 
         self.responses["generate_content"] = [
             simple_response(" world!"),
@@ -200,7 +200,7 @@ class CUJTests(parameterized.TestCase):
         chunks = ["first", " second", " third"]
         self.responses["stream_generate_content"] = [(simple_response(text) for text in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-m")
+        model = generative_models.GenerativeModel("gemini-pro")
         response = model.generate_content("Hello", stream=True)
 
         self.assertEqual(self.observed_requests[0].contents[0].parts[0].text, "Hello")
@@ -214,7 +214,7 @@ class CUJTests(parameterized.TestCase):
         chunks = ["first", " second", " third"]
         self.responses["stream_generate_content"] = [(simple_response(text) for text in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-m")
+        model = generative_models.GenerativeModel("gemini-pro")
         response = model.generate_content("Hello", stream=True)
 
         self.assertEqual(self.observed_requests[0].contents[0].parts[0].text, "Hello")
@@ -234,7 +234,7 @@ class CUJTests(parameterized.TestCase):
         ]
         self.responses["stream_generate_content"] = [(chunk for chunk in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-m")
+        model = generative_models.GenerativeModel("gemini-pro")
         response = model.generate_content("Bad stuff!", stream=True)
 
         self.assertEqual(
@@ -269,7 +269,7 @@ class CUJTests(parameterized.TestCase):
         ]
         self.responses["stream_generate_content"] = [(chunk for chunk in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-m")
+        model = generative_models.GenerativeModel("gemini-pro")
         response = model.generate_content("Hello", stream=True)
 
         self.assertEqual(
@@ -282,7 +282,7 @@ class CUJTests(parameterized.TestCase):
 
     def test_chat(self):
         # Multi turn chat
-        model = generative_models.GenerativeModel("gemini-m")
+        model = generative_models.GenerativeModel("gemini-pro")
         chat = model.start_chat()
 
         self.responses["generate_content"] = [
@@ -331,7 +331,7 @@ class CUJTests(parameterized.TestCase):
             iter([simple_response("x"), simple_response("y"), simple_response("z")]),
         ]
 
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat()
 
         response = chat.send_message("letters?", stream=True)
@@ -354,7 +354,7 @@ class CUJTests(parameterized.TestCase):
             iter([simple_response("x"), simple_response("y"), simple_response("z")]),
         ]
 
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat()
         response = chat.send_message("letters?", stream=True)
 
@@ -378,7 +378,7 @@ class CUJTests(parameterized.TestCase):
             simple_response("third"),
         ]
 
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat()
 
         response = chat.send_message("hello")
@@ -404,7 +404,7 @@ class CUJTests(parameterized.TestCase):
             simple_response("third"),
         ]
 
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat()
         chat.send_message("hello1")
         chat.send_message("hello2")
@@ -426,7 +426,7 @@ class CUJTests(parameterized.TestCase):
             simple_response("third"),
         ]
 
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         chat1 = model.start_chat()
         chat1.send_message("hello1")
 
@@ -471,7 +471,7 @@ class CUJTests(parameterized.TestCase):
             no_throw(),
         ]
 
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat()
 
         # Send a message, the response is okay..
@@ -514,7 +514,7 @@ class CUJTests(parameterized.TestCase):
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat()
 
         with self.assertRaises(generation_types.BlockedPromptException):
@@ -532,7 +532,7 @@ class CUJTests(parameterized.TestCase):
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat()
 
         with self.assertRaises(generation_types.StopCandidateException):
@@ -554,7 +554,7 @@ class CUJTests(parameterized.TestCase):
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat()
 
         response = chat.send_message("hello", stream=True)
@@ -578,7 +578,7 @@ class CUJTests(parameterized.TestCase):
                 dict(name="datetime", description="Returns the current UTC date and time.")
             ]
         )
-        model = generative_models.GenerativeModel("gemini-mm-m", tools=tools)
+        model = generative_models.GenerativeModel("gemini-pro-vision", tools=tools)
 
         self.responses["generate_content"] = [
             simple_response("a"),
@@ -611,7 +611,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_count_tokens_smoke(self, contents):
         self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         response = model.count_tokens(contents)
         self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
 
