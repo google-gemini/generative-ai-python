@@ -101,7 +101,7 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
                 passages.append({"id": str(n), "content": content_types.to_content(data)})
         return glm.GroundingPassages(passages=passages)
     else:
-        raise TypeError("`source` must be a valid `Content` type object.")
+        raise TypeError(f"`source` must be a valid `GroundingPassagesOptions` type object got a: `{type(source)}`.")
 
 
 def _make_generate_answer_request(
