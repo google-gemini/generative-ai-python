@@ -55,6 +55,25 @@ class UnitTests(parameterized.TestCase):
                 ),
                 answerable_probability=0.500,
             )
+        
+    def test_make_grounding_passages_mixed_types(self):
+        inline_passages=[
+            "I am a chicken",
+            glm.Content(parts=[glm.Part(text="I am a bird.")]),
+            glm.Content(parts=[glm.Part(text="I can fly!")]),
+        ]
+        x = answer._make_grounding_passages(inline_passages)
+        self.assertIsInstance(x, glm.GroundingPassages)
+        self.assertEqual(
+            glm.GroundingPassages(
+                passages=[
+                    {"id": "0", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
+                    {"id": "1", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
+                    {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+                ]
+            ),
+            x,
+        )
 
     @parameterized.named_parameters(
         [
@@ -83,36 +102,6 @@ class UnitTests(parameterized.TestCase):
                 testcase_name="list_of_strings",
                 inline_passages=["I am a chicken", "I am a bird.", "I can fly!"],
             ),
-            dict(
-                testcase_name="dict_of_strings",
-                inline_passages={4: "I am a chicken", 5: "I am a bird.", 6: "I can fly!"},
-            ),
-            dict(
-                testcase_name="tuple_of_strings",
-                inline_passages=[(4, "I am a chicken"), (5, "I am a bird."), (6, "I can fly!")],
-            ),
-            dict(
-                testcase_name="mixed_types",
-                inline_passages=[
-                    "I am a chicken",
-                    glm.Content(parts=[glm.Part(text="I am a bird.")]),
-                    glm.Content(parts=[glm.Part(text="I can fly!")]),
-                ],
-            ),
-            dict(
-                testcase_name="list_of_grounding_passages",
-                inline_passages=[
-                    glm.GroundingPassage(
-                        id="0", content=glm.Content(parts=[glm.Part(text="I am a chicken")])
-                    ),
-                    glm.GroundingPassage(
-                        id="1", content=glm.Content(parts=[glm.Part(text="I am a bird.")])
-                    ),
-                    glm.GroundingPassage(
-                        id="2", content=glm.Content(parts=[glm.Part(text="I can fly!")])
-                    ),
-                ],
-            ),
         ]
     )
     def test_make_grounding_passages(self, inline_passages):
@@ -124,6 +113,44 @@ class UnitTests(parameterized.TestCase):
                     {"id": "0", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
                     {"id": "1", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
                     {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+                ]
+            ),
+            x,
+        )
+
+    @parameterized.named_parameters(
+        dict(
+            testcase_name="dict_of_strings",
+            inline_passages={"4": "I am a chicken", "5": "I am a bird.", "6": "I can fly!"},
+        ),
+        dict(
+            testcase_name="tuple_of_strings",
+            inline_passages=[("4", "I am a chicken"), ("5", "I am a bird."), ("6", "I can fly!")],
+        ),
+        dict(
+            testcase_name="list_of_grounding_passages",
+            inline_passages=[
+                glm.GroundingPassage(
+                    id="4", content=glm.Content(parts=[glm.Part(text="I am a chicken")])
+                ),
+                glm.GroundingPassage(
+                    id="5", content=glm.Content(parts=[glm.Part(text="I am a bird.")])
+                ),
+                glm.GroundingPassage(
+                    id="6", content=glm.Content(parts=[glm.Part(text="I can fly!")])
+                ),
+            ],
+        ),
+    )
+    def test_make_grounding_passages_different_id(self, inline_passages):
+        x = answer._make_grounding_passages(inline_passages)
+        self.assertIsInstance(x, glm.GroundingPassages)
+        self.assertEqual(
+            glm.GroundingPassages(
+                passages=[
+                    {"id": "4", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
+                    {"id": "5", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
+                    {"id": "6", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
                 ]
             ),
             x,
@@ -187,15 +214,15 @@ class UnitTests(parameterized.TestCase):
                 {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
             ]
         )
-        request = glm.GenerateAnswerRequest(
+        print(type(grounding_passages))
+        a = answer.generate_answer(
             model="models/aqa",
             contents=contents,
             inline_passages=grounding_passages,
             answer_style="ABSTRACTIVE",
         )
-        response = answer._generate_answer_response(request)
-        self.assertIsInstance(response, answer.Answer)
-        self.assertEqual(response.result[0]["text"], "Demo answer.")
+        self.assertIsInstance(a, glm.GenerateAnswerResponse)
+        self.assertEqual(a.result[0]["text"], "Demo answer.")
 
 
 if __name__ == "__main__":

@@ -84,27 +84,3 @@ class Candidate(TypedDict):
     citation_metadata: citation_types.CitationMetadataDict | None
     token_count: int
     grounding_attribution: list[GroundingAttribution]
-
-
-@string_utils.prettyprint
-@dataclasses.dataclass(init=False)
-class Answer(abc.ABC):
-    """The result returned by `generativeai.generate_answer`.
-
-    Use `GenerateAnswerResponse.answer` to access all the candidates used to create the answer.
-
-    Attributes:
-        answer: Answer grounded in the requested passages.
-        answerable_probability: Indicates which safety settings blocked content in this result.
-
-    """
-
-    answer: Candidate
-    answerable_probability: float
-
-    def to_dict(self) -> dict[str, Any]:
-        result = {
-            "answer": self.answer,
-            "answerable_probability": self.answerable_probability,
-        }
-        return result

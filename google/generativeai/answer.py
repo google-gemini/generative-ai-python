@@ -31,16 +31,6 @@ from google.generativeai.types import answer_types
 
 DEFAULT_ANSWER_MODEL = "models/aqa"
 
-GroundingPassageOptions = (
-    Union[glm.GroundingPassage, tuple[str, content_types.ContentType], content_types.ContentType],
-)
-
-GroundingPassagesOptions = Union[
-    glm.GroundingPassages,
-    Iterable[GroundingPassageOptions],
-    Mapping[str, content_types.ContentType],
-]
-
 AnswerStyle = glm.GenerateAnswerRequest.AnswerStyle
 
 AnswerStyleOptions = Union[int, str, AnswerStyle]
@@ -71,37 +61,50 @@ def to_answer_style(x: AnswerStyleOptions) -> AnswerStyle:
     return _ANSWER_STYLES[x]
 
 
+GroundingPassageOptions = (
+    Union[glm.GroundingPassage, tuple[str, content_types.ContentType], content_types.ContentType],
+)
+
+GroundingPassagesOptions = Union[
+    glm.GroundingPassages,
+    Iterable[GroundingPassageOptions],
+    Mapping[str, content_types.ContentType],
+]
+
+
 def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingPassages:
     """
-    Creates a list of `glm.Content` wrapped in `glm.GroundingPassages`. The `glm.GroundingPassage`
-    object contains an id of the content, and the actual content itself.
+    Converts the `source` into a `glm.GroundingPassage`. A `GroundingPassages` contains a list of 
+    `glm.GroundingPassage` objects, which each contain a `glm.Contant` and a string `id`.
 
     Args:
-        source: `Content` or an iterable `Content` that will be converted to glm.GroundingPassages.
+        source: `Content` or a `GroundingPassagesOptions` that will be converted to glm.GroundingPassages.
 
     Return:
-        glm.GroundingPassages to be passed into glm.GenerateAnswer.
+        `glm.GroundingPassages` to be passed into `glm.GenerateAnswer`.
     """
+    if not isinstance(source, Iterable):
+        raise TypeError(
+            f"`source` must be a valid `GroundingPassagesOptions` type object got a: `{type(source)}`."
+        )
+
     if isinstance(source, glm.GroundingPassages):
         return source
 
     passages = []
-    if isinstance(source, Iterable):
-        if isinstance(source, Mapping):
-            source = source.items()
-        for n, data in enumerate(source):
-            if isinstance(data, glm.GroundingPassage):
-                passages.append(data)
-            elif isinstance(data, tuple):
-                if isinstance(data[0], str):
-                    passages.append({"id": data[0], "content": content_types.to_content(data[1])})
-                else:
-                    passages.append({"id": str(n), "content": content_types.to_content(data[1])})
-            else:
-                passages.append({"id": str(n), "content": content_types.to_content(data)})
-        return glm.GroundingPassages(passages=passages)
-    else:
-        raise TypeError(f"`source` must be a valid `GroundingPassagesOptions` type object got a: `{type(source)}`.")
+    if isinstance(source, Mapping):
+        source = source.items()
+
+    for n, data in enumerate(source):
+        if isinstance(data, glm.GroundingPassage):
+            passages.append(data)
+        elif isinstance(data, tuple):
+            id, content = data # tuple must have exactly 2 items.
+            passages.append({'id':id, 'content': content_types.to_content(content)})
+        else:
+            passages.append({"id": str(n), "content": content_types.to_content(data)})
+
+    return glm.GroundingPassages(passages=passages)
 
 
 def _make_generate_answer_request(
@@ -123,8 +126,8 @@ def _make_generate_answer_request(
             conversation history and the last `Content` in the list containing the question.
         grounding_source: Sources in which to grounding the answer.
         answer_style: Style for grounded answers.
-        safety_settings: Safety settings for generated output. Defaults to None.
-        temperature: The temperature for randomness in the output. Defaults to None.
+        safety_settings: Safety settings for generated output. 
+        temperature: The temperature for randomness in the output. 
 
     Returns:
         Call for glm.GenerateAnswerRequest().
@@ -162,7 +165,7 @@ def generate_answer(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
-) -> answer_types.Answer:
+):
     """
     Calls the API and returns a `types.Answer` containing the answer.
 
@@ -187,39 +190,7 @@ def generate_answer(
         answer_style=answer_style,
     )
 
-    return _generate_answer_response(client=client, request=request)
-
-
-@string_utils.prettyprint
-@dataclasses.dataclass(init=False)
-class Answer(answer_types.Answer):
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-        self.result = None
-        if self.answer:
-            self.result = self.answer["content"]["parts"]
-
-
-def _generate_answer_response(
-    request: glm.GenerateAnswerRequest, client: glm.GenerativeServiceClient | None = None
-) -> Answer:
-    """
-    Generates a response using the provided `glm.GenerateAnswerRequest` and client.
-
-    Args:
-        request: The answer generation request.
-        client: The client used for text answer generation. Defaults to None, in which
-            case the default generative client is used.
-
-    Returns:
-        `Answer`: An `Answer` object with the generated text and response information.
-    """
-    if client is None:
-        client = get_default_generative_client()
-
     response = client.generate_answer(request)
     response = type(response).to_dict(response)
 
-    return Answer(_client=client, **response)
+    return response
