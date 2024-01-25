@@ -519,7 +519,7 @@ class Document(abc.ABC):
     def create_chunk(
         self,
         name: str,
-        data: ChunkData,
+        data: str | ChunkData,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> Chunk:
@@ -544,20 +544,25 @@ class Document(abc.ABC):
         if len(name) == 0:
             raise ValueError("Chunk name must be specified.")
 
-        chunk = None
+        chunk_name, chunk = "", None
         if re.match(_CHUNK_NAME_REGEX, name):
-            chunk = glm.Chunk(
-                name=name, data={"string_value": data}, custom_metadata=custom_metadata
-            )
+            chunk_name = name
+
         elif "chunks/" not in name:
             chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
+        else:
+            raise ValueError(f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>.")
+
+        if isinstance(data, str):
+            chunk = glm.Chunk(
+                name=chunk_name, data={"string_value": data}, custom_metadata=custom_metadata
+            )
+        else:
             chunk = glm.Chunk(
                 name=chunk_name,
                 data={"string_value": data},
                 custom_metadata=custom_metadata,
             )
-        else:
-            raise ValueError(f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>.")
 
         request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
         response = client.create_chunk(request)
@@ -571,7 +576,7 @@ class Document(abc.ABC):
     async def create_chunk_async(
         self,
         name: str,
-        data: ChunkData,
+        data: str | ChunkData,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Chunk:
@@ -581,18 +586,25 @@ class Document(abc.ABC):
         if len(name) == 0:
             raise ValueError("Chunk name must be specified.")
 
-        chunk = None
+        chunk_name, chunk = "", None
         if re.match(_CHUNK_NAME_REGEX, name):
-            chunk = glm.Chunk(
-                name=name, data={"string_value": data}, custom_metadata=custom_metadata
-            )
+            chunk_name = name
+
         elif "chunks/" not in name:
             chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
+        else:
+            raise ValueError(f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>.")
+
+        if isinstance(data, str):
             chunk = glm.Chunk(
                 name=chunk_name, data={"string_value": data}, custom_metadata=custom_metadata
             )
         else:
-            raise ValueError(f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>.")
+            chunk = glm.Chunk(
+                name=chunk_name,
+                data={"string_value": data},
+                custom_metadata=custom_metadata,
+            )
 
         request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
         response = await client.create_chunk(request)

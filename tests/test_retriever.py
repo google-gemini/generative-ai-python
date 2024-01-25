@@ -581,11 +581,16 @@ class UnitTests(parameterized.TestCase):
 
 
 """     @parameterized.named_parameters(
-        dict(
-                testcase_name="CreateDocument",
-                obj=retriever_service.Corpus.create_document,
-                aobj=retriever_service.Corpus.create_document_async,
-        )
+        [       
+            "Corpus.create_document",
+            retriever_service.Corpus.create_document,
+            retriever_service.Corpus.create_document_async,
+        ],
+        [
+            "Corpus.get_document",
+            retriever_service.Corpus.get_document,
+            retriever_service.Corpus.get_document_async,
+        ],
     )
     def test_async_code_match(self, obj, aobj):
         import inspect
