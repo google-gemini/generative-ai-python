@@ -55,9 +55,9 @@ class UnitTests(parameterized.TestCase):
                 ),
                 answerable_probability=0.500,
             )
-        
+
     def test_make_grounding_passages_mixed_types(self):
-        inline_passages=[
+        inline_passages = [
             "I am a chicken",
             glm.Content(parts=[glm.Part(text="I am a bird.")]),
             glm.Content(parts=[glm.Part(text="I can fly!")]),
@@ -221,8 +221,8 @@ class UnitTests(parameterized.TestCase):
             inline_passages=grounding_passages,
             answer_style="ABSTRACTIVE",
         )
-        self.assertIsInstance(a, glm.GenerateAnswerResponse)
-        self.assertEqual(a.result[0]["text"], "Demo answer.")
+        self.assertIsInstance(a, dict)
+        self.assertEqual(a["answer"]["content"]["parts"][0]["text"], "Demo answer.")
 
 
 if __name__ == "__main__":

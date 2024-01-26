@@ -74,7 +74,7 @@ GroundingPassagesOptions = Union[
 
 def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingPassages:
     """
-    Converts the `source` into a `glm.GroundingPassage`. A `GroundingPassages` contains a list of 
+    Converts the `source` into a `glm.GroundingPassage`. A `GroundingPassages` contains a list of
     `glm.GroundingPassage` objects, which each contain a `glm.Contant` and a string `id`.
 
     Args:
@@ -83,14 +83,14 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
     Return:
         `glm.GroundingPassages` to be passed into `glm.GenerateAnswer`.
     """
+    if isinstance(source, glm.GroundingPassages):
+        return source
+    
     if not isinstance(source, Iterable):
         raise TypeError(
             f"`source` must be a valid `GroundingPassagesOptions` type object got a: `{type(source)}`."
         )
-
-    if isinstance(source, glm.GroundingPassages):
-        return source
-
+    
     passages = []
     if isinstance(source, Mapping):
         source = source.items()
@@ -99,8 +99,8 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
         if isinstance(data, glm.GroundingPassage):
             passages.append(data)
         elif isinstance(data, tuple):
-            id, content = data # tuple must have exactly 2 items.
-            passages.append({'id':id, 'content': content_types.to_content(content)})
+            id, content = data  # tuple must have exactly 2 items.
+            passages.append({"id": id, "content": content_types.to_content(content)})
         else:
             passages.append({"id": str(n), "content": content_types.to_content(data)})
 
@@ -126,8 +126,8 @@ def _make_generate_answer_request(
             conversation history and the last `Content` in the list containing the question.
         grounding_source: Sources in which to grounding the answer.
         answer_style: Style for grounded answers.
-        safety_settings: Safety settings for generated output. 
-        temperature: The temperature for randomness in the output. 
+        safety_settings: Safety settings for generated output.
+        temperature: The temperature for randomness in the output.
 
     Returns:
         Call for glm.GenerateAnswerRequest().
@@ -181,6 +181,9 @@ def generate_answer(
     Returns:
         A `types.Answer` containing the model's text answer response.
     """
+    if client is None:
+        client = get_default_generative_client()
+        
     request = _make_generate_answer_request(
         model=model,
         contents=contents,

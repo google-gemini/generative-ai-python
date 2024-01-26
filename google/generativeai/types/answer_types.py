@@ -27,6 +27,25 @@ from google.generativeai.types import content_types
 
 __all__ = ["Answer"]
 
+""" BlockReason = glm.InputFeedback.BlockReason
+
+BlockReasonOptions = Union[int, str, BlockReason]
+
+_BLOCK_REASONS: dict[BlockReasonOptions, BlockReason] = {
+    BlockReason.BLOCK_REASON_UNSPECIFIED: BlockReason.BLOCK_REASON_UNSPECIFIED,
+    0: BlockReason.BLOCK_REASON_UNSPECIFIED,
+    "block_reason_unspecified": BlockReason.BLOCK_REASON_UNSPECIFIED,
+    "unspecified": BlockReason.BLOCK_REASON_UNSPECIFIED,
+    BlockReason.SAFETY: BlockReason.SAFETY,
+    1: BlockReason.SAFETY,
+    "block_reason_safety": BlockReason.SAFETY,
+    "safety": BlockReason.SAFETY,
+    BlockReason.OTHER: BlockReason.OTHER,
+    2: BlockReason.OTHER,
+    "block_reason_other": BlockReason.OTHER,
+    "other": BlockReason.OTHER,
+} """
+
 FinishReason = glm.Candidate.FinishReason
 
 FinishReasonOptions = Union[int, str, FinishReason]
