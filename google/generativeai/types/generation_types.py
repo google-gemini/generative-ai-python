@@ -268,9 +268,11 @@ class BaseGenerateContentResponse:
     def __init__(
         self,
         done: bool,
-        iterator: None
-        | Iterable[glm.GenerateContentResponse]
-        | AsyncIterable[glm.GenerateContentResponse],
+        iterator: (
+            None
+            | Iterable[glm.GenerateContentResponse]
+            | AsyncIterable[glm.GenerateContentResponse]
+        ),
         result: glm.GenerateContentResponse,
         chunks: Iterable[glm.GenerateContentResponse],
     ):
