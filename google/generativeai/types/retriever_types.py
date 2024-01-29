@@ -160,7 +160,7 @@ class ChunkData:
 
 
 @string_utils.prettyprint
-@dataclasses.dataclass(init=False)
+@dataclasses.dataclass()
 class Corpus:
     """
     A `Corpus` is a collection of `Documents`.
@@ -221,7 +221,6 @@ class Corpus:
         response = Document(**response)
         return response
 
-    @string_utils.set_doc(create_document.__doc__)
     async def create_document_async(
         self,
         name: Optional[str] = None,
@@ -229,6 +228,7 @@ class Corpus:
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Document:
+        """This is the async version of `Corpus.create_document`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -284,12 +284,12 @@ class Corpus:
         response = Document(**response)
         return response
 
-    @string_utils.set_doc(get_document.__doc__)
     async def get_document_async(
         self,
         name: str,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Document:
+        """This is the async version of `Corpus.get_document`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -505,16 +505,15 @@ class Corpus:
 
 
 @string_utils.prettyprint
-@dataclasses.dataclass(init=False)
+@dataclasses.dataclass()
 class Document(abc.ABC):
     """
     A `Document` is a collection of `Chunk`s.
     """
 
-    def __init__(self, name: str, display_name: str, custom_metadata: list[CustomMetadata]):
-        self.name = name
-        self.display_name = display_name
-        self.custom_metadata = custom_metadata
+    name: str
+    display_name: str
+    custom_metadata: list[CustomMetadata]
 
     def create_chunk(
         self,
@@ -1244,7 +1243,7 @@ class Chunk(abc.ABC):
     def __init__(
         self,
         name: str,
-        data: str,
+        data: ChunkData | str,
         custom_metadata: list[CustomMetadata] | None,
         state: State,
     ):

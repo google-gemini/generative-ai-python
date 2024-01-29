@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import copy
-import math
 import unittest
 import unittest.mock as mock
 
@@ -579,9 +577,8 @@ class UnitTests(parameterized.TestCase):
         delete_request = demo_document.batch_delete_chunks(chunks=[x.name, y.name])
         self.assertIsInstance(self.observed_requests[-1], glm.BatchDeleteChunksRequest)
 
-
-"""     @parameterized.named_parameters(
-        [       
+    @parameterized.named_parameters(
+        [
             "Corpus.create_document",
             retriever_service.Corpus.create_document,
             retriever_service.Corpus.create_document_async,
@@ -598,7 +595,8 @@ class UnitTests(parameterized.TestCase):
 
         source = inspect.getsource(obj)
         asource = inspect.getsource(aobj)
-
+        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
+        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
         asource = (
             asource.replace("anext", "next")
             .replace("aiter", "iter")
@@ -610,7 +608,7 @@ class UnitTests(parameterized.TestCase):
         )
 
         asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource) """
+        self.assertEqual(source, asource)
 
 
 if __name__ == "__main__":
