@@ -339,12 +339,12 @@ class Corpus:
         idecode_time(response, "update_time")
         return self
 
-    @string_utils.set_doc(update.__doc__)
     async def update_async(
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Corpus.update`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -399,7 +399,6 @@ class Corpus:
 
         return response
 
-    @string_utils.set_doc(query.__doc__)
     async def query_async(
         self,
         query: str,
@@ -407,6 +406,7 @@ class Corpus:
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Corpus.query`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -444,13 +444,13 @@ class Corpus:
         request = glm.DeleteDocumentRequest(name=name, force=force)
         client.delete_document(request)
 
-    @string_utils.set_doc(delete_document.__doc__)
     async def delete_document_async(
         self,
         name: str,
         force: Optional[bool] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Corpus.delete_document`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -483,13 +483,13 @@ class Corpus:
         response = client.list_documents(request)
         return response
 
-    @string_utils.set_doc(list_documents.__doc__)
     async def list_documents_async(
         self,
         page_size: Optional[int] = None,
         page_token: Optional[str] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> list[Document]:
+        """This is the async version of `Corpus.list_documents`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -517,7 +517,7 @@ class Document(abc.ABC):
 
     def create_chunk(
         self,
-        name: str,
+        name: Optional[str],
         data: str | ChunkData,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceClient | None = None,
@@ -540,17 +540,17 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        if len(name) == 0:
-            raise ValueError("Chunk name must be specified.")
-
         chunk_name, chunk = "", None
-        if re.match(_CHUNK_NAME_REGEX, name):
-            chunk_name = name
+        if name:
+            if re.match(_CHUNK_NAME_REGEX, name):
+                chunk_name = name
 
-        elif "chunks/" not in name:
-            chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
-        else:
-            raise ValueError(f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>.")
+            elif "chunks/" not in name:
+                chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
+            else:
+                raise ValueError(
+                    f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>."
+                )
 
         if isinstance(data, str):
             chunk = glm.Chunk(
@@ -571,28 +571,28 @@ class Document(abc.ABC):
         response = Chunk(**response)
         return response
 
-    @string_utils.set_doc(create_chunk.__doc__)
     async def create_chunk_async(
         self,
-        name: str,
+        name: Optional[str],
         data: str | ChunkData,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Chunk:
+        """This is the async version of `Document.create_chunk`."""
         if client is None:
             client = get_default_retriever_async_client()
 
-        if len(name) == 0:
-            raise ValueError("Chunk name must be specified.")
-
         chunk_name, chunk = "", None
-        if re.match(_CHUNK_NAME_REGEX, name):
-            chunk_name = name
+        if name:
+            if re.match(_CHUNK_NAME_REGEX, name):
+                chunk_name = name
 
-        elif "chunks/" not in name:
-            chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
-        else:
-            raise ValueError(f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>.")
+            elif "chunks/" not in name:
+                chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
+            else:
+                raise ValueError(
+                    f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>."
+                )
 
         if isinstance(data, str):
             chunk = glm.Chunk(
@@ -691,17 +691,17 @@ class Document(abc.ABC):
         response = type(response).to_dict(response)
         return response
 
-    @string_utils.set_doc(batch_create_chunks.__doc__)
     async def batch_create_chunks_async(
         self,
         chunks: BatchCreateChunkOptions,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Document.batch_create_chunk`."""
         if client is None:
             client = get_default_retriever_async_client()
 
         if isinstance(chunks, glm.BatchCreateChunksRequest):
-            response = await client.batch_update_chunks(chunks)
+            response = await client.batch_create_chunks(chunks)
             response = type(response).to_dict(response)
             return response
 
@@ -786,12 +786,12 @@ class Document(abc.ABC):
         response = Chunk(**response)
         return response
 
-    @string_utils.set_doc(get_chunk.__doc__)
     async def get_chunk_async(
         self,
         name: str,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Document.get_chunk`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -826,6 +826,22 @@ class Document(abc.ABC):
             parent=self.name, page_size=page_size, page_token=page_token
         )
         response = client.list_chunks(request)
+        return response
+
+    async def list_chunks_async(
+        self,
+        page_size: Optional[int] = None,
+        page_token: Optional[str] = None,
+        client: glm.RetrieverServiceClient | None = None,
+    ):
+        """This is the async version of `Document.list_chunks`."""
+        if client is None:
+            client = get_default_retriever_async_client()
+
+        request = glm.ListChunksRequest(
+            parent=self.name, page_size=page_size, page_token=page_token
+        )
+        response = await client.list_chunks(request)
         return response
 
     def query(
@@ -864,7 +880,6 @@ class Document(abc.ABC):
 
         return response
 
-    @string_utils.set_doc(query.__doc__)
     async def query_async(
         self,
         query: str,
@@ -872,6 +887,7 @@ class Document(abc.ABC):
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Document.query`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -888,22 +904,6 @@ class Document(abc.ABC):
         response = await client.query_document(request)
         response = type(response).to_dict(response)
 
-        return response
-
-    @string_utils.set_doc(list_chunks.__doc__)
-    async def list_chunks_async(
-        self,
-        page_size: Optional[int] = None,
-        page_token: Optional[str] = None,
-        client: glm.RetrieverServiceClient | None = None,
-    ):
-        if client is None:
-            client = get_default_retriever_async_client()
-
-        request = glm.ListChunksRequest(
-            parent=self.name, page_size=page_size, page_token=page_token
-        )
-        response = await client.list_chunks(request)
         return response
 
     def _apply_update(self, path, value):
@@ -943,12 +943,12 @@ class Document(abc.ABC):
         idecode_time(response, "update_time")
         return self
 
-    @string_utils.set_doc(update.__doc__)
     async def update_async(
         self,
         updates: dict[str, Any],
-        client: glm.RetrieverServiceAsynclient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Document.update`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -1029,12 +1029,12 @@ class Document(abc.ABC):
             response = type(response).to_dict(response)
             return response
 
-    @string_utils.set_doc(batch_update_chunks.__doc__)
     async def batch_update_chunks_async(
         self,
         chunks: BatchUpdateChunksOptions,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Document.batch_update_chunks`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -1085,9 +1085,7 @@ class Document(abc.ABC):
             return response
 
     def delete_chunk(
-        self,
-        name: str,
-        client: glm.RetrieverServiceClient | None = None,
+        self, name: str, client: glm.RetrieverServiceClient | None = None,  # fmt: skip
     ):
         """
         Delete a `Chunk`.
@@ -1101,10 +1099,10 @@ class Document(abc.ABC):
         request = glm.DeleteChunkRequest(name=name)
         client.delete_chunk(request)
 
-    @string_utils.set_doc(delete_chunk.__doc__)
     async def delete_chunk_async(
-        self, name: str, client: glm.RetrieverServiceAsyncClient | None = None
+        self, name: str, client: glm.RetrieverServiceAsyncClient | None = None,  # fmt: skip
     ):
+        """This is the async version of `Document.delete_chunk`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -1139,12 +1137,12 @@ class Document(abc.ABC):
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `glm.DeleteChunkRequest`s."
             )
 
-    @string_utils.set_doc(batch_delete_chunks.__doc__)
     async def batch_delete_chunks_async(
         self,
         chunks: BatchDeleteChunkOptions,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Document.batch_delete_chunks`."""
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -1161,63 +1159,6 @@ class Document(abc.ABC):
             raise ValueError(
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `glm.DeleteChunkRequest`s."
             )
-
-    def query(
-        self,
-        query: str,
-        results_count: Optional[int] = None,
-        metadata_filters: Optional[list[MetadataFilters]] = None,
-        client: glm.RetrieverServiceClient | None = None,
-    ) -> dict:
-        """
-        Performs semantic search over a `Document`.
-
-        Args:
-            name: The name of the `Document` to query.
-            query: Query string to perform semantic search.
-            results_count: The maximum number of `Chunk`s to return. At most, 10 will be returned.
-            metadata_filters: List of filter criteria for filtering for `Chunk` and `Document` metadata.
-
-        Returns:
-            Result with relevant documents from the query.
-        """
-        if client is None:
-            client = get_default_retriever_client()
-
-        request = glm.QueryDocumentRequest(
-            name=self.name,
-            query=query,
-            results_count=results_count,
-            metadata_filters=metadata_filters,
-        )
-
-        response = client.query_document(request)
-        response = type(response).to_dict(response)
-
-        return response
-
-    @string_utils.set_doc(query.__doc__)
-    async def query_async(
-        self,
-        query: str,
-        results_count: Optional[int] = None,
-        metadata_filters: Optional[list[MetadataFilters]] = None,
-        client: glm.RetrieverServiceAsyncClient | None = None,
-    ):
-        if client is None:
-            client = get_default_retriever_async_client()
-
-        request = glm.QueryDocumentRequest(
-            name=self.name,
-            query=query,
-            results_count=results_count,
-            metadata_filters=metadata_filters,
-        )
-
-        response = await client.query_document(request)
-        response = type(response).to_dict(response)
-
-        return response
 
     def to_dict(self) -> dict[str, Any]:
         result = {
@@ -1296,12 +1237,12 @@ class Chunk(abc.ABC):
 
         return self
 
-    @string_utils.set_doc(update.__doc__)
     async def update_async(
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
+        """This is the async version of `Chunk.update`."""
         if client is None:
             client = get_default_retriever_async_client()
 

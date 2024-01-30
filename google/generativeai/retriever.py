@@ -94,12 +94,12 @@ def create_corpus(
     return response
 
 
-@string_utils.set_doc(create_corpus.__doc__)
 async def create_corpus_async(
     name: Optional[str] = None,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceAsyncClient | None = None,
 ) -> Corpus:
+    """This is the async version of `create_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
 
@@ -125,7 +125,7 @@ async def create_corpus_async(
     return response
 
 
-def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> Corpus:
+def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> Corpus:  # fmt: skip
     """
     Get information about a specific `Corpus`.
 
@@ -147,10 +147,8 @@ def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> C
     return response
 
 
-@string_utils.set_doc(get_corpus.__doc__)
-async def get_corpus_async(
-    name: str, client: glm.RetrieverServiceAsyncClient | None = None
-) -> Corpus:
+async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | None = None) -> Corpus:  # fmt: skip
+    """This is the async version of `get_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
 
@@ -163,7 +161,7 @@ async def get_corpus_async(
     return response
 
 
-def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | None = None):
+def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | None = None):  # fmt: skip
     """
     Delete a `Corpus`.
 
@@ -178,10 +176,8 @@ def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | N
     client.delete_corpus(request)
 
 
-@string_utils.set_doc(delete_corpus.__doc__)
-async def delete_corpus_async(
-    name: str, force: bool, client: glm.RetrieverServiceAsyncClient | None = None
-):
+async def delete_corpus_async(name: str, force: bool, client: glm.RetrieverServiceAsyncClient | None = None):  # fmt: skip
+    """This is the async version of `delete_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
 
@@ -213,13 +209,13 @@ def list_corpora(
     return response
 
 
-@string_utils.set_doc(list_corpora.__doc__)
 async def list_corpora_async(
     *,
     page_size: Optional[int] = None,
     page_token: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
 ) -> list[Corpus]:
+    """This is the async version of `list_corpora`."""
     if client is None:
         client = get_default_retriever_async_client()
 

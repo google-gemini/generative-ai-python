@@ -412,6 +412,7 @@ class UnitTests(parameterized.TestCase):
                 name="corpora/demo_corpus*(*)/documents/demo_doc/chunks*****/demo_chunk",
             ),
             dict(testcase_name="dash_at_start", name="-demo_chunk"),
+            dict(testcase_name="empty_value", name=""),
         ]
     )
     def test_create_chunk_name(self, name):
@@ -579,6 +580,26 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         [
+            "create_corpus",
+            retriever.create_corpus,
+            retriever.create_corpus_async,
+        ],
+        [
+            "get_corpus",
+            retriever.get_corpus,
+            retriever.get_corpus_async,
+        ],
+        [
+            "delete_corpus",
+            retriever.delete_corpus,
+            retriever.delete_corpus_async,
+        ],
+        [
+            "list_corpora",
+            retriever.list_corpora,
+            retriever.list_corpora_async,
+        ],
+        [
             "Corpus.create_document",
             retriever_service.Corpus.create_document,
             retriever_service.Corpus.create_document_async,
@@ -587,6 +608,76 @@ class UnitTests(parameterized.TestCase):
             "Corpus.get_document",
             retriever_service.Corpus.get_document,
             retriever_service.Corpus.get_document_async,
+        ],
+        [
+            "Corpus.update",
+            retriever_service.Corpus.update,
+            retriever_service.Corpus.update_async,
+        ],
+        [
+            "Corpus.query",
+            retriever_service.Corpus.query,
+            retriever_service.Corpus.query_async,
+        ],
+        [
+            "Corpus.list_documents",
+            retriever_service.Corpus.list_documents,
+            retriever_service.Corpus.list_documents_async,
+        ],
+        [
+            "Corpus.delete_document",
+            retriever_service.Corpus.delete_document,
+            retriever_service.Corpus.delete_document_async,
+        ],
+        [
+            "Document.create_chunk",
+            retriever_service.Document.create_chunk,
+            retriever_service.Document.create_chunk_async,
+        ],
+        [
+            "Document.get_chunk",
+            retriever_service.Document.get_chunk,
+            retriever_service.Document.get_chunk_async,
+        ],
+        [
+            "Document.batch_create_chunks",
+            retriever_service.Document.batch_create_chunks,
+            retriever_service.Document.batch_create_chunks_async,
+        ],
+        [
+            "Document.list_chunks",
+            retriever_service.Document.list_chunks,
+            retriever_service.Document.list_chunks_async,
+        ],
+        [
+            "Document.query",
+            retriever_service.Document.query,
+            retriever_service.Document.query_async,
+        ],
+        [
+            "Document.update",
+            retriever_service.Document.update,
+            retriever_service.Document.update_async,
+        ],
+        [
+            "Document.batch_update_chunks",
+            retriever_service.Document.batch_update_chunks,
+            retriever_service.Document.batch_update_chunks_async,
+        ],
+        [
+            "Document.delete_chunk",
+            retriever_service.Document.delete_chunk,
+            retriever_service.Document.delete_chunk_async,
+        ],
+        [
+            "Document.batch_delete_chunks",
+            retriever_service.Document.batch_delete_chunks,
+            retriever_service.Document.batch_delete_chunks_async,
+        ],
+        [
+            "Chunk.update",
+            retriever_service.Chunk.update,
+            retriever_service.Chunk.update_async,
         ],
     )
     def test_async_code_match(self, obj, aobj):
