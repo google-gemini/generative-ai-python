@@ -93,8 +93,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
-) -> text_types.EmbeddingDict:
-    ...
+) -> text_types.EmbeddingDict: ...
 
 
 @overload
@@ -104,8 +103,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
-) -> text_types.BatchEmbeddingDict:
-    ...
+) -> text_types.BatchEmbeddingDict: ...
 
 
 def embed_content(

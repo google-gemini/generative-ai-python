@@ -109,12 +109,10 @@ class LLMFnOutputsBase(Sequence[LLMFnOutputEntry]):
 
     # Needed for Sequence[LLMFnOutputEntry].
     @overload
-    def __getitem__(self, x: int) -> LLMFnOutputEntry:
-        ...
+    def __getitem__(self, x: int) -> LLMFnOutputEntry: ...
 
     @overload
-    def __getitem__(self, x: slice) -> Sequence[LLMFnOutputEntry]:
-        ...
+    def __getitem__(self, x: slice) -> Sequence[LLMFnOutputEntry]: ...
 
     def __getitem__(self, x: int | slice) -> LLMFnOutputEntry | Sequence[LLMFnOutputEntry]:
         return self._outputs.__getitem__(x)

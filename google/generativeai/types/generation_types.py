@@ -268,9 +268,11 @@ class BaseGenerateContentResponse:
     def __init__(
         self,
         done: bool,
-        iterator: None
-        | Iterable[glm.GenerateContentResponse]
-        | AsyncIterable[glm.GenerateContentResponse],
+        iterator: (
+            None
+            | Iterable[glm.GenerateContentResponse]
+            | AsyncIterable[glm.GenerateContentResponse]
+        ),
         result: glm.GenerateContentResponse,
         chunks: Iterable[glm.GenerateContentResponse],
     ):
@@ -324,6 +326,13 @@ class BaseGenerateContentResponse:
             ValueError: If the candidate list or parts list does not contain exactly one entry.
         """
         parts = self.parts
+        if not parts:
+            raise ValueError(
+                "The `response.text` quick accessor only works when the response contains a valid "
+                "`Part`, but none was returned. Check the `candidate.safety_ratings` to see if the "
+                "response was blocked."
+            )
+
         if len(parts) != 1 or "text" not in parts[0]:
             raise ValueError(
                 "The `response.text` quick accessor only works for "
