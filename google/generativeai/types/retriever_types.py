@@ -441,9 +441,9 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
-        if force: 
+        if force:
             request = glm.DeleteDocumentRequest(name=name, force=force)
-        else: 
+        else:
             request = glm.DeleteDocumentRequest(name=name)
 
         client.delete_document(request)
@@ -458,9 +458,9 @@ class Corpus:
         if client is None:
             client = get_default_retriever_async_client()
 
-        if force: 
+        if force:
             request = glm.DeleteDocumentRequest(name=name, force=force)
-        else: 
+        else:
             request = glm.DeleteDocumentRequest(name=name)
 
         await client.delete_document(request)
