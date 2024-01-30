@@ -102,7 +102,7 @@ except AttributeError:
                 batch = []
 
         if batch:
-            yield batch 
+            yield batch
 
 
 @overload
@@ -112,8 +112,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
-) -> text_types.EmbeddingDict:
-    ...
+) -> text_types.EmbeddingDict: ...
 
 
 @overload
@@ -123,8 +122,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
-) -> text_types.BatchEmbeddingDict:
-    ...
+) -> text_types.BatchEmbeddingDict: ...
 
 
 @string_utils.set_doc(_EMBED_CONTENT_DOC)
@@ -179,8 +177,7 @@ async def embed_content_async(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
-) -> text_types.EmbeddingDict:
-    ...
+) -> text_types.EmbeddingDict: ...
 
 
 @overload
@@ -190,8 +187,7 @@ async def embed_content_async(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
-) -> text_types.BatchEmbeddingDict:
-    ...
+) -> text_types.BatchEmbeddingDict: ...
 
 
 @string_utils.set_doc(_EMBED_CONTENT_ASYNC_DOC)
@@ -214,7 +210,7 @@ async def embed_content_async(
 
     if task_type:
         task_type = to_task_type(task_type)
-    
+
     if isinstance(content, Iterable) and not isinstance(content, (str, Mapping)):
         result = {"embedding": []}
         requests = (
@@ -236,4 +232,4 @@ async def embed_content_async(
         embedding_response = await client.embed_content(embedding_request)
         embedding_dict = type(embedding_response).to_dict(embedding_response)
         embedding_dict["embedding"] = embedding_dict["embedding"]["values"]
-        return embedding_dict 
+        return embedding_dict

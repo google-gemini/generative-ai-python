@@ -56,16 +56,16 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             return glm.BatchEmbedContentsResponse(
                 embeddings=[glm.ContentEmbedding(values=[1, 2, 3])] * len(request.requests)
             )
-        
+
     async def test_embed_content_async(self):
         text = "What are you?"
         emb = await embedding.embed_content_async(model=DEFAULT_EMB_MODEL, content=text)
 
         self.assertIsInstance(emb, dict)
         self.assertEqual(
-        self.observed_requests[-1],
-        glm.EmbedContentRequest(
-            model=DEFAULT_EMB_MODEL, content=glm.Content(parts=[glm.Part(text="What are you?")])
+            self.observed_requests[-1],
+            glm.EmbedContentRequest(
+                model=DEFAULT_EMB_MODEL, content=glm.Content(parts=[glm.Part(text="What are you?")])
             ),
         )
         self.assertIsInstance(emb["embedding"][0], float)
