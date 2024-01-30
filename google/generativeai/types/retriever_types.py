@@ -376,7 +376,7 @@ class Corpus:
         Args:
             query: Query string to perform semantic search.
             metadata_filters: Filter for `Chunk` metadata.
-            results_count: The maximum number of `Chunk`s to return.
+            results_count: The maximum number of `Chunk`s to return; must be less than 100.
 
         Returns:
             List of relevant chunks.
@@ -385,7 +385,7 @@ class Corpus:
             client = get_default_retriever_client()
 
         if results_count:
-            if results_count < 0 or results_count >= 100:
+            if results_count > 100:
                 raise ValueError("Number of results returned must be between 1 and 100.")
 
         request = glm.QueryCorpusRequest(
@@ -411,7 +411,7 @@ class Corpus:
             client = get_default_retriever_async_client()
 
         if results_count:
-            if results_count < 0 or results_count >= 100:
+            if results_count > 100:
                 raise ValueError("Number of results returned must be between 1 and 100.")
 
         request = glm.QueryCorpusRequest(
@@ -441,7 +441,11 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
-        request = glm.DeleteDocumentRequest(name=name, force=force)
+        if force: 
+            request = glm.DeleteDocumentRequest(name=name, force=force)
+        else: 
+            request = glm.DeleteDocumentRequest(name=name)
+
         client.delete_document(request)
 
     async def delete_document_async(
@@ -454,7 +458,11 @@ class Corpus:
         if client is None:
             client = get_default_retriever_async_client()
 
-        request = glm.DeleteDocumentRequest(name=name, force=force)
+        if force: 
+            request = glm.DeleteDocumentRequest(name=name, force=force)
+        else: 
+            request = glm.DeleteDocumentRequest(name=name)
+
         await client.delete_document(request)
 
     def list_documents(
