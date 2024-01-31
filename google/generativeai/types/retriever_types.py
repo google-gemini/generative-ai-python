@@ -18,7 +18,7 @@ import re
 import string
 import abc
 import dataclasses
-from typing import Any, Optional, Union, Iterable, Mapping
+from typing import Any, AsyncIterable, Optional, Union, Iterable, Mapping
 
 import google.ai.generativelanguage as glm
 
@@ -464,7 +464,7 @@ class Corpus:
         self,
         page_size: Optional[int] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-    ) -> Iterable[Document]:
+    ) -> AsyncIterable[Document]:
         """This is the async version of `Corpus.list_documents`."""
         if client is None:
             client = get_default_retriever_async_client()
@@ -794,7 +794,7 @@ class Document(abc.ABC):
         self,
         page_size: Optional[int] = None,
         client: glm.RetrieverServiceClient | None = None,
-    ) -> Iterable[Chunk]:
+    ) -> AsyncIterable[Chunk]:
         """This is the async version of `Document.list_chunks`."""
         if client is None:
             client = get_default_retriever_async_client()
