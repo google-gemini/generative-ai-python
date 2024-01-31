@@ -18,7 +18,7 @@ import re
 import string
 import abc
 import dataclasses
-from typing import Any, Optional, Union, Iterable, Mapping
+from typing import Any, AsyncIterable, Optional, Union, Iterable, Mapping
 
 import google.ai.generativelanguage as glm
 
@@ -215,11 +215,7 @@ class Corpus:
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
         response = client.create_document(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        response = Document(**response)
-        return response
+        return decode_document(response)
 
     async def create_document_async(
         self,
@@ -253,11 +249,7 @@ class Corpus:
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
         response = await client.create_document(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        response = Document(**response)
-        return response
+        return decode_document(response)
 
     def get_document(
         self,
@@ -278,11 +270,7 @@ class Corpus:
 
         request = glm.GetDocumentRequest(name=name)
         response = client.get_document(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        response = Document(**response)
-        return response
+        return decode_document(response)
 
     async def get_document_async(
         self,
@@ -295,11 +283,7 @@ class Corpus:
 
         request = glm.GetDocumentRequest(name=name)
         response = await client.get_document(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        response = Document(**response)
-        return response
+        return decode_document(response)
 
     def _apply_update(self, path, value):
         parts = path.split(".")
@@ -333,10 +317,7 @@ class Corpus:
             self._apply_update(path, value)
 
         request = glm.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
-        response = client.update_corpus(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
+        client.update_corpus(request)
         return self
 
     async def update_async(
@@ -357,10 +338,7 @@ class Corpus:
             self._apply_update(path, value)
 
         request = glm.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
-        response = await client.update_corpus(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
+        await client.update_corpus(request)
         return self
 
     def query(
@@ -441,11 +419,7 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
-        if force:
-            request = glm.DeleteDocumentRequest(name=name, force=force)
-        else:
-            request = glm.DeleteDocumentRequest(name=name)
-
+        request = glm.DeleteDocumentRequest(name=name, force=bool(force))
         client.delete_document(request)
 
     async def delete_document_async(
@@ -458,26 +432,20 @@ class Corpus:
         if client is None:
             client = get_default_retriever_async_client()
 
-        if force:
-            request = glm.DeleteDocumentRequest(name=name, force=force)
-        else:
-            request = glm.DeleteDocumentRequest(name=name)
-
+        request = glm.DeleteDocumentRequest(name=name, force=bool(force))
         await client.delete_document(request)
 
     def list_documents(
         self,
         page_size: Optional[int] = None,
-        page_token: Optional[str] = None,
         client: glm.RetrieverServiceClient | None = None,
-    ) -> list[Document]:
+    ) -> Iterable[Document]:
         """
         List documents in corpus.
 
         Args:
             name: The name of the `Corpus` containing `Document`s.
             page_size: The maximum number of `Document`s to return (per page). The service may return fewer `Document`s.
-            page_token: A page token, received from a previous `ListDocuments` call.
 
         Return:
             Paginated list of `Document`s.
@@ -486,30 +454,38 @@ class Corpus:
             client = get_default_retriever_client()
 
         request = glm.ListDocumentsRequest(
-            parent=self.name, page_size=page_size, page_token=page_token
+            parent=self.name,
+            page_size=page_size,
         )
-        response = client.list_documents(request)
-        return response
+        for doc in client.list_documents(request):
+            yield decode_document(doc)
 
     async def list_documents_async(
         self,
         page_size: Optional[int] = None,
-        page_token: Optional[str] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-    ) -> list[Document]:
+    ) -> AsyncIterable[Document]:
         """This is the async version of `Corpus.list_documents`."""
         if client is None:
             client = get_default_retriever_async_client()
 
         request = glm.ListDocumentsRequest(
-            parent=self.name, page_size=page_size, page_token=page_token
+            parent=self.name,
+            page_size=page_size,
         )
-        response = await client.list_documents(request)
-        return response
+        async for doc in await client.list_documents(request):
+            yield decode_document(doc)
 
     def to_dict(self) -> dict[str, Any]:
         result = {"name": self.name, "display_name": self.display_name}
         return result
+
+
+def decode_document(document):
+    document = type(document).to_dict(document)
+    idecode_time(document, "create_time")
+    idecode_time(document, "update_time")
+    return Document(**document)
 
 
 @string_utils.prettyprint
@@ -573,11 +549,7 @@ class Document(abc.ABC):
 
         request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
         response = client.create_chunk(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        response = Chunk(**response)
-        return response
+        return decode_chunk(response)
 
     async def create_chunk_async(
         self,
@@ -615,11 +587,7 @@ class Document(abc.ABC):
 
         request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
         response = await client.create_chunk(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        response = Chunk(**response)
-        return response
+        return decode_chunk(response)
 
     def batch_create_chunks(
         self,
@@ -696,8 +664,7 @@ class Document(abc.ABC):
 
         request = glm.BatchCreateChunksRequest(parent=self.name, requests=_requests)
         response = client.batch_create_chunks(request)
-        response = type(response).to_dict(response)
-        return response
+        return [decode_chunk(chunk) for chunk in response.chunks]
 
     async def batch_create_chunks_async(
         self,
@@ -766,8 +733,7 @@ class Document(abc.ABC):
 
         request = glm.BatchCreateChunksRequest(parent=self.name, requests=_requests)
         response = await client.batch_create_chunks(request)
-        response = type(response).to_dict(response)
-        return response
+        return [decode_chunk(chunk) for chunk in response.chunks]
 
     def get_chunk(
         self,
@@ -788,11 +754,7 @@ class Document(abc.ABC):
 
         request = glm.GetChunkRequest(name=name)
         response = client.get_chunk(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        response = Chunk(**response)
-        return response
+        return decode_chunk(response)
 
     async def get_chunk_async(
         self,
@@ -805,24 +767,18 @@ class Document(abc.ABC):
 
         request = glm.GetChunkRequest(name=name)
         response = await client.get_chunk(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        response = Chunk(**response)
-        return response
+        return decode_chunk(response)
 
     def list_chunks(
         self,
         page_size: Optional[int] = None,
-        page_token: Optional[str] = None,
         client: glm.RetrieverServiceClient | None = None,
-    ):
+    ) -> Iterable[Chunk]:
         """
         List chunks of a document.
 
         Args:
             page_size: Maximum number of `Chunk`s to request.
-            page_token: A page token, received from a previous ListChunks call.
 
         Return:
             List of chunks in the document.
@@ -830,27 +786,22 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        request = glm.ListChunksRequest(
-            parent=self.name, page_size=page_size, page_token=page_token
-        )
-        response = client.list_chunks(request)
-        return response
+        request = glm.ListChunksRequest(parent=self.name, page_size=page_size)
+        for chunk in client.list_chunks(request):
+            yield decode_chunk(chunk)
 
     async def list_chunks_async(
         self,
         page_size: Optional[int] = None,
-        page_token: Optional[str] = None,
         client: glm.RetrieverServiceClient | None = None,
-    ):
+    ) -> AsyncIterable[Chunk]:
         """This is the async version of `Document.list_chunks`."""
         if client is None:
             client = get_default_retriever_async_client()
 
-        request = glm.ListChunksRequest(
-            parent=self.name, page_size=page_size, page_token=page_token
-        )
-        response = await client.list_chunks(request)
-        return response
+        request = glm.ListChunksRequest(parent=self.name, page_size=page_size)
+        async for chunk in await client.list_chunks(request):
+            yield decode_chunk(chunk)
 
     def query(
         self,
@@ -946,10 +897,6 @@ class Document(abc.ABC):
 
         request = glm.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
         response = client.update_document(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        return self
 
     async def update_async(
         self,
@@ -969,10 +916,6 @@ class Document(abc.ABC):
 
         request = glm.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
         response = await client.update_document(request)
-        response = type(response).to_dict(response)
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-        return self
 
     def batch_update_chunks(
         self,
@@ -1177,6 +1120,13 @@ class Document(abc.ABC):
         return result
 
 
+def decode_chunk(chunk: glm.Chunk) -> Chunk:
+    chunk = type(chunk).to_dict(chunk)
+    idecode_time(chunk, "create_time")
+    idecode_time(chunk, "update_time")
+    return Chunk(**chunk)
+
+
 @string_utils.prettyprint
 @dataclasses.dataclass(init=False)
 class Chunk(abc.ABC):
@@ -1237,13 +1187,7 @@ class Chunk(abc.ABC):
         for path, value in updates.items():
             self._apply_update(path, value)
         request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
-        response = client.update_chunk(request)
-        response = type(response).to_dict(response)
-
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-
-        return self
+        client.update_chunk(request)
 
     async def update_async(
         self,
@@ -1261,13 +1205,7 @@ class Chunk(abc.ABC):
         for path, value in updates.items():
             self._apply_update(path, value)
         request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
-        response = await client.update_chunk(request)
-        response = type(response).to_dict(response)
-
-        idecode_time(response, "create_time")
-        idecode_time(response, "update_time")
-
-        return self
+        await client.update_chunk(request)
 
     def to_dict(self) -> dict[str, Any]:
         result = {
