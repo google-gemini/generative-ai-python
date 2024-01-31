@@ -441,10 +441,7 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
-        if force:
-            request = glm.DeleteDocumentRequest(name=name, force=force)
-        else:
-            request = glm.DeleteDocumentRequest(name=name)
+        request = glm.DeleteDocumentRequest(name=name, force=bool(force))
 
         client.delete_document(request)
 
@@ -458,10 +455,7 @@ class Corpus:
         if client is None:
             client = get_default_retriever_async_client()
 
-        if force:
-            request = glm.DeleteDocumentRequest(name=name, force=force)
-        else:
-            request = glm.DeleteDocumentRequest(name=name)
+        request = glm.DeleteDocumentRequest(name=name, force=bool(force))
 
         await client.delete_document(request)
 
@@ -645,54 +639,53 @@ class Document(abc.ABC):
 
         _requests = []
         name, data, custom_metadata = None, None, None
-        if isinstance(chunks, Iterable):
-            for chunk in chunks:
-                if isinstance(chunk, glm.CreateChunkRequest):
-                    _requests.append(chunk)
-                elif isinstance(chunk, str):
-                    c = glm.CreateChunkRequest(
-                        parent=self.name, chunk=glm.Chunk(data={"string_value": chunk})
+        for chunk in chunks:
+            if isinstance(chunk, glm.CreateChunkRequest):
+                _requests.append(chunk)
+            elif isinstance(chunk, str):
+                c = glm.CreateChunkRequest(
+                    parent=self.name, chunk=glm.Chunk(data={"string_value": chunk})
+                )
+                _requests.append(c)
+            elif isinstance(chunk, Mapping):
+                for key, value in chunk.items():
+                    if re.match(_CHUNK_NAME_REGEX, value):
+                        name = value
+                    elif isinstance(value, str):
+                        data = chunk[key]
+                    elif isinstance(value, Iterable):
+                        custom_metadata = value
+                    c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
+                        parent=self.name,
+                        chunk=glm.Chunk(
+                            name=name,
+                            data={"string_value": data},
+                            custom_metadata=custom_metadata,
+                        ),
                     )
                     _requests.append(c)
-                elif isinstance(chunk, Mapping):
-                    for key, value in chunk.items():
-                        if re.match(_CHUNK_NAME_REGEX, value):
-                            name = value
-                        elif isinstance(value, str):
-                            data = chunk[key]
-                        elif isinstance(value, Iterable):
-                            custom_metadata = value
-                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
-                            parent=self.name,
-                            chunk=glm.Chunk(
-                                name=name,
-                                data={"string_value": data},
-                                custom_metadata=custom_metadata,
-                            ),
-                        )
-                        _requests.append(c)
-                elif isinstance(chunk, tuple):
-                    for item in chunk:
-                        if re.match(_CHUNK_NAME_REGEX, item):
-                            name = item
-                        elif isinstance(item, str):
-                            data = item
-                        elif isinstance(item, Iterable):
-                            custom_metadata = item
-                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
-                            parent=self.name,
-                            chunk=glm.Chunk(
-                                name=name,
-                                data={"string_value": data},
-                                custom_metadata=custom_metadata,
-                            ),
-                        )
-
-                else:
-                    raise TypeError(
-                        "Batched chunk requests must be in the format of a dictionary or tuple,"
-                        "with the name as the key and the data as the value."
+            elif isinstance(chunk, tuple):
+                for item in chunk:
+                    if re.match(_CHUNK_NAME_REGEX, item):
+                        name = item
+                    elif isinstance(item, str):
+                        data = item
+                    elif isinstance(item, Iterable):
+                        custom_metadata = item
+                    c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
+                        parent=self.name,
+                        chunk=glm.Chunk(
+                            name=name,
+                            data={"string_value": data},
+                            custom_metadata=custom_metadata,
+                        ),
                     )
+
+            else:
+                raise TypeError(
+                    "Batched chunk requests must be in the format of a dictionary or tuple,"
+                    "with the name as the key and the data as the value."
+                )
 
         request = glm.BatchCreateChunksRequest(parent=self.name, requests=_requests)
         response = client.batch_create_chunks(request)
@@ -715,54 +708,53 @@ class Document(abc.ABC):
 
         _requests = []
         name, data, custom_metadata = None, None, None
-        if isinstance(chunks, Iterable):
-            for chunk in chunks:
-                if isinstance(chunk, glm.CreateChunkRequest):
-                    _requests.append(chunk)
-                elif isinstance(chunk, str):
-                    c = glm.CreateChunkRequest(
-                        parent=self.name, chunk=glm.Chunk(data={"string_value": chunk})
+        for chunk in chunks:
+            if isinstance(chunk, glm.CreateChunkRequest):
+                _requests.append(chunk)
+            elif isinstance(chunk, str):
+                c = glm.CreateChunkRequest(
+                    parent=self.name, chunk=glm.Chunk(data={"string_value": chunk})
+                )
+                _requests.append(c)
+            elif isinstance(chunk, Mapping):
+                for key, value in chunk.items():
+                    if re.match(_CHUNK_NAME_REGEX, value):
+                        name = value
+                    elif isinstance(value, str):
+                        data = chunk[key]
+                    elif isinstance(value, Iterable):
+                        custom_metadata = value
+                    c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
+                        parent=self.name,
+                        chunk=glm.Chunk(
+                            name=name,
+                            data={"string_value": data},
+                            custom_metadata=custom_metadata,
+                        ),
                     )
                     _requests.append(c)
-                elif isinstance(chunk, Mapping):
-                    for key, value in chunk.items():
-                        if re.match(_CHUNK_NAME_REGEX, value):
-                            name = value
-                        elif isinstance(value, str):
-                            data = chunk[key]
-                        elif isinstance(value, Iterable):
-                            custom_metadata = value
-                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
-                            parent=self.name,
-                            chunk=glm.Chunk(
-                                name=name,
-                                data={"string_value": data},
-                                custom_metadata=custom_metadata,
-                            ),
-                        )
-                        _requests.append(c)
-                elif isinstance(chunk, tuple):
-                    for item in chunk:
-                        if re.match(_CHUNK_NAME_REGEX, item):
-                            name = item
-                        elif isinstance(item, str):
-                            data = item
-                        elif isinstance(item, Iterable):
-                            custom_metadata = item
-                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
-                            parent=self.name,
-                            chunk=glm.Chunk(
-                                name=name,
-                                data={"string_value": data},
-                                custom_metadata=custom_metadata,
-                            ),
-                        )
-
-                else:
-                    raise TypeError(
-                        "Batched chunk requests must be in the format of a dictionary or tuple,"
-                        "with the name as the key and the data as the value."
+            elif isinstance(chunk, tuple):
+                for item in chunk:
+                    if re.match(_CHUNK_NAME_REGEX, item):
+                        name = item
+                    elif isinstance(item, str):
+                        data = item
+                    elif isinstance(item, Iterable):
+                        custom_metadata = item
+                    c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
+                        parent=self.name,
+                        chunk=glm.Chunk(
+                            name=name,
+                            data={"string_value": data},
+                            custom_metadata=custom_metadata,
+                        ),
                     )
+
+            else:
+                raise TypeError(
+                    "Batched chunk requests must be in the format of a dictionary or tuple,"
+                    "with the name as the key and the data as the value."
+                )
 
         request = glm.BatchCreateChunksRequest(parent=self.name, requests=_requests)
         response = await client.batch_create_chunks(request)
