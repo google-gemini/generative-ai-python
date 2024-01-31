@@ -1182,8 +1182,8 @@ class Chunk(abc.ABC):
     data: ChunkData
     custom_metadata: list[CustomMetadata] | None
     state: State
-    create_time: datetime.datetime | str
-    update_time: datetime.datetime | str
+    create_time: datetime.datetime
+    update_time: datetime.datetime
 
     def __init__(
         self,
@@ -1191,8 +1191,8 @@ class Chunk(abc.ABC):
         data: ChunkData | str,
         custom_metadata: list[CustomMetadata] | None,
         state: State,
-        create_time: datetime.datetime,
-        update_time: datetime.datetime,
+        create_time: datetime.datetime | str,
+        update_time: datetime.datetime | str,
     ):
         self.name = name
         if isinstance(data, str):
