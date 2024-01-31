@@ -188,11 +188,10 @@ async def delete_corpus_async(name: str, force: bool, client: glm.RetrieverServi
 def list_corpora(
     *,
     page_size: Optional[int] = None,
-    page_token: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
-) -> list[Corpus]:
+) -> Iterable[retriever_types.Corpus]:
     """
-    List `Corpus`.
+    List the Corpuses you own in the service.
 
     Args:
         page_size: Maximum number of `Corpora` to request.
@@ -204,21 +203,22 @@ def list_corpora(
     if client is None:
         client = get_default_retriever_client()
 
-    request = glm.ListCorporaRequest(page_size=page_size, page_token=page_token)
-    response = client.list_corpora(request)
-    return response
+    request = glm.ListCorporaRequest(page_size=page_size)
+    for corpus in client.list_corpora(request):
+        corpus = type(corpus).to_dict(corpus)
+        yield retriever_types.Corpus(**corpus)
 
 
 async def list_corpora_async(
     *,
     page_size: Optional[int] = None,
-    page_token: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
 ) -> list[Corpus]:
     """This is the async version of `list_corpora`."""
     if client is None:
         client = get_default_retriever_async_client()
 
-    request = glm.ListCorporaRequest(page_size=page_size, page_token=page_token)
-    response = await client.list_corpora(request)
-    return response
+    request = glm.ListCorporaRequest(page_size=page_size)
+    async for corpus in client.list_corpora(request):
+        corpus = type(corpus).to_dict(corpus)
+        yield retriever_types.Corpus(**corpus)
