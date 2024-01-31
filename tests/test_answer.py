@@ -221,8 +221,17 @@ class UnitTests(parameterized.TestCase):
             inline_passages=grounding_passages,
             answer_style="ABSTRACTIVE",
         )
-        self.assertIsInstance(a, dict)
-        self.assertEqual(a["answer"]["content"]["parts"][0]["text"], "Demo answer.")
+        self.assertIsInstance(a, glm.GenerateAnswerResponse)
+        self.assertEqual(
+            a,
+            glm.GenerateAnswerResponse(
+                answer=glm.Candidate(
+                    index=1,
+                    content=(glm.Content(parts=[glm.Part(text="Demo answer.")])),
+                ),
+                answerable_probability=0.500,
+            ),
+        )
 
 
 if __name__ == "__main__":
