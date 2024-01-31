@@ -347,7 +347,7 @@ class Corpus:
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceClient | None = None,
-    ) -> list[RelevantChunk]:
+    ) -> Iterable[RelevantChunk]:
         """
         Query a corpus for information.
 
@@ -373,7 +373,6 @@ class Corpus:
             results_count=results_count,
         )
         response = client.query_corpus(request)
-        print(response)
         response = type(response).to_dict(response)
 
         # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
@@ -383,7 +382,7 @@ class Corpus:
                 chunk_relevance_score=c["chunk_relevance_score"], chunk=Chunk(**c["chunk"])
             )
             relevant_chunks.append(rc)
-        print(relevant_chunks)
+
         return relevant_chunks
 
     async def query_async(
@@ -392,7 +391,7 @@ class Corpus:
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-    ) -> list[RelevantChunk]:
+    ) -> Iterable[RelevantChunk]:
         """This is the async version of `Corpus.query`."""
         if client is None:
             client = get_default_retriever_async_client()
@@ -413,7 +412,9 @@ class Corpus:
         # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
         relevant_chunks = []
         for c in response["relevant_chunks"]:
-            rc = RelevantChunk(chunk_relevance_score=c["chunk_relevance_score"], chunk=c["chunk"])
+            rc = RelevantChunk(
+                chunk_relevance_score=c["chunk_relevance_score"], chunk=Chunk(**c["chunk"])
+            )
             relevant_chunks.append(rc)
 
         return relevant_chunks
@@ -855,7 +856,9 @@ class Document(abc.ABC):
         # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
         relevant_chunks = []
         for c in response["relevant_chunks"]:
-            rc = RelevantChunk(chunk_relevance_score=c["chunk_relevance_score"], chunk=c["chunk"])
+            rc = RelevantChunk(
+                chunk_relevance_score=c["chunk_relevance_score"], chunk=Chunk(**c["chunk"])
+            )
             relevant_chunks.append(rc)
 
         return relevant_chunks
@@ -887,7 +890,9 @@ class Document(abc.ABC):
         # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
         relevant_chunks = []
         for c in response["relevant_chunks"]:
-            rc = RelevantChunk(chunk_relevance_score=c["chunk_relevance_score"], chunk=c["chunk"])
+            rc = RelevantChunk(
+                chunk_relevance_score=c["chunk_relevance_score"], chunk=Chunk(**c["chunk"])
+            )
             relevant_chunks.append(rc)
 
         return relevant_chunks

@@ -82,6 +82,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                         chunk=glm.Chunk(
                             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                             data={"string_value": "This is a demo chunk."},
+                            custom_metadata=[],
+                            state=0,
                         ),
                     )
                 ]
@@ -145,13 +147,15 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             request: glm.QueryDocumentRequest,
         ) -> glm.QueryDocumentResponse:
             self.observed_requests.append(request)
-            return glm.QueryCorpusResponse(
+            return glm.QueryDocumentResponse(
                 relevant_chunks=[
                     glm.RelevantChunk(
                         chunk_relevance_score=0.08,
                         chunk=glm.Chunk(
                             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                             data={"string_value": "This is a demo chunk."},
+                            custom_metadata=[],
+                            state=0,
                         ),
                     )
                 ]
@@ -295,22 +299,19 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             data="This is a demo chunk.",
         )
         q = await demo_corpus.query_async(query="What kind of chunk is this?")
-        self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
-            {
-                "relevant_chunks": [
-                    {
-                        "chunk_relevance_score": 0.08,
-                        "chunk": {
-                            "name": "corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
-                            "data": {"string_value": "This is a demo chunk."},
-                            "custom_metadata": [],
-                            "state": 0,
-                        },
-                    }
-                ]
-            },
+            [
+                retriever_service.RelevantChunk(
+                    chunk_relevance_score=0.08,
+                    chunk=retriever_service.Chunk(
+                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        data="This is a demo chunk.",
+                        custom_metadata=[],
+                        state=0,
+                    ),
+                )
+            ],
         )
 
     async def test_delete_corpus(self):
@@ -378,22 +379,19 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             data="This is a demo chunk.",
         )
         q = await demo_document.query_async(query="What kind of chunk is this?")
-        self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
-            {
-                "relevant_chunks": [
-                    {
-                        "chunk_relevance_score": 0.08,
-                        "chunk": {
-                            "name": "corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
-                            "data": {"string_value": "This is a demo chunk."},
-                            "custom_metadata": [],
-                            "state": 0,
-                        },
-                    }
-                ]
-            },
+            [
+                retriever_service.RelevantChunk(
+                    chunk_relevance_score=0.08,
+                    chunk=retriever_service.Chunk(
+                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        data="This is a demo chunk.",
+                        custom_metadata=[],
+                        state=0,
+                    ),
+                )
+            ],
         )
 
     async def test_create_chunk(self):
