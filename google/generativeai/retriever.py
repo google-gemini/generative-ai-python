@@ -17,7 +17,7 @@ from __future__ import annotations
 import re
 import string
 import dataclasses
-from typing import Iterable, Optional
+from typing import AsyncIterable, Iterable, Optional
 
 import google.ai.generativelanguage as glm
 
@@ -203,7 +203,7 @@ async def list_corpora_async(
     *,
     page_size: Optional[int] = None,
     client: glm.RetrieverServiceClient | None = None,
-) -> Iterable[retriever_types.Corpus]:
+) -> AsyncIterable[retriever_types.Corpus]:
     """This is the async version of `retriever.list_corpora`."""
     if client is None:
         client = get_default_retriever_async_client()
