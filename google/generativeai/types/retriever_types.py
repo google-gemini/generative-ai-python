@@ -29,7 +29,7 @@ from google.generativeai.client import get_default_retriever_async_client
 from google.generativeai import string_utils
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
-from google.generativeai.types.model_types import idecode_time, _fix_microseconds
+from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
 
 
