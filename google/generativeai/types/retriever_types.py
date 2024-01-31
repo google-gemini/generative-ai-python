@@ -14,6 +14,7 @@
 # limitations under the License.
 from __future__ import annotations
 
+import datetime
 import re
 import string
 import abc
@@ -168,6 +169,8 @@ class Corpus:
 
     name: str
     display_name: str
+    create_time: datetime.datetime
+    update_time: datetime.datetime
 
     def create_document(
         self,
@@ -514,6 +517,8 @@ class Document(abc.ABC):
     name: str
     display_name: str
     custom_metadata: list[CustomMetadata]
+    create_time: datetime.datetime
+    update_time: datetime.datetime
 
     def create_chunk(
         self,
@@ -1177,6 +1182,8 @@ class Chunk(abc.ABC):
     data: ChunkData
     custom_metadata: list[CustomMetadata] | None
     state: State
+    create_time: datetime.datetime
+    update_time: datetime.datetime
 
     def __init__(
         self,
@@ -1184,6 +1191,8 @@ class Chunk(abc.ABC):
         data: ChunkData | str,
         custom_metadata: list[CustomMetadata] | None,
         state: State,
+        create_time: datetime.datetime,
+        update_time: datetime.datetime,
     ):
         self.name = name
         if isinstance(data, str):
@@ -1195,6 +1204,8 @@ class Chunk(abc.ABC):
         else:
             self.custom_metadata = [CustomMetadata(*cm) for cm in custom_metadata]
         self.state = state
+        self.create_time = create_time
+        self.update_time = update_time
 
     def _apply_update(self, path, value):
         parts = path.split(".")

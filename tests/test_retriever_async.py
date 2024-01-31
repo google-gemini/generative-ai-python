@@ -46,27 +46,52 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             request: glm.CreateCorpusRequest,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(name="corpora/demo_corpus", display_name="demo_corpus")
+            return glm.Corpus(
+                name="corpora/demo_corpus",
+                display_name="demo_corpus",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
+            )
 
         @add_client_method
         async def get_corpus(
             request: glm.GetCorpusRequest,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(name="corpora/demo_corpus", display_name="demo_corpus")
+            return glm.Corpus(
+                name="corpora/demo_corpus",
+                display_name="demo_corpus",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
+            )
 
         @add_client_method
         async def update_corpus(request: glm.UpdateCorpusRequest) -> glm.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(name="corpora/demo_corpus", display_name="demo_corpus_1")
+            return glm.Corpus(
+                name="corpora/demo_corpus",
+                display_name="demo_corpus_1",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
+            )
 
         @add_client_method
         async def list_corpora(request: glm.ListCorporaRequest) -> glm.ListCorporaResponse:
             self.observed_requests.append(request)
 
             async def results():
-                yield glm.Corpus(name="corpora/demo_corpus_1", display_name="demo_corpus_1")
-                yield glm.Corpus(name="corpora/demo_corpus_2", display_name="demo_corpus_2")
+                yield glm.Corpus(
+                    name="corpora/demo_corpus_1",
+                    display_name="demo_corpus_1",
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
+                )
+                yield glm.Corpus(
+                    name="corpora/demo_corpus_2",
+                    display_name="demo_corpus_2",
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
+                )
 
             return results()
 
@@ -84,6 +109,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                             data={"string_value": "This is a demo chunk."},
                             custom_metadata=[],
                             state=0,
+                            create_time="2000-01-01T01:01:01.123456Z",
+                            update_time="2000-01-01T01:01:01.123456Z",
                         ),
                     )
                 ]
@@ -99,7 +126,10 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ) -> retriever_service.Document:
             self.observed_requests.append(request)
             return glm.Document(
-                name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc"
+                name="corpora/demo_corpus/documents/demo_doc",
+                display_name="demo_doc",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -108,7 +138,10 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ) -> retriever_service.Document:
             self.observed_requests.append(request)
             return glm.Document(
-                name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc"
+                name="corpora/demo_corpus/documents/demo_doc",
+                display_name="demo_doc",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -117,7 +150,10 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ) -> glm.Document:
             self.observed_requests.append(request)
             return glm.Document(
-                name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc_1"
+                name="corpora/demo_corpus/documents/demo_doc",
+                display_name="demo_doc_1",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -128,10 +164,16 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
             async def results():
                 yield glm.Document(
-                    name="corpora/demo_corpus/documents/demo_doc_1", display_name="demo_doc_1"
+                    name="corpora/demo_corpus/documents/demo_doc_1",
+                    display_name="demo_doc_1",
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
                 )
                 yield glm.Document(
-                    name="corpora/demo_corpus/documents/demo_doc_2", display_name="demo_doc_2"
+                    name="corpora/demo_corpus/documents/demo_doc_2",
+                    display_name="demo_doc_2",
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
                 )
 
             return results()
@@ -156,6 +198,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                             data={"string_value": "This is a demo chunk."},
                             custom_metadata=[],
                             state=0,
+                            create_time="2000-01-01T01:01:01.123456Z",
+                            update_time="2000-01-01T01:01:01.123456Z",
                         ),
                     )
                 ]
@@ -169,6 +213,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             return glm.Chunk(
                 name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                 data={"string_value": "This is a demo chunk."},
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -181,10 +227,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                     glm.Chunk(
                         name="corpora/demo_corpus/documents/demo_doc/chunks/dc",
                         data={"string_value": "This is a demo chunk."},
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                     glm.Chunk(
                         name="corpora/demo_corpus/documents/demo_doc/chunks/dc1",
                         data={"string_value": "This is another demo chunk."},
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                 ]
             )
@@ -197,6 +247,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             return glm.Chunk(
                 name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                 data={"string_value": "This is a demo chunk."},
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -209,10 +261,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                 yield glm.Chunk(
                     name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                     data={"string_value": "This is a demo chunk."},
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
                 )
                 yield glm.Chunk(
                     name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
                     data={"string_value": "This is another demo chunk."},
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
                 )
 
             return results()
@@ -223,6 +279,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             return glm.Chunk(
                 name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                 data={"string_value": "This is an updated demo chunk."},
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -235,10 +293,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                     glm.Chunk(
                         name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                         data={"string_value": "This is an updated chunk."},
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                     glm.Chunk(
                         name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
                         data={"string_value": "This is another updated chunk."},
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                 ]
             )
@@ -309,6 +371,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                         data="This is a demo chunk.",
                         custom_metadata=[],
                         state=0,
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z"
                     ),
                 )
             ],
@@ -389,6 +453,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                         data="This is a demo chunk.",
                         custom_metadata=[],
                         state=0,
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                 )
             ],

@@ -44,21 +44,36 @@ class UnitTests(parameterized.TestCase):
             request: glm.CreateCorpusRequest,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(name="corpora/demo_corpus", display_name="demo_corpus")
+            return glm.Corpus(
+                name="corpora/demo_corpus",
+                display_name="demo_corpus",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
+            )
 
         @add_client_method
         def get_corpus(
             request: glm.GetCorpusRequest,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(name="corpora/demo_corpus", display_name="demo_corpus")
+            return glm.Corpus(
+                name="corpora/demo_corpus",
+                display_name="demo_corpus",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
+            )
 
         @add_client_method
         def update_corpus(
             request: glm.UpdateCorpusRequest,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(name="corpora/demo_corpus", display_name="demo_corpus_1")
+            return glm.Corpus(
+                name="corpora/demo_corpus",
+                display_name="demo_corpus_1",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
+            )
 
         @add_client_method
         def list_corpora(
@@ -66,8 +81,18 @@ class UnitTests(parameterized.TestCase):
         ) -> glm.ListCorporaResponse:
             self.observed_requests.append(request)
             return [
-                glm.Corpus(name="corpora/demo_corpus_1", display_name="demo_corpus_1"),
-                glm.Corpus(name="corpora/demo_corpus_2", display_name="demo_corpus_2"),
+                glm.Corpus(
+                    name="corpora/demo_corpus_1",
+                    display_name="demo_corpus_1",
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
+                ),
+                glm.Corpus(
+                    name="corpora/demo_corpus_2",
+                    display_name="demo_corpus_2",
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
+                ),
             ]
 
         @add_client_method
@@ -84,6 +109,8 @@ class UnitTests(parameterized.TestCase):
                             data={"string_value": "This is a demo chunk."},
                             custom_metadata=[],
                             state=0,
+                            create_time="2000-01-01T01:01:01.123456Z",
+                            update_time="2000-01-01T01:01:01.123456Z",
                         ),
                     )
                 ]
@@ -99,7 +126,10 @@ class UnitTests(parameterized.TestCase):
         ) -> retriever_service.Document:
             self.observed_requests.append(request)
             return glm.Document(
-                name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc"
+                name="corpora/demo_corpus/documents/demo_doc",
+                display_name="demo_doc",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -108,7 +138,10 @@ class UnitTests(parameterized.TestCase):
         ) -> retriever_service.Document:
             self.observed_requests.append(request)
             return glm.Document(
-                name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc"
+                name="corpora/demo_corpus/documents/demo_doc",
+                display_name="demo_doc",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -117,7 +150,10 @@ class UnitTests(parameterized.TestCase):
         ) -> glm.Document:
             self.observed_requests.append(request)
             return glm.Document(
-                name="corpora/demo_corpus/documents/demo_doc", display_name="demo_doc_1"
+                name="corpora/demo_corpus/documents/demo_doc",
+                display_name="demo_doc_1",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -127,10 +163,16 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return [
                 glm.Document(
-                    name="corpora/demo_corpus/documents/demo_doc_1", display_name="demo_doc_1"
+                    name="corpora/demo_corpus/documents/demo_doc_1",
+                    display_name="demo_doc_1",
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
                 ),
                 glm.Document(
-                    name="corpora/demo_corpus/documents/demo_doc_2", display_name="demo_doc_2"
+                    name="corpora/demo_corpus/documents/demo_doc_2",
+                    display_name="demo_doc_2",
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
                 ),
             ]
 
@@ -154,6 +196,8 @@ class UnitTests(parameterized.TestCase):
                             data={"string_value": "This is a demo chunk."},
                             custom_metadata=[],
                             state=0,
+                            create_time="2000-01-01T01:01:01.123456Z",
+                            update_time="2000-01-01T01:01:01.123456Z",
                         ),
                     )
                 ]
@@ -167,6 +211,8 @@ class UnitTests(parameterized.TestCase):
             return glm.Chunk(
                 name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                 data={"string_value": "This is a demo chunk."},
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -179,10 +225,14 @@ class UnitTests(parameterized.TestCase):
                     glm.Chunk(
                         name="corpora/demo_corpus/documents/demo_doc/chunks/dc",
                         data={"string_value": "This is a demo chunk."},
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                     glm.Chunk(
                         name="corpora/demo_corpus/documents/demo_doc/chunks/dc1",
                         data={"string_value": "This is another demo chunk."},
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                 ]
             )
@@ -195,6 +245,8 @@ class UnitTests(parameterized.TestCase):
             return glm.Chunk(
                 name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                 data={"string_value": "This is a demo chunk."},
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -206,10 +258,14 @@ class UnitTests(parameterized.TestCase):
                 glm.Chunk(
                     name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                     data={"string_value": "This is a demo chunk."},
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
                 ),
                 glm.Chunk(
                     name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
                     data={"string_value": "This is another demo chunk."},
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
                 ),
             ]
 
@@ -219,6 +275,8 @@ class UnitTests(parameterized.TestCase):
             return glm.Chunk(
                 name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                 data={"string_value": "This is an updated demo chunk."},
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
             )
 
         @add_client_method
@@ -231,10 +289,14 @@ class UnitTests(parameterized.TestCase):
                     glm.Chunk(
                         name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                         data={"string_value": "This is an updated chunk."},
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                     glm.Chunk(
                         name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
                         data={"string_value": "This is another updated chunk."},
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                 ]
             )
@@ -303,6 +365,8 @@ class UnitTests(parameterized.TestCase):
                         data="This is a demo chunk.",
                         custom_metadata=[],
                         state=0,
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                 )
             ],
@@ -381,6 +445,8 @@ class UnitTests(parameterized.TestCase):
                         data="This is a demo chunk.",
                         custom_metadata=[],
                         state=0,
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                 )
             ],
