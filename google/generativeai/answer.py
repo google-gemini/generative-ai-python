@@ -85,12 +85,12 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
     """
     if isinstance(source, glm.GroundingPassages):
         return source
-    
+
     if not isinstance(source, Iterable):
         raise TypeError(
             f"`source` must be a valid `GroundingPassagesOptions` type object got a: `{type(source)}`."
         )
-    
+
     passages = []
     if isinstance(source, Mapping):
         source = source.items()
@@ -183,7 +183,7 @@ def generate_answer(
     """
     if client is None:
         client = get_default_generative_client()
-        
+
     request = _make_generate_answer_request(
         model=model,
         contents=contents,
@@ -194,6 +194,5 @@ def generate_answer(
     )
 
     response = client.generate_answer(request)
-    response = type(response).to_dict(response)
 
     return response
