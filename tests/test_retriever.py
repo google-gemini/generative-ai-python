@@ -364,8 +364,8 @@ class UnitTests(parameterized.TestCase):
                             "data": {"string_value": "This is a demo chunk."},
                             "custom_metadata": [],
                             "state": 0,
-                            "create_time": "2000-01-01T01:01:01.123456Z", 
-                            "update_time": "2000-01-01T01:01:01.123456Z"
+                            "create_time": "2000-01-01T01:01:01.123456Z",
+                            "update_time": "2000-01-01T01:01:01.123456Z",
                         },
                     }
                 ]
