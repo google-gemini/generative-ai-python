@@ -168,6 +168,8 @@ class Corpus:
 
     name: str
     display_name: str
+    create_time: str
+    update_time: str
 
     def create_document(
         self,
@@ -522,6 +524,8 @@ class Document(abc.ABC):
     name: str
     display_name: str
     custom_metadata: list[CustomMetadata]
+    create_time: str
+    update_time: str
 
     def create_chunk(
         self,
@@ -1188,6 +1192,8 @@ class Chunk(abc.ABC):
     data: ChunkData
     custom_metadata: list[CustomMetadata] | None
     state: State
+    create_time: str
+    update_time: str
 
     def __init__(
         self,
