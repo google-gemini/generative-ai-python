@@ -17,7 +17,7 @@ from __future__ import annotations
 import re
 import string
 import dataclasses
-from typing import Optional
+from typing import Iterable, Optional
 
 import google.ai.generativelanguage as glm
 
