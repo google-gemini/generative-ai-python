@@ -205,7 +205,6 @@ async def list_corpora_async(
     client: glm.RetrieverServiceClient | None = None,
 ) -> Iterable[retriever_types.Corpus]:
     """This is the async version of `retriever.list_corpora`."""
-
     if client is None:
         client = get_default_retriever_async_client()
 
