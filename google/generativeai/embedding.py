@@ -22,10 +22,29 @@ from typing import Iterable, overload, TypeVar, Union, Mapping
 import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_generative_client
+from google.generativeai.client import get_default_generative_async_client
 
+from google.generativeai import string_utils
 from google.generativeai.types import text_types
 from google.generativeai.types import model_types
 from google.generativeai.types import content_types
+
+_EMBED_CONTENT_ASYNC_DOC = """The async version of `genai.embed_content`."""
+
+_EMBED_CONTENT_DOC = """Calls the API to create embeddings for content passed in.
+
+    Args:
+        model: Which model to call, as a string or a `types.Model`.
+
+        content: Content to embed.
+
+        task_type: Optional task type for which the embeddings will be used. Can only be set for `models/embedding-001`.
+
+        title: An optional title for the text. Only applicable when task_type is `RETRIEVAL_DOCUMENT`.
+
+    Return:
+        Dictionary containing the embedding (list of float values) for the input content.
+    """
 
 DEFAULT_EMB_MODEL = "models/embedding-001"
 EMBEDDING_MAX_BATCH_SIZE = 100
@@ -106,6 +125,7 @@ def embed_content(
 ) -> text_types.BatchEmbeddingDict: ...
 
 
+@string_utils.set_doc(_EMBED_CONTENT_DOC)
 def embed_content(
     model: model_types.BaseModelNameOptions,
     content: content_types.ContentType | Iterable[content_types.ContentType],
@@ -113,21 +133,6 @@ def embed_content(
     title: str | None = None,
     client: glm.GenerativeServiceClient = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
-    """
-    Calls the API to create embeddings for content passed in.
-
-    Args:
-        model: Which model to call, as a string or a `types.Model`.
-
-        content: Content to embed.
-
-        task_type: Optional task type for which the embeddings will be used. Can only be set for `models/embedding-001`.
-
-        title: An optional title for the text. Only applicable when task_type is `RETRIEVAL_DOCUMENT`.
-
-    Return:
-        Dictionary containing the embedding (list of float values) for the input content.
-    """
     model = model_types.make_model_name(model)
 
     if client is None:
@@ -160,6 +165,71 @@ def embed_content(
             model=model, content=content_types.to_content(content), task_type=task_type, title=title
         )
         embedding_response = client.embed_content(embedding_request)
+        embedding_dict = type(embedding_response).to_dict(embedding_response)
+        embedding_dict["embedding"] = embedding_dict["embedding"]["values"]
+        return embedding_dict
+
+
+@overload
+async def embed_content_async(
+    model: model_types.BaseModelNameOptions,
+    content: content_types.ContentType,
+    task_type: EmbeddingTaskTypeOptions | None = None,
+    title: str | None = None,
+    client: glm.GenerativeServiceAsyncClient | None = None,
+) -> text_types.EmbeddingDict: ...
+
+
+@overload
+async def embed_content_async(
+    model: model_types.BaseModelNameOptions,
+    content: Iterable[content_types.ContentType],
+    task_type: EmbeddingTaskTypeOptions | None = None,
+    title: str | None = None,
+    client: glm.GenerativeServiceAsyncClient | None = None,
+) -> text_types.BatchEmbeddingDict: ...
+
+
+@string_utils.set_doc(_EMBED_CONTENT_ASYNC_DOC)
+async def embed_content_async(
+    model: model_types.BaseModelNameOptions,
+    content: content_types.ContentType | Iterable[content_types.ContentType],
+    task_type: EmbeddingTaskTypeOptions | None = None,
+    title: str | None = None,
+    client: glm.GenerativeServiceAsyncClient = None,
+) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
+    model = model_types.make_model_name(model)
+
+    if client is None:
+        client = get_default_generative_async_client()
+
+    if title and to_task_type(task_type) is not EmbeddingTaskType.RETRIEVAL_DOCUMENT:
+        raise ValueError(
+            "If a title is specified, the task must be a retrieval document type task."
+        )
+
+    if task_type:
+        task_type = to_task_type(task_type)
+
+    if isinstance(content, Iterable) and not isinstance(content, (str, Mapping)):
+        result = {"embedding": []}
+        requests = (
+            glm.EmbedContentRequest(
+                model=model, content=content_types.to_content(c), task_type=task_type, title=title
+            )
+            for c in content
+        )
+        for batch in _batched(requests, EMBEDDING_MAX_BATCH_SIZE):
+            embedding_request = glm.BatchEmbedContentsRequest(model=model, requests=batch)
+            embedding_response = await client.batch_embed_contents(embedding_request)
+            embedding_dict = type(embedding_response).to_dict(embedding_response)
+            result["embedding"].extend(e["values"] for e in embedding_dict["embeddings"])
+        return result
+    else:
+        embedding_request = glm.EmbedContentRequest(
+            model=model, content=content_types.to_content(content), task_type=task_type, title=title
+        )
+        embedding_response = await client.embed_content(embedding_request)
         embedding_dict = type(embedding_response).to_dict(embedding_response)
         embedding_dict["embedding"] = embedding_dict["embedding"]["values"]
         return embedding_dict
