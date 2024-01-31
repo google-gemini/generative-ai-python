@@ -278,8 +278,7 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual("demo_corpus_1", demo_corpus.display_name)
 
     def test_list_corpora(self):
-        x = retriever.list_corpora(page_size=1)
-        self.assertIsInstance(x, list)
+        x = list(retriever.list_corpora(page_size=1))
         self.assertEqual(len(x), 2)
 
     def test_query_corpus(self):
@@ -361,7 +360,7 @@ class UnitTests(parameterized.TestCase):
         demo_corpus = retriever.create_corpus(display_name="demo_corpus")
         demo_document = demo_corpus.create_document(display_name="demo_doc")
         demo_doc2 = demo_corpus.create_document(display_name="demo_doc_2")
-        self.assertLen(demo_corpus.list_documents(), 2)
+        self.assertLen(list(demo_corpus.list_documents()), 2)
 
     def test_query_document(self):
         demo_corpus = retriever.create_corpus(display_name="demo_corpus")
@@ -457,12 +456,10 @@ class UnitTests(parameterized.TestCase):
     def test_batch_create_chunks(self, chunks):
         demo_corpus = retriever.create_corpus(display_name="demo_corpus")
         demo_document = demo_corpus.create_document(display_name="demo_doc")
-        creation_req = demo_document.batch_create_chunks(chunks=chunks)
+        chunks = demo_document.batch_create_chunks(chunks=chunks)
         self.assertIsInstance(self.observed_requests[-1], glm.BatchCreateChunksRequest)
-        self.assertEqual("This is a demo chunk.", creation_req["chunks"][0]["data"]["string_value"])
-        self.assertEqual(
-            "This is another demo chunk.", creation_req["chunks"][1]["data"]["string_value"]
-        )
+        self.assertEqual("This is a demo chunk.", chunks[0].data.string_value)
+        self.assertEqual("This is another demo chunk.", chunks[1].data.string_value)
 
     def test_get_chunk(self):
         demo_corpus = retriever.create_corpus(display_name="demo_corpus")
@@ -485,7 +482,8 @@ class UnitTests(parameterized.TestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
             data="This is another demo chunk.",
         )
-        list_req = demo_document.list_chunks()
+
+        list_req = list(demo_document.list_chunks())
         self.assertIsInstance(self.observed_requests[-1], glm.ListChunksRequest)
         self.assertLen(list_req, 2)
 
@@ -496,12 +494,10 @@ class UnitTests(parameterized.TestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        update_request = x.update(
-            updates={"data": {"string_value": "This is an updated demo chunk."}}
-        )
+        x.update(updates={"data": {"string_value": "This is an updated demo chunk."}})
         self.assertEqual(
             retriever_service.ChunkData("This is an updated demo chunk."),
-            update_request.data,
+            x.data,
         )
 
     @parameterized.named_parameters(
