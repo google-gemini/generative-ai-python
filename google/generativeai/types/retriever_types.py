@@ -14,6 +14,7 @@
 # limitations under the License.
 from __future__ import annotations
 
+import datetime
 import re
 import string
 import abc
@@ -28,7 +29,7 @@ from google.generativeai.client import get_default_retriever_async_client
 from google.generativeai import string_utils
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
-from google.generativeai.types.model_types import idecode_time
+from google.generativeai.types.model_types import idecode_time, _fix_microseconds
 from google.generativeai.utils import flatten_update_paths
 
 
@@ -168,8 +169,8 @@ class Corpus:
 
     name: str
     display_name: str
-    create_time: str
-    update_time: str
+    create_time: datetime.datetime.strptime(str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    update_time: datetime.datetime.strptime(str, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     def create_document(
         self,
@@ -500,8 +501,8 @@ class Document(abc.ABC):
     name: str
     display_name: str
     custom_metadata: list[CustomMetadata]
-    create_time: str
-    update_time: str
+    create_time: datetime.datetime.strptime(str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    update_time: datetime.datetime.strptime(str, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     def create_chunk(
         self,
