@@ -36,25 +36,15 @@ _REMOVE = _REMOVE.replace("-", "")  # Don't remove hyphens
 _PATTERN = r"[{}]".format(_REMOVE)  # Create the pattern
 
 
-@string_utils.prettyprint
-@dataclasses.dataclass(init=False)
-class Corpus(retriever_types.Corpus):
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-        self.result = None
-        if self.name:
-            self.result = self.name
-
-
 def create_corpus(
     name: Optional[str] = None,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
-) -> Corpus:
+) -> retriever_types.Corpus:
     """
-    Create a Corpus object. Users can specify either a name or display_name.
+    Create a new `Corpus` in the retriever service, and return it as a `retriever_types.Corpus` instance.
+
+    Users can specify either a name or display_name.
 
     Args:
         name: The corpus resource name (ID). The name must be alphanumeric and fewer
@@ -64,7 +54,7 @@ def create_corpus(
             dashes are supported.
 
     Return:
-        Corpus object with specified name or display name.
+        `retriever_types.Corpus` object with specified name or display name.
 
     Raises:
         ValueError: When the name is not specified or formatted incorrectly.
@@ -90,7 +80,7 @@ def create_corpus(
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")
-    response = Corpus(**response)
+    response = retriever_types.Corpus(**response)
     return response
 
 
@@ -98,8 +88,8 @@ async def create_corpus_async(
     name: Optional[str] = None,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceAsyncClient | None = None,
-) -> Corpus:
-    """This is the async version of `create_corpus`."""
+) -> retriever_types.Corpus:
+    """This is the async version of `retriever.create_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
 
@@ -121,19 +111,19 @@ async def create_corpus_async(
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")
-    response = Corpus(**response)
+    response = retriever_types.Corpus(**response)
     return response
 
 
-def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> Corpus:  # fmt: skip
+def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> retriever_types.Corpus:  # fmt: skip
     """
-    Get information about a specific `Corpus`.
+    Fetch a specific `Corpus` from the retriever service.
 
     Args:
         name: The `Corpus` name.
 
     Return:
-        `Corpus` of interest.
+        a `retriever_types.Corpus` of interest.
     """
     if client is None:
         client = get_default_retriever_client()
@@ -143,12 +133,12 @@ def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> C
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")
-    response = Corpus(**response)
+    response = retriever_types.Corpus(**response)
     return response
 
 
-async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | None = None) -> Corpus:  # fmt: skip
-    """This is the async version of `get_corpus`."""
+async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | None = None) -> retriever_types.Corpus:  # fmt: skip
+    """This is the async version of `retriever.get_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
 
@@ -157,13 +147,13 @@ async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | 
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")
-    response = Corpus(**response)
+    response = retriever_types.Corpus(**response)
     return response
 
 
 def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | None = None):  # fmt: skip
     """
-    Delete a `Corpus`.
+    Delete a `Corpus` from the service.
 
     Args:
         name: The `Corpus` name.
@@ -177,7 +167,7 @@ def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | N
 
 
 async def delete_corpus_async(name: str, force: bool, client: glm.RetrieverServiceAsyncClient | None = None):  # fmt: skip
-    """This is the async version of `delete_corpus`."""
+    """This is the async version of `retriever.delete_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
 
@@ -190,9 +180,9 @@ def list_corpora(
     page_size: Optional[int] = None,
     page_token: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
-) -> list[Corpus]:
+) -> list[retriever_types.Corpus]:
     """
-    List `Corpus`.
+    List the Corpuses you own in the service.
 
     Args:
         page_size: Maximum number of `Corpora` to request.
@@ -214,8 +204,8 @@ async def list_corpora_async(
     page_size: Optional[int] = None,
     page_token: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
-) -> list[Corpus]:
-    """This is the async version of `list_corpora`."""
+) -> list[retriever_types.Corpus]:
+    """This is the async version of `retriever.list_corpora`."""
     if client is None:
         client = get_default_retriever_async_client()
 
