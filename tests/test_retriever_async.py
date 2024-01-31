@@ -372,7 +372,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                         custom_metadata=[],
                         state=0,
                         create_time="2000-01-01T01:01:01.123456Z",
-                        update_time="2000-01-01T01:01:01.123456Z"
+                        update_time="2000-01-01T01:01:01.123456Z",
                     ),
                 )
             ],
