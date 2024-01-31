@@ -263,7 +263,8 @@ def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: str,
     client: glm.TextServiceClient = None,
-) -> text_types.EmbeddingDict: ...
+) -> text_types.EmbeddingDict:
+    ...
 
 
 @overload
@@ -271,7 +272,8 @@ def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: Sequence[str],
     client: glm.TextServiceClient = None,
-) -> text_types.BatchEmbeddingDict: ...
+) -> text_types.BatchEmbeddingDict:
+    ...
 
 
 def generate_embeddings(

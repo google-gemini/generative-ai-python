@@ -1201,6 +1201,8 @@ class Chunk(abc.ABC):
         data: ChunkData | str,
         custom_metadata: list[CustomMetadata] | None,
         state: State,
+        create_time: str,
+        update_time: str,
     ):
         self.name = name
         if isinstance(data, str):
@@ -1212,6 +1214,8 @@ class Chunk(abc.ABC):
         else:
             self.custom_metadata = [CustomMetadata(*cm) for cm in custom_metadata]
         self.state = state
+        self.create_time = create_time
+        self.update_time = update_time
 
     def _apply_update(self, path, value):
         parts = path.split(".")
