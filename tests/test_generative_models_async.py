@@ -72,7 +72,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
     async def test_basic(self):
         # Generate text from text prompt
-        model = generative_models.GenerativeModel(model_name="gemini-m")
+        model = generative_models.GenerativeModel(model_name="gemini-pro")
 
         self.responses["generate_content"] = [simple_response("world!")]
 
@@ -85,7 +85,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
     async def test_streaming(self):
         # Generate text from text prompt
-        model = generative_models.GenerativeModel(model_name="gemini-m")
+        model = generative_models.GenerativeModel(model_name="gemini-pro")
 
         async def responses():
             for c in "world!":
@@ -113,7 +113,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
     )
     async def test_count_tokens_smoke(self, contents):
         self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
-        model = generative_models.GenerativeModel("gemini-mm-m")
+        model = generative_models.GenerativeModel("gemini-pro-vision")
         response = await model.count_tokens_async(contents)
         self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
 

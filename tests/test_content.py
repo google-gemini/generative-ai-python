@@ -202,7 +202,7 @@ class UnitTests(parameterized.TestCase):
             ],
         ],
     )
-    def test_img_to_contents(self, tools):
+    def test_to_tools(self, tools):
         tools = content_types.to_tools(tools)
         expected = dict(
             function_declarations=[

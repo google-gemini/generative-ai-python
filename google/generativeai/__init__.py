@@ -51,6 +51,7 @@ from google.generativeai.discuss import chat_async
 from google.generativeai.discuss import count_message_tokens
 
 from google.generativeai.embedding import embed_content
+from google.generativeai.embedding import embed_content_async
 
 from google.generativeai.generative_models import GenerativeModel
 from google.generativeai.generative_models import ChatSession

@@ -17,7 +17,6 @@ import io
 import os
 import pathlib
 
-
 import setuptools  # type: ignore
 
 package_root = pathlib.Path(__file__).parent.resolve()
@@ -44,7 +43,7 @@ else:
 
 dependencies = [
     "google-ai-generativelanguage==0.4.0",
-    "google-auth",
+    "google-auth>=2.15.0",  # 2.15 adds API key auth support
     "google-api-core",
     "typing-extensions",
     "protobuf",
@@ -84,6 +83,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",  # Colab
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
