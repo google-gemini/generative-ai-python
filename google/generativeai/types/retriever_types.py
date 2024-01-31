@@ -446,7 +446,6 @@ class Corpus:
         Args:
             name: The name of the `Corpus` containing `Document`s.
             page_size: The maximum number of `Document`s to return (per page). The service may return fewer `Document`s.
-            page_token: A page token, received from a previous `ListDocuments` call.
 
         Return:
             Paginated list of `Document`s.
@@ -455,7 +454,8 @@ class Corpus:
             client = get_default_retriever_client()
 
         request = glm.ListDocumentsRequest(
-            parent=self.name, page_size=page_size, page_token=page_token
+            parent=self.name,
+            page_size=page_size,
         )
         for doc in client.list_documents(request):
             yield decode_document(doc)
@@ -470,9 +470,10 @@ class Corpus:
             client = get_default_retriever_async_client()
 
         request = glm.ListDocumentsRequest(
-            parent=self.name, page_size=page_size, page_token=page_token
+            parent=self.name,
+            page_size=page_size,
         )
-        async for doc in client.list_documents(request):
+        async for doc in await client.list_documents(request):
             yield decode_document(doc)
 
     def to_dict(self) -> dict[str, Any]:
@@ -778,7 +779,6 @@ class Document(abc.ABC):
 
         Args:
             page_size: Maximum number of `Chunk`s to request.
-            page_token: A page token, received from a previous ListChunks call.
 
         Return:
             List of chunks in the document.
@@ -787,7 +787,7 @@ class Document(abc.ABC):
             client = get_default_retriever_client()
 
         request = glm.ListChunksRequest(parent=self.name, page_size=page_size)
-        for chunk in client.list_chunk(request):
+        for chunk in client.list_chunks(request):
             yield decode_chunk(chunk)
 
     async def list_chunks_async(
@@ -800,7 +800,7 @@ class Document(abc.ABC):
             client = get_default_retriever_async_client()
 
         request = glm.ListChunksRequest(parent=self.name, page_size=page_size)
-        async for chunk in client.list_chunk(request):
+        async for chunk in await client.list_chunks(request):
             yield decode_chunk(chunk)
 
     def query(

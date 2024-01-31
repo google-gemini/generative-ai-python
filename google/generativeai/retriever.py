@@ -213,12 +213,12 @@ async def list_corpora_async(
     *,
     page_size: Optional[int] = None,
     client: glm.RetrieverServiceClient | None = None,
-) -> list[Corpus]:
+) -> Iterable[retriever_types.Corpus]:
     """This is the async version of `list_corpora`."""
     if client is None:
         client = get_default_retriever_async_client()
 
     request = glm.ListCorporaRequest(page_size=page_size)
-    async for corpus in client.list_corpora(request):
+    async for corpus in await client.list_corpora(request):
         corpus = type(corpus).to_dict(corpus)
         yield retriever_types.Corpus(**corpus)

@@ -63,10 +63,12 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def list_corpora(request: glm.ListCorporaRequest) -> glm.ListCorporaResponse:
             self.observed_requests.append(request)
-            return [
-                glm.Corpus(name="corpora/demo_corpus_1", display_name="demo_corpus_1"),
-                glm.Corpus(name="corpora/demo_corpus_2", display_name="demo_corpus_2"),
-            ]
+
+            async def results():
+                yield glm.Corpus(name="corpora/demo_corpus_1", display_name="demo_corpus_1")
+                yield glm.Corpus(name="corpora/demo_corpus_2", display_name="demo_corpus_2")
+
+            return results()
 
         @add_client_method
         async def query_corpus(
@@ -121,14 +123,16 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             request: glm.ListDocumentsRequest,
         ) -> glm.ListDocumentsResponse:
             self.observed_requests.append(request)
-            return [
-                glm.Document(
+
+            async def results():
+                yield glm.Document(
                     name="corpora/demo_corpus/documents/demo_doc_1", display_name="demo_doc_1"
-                ),
-                glm.Document(
+                )
+                yield glm.Document(
                     name="corpora/demo_corpus/documents/demo_doc_2", display_name="demo_doc_2"
-                ),
-            ]
+                )
+
+            return results()
 
         @add_client_method
         async def delete_document(
@@ -196,16 +200,18 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             request: glm.ListChunksRequest,
         ) -> glm.ListChunksResponse:
             self.observed_requests.append(request)
-            return [
-                glm.Chunk(
+
+            async def results():
+                yield glm.Chunk(
                     name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                     data={"string_value": "This is a demo chunk."},
-                ),
-                glm.Chunk(
+                )
+                yield glm.Chunk(
                     name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
                     data={"string_value": "This is another demo chunk."},
-                ),
-            ]
+                )
+
+            return results()
 
         @add_client_method
         async def update_chunk(request: glm.UpdateChunkRequest) -> glm.Chunk:
@@ -275,9 +281,11 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         self.assertEqual("demo_corpus_1", demo_corpus.display_name)
 
     async def test_list_corpora(self):
-        x = await retriever.list_corpora_async(page_size=1)
-        self.assertIsInstance(x, list)
-        self.assertEqual(len(x), 2)
+        result = []
+        async for x in retriever.list_corpora_async(page_size=1):
+            result.append(x)
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 2)
 
     async def test_query_corpus(self):
         demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
@@ -360,7 +368,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
         demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
         demo_doc2 = await demo_corpus.create_document_async(display_name="demo_doc_2")
-        self.assertLen(demo_corpus.list_documents(), 2)
+        self.assertLen(list(demo_corpus.list_documents()), 2)
 
     async def test_query_document(self):
         demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
@@ -455,12 +463,10 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
     async def test_batch_create_chunks(self, chunks):
         demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
         demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
-        creation_req = await demo_document.batch_create_chunks_async(chunks=chunks)
+        chunks = await demo_document.batch_create_chunks_async(chunks=chunks)
         self.assertIsInstance(self.observed_requests[-1], glm.BatchCreateChunksRequest)
-        self.assertEqual("This is a demo chunk.", creation_req["chunks"][0]["data"]["string_value"])
-        self.assertEqual(
-            "This is another demo chunk.", creation_req["chunks"][1]["data"]["string_value"]
-        )
+        self.assertEqual("This is a demo chunk.", chunks[0].data.string_value)
+        self.assertEqual("This is another demo chunk.", chunks[1].data.string_value)
 
     async def test_get_chunk(self):
         demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
@@ -483,9 +489,11 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1",
             data="This is another demo chunk.",
         )
-        list_req = await demo_document.list_chunks_async()
+        chunks = []
+        async for chunk in demo_document.list_chunks_async():
+            chunks.append(chunk)
         self.assertIsInstance(self.observed_requests[-1], glm.ListChunksRequest)
-        self.assertLen(list_req, 2)
+        self.assertLen(chunks, 2)
 
     async def test_update_chunk(self):
         demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
@@ -494,12 +502,10 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
             data="This is a demo chunk.",
         )
-        update_request = await x.update_async(
-            updates={"data": {"string_value": "This is an updated demo chunk."}}
-        )
+        await x.update_async(updates={"data": {"string_value": "This is an updated demo chunk."}})
         self.assertEqual(
             retriever_service.ChunkData("This is an updated demo chunk."),
-            update_request.data,
+            x.data,
         )
 
     @parameterized.named_parameters(
