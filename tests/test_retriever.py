@@ -75,6 +75,18 @@ class UnitTests(parameterized.TestCase):
             request: glm.QueryCorpusRequest,
         ) -> glm.QueryCorpusResponse:
             self.observed_requests.append(request)
+            return [
+                retriever_service.RelevantChunk(
+                    chunk_relevance_score=0.08,
+                    chunk=retriever_service.Chunk(
+                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        data=retriever_service.ChunkData(string_value="This is a demo chunk."),
+                        custom_metadata=[],
+                        state=0,
+                    ),
+                )
+            ]
+            """      
             return glm.QueryCorpusResponse(
                 relevant_chunks=[
                     glm.RelevantChunk(
@@ -86,6 +98,7 @@ class UnitTests(parameterized.TestCase):
                     )
                 ]
             )
+            """
 
         @add_client_method
         def delete_corpus(request: glm.DeleteCorpusRequest) -> None:
@@ -290,22 +303,16 @@ class UnitTests(parameterized.TestCase):
             data="This is a demo chunk.",
         )
         q = demo_corpus.query(query="What kind of chunk is this?")
-        self.assertIsInstance(q, dict)
+        self.assertIsInstance(q, retriever_service.RelevantChunk)
         self.assertEqual(
             q,
-            {
-                "relevant_chunks": [
-                    {
-                        "chunk_relevance_score": 0.08,
-                        "chunk": {
-                            "name": "corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
-                            "data": {"string_value": "This is a demo chunk."},
-                            "custom_metadata": [],
-                            "state": 0,
-                        },
-                    }
-                ]
-            },
+            retriever_service.RelevantChunk(
+                chunk_relevance_score=0.08,
+                chunk=glm.Chunk(
+                    name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                    data={"string_value": "This is a demo chunk."},
+                ),
+            ),
         )
 
     def test_delete_corpus(self):
@@ -371,22 +378,16 @@ class UnitTests(parameterized.TestCase):
             data="This is a demo chunk.",
         )
         q = demo_document.query(query="What kind of chunk is this?")
-        self.assertIsInstance(q, dict)
+        self.assertIsInstance(q, retriever_service.RelevantChunk)
         self.assertEqual(
             q,
-            {
-                "relevant_chunks": [
-                    {
-                        "chunk_relevance_score": 0.08,
-                        "chunk": {
-                            "name": "corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
-                            "data": {"string_value": "This is a demo chunk."},
-                            "custom_metadata": [],
-                            "state": 0,
-                        },
-                    }
-                ]
-            },
+            retriever_service.RelevantChunk(
+                chunk_relevance_score=0.08,
+                chunk=glm.Chunk(
+                    name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                    data={"string_value": "This is a demo chunk."},
+                ),
+            ),
         )
 
     def test_create_chunk(self):

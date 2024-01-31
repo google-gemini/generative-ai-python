@@ -369,7 +369,7 @@ class Corpus:
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceClient | None = None,
-    ):
+    ) -> list[RelevantChunk]:
         """
         Query a corpus for information.
 
@@ -395,9 +395,18 @@ class Corpus:
             results_count=results_count,
         )
         response = client.query_corpus(request)
+        print(response)
         response = type(response).to_dict(response)
 
-        return response
+        # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
+        relevant_chunks = []
+        for c in response["relevant_chunks"]:
+            rc = RelevantChunk(
+                chunk_relevance_score=c["chunk_relevance_score"], chunk=Chunk(**c["chunk"])
+            )
+            relevant_chunks.append(rc)
+        print(relevant_chunks)
+        return relevant_chunks
 
     async def query_async(
         self,
@@ -405,7 +414,7 @@ class Corpus:
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-    ):
+    ) -> list[RelevantChunk]:
         """This is the async version of `Corpus.query`."""
         if client is None:
             client = get_default_retriever_async_client()
@@ -423,7 +432,13 @@ class Corpus:
         response = await client.query_corpus(request)
         response = type(response).to_dict(response)
 
-        return response
+        # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
+        relevant_chunks = []
+        for c in response["relevant_chunks"]:
+            rc = RelevantChunk(chunk_relevance_score=c["chunk_relevance_score"], chunk=c["chunk"])
+            relevant_chunks.append(rc)
+
+        return relevant_chunks
 
     def delete_document(
         self,
@@ -858,7 +873,7 @@ class Document(abc.ABC):
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceClient | None = None,
-    ):
+    ) -> list[RelevantChunk]:
         """
         Query a `Document` in the `Corpus` for information.
 
@@ -886,7 +901,13 @@ class Document(abc.ABC):
         response = client.query_document(request)
         response = type(response).to_dict(response)
 
-        return response
+        # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
+        relevant_chunks = []
+        for c in response["relevant_chunks"]:
+            rc = RelevantChunk(chunk_relevance_score=c["chunk_relevance_score"], chunk=c["chunk"])
+            relevant_chunks.append(rc)
+
+        return relevant_chunks
 
     async def query_async(
         self,
@@ -894,7 +915,7 @@ class Document(abc.ABC):
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-    ):
+    ) -> list[RelevantChunk]:
         """This is the async version of `Document.query`."""
         if client is None:
             client = get_default_retriever_async_client()
@@ -912,7 +933,13 @@ class Document(abc.ABC):
         response = await client.query_document(request)
         response = type(response).to_dict(response)
 
-        return response
+        # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
+        relevant_chunks = []
+        for c in response["relevant_chunks"]:
+            rc = RelevantChunk(chunk_relevance_score=c["chunk_relevance_score"], chunk=c["chunk"])
+            relevant_chunks.append(rc)
+
+        return relevant_chunks
 
     def _apply_update(self, path, value):
         parts = path.split(".")
@@ -1175,6 +1202,13 @@ class Document(abc.ABC):
             "custom_metadata": self.custom_metadata,
         }
         return result
+
+
+@string_utils.prettyprint
+@dataclasses.dataclass
+class RelevantChunk:
+    chunk_relevance_score: float
+    chunk: Chunk
 
 
 @string_utils.prettyprint
