@@ -1085,7 +1085,7 @@ def _make_chunk(chunk: ChunkOptions) -> glm.Chunk:
                 custom_metadata=custom_metadata,
             )
     elif isinstance(chunk, Mapping):
-        return glm.Chunk(**chunk))
+        return glm.Chunk(**chunk)
     else:
         raise TypeError(f"Could not convert instance of `{type(chunk)}` chunk:"
                         f"value: {chunk}")
