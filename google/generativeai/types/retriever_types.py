@@ -45,20 +45,20 @@ State = glm.Chunk.State
 OperatorOptions = Union[str, int, Operator]
 StateOptions = Union[str, int, State]
 
-ChunkOptions=Union[
+ChunkOptions = Union[
     glm.Chunk,
     str,
     tuple[str, str],
     tuple[str, str, Any],
-    Mapping[str, Any]
-]
+    Mapping[str, Any],
+]  # fmt: no
 
 BatchCreateChunkOptions = Union[
-  glm.BatchCreateChunksRequest,
-  Mapping[str, str],
-  Mapping[str, tuple[str,str]],
-  Iterable[ChunkOptions]
-]
+    glm.BatchCreateChunksRequest,
+    Mapping[str, str],
+    Mapping[str, tuple[str, str]],
+    Iterable[ChunkOptions],
+]  # fmt: no
 
 UpdateChunkOptions = Union[glm.UpdateChunkRequest, Mapping[str, Any], tuple[str, Any]]
 
@@ -629,8 +629,10 @@ class Document(abc.ABC):
             elif len(chunk) == 3:
                 name, data, custom_metadata = chunk
             else:
-                raise ValueError(f"Tuples should have length 2 or 3, got length: {len(chunk)}\n"
-                                 f"value: {chunk}")
+                raise ValueError(
+                    f"Tuples should have length 2 or 3, got length: {len(chunk)}\n"
+                    f"value: {chunk}"
+                )
 
             return glm.Chunk(
                 name=name,
@@ -638,15 +640,18 @@ class Document(abc.ABC):
                 custom_metadata=custom_metadata,
             )
         elif isinstance(chunk, Mapping):
-            if isinstance(chunk['data'], str):
+            if isinstance(chunk["data"], str):
                 chunk = chunk.copy()
-                chunk['data'] = {'string_value': chunk['data']}
+                chunk["data"] = {"string_value": chunk["data"]}
             return glm.Chunk(chunk)
         else:
-            raise TypeError(f"Could not convert instance of `{type(chunk)}` chunk:"
-                            f"value: {chunk}")
+            raise TypeError(
+                f"Could not convert instance of `{type(chunk)}` chunk:" f"value: {chunk}"
+            )
 
-    def _make_batch_create_chunk_request(self, chunks: BatchCreateChunkOptions) -> glm.BatchCreateChunksRequest:
+    def _make_batch_create_chunk_request(
+        self, chunks: BatchCreateChunkOptions
+    ) -> glm.BatchCreateChunksRequest:
         if isinstance(chunks, glm.BatchCreateChunksRequest):
             return chunks
 
@@ -664,8 +669,7 @@ class Document(abc.ABC):
             if chunk.name == "":
                 chunk.name = str(i)
 
-            requests.append(
-                glm.CreateChunkRequest(parent=self.name, chunk=chunk))
+            requests.append(glm.CreateChunkRequest(parent=self.name, chunk=chunk))
 
         return glm.BatchCreateChunksRequest(parent=self.name, requests=requests)
 
