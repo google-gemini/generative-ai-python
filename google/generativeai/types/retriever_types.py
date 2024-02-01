@@ -643,7 +643,10 @@ class Document(abc.ABC):
                 custom_metadata=custom_metadata,
             )
         elif isinstance(chunk, Mapping):
-            return glm.Chunk(**chunk)
+            if isinstance(chunk['data'], str):
+                chunk = chunk.copy()
+                chunk['data'] = {'string_value': chunk['data']}
+            return glm.Chunk(chunk)
         else:
             raise TypeError(f"Could not convert instance of `{type(chunk)}` chunk:"
                             f"value: {chunk}")
@@ -662,7 +665,7 @@ class Document(abc.ABC):
 
         requests = []
         for i, chunk in enumerate(chunks):
-            chunk = _make_chunk(chunk)
+            chunk = self._make_chunk(chunk)
             if chunk.name == "":
                 chunk.name = str(i)
 
@@ -688,7 +691,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        request = _make_batch_create_chunk_request(chunks)
+        request = self._make_batch_create_chunk_request(chunks)
         response = client.batch_create_chunks(request)
         response = type(response).to_dict(response)
         return response
@@ -702,7 +705,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        request = _make_batch_create_chunk_request(chunks)
+        request = self._make_batch_create_chunk_request(chunks)
         response = await client.batch_create_chunks(request)
         response = type(response).to_dict(response)
         return response
