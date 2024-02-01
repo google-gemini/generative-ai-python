@@ -460,8 +460,6 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             ],
         )
 
-        print(type(q[0].chunk.create_time))
-
     async def test_create_chunk(self):
         demo_corpus = await retriever.create_corpus_async(display_name="demo_corpus")
         demo_document = await demo_corpus.create_document_async(display_name="demo_doc")
