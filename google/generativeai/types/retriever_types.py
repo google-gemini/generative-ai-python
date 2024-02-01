@@ -55,7 +55,7 @@ ChunkOptions=Union[
 BatchCreateChunkOptions = Union[
   glm.BatchCreateChunksRequest,
   Mapping[str, str],
-  Mapping[str, tuple[str,str]]
+  Mapping[str, tuple[str,str]],
   Iterable[ChunkOptions]
 ]
 
@@ -621,6 +621,56 @@ class Document(abc.ABC):
         response = Chunk(**response)
         return response
 
+    def _make_chunk(self, chunk: ChunkOptions) -> glm.Chunk:
+        del self
+        if isinstance(chunk, glm.Chunk):
+            return chunk
+        elif isinstance(chunk, str):
+            return glm.Chunk(data={"string_value": chunk})
+        elif isinstance(chunk, tuple):
+            if len(chunk) == 2:
+                name, data = chunk
+                custom_metadata = None
+            elif len(chunk) == 3:
+                name, data, custom_metadata = chunk
+            else:
+                raise ValueError(f"Tuples should have length 2 or 3, got length: {len(chunk)}\n"
+                                 f"value: {chunk}")
+
+            return glm.Chunk(
+                name=name,
+                data={"string_value": data},
+                custom_metadata=custom_metadata,
+            )
+        elif isinstance(chunk, Mapping):
+            return glm.Chunk(**chunk)
+        else:
+            raise TypeError(f"Could not convert instance of `{type(chunk)}` chunk:"
+                            f"value: {chunk}")
+
+    def _make_batch_create_chunk_request(self, chunks: BatchCreateChunkOptions) -> glm.BatchCreateChunksRequest:
+        if isinstance(chunks, glm.BatchCreateChunksRequest):
+            return chunks
+
+        if isinstance(chunks, Mapping):
+            chunks = chunks.items()
+            chunks = (
+                # Flatten tuples
+                (key,) + value if isinstance(value, tuple) else (key, value)
+                for key, value in chunks
+            )
+
+        requests = []
+        for i, chunk in enumerate(chunks):
+            chunk = _make_chunk(chunk)
+            if chunk.name == "":
+                chunk.name = str(i)
+
+            requests.append(
+                glm.CreateChunkRequest(parent=self.name, chunk=chunk))
+
+        return glm.BatchCreateChunksRequest(parent=self.name, requests=requests)
+
     def batch_create_chunks(
         self,
         chunks: BatchCreateChunkOptions,
@@ -1064,57 +1114,6 @@ class Document(abc.ABC):
         }
         return result
 
-def _make_chunk(chunk: ChunkOptions) -> glm.Chunk:
-    if isinstance(chunk, glm.Chunk):
-        return chunk
-    elif isinstance(chunk, str):
-        return glm.Chunk(data={"string_value": chunk})
-    elif isinstance(chunk, tuple):
-        if len(chunk) == 2:
-            name, data = chunk
-            custom_metadata = None
-        elif len(chunk) == 3:
-            name, data, custom_metadata = chunk
-        else:
-            raise ValueError(f"Tuples should have length 2 or 3, got length: {len(chunk)}\n"
-                             f"value: {chunk}")
-
-        return glm.Chunk(
-                name=name,
-                data={"string_value": data},
-                custom_metadata=custom_metadata,
-            )
-    elif isinstance(chunk, Mapping):
-        return glm.Chunk(**chunk)
-    else:
-        raise TypeError(f"Could not convert instance of `{type(chunk)}` chunk:"
-                        f"value: {chunk}")
-
-
-
-
-def _make_batch_create_chunk_request(chunks:BatchCreateChunkOptions) -> glm.BatchCreateChunksRequest:
-    if isinstance(chunks, glm.BatchCreateChunksRequest):
-        return chunks
-
-    if isinstance(chunks, Mapping):
-        chunks = chunks.items()
-        chunks = (
-            # Flatten tuples
-            (key,) + value if isinstance(value, tuple) else (key, value)
-            for key, value in chunks
-        )
-
-    requests = []
-    for i, chunk in enumerate(chunks):
-        chunk = _make_chunk(chunk)
-        if chunk.name == "":
-            chunk.name = str(i)
-
-        requests.append(
-            glm.CreateChunkRequest(parent=self.name, chunk=chunk))
-
-    return glm.BatchCreateChunksRequest(parent=self.name, requests=requests)
 
 @string_utils.prettyprint
 @dataclasses.dataclass(init=False)
