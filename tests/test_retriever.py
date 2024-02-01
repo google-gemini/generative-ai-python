@@ -107,6 +107,8 @@ class UnitTests(parameterized.TestCase):
                         chunk=glm.Chunk(
                             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                             data={"string_value": "This is a demo chunk."},
+                            custom_metadata=[],
+                            state=0,
                             create_time="2000-01-01T01:01:01.123456Z",
                             update_time="2000-01-01T01:01:01.123456Z",
                         ),
@@ -185,13 +187,15 @@ class UnitTests(parameterized.TestCase):
             request: glm.QueryDocumentRequest,
         ) -> glm.QueryDocumentResponse:
             self.observed_requests.append(request)
-            return glm.QueryCorpusResponse(
+            return glm.QueryDocumentResponse(
                 relevant_chunks=[
                     glm.RelevantChunk(
                         chunk_relevance_score=0.08,
                         chunk=glm.Chunk(
                             name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
                             data={"string_value": "This is a demo chunk."},
+                            custom_metadata=[],
+                            state=0,
                             create_time="2000-01-01T01:01:01.123456Z",
                             update_time="2000-01-01T01:01:01.123456Z",
                         ),
@@ -351,24 +355,21 @@ class UnitTests(parameterized.TestCase):
             data="This is a demo chunk.",
         )
         q = demo_corpus.query(query="What kind of chunk is this?")
-        self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
-            {
-                "relevant_chunks": [
-                    {
-                        "chunk_relevance_score": 0.08,
-                        "chunk": {
-                            "name": "corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
-                            "data": {"string_value": "This is a demo chunk."},
-                            "custom_metadata": [],
-                            "state": 0,
-                            "create_time": "2000-01-01T01:01:01.123456Z",
-                            "update_time": "2000-01-01T01:01:01.123456Z",
-                        },
-                    }
-                ]
-            },
+            [
+                retriever_service.RelevantChunk(
+                    chunk_relevance_score=0.08,
+                    chunk=retriever_service.Chunk(
+                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        data="This is a demo chunk.",
+                        custom_metadata=[],
+                        state=0,
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
+                    ),
+                )
+            ],
         )
 
     def test_delete_corpus(self):
@@ -434,24 +435,21 @@ class UnitTests(parameterized.TestCase):
             data="This is a demo chunk.",
         )
         q = demo_document.query(query="What kind of chunk is this?")
-        self.assertIsInstance(q, dict)
         self.assertEqual(
             q,
-            {
-                "relevant_chunks": [
-                    {
-                        "chunk_relevance_score": 0.08,
-                        "chunk": {
-                            "name": "corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
-                            "data": {"string_value": "This is a demo chunk."},
-                            "custom_metadata": [],
-                            "state": 0,
-                            "create_time": "2000-01-01T01:01:01.123456Z",
-                            "update_time": "2000-01-01T01:01:01.123456Z",
-                        },
-                    }
-                ]
-            },
+            [
+                retriever_service.RelevantChunk(
+                    chunk_relevance_score=0.08,
+                    chunk=retriever_service.Chunk(
+                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        data="This is a demo chunk.",
+                        custom_metadata=[],
+                        state=0,
+                        create_time="2000-01-01T01:01:01.123456Z",
+                        update_time="2000-01-01T01:01:01.123456Z",
+                    ),
+                )
+            ],
         )
 
     def test_create_chunk(self):

@@ -346,7 +346,7 @@ class Corpus:
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceClient | None = None,
-    ):
+    ) -> Iterable[RelevantChunk]:
         """
         Query a corpus for information.
 
@@ -374,7 +374,15 @@ class Corpus:
         response = client.query_corpus(request)
         response = type(response).to_dict(response)
 
-        return response
+        # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
+        relevant_chunks = []
+        for c in response["relevant_chunks"]:
+            rc = RelevantChunk(
+                chunk_relevance_score=c["chunk_relevance_score"], chunk=Chunk(**c["chunk"])
+            )
+            relevant_chunks.append(rc)
+
+        return relevant_chunks
 
     async def query_async(
         self,
@@ -382,7 +390,7 @@ class Corpus:
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-    ):
+    ) -> Iterable[RelevantChunk]:
         """This is the async version of `Corpus.query`."""
         if client is None:
             client = get_default_retriever_async_client()
@@ -400,7 +408,15 @@ class Corpus:
         response = await client.query_corpus(request)
         response = type(response).to_dict(response)
 
-        return response
+        # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
+        relevant_chunks = []
+        for c in response["relevant_chunks"]:
+            rc = RelevantChunk(
+                chunk_relevance_score=c["chunk_relevance_score"], chunk=Chunk(**c["chunk"])
+            )
+            relevant_chunks.append(rc)
+
+        return relevant_chunks
 
     def delete_document(
         self,
@@ -810,7 +826,7 @@ class Document(abc.ABC):
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceClient | None = None,
-    ):
+    ) -> list[RelevantChunk]:
         """
         Query a `Document` in the `Corpus` for information.
 
@@ -838,7 +854,15 @@ class Document(abc.ABC):
         response = client.query_document(request)
         response = type(response).to_dict(response)
 
-        return response
+        # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
+        relevant_chunks = []
+        for c in response["relevant_chunks"]:
+            rc = RelevantChunk(
+                chunk_relevance_score=c["chunk_relevance_score"], chunk=Chunk(**c["chunk"])
+            )
+            relevant_chunks.append(rc)
+
+        return relevant_chunks
 
     async def query_async(
         self,
@@ -846,7 +870,7 @@ class Document(abc.ABC):
         metadata_filters: Optional[list[str]] = None,
         results_count: Optional[int] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-    ):
+    ) -> list[RelevantChunk]:
         """This is the async version of `Document.query`."""
         if client is None:
             client = get_default_retriever_async_client()
@@ -864,7 +888,15 @@ class Document(abc.ABC):
         response = await client.query_document(request)
         response = type(response).to_dict(response)
 
-        return response
+        # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
+        relevant_chunks = []
+        for c in response["relevant_chunks"]:
+            rc = RelevantChunk(
+                chunk_relevance_score=c["chunk_relevance_score"], chunk=Chunk(**c["chunk"])
+            )
+            relevant_chunks.append(rc)
+
+        return relevant_chunks
 
     def _apply_update(self, path, value):
         parts = path.split(".")
@@ -1129,6 +1161,13 @@ def decode_chunk(chunk: glm.Chunk) -> Chunk:
 
 
 @string_utils.prettyprint
+@dataclasses.dataclass
+class RelevantChunk:
+    chunk_relevance_score: float
+    chunk: Chunk
+
+
+@string_utils.prettyprint
 @dataclasses.dataclass(init=False)
 class Chunk(abc.ABC):
     """
@@ -1148,8 +1187,8 @@ class Chunk(abc.ABC):
         data: ChunkData | str,
         custom_metadata: list[CustomMetadata] | None,
         state: State,
-        create_time: datetime.datetime,
-        update_time: datetime.datetime,
+        create_time: datetime.datetime | str,
+        update_time: datetime.datetime | str,
     ):
         self.name = name
         if isinstance(data, str):
@@ -1161,8 +1200,14 @@ class Chunk(abc.ABC):
         else:
             self.custom_metadata = [CustomMetadata(*cm) for cm in custom_metadata]
         self.state = state
-        self.create_time = create_time
-        self.update_time = update_time
+        if isinstance(create_time, datetime.datetime):
+            self.create_time = create_time
+        else:
+            self.create_time = datetime.datetime.strptime(create_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+        if isinstance(update_time, datetime.datetime):
+            self.update_time = update_time
+        else:
+            self.update_time = datetime.datetime.strptime(update_time, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     def _apply_update(self, path, value):
         parts = path.split(".")
