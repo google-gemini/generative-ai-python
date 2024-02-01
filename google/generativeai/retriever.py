@@ -30,14 +30,11 @@ from google.generativeai import models
 from google.generativeai.types import safety_types
 from google.generativeai.types.model_types import idecode_time
 
-_CORPORA_NAME_REGEX = re.compile(r"^corpora/[a-z0-9-]+")
-_REMOVE = string.punctuation
-_REMOVE = _REMOVE.replace("-", "")  # Don't remove hyphens
-_PATTERN = r"[{}]".format(_REMOVE)  # Create the pattern
+_VALID_NAME = r"^[^-][a-zA-Z\d-][^-]+$"
 
 
 def create_corpus(
-    name: Optional[str] = None,
+    name: str,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
 ) -> retriever_types.Corpus:
@@ -62,18 +59,18 @@ def create_corpus(
     if client is None:
         client = get_default_retriever_client()
 
-    if not name and not display_name:
-        raise ValueError("Either the corpus name or display name must be specified.")
-
     corpus = None
-    if name:
-        if re.match(_CORPORA_NAME_REGEX, name):
-            corpus = glm.Corpus(name=name, display_name=display_name)
-        elif "corpora/" not in name:
-            corpus_name = "corpora/" + re.sub(_PATTERN, "", name)
-            corpus = glm.Corpus(name=corpus_name, display_name=display_name)
-        else:
-            raise ValueError("Corpus name must be formatted as corpora/<corpus_name>.")
+    if re.match(_VALID_NAME, name) and len(name) < 40:
+        corpus_name = "corpora/" + name  # Construct the name
+        corpus = glm.Corpus(name=corpus_name, display_name=display_name)
+    else:
+        raise ValueError(
+            """
+            `Corpus` name must be formatted as corpora/<corpus_name>. Enter a `corpus_name` that 
+            contains alphanumeric characters and/or dashes, but the name must not begin or end 
+            with a dash. The name entered for the `Corpus` must be less than 40 characters.
+            """
+        )
 
     request = glm.CreateCorpusRequest(corpus=corpus)
     response = client.create_corpus(request)
@@ -93,21 +90,21 @@ async def create_corpus_async(
     if client is None:
         client = get_default_retriever_async_client()
 
-    if not name and not display_name:
-        raise ValueError("Either the corpus name or display name must be specified.")
-
     corpus = None
-    if name:
-        if re.match(_CORPORA_NAME_REGEX, name):
-            corpus = glm.Corpus(name=name, display_name=display_name)
-        elif "corpora/" not in name:
-            corpus_name = "corpora/" + re.sub(_PATTERN, "", name)
-            corpus = glm.Corpus(name=corpus_name, display_name=display_name)
-        else:
-            raise ValueError("Corpus name must be formatted as corpora/<corpus_name>.")
+    if re.match(_VALID_NAME, name) and len(name) < 40:
+        corpus_name = "corpora/" + name  # Construct the name
+        corpus = glm.Corpus(name=corpus_name, display_name=display_name)
+    else:
+        raise ValueError(
+            """
+            `Corpus` name must be formatted as corpora/<corpus_name>. Enter a `corpus_name` that 
+            contains alphanumeric characters and/or dashes, but the name must not begin or end 
+            with a dash. The name entered for the `Corpus` must be less than 40 characters.
+            """
+        )
 
     request = glm.CreateCorpusRequest(corpus=corpus)
-    response = await client.create_corpus(request)
+    response = client.create_corpus(request)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")
