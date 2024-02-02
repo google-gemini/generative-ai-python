@@ -624,10 +624,10 @@ class Document(abc.ABC):
             return glm.Chunk(data={"string_value": chunk})
         elif isinstance(chunk, tuple):
             if len(chunk) == 2:
-                name, data = chunk
+                name, data = chunk   # pytype: disable=bad-unpacking
                 custom_metadata = None
             elif len(chunk) == 3:
-                name, data, custom_metadata = chunk
+                name, data, custom_metadata = chunk    # pytype: disable=bad-unpacking
             else:
                 raise ValueError(
                     f"Tuples should have length 2 or 3, got length: {len(chunk)}\n"
@@ -641,7 +641,7 @@ class Document(abc.ABC):
             )
         elif isinstance(chunk, Mapping):
             if isinstance(chunk["data"], str):
-                chunk = chunk.copy()
+                chunk = dict(chunk)
                 chunk["data"] = {"string_value": chunk["data"]}
             return glm.Chunk(chunk)
         else:
