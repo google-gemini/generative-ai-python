@@ -206,11 +206,7 @@ class Corpus:
             )
         else:
             raise ValueError(
-                f"""
-                Document name must be formatted as {self.name}/documents/<document_name>. Enter a 
-                `document_name` that contains alphanumeric characters and/or dashes, but the name must not 
-                begin or end with a dash. The name entered for the `Document` must be less than 40 characters.
-                """
+                f"`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Document`. The name entered will be formatted as {self.name}/documents/<document_name>."
             )
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
@@ -239,11 +235,7 @@ class Corpus:
             )
         else:
             raise ValueError(
-                f"""
-                Document name must be formatted as {self.name}/documents/<document_name>. Enter a 
-                `document_name` that contains alphanumeric characters and/or dashes, but the name must not 
-                begin or end with a dash. The name entered for the `Document` must be less than 40 characters.
-                """
+                f"`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Document`. The name entered will be formatted as {self.name}/documents/<document_name>."
             )
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
@@ -546,11 +538,7 @@ class Document(abc.ABC):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(
-                f"""
-                Chunk name must be formatted as {self.name}/chunks/<chunk_name>. Enter a `chunk_name` that 
-                contains alphanumeric characters and/or dashes, but the name must not begin or end with a dash. 
-                The name entered for the `Chunk` must be less than 40 characters.
-                """
+                f"`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Chunk`. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
             )
 
         if isinstance(data, str):
@@ -584,11 +572,7 @@ class Document(abc.ABC):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(
-                f"""
-                Chunk name must be formatted as {self.name}/chunks/<chunk_name>. Enter a `chunk_name` that 
-                contains alphanumeric characters and/or dashes, but the name must not begin or end with a dash. 
-                The name entered for the `Chunk` must be less than 40 characters.
-                """
+                f"`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Chunk`. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
             )
 
         if isinstance(data, str):

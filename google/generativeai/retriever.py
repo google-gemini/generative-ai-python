@@ -60,11 +60,7 @@ def create_corpus(
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:
         raise ValueError(
-            """
-            Enter an alphanumeric name which can contain dashes that is less than 40 characters, 
-            but the name must not begin or end with a dash for the `Corpus`. The name 
-            entered will be formatted as corpora/<corpus_name>.
-            """
+            " `name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Corpus`. The name entered will be formatted as corpora/<corpus_name>."
         )
 
     request = glm.CreateCorpusRequest(corpus=corpus)
@@ -91,11 +87,7 @@ async def create_corpus_async(
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:
         raise ValueError(
-            """
-            `Corpus` name must be formatted as corpora/<corpus_name>. Enter a `corpus_name` that 
-            contains alphanumeric characters and/or dashes, but the name must not begin or end 
-            with a dash. The name entered for the `Corpus` must be less than 40 characters.
-            """
+            " `name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Corpus`. The name entered will be formatted as corpora/<corpus_name>."
         )
 
     request = glm.CreateCorpusRequest(corpus=corpus)
