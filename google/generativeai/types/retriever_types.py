@@ -33,7 +33,10 @@ from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
 
 _VALID_NAME = r"[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$"
-_NAME_ERROR_MESSAGE = "`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the "
+NAME_ERROR_MSG = """The `name` must consist of alphanumeric characters (or -) and be 40 or fewer characters. The name you entered:
+\tlen(name)== {length}
+\tname={name}
+"""
 
 
 def valid_name(name):
@@ -211,9 +214,7 @@ class Corpus:
                 name=document_name, display_name=display_name, custom_metadata=custom_metadata
             )
         else:
-            raise ValueError(
-                f"{_NAME_ERROR_MESSAGE}`Document`. The name entered will be formatted as {self.name}/documents/<document_name>."
-            )
+            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
         response = client.create_document(request)
@@ -237,9 +238,7 @@ class Corpus:
                 name=document_name, display_name=display_name, custom_metadata=custom_metadata
             )
         else:
-            raise ValueError(
-                f"{_NAME_ERROR_MESSAGE}`Document`. The name entered will be formatted as {self.name}/documents/<document_name>."
-            )
+            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
         response = await client.create_document(request)
@@ -542,9 +541,7 @@ class Document(abc.ABC):
         elif valid_name(name):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
-            raise ValueError(
-                f"{_NAME_ERROR_MESSAGE}`Chunk`. An empty name can also be passed in. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
-            )
+            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         if isinstance(data, str):
             chunk = glm.Chunk(
@@ -578,9 +575,7 @@ class Document(abc.ABC):
         elif valid_name(name):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
-            raise ValueError(
-                f"{_NAME_ERROR_MESSAGE}`Chunk`. An empty name can also be passed in. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
-            )
+            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         if isinstance(data, str):
             chunk = glm.Chunk(

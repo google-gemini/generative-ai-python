@@ -58,9 +58,7 @@ def create_corpus(
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:
-        raise ValueError(
-            f"{retriever_types._NAME_ERROR_MESSAGE}`Corpus`. The name entered will be formatted as corpora/<corpus_name>."
-        )
+        raise ValueError(retriever_types.NAME_ERROR_MSG.format(length=len(name), name=name))
 
     request = glm.CreateCorpusRequest(corpus=corpus)
     response = client.create_corpus(request)
@@ -85,9 +83,7 @@ async def create_corpus_async(
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:
-        raise ValueError(
-            f"{retriever_types._NAME_ERROR_MESSAGE}`Corpus`. The name entered will be formatted as corpora/<corpus_name>."
-        )
+        raise ValueError(retriever_types.NAME_ERROR_MSG.format(length=len(name), name=name))
 
     request = glm.CreateCorpusRequest(corpus=corpus)
     response = await client.create_corpus(request)
