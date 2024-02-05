@@ -34,7 +34,7 @@ from google.generativeai.utils import flatten_update_paths
 
 _VALID_NAME = r"[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$"
 
-def valid_name(name)
+def valid_name(name):
   return re.match(_VALID_NAME, name) and len(name) < 40
 
 Operator = glm.Condition.Operator
