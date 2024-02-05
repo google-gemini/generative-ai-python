@@ -522,8 +522,8 @@ class Document(abc.ABC):
         Create a `Chunk` object which has textual data.
 
         Args:
-            name: The `Chunk` resource name. The ID (name excluding the "corpora/*/documents/*/chunks/" prefix) can contain up to 40 characters that are lowercase alphanumeric or dashes (-).
             data: The content for the `Chunk`, such as the text string.
+            name: The `Chunk` resource name. The ID (name excluding the "corpora/*/documents/*/chunks/" prefix) can contain up to 40 characters that are lowercase alphanumeric or dashes (-).
             custom_metadata: User provided custom metadata stored as key-value pairs.
             state: States for the lifecycle of a `Chunk`.
 
@@ -536,12 +536,14 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        chunk_name, chunk = "", None
-        if valid_name(name):
+        chunk_name, chunk = None, None
+        if name is None:
+            chunk_name = None
+        elif valid_name(name):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(
-                f"{_NAME_ERROR_MESSAGE}`Chunk`. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
+                f"{_NAME_ERROR_MESSAGE}`Chunk`. An empty name can also be passed in. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
             )
 
         if isinstance(data, str):
@@ -570,12 +572,14 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        chunk_name, chunk = "", None
-        if valid_name(name):
+        chunk_name, chunk = None, None
+        if name is None:
+            chunk_name = None
+        elif valid_name(name):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(
-                f"{_NAME_ERROR_MESSAGE}`Chunk`. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
+                f"{_NAME_ERROR_MESSAGE}`Chunk`. An empty name can also be passed in. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
             )
 
         if isinstance(data, str):

@@ -432,6 +432,16 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual("demo-chunk", x.name)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
 
+    def test_create_chunk_empty(self):
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
+        x = demo_document.create_chunk(
+            data="This is a demo chunk.",
+        )
+        self.assertIsInstance(x, retriever_service.Chunk)
+        self.assertEqual("demo-chunk", x.name)
+        self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
+
     @parameterized.named_parameters(
         [
             dict(
