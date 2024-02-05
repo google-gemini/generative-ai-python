@@ -209,7 +209,7 @@ class UnitTests(parameterized.TestCase):
         ) -> retriever_service.Chunk:
             self.observed_requests.append(request)
             return glm.Chunk(
-                name="demo-chunk",
+                name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
                 data={"string_value": "This is a demo chunk."},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
@@ -429,7 +429,7 @@ class UnitTests(parameterized.TestCase):
             data="This is a demo chunk.",
         )
         self.assertIsInstance(x, retriever_service.Chunk)
-        self.assertEqual("demo-chunk", x.name)
+        self.assertEqual("corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk", x.name)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
 
     def test_create_chunk_empty(self):
@@ -439,7 +439,7 @@ class UnitTests(parameterized.TestCase):
             data="This is a demo chunk.",
         )
         self.assertIsInstance(x, retriever_service.Chunk)
-        self.assertEqual("demo-chunk", x.name)
+        self.assertEqual("corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk", x.name)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
 
     @parameterized.named_parameters(
