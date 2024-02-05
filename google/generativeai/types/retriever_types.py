@@ -224,9 +224,6 @@ class Corpus:
         if client is None:
             client = get_default_retriever_async_client()
 
-        if not name and not display_name:
-            raise ValueError("Either the document name or display name must be specified.")
-
         document = None
         if re.match(_VALID_NAME, name) and len(name) < 40:
             document_name = f"{self.name}/documents/{name}"
