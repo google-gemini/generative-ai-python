@@ -32,12 +32,16 @@ from google.generativeai.types import citation_types
 from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
 
+_VALID_NAME = r"[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$"
+NAME_ERROR_MSG = """The `name` must consist of alphanumeric characters (or -) and be 40 or fewer characters. The name you entered:
+\tlen(name)== {length}
+\tname={name}
+"""
 
-_DOCUMENT_NAME_REGEX = re.compile(r"^corpora/[a-z0-9-]+/documents/[a-z0-9-]+$")
-_CHUNK_NAME_REGEX = re.compile(r"^corpora/([^/]+?)(/documents/([^/]+?)(/chunks/([^/]+?))?)?$")
-_REMOVE = string.punctuation
-_REMOVE = _REMOVE.replace("-", "")  # Don't remove hyphens
-_PATTERN = r"[{}]".format(_REMOVE)  # Create the pattern
+
+def valid_name(name):
+    return re.match(_VALID_NAME, name) and len(name) < 40
+
 
 Operator = glm.Condition.Operator
 State = glm.Chunk.State
@@ -180,7 +184,7 @@ class Corpus:
 
     def create_document(
         self,
-        name: Optional[str] = None,
+        name: str,
         display_name: Optional[str] = None,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceClient | None = None,
@@ -203,24 +207,14 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
-        if not name and not display_name:
-            raise ValueError("Either the document name or display name must be specified.")
-
         document = None
-        if name:
-            if re.match(_DOCUMENT_NAME_REGEX, name):
-                document = glm.Document(
-                    name=name, display_name=display_name, custom_metadata=custom_metadata
-                )
-            elif f"corpora/{self.name}/documents/" not in name:
-                document_name = f"{self.name}/documents/" + re.sub(_PATTERN, "", name)
-                document = glm.Document(
-                    name=document_name, display_name=display_name, custom_metadata=custom_metadata
-                )
-            else:
-                raise ValueError(
-                    f"Document name must be formatted as {self.name}/document/<document_name>."
-                )
+        if valid_name(name):
+            document_name = f"{self.name}/documents/{name}"
+            document = glm.Document(
+                name=document_name, display_name=display_name, custom_metadata=custom_metadata
+            )
+        else:
+            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
         response = client.create_document(request)
@@ -228,7 +222,7 @@ class Corpus:
 
     async def create_document_async(
         self,
-        name: Optional[str] = None,
+        name: str,
         display_name: Optional[str] = None,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
@@ -237,24 +231,14 @@ class Corpus:
         if client is None:
             client = get_default_retriever_async_client()
 
-        if not name and not display_name:
-            raise ValueError("Either the document name or display name must be specified.")
-
         document = None
-        if name:
-            if re.match(_DOCUMENT_NAME_REGEX, name):
-                document = glm.Document(
-                    name=name, display_name=display_name, custom_metadata=custom_metadata
-                )
-            elif f"corpora/{self.name}/documents/" not in name:
-                document_name = f"{self.name}/documents/" + re.sub(_PATTERN, "", name)
-                document = glm.Document(
-                    name=document_name, display_name=display_name, custom_metadata=custom_metadata
-                )
-            else:
-                raise ValueError(
-                    f"Document name must be formatted as {self.name}/document/<document_name>."
-                )
+        if valid_name(name):
+            document_name = f"{self.name}/documents/{name}"
+            document = glm.Document(
+                name=document_name, display_name=display_name, custom_metadata=custom_metadata
+            )
+        else:
+            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
         response = await client.create_document(request)
@@ -431,7 +415,7 @@ class Corpus:
     def delete_document(
         self,
         name: str,
-        force: Optional[bool] = None,
+        force: bool = False,
         client: glm.RetrieverServiceClient | None = None,
     ):
         """
@@ -450,7 +434,7 @@ class Corpus:
     async def delete_document_async(
         self,
         name: str,
-        force: Optional[bool] = None,
+        force: bool = False,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
         """This is the async version of `Corpus.delete_document`."""
@@ -528,8 +512,8 @@ class Document(abc.ABC):
 
     def create_chunk(
         self,
-        name: Optional[str],
         data: str | ChunkData,
+        name: Optional[str] = None,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> Chunk:
@@ -537,8 +521,8 @@ class Document(abc.ABC):
         Create a `Chunk` object which has textual data.
 
         Args:
-            name: The `Chunk` resource name. The ID (name excluding the "corpora/*/documents/*/chunks/" prefix) can contain up to 40 characters that are lowercase alphanumeric or dashes (-).
             data: The content for the `Chunk`, such as the text string.
+            name: The `Chunk` resource name. The ID (name excluding the "corpora/*/documents/*/chunks/" prefix) can contain up to 40 characters that are lowercase alphanumeric or dashes (-).
             custom_metadata: User provided custom metadata stored as key-value pairs.
             state: States for the lifecycle of a `Chunk`.
 
@@ -551,17 +535,13 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        chunk_name, chunk = "", None
-        if name:
-            if re.match(_CHUNK_NAME_REGEX, name):
-                chunk_name = name
-
-            elif "chunks/" not in name:
-                chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
-            else:
-                raise ValueError(
-                    f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>."
-                )
+        chunk_name, chunk = None, None
+        if name is None:
+            chunk_name = None
+        elif valid_name(name):
+            chunk_name = f"{self.name}/chunks/{name}"
+        else:
+            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         if isinstance(data, str):
             chunk = glm.Chunk(
@@ -580,8 +560,8 @@ class Document(abc.ABC):
 
     async def create_chunk_async(
         self,
-        name: Optional[str],
         data: str | ChunkData,
+        name: Optional[str] = None,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Chunk:
@@ -589,17 +569,13 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        chunk_name, chunk = "", None
-        if name:
-            if re.match(_CHUNK_NAME_REGEX, name):
-                chunk_name = name
-
-            elif "chunks/" not in name:
-                chunk_name = f"{self.name}/chunks/" + re.sub(_PATTERN, "", name)
-            else:
-                raise ValueError(
-                    f"Chunk name must be formatted as {self.name}/chunks/<chunk_name>."
-                )
+        chunk_name, chunk = None, None
+        if name is None:
+            chunk_name = None
+        elif valid_name(name):
+            chunk_name = f"{self.name}/chunks/{name}"
+        else:
+            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         if isinstance(data, str):
             chunk = glm.Chunk(

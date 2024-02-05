@@ -23,17 +23,12 @@ import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_retriever_client
 from google.generativeai.client import get_default_retriever_async_client
-from google.generativeai.types import retriever_types
 from google.generativeai.types.model_types import idecode_time
-
-_CORPORA_NAME_REGEX = re.compile(r"^corpora/[a-z0-9-]+")
-_REMOVE = string.punctuation
-_REMOVE = _REMOVE.replace("-", "")  # Don't remove hyphens
-_PATTERN = r"[{}]".format(_REMOVE)  # Create the pattern
+from google.generativeai.types import retriever_types
 
 
 def create_corpus(
-    name: Optional[str] = None,
+    name: str,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
 ) -> retriever_types.Corpus:
@@ -58,18 +53,12 @@ def create_corpus(
     if client is None:
         client = get_default_retriever_client()
 
-    if not name and not display_name:
-        raise ValueError("Either the corpus name or display name must be specified.")
-
     corpus = None
-    if name:
-        if re.match(_CORPORA_NAME_REGEX, name):
-            corpus = glm.Corpus(name=name, display_name=display_name)
-        elif "corpora/" not in name:
-            corpus_name = "corpora/" + re.sub(_PATTERN, "", name)
-            corpus = glm.Corpus(name=corpus_name, display_name=display_name)
-        else:
-            raise ValueError("Corpus name must be formatted as corpora/<corpus_name>.")
+    if retriever_types.valid_name(name):
+        corpus_name = "corpora/" + name  # Construct the name
+        corpus = glm.Corpus(name=corpus_name, display_name=display_name)
+    else:
+        raise ValueError(retriever_types.NAME_ERROR_MSG.format(length=len(name), name=name))
 
     request = glm.CreateCorpusRequest(corpus=corpus)
     response = client.create_corpus(request)
@@ -81,7 +70,7 @@ def create_corpus(
 
 
 async def create_corpus_async(
-    name: Optional[str] = None,
+    name: str,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceAsyncClient | None = None,
 ) -> retriever_types.Corpus:
@@ -89,18 +78,12 @@ async def create_corpus_async(
     if client is None:
         client = get_default_retriever_async_client()
 
-    if not name and not display_name:
-        raise ValueError("Either the corpus name or display name must be specified.")
-
     corpus = None
-    if name:
-        if re.match(_CORPORA_NAME_REGEX, name):
-            corpus = glm.Corpus(name=name, display_name=display_name)
-        elif "corpora/" not in name:
-            corpus_name = "corpora/" + re.sub(_PATTERN, "", name)
-            corpus = glm.Corpus(name=corpus_name, display_name=display_name)
-        else:
-            raise ValueError("Corpus name must be formatted as corpora/<corpus_name>.")
+    if retriever_types.valid_name(name):
+        corpus_name = "corpora/" + name  # Construct the name
+        corpus = glm.Corpus(name=corpus_name, display_name=display_name)
+    else:
+        raise ValueError(retriever_types.NAME_ERROR_MSG.format(length=len(name), name=name))
 
     request = glm.CreateCorpusRequest(corpus=corpus)
     response = await client.create_corpus(request)
@@ -147,7 +130,7 @@ async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | 
     return response
 
 
-def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | None = None):  # fmt: skip
+def delete_corpus(name: str, force: bool = False, client: glm.RetrieverServiceClient | None = None):  # fmt: skip
     """
     Delete a `Corpus` from the service.
 
@@ -162,7 +145,7 @@ def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | N
     client.delete_corpus(request)
 
 
-async def delete_corpus_async(name: str, force: bool, client: glm.RetrieverServiceAsyncClient | None = None):  # fmt: skip
+async def delete_corpus_async(name: str, force: bool = False, client: glm.RetrieverServiceAsyncClient | None = None):  # fmt: skip
     """This is the async version of `retriever.delete_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
