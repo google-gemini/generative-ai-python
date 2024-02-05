@@ -262,7 +262,7 @@ class UnitTests(parameterized.TestCase):
                     update_time="2000-01-01T01:01:01.123456Z",
                 ),
                 glm.Chunk(
-                    name="corpora/demo-corpus/documents/demo-doc/chunks/demo_chunk_1",
+                    name="corpora/demo-corpus/documents/demo-doc/chunks/demo-chunk-1",
                     data={"string_value": "This is another demo chunk."},
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
@@ -293,7 +293,7 @@ class UnitTests(parameterized.TestCase):
                         update_time="2000-01-01T01:01:01.123456Z",
                     ),
                     glm.Chunk(
-                        name="corpora/demo-corpus/documents/demo-doc/chunks/demo_chunk_1",
+                        name="corpora/demo-corpus/documents/demo-doc/chunks/demo-chunk-1",
                         data={"string_value": "This is another updated chunk."},
                         create_time="2000-01-01T01:01:01.123456Z",
                         update_time="2000-01-01T01:01:01.123456Z",
@@ -517,7 +517,7 @@ class UnitTests(parameterized.TestCase):
                     "corpora/demo-corpus/documents/demo-doc/chunks/demo-chunk": {
                         "data": {"string_value": "This is an updated chunk."}
                     },
-                    "corpora/demo-corpus/documents/demo-doc/chunks/demo_chunk_1": {
+                    "corpora/demo-corpus/documents/demo-doc/chunks/demo-chunk-1": {
                         "data": {"string_value": "This is another updated chunk."}
                     },
                 },
@@ -530,7 +530,7 @@ class UnitTests(parameterized.TestCase):
                         {"data": {"string_value": "This is an updated chunk."}},
                     ),
                     (
-                        "corpora/demo-corpus/documents/demo-doc/chunks/demo_chunk_1",
+                        "corpora/demo-corpus/documents/demo-doc/chunks/demo-chunk-1",
                         {"data": {"string_value": "This is another updated chunk."}},
                     ),
                 ],

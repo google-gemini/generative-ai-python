@@ -99,7 +99,7 @@ async def create_corpus_async(
         )
 
     request = glm.CreateCorpusRequest(corpus=corpus)
-    response = client.create_corpus(request)
+    response = await client.create_corpus(request)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")

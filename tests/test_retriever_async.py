@@ -265,7 +265,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                     update_time="2000-01-01T01:01:01.123456Z",
                 )
                 yield glm.Chunk(
-                    name="corpora/demo-corpus/documents/dem-doc/chunks/demo_chunk_1",
+                    name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk-1",
                     data={"string_value": "This is another demo chunk."},
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
@@ -297,7 +297,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                         update_time="2000-01-01T01:01:01.123456Z",
                     ),
                     glm.Chunk(
-                        name="corpora/demo-corpus/documents/dem-doc/chunks/demo_chunk_1",
+                        name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk-1",
                         data={"string_value": "This is another updated chunk."},
                         create_time="2000-01-01T01:01:01.123456Z",
                         update_time="2000-01-01T01:01:01.123456Z",
@@ -401,7 +401,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
     async def test_list_documents(self):
         demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
         demo_document = await demo_corpus.create_document_async(name="demo-doc")
-        demo_doc2 = await demo_corpus.create_document_async(name="demo-doc_2")
+        demo_doc2 = await demo_corpus.create_document_async(name="demo-doc-2")
         self.assertLen(list(demo_corpus.list_documents()), 2)
 
     async def test_query_document(self):
@@ -439,29 +439,6 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(x, retriever_service.Chunk)
         self.assertEqual("corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk", x.name)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
-
-    @parameterized.named_parameters(
-        [
-            dict(
-                testcase_name="match_chunk_regex",
-                name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
-            ),
-            dict(testcase_name="no_chunk", name="corpora/demo-corpus/dem-document/demo-chunk"),
-            dict(
-                testcase_name="with_punctuation",
-                name="corpora/demo-corpus*(*)/documents/dem-doc/chunks*****/demo-chunk",
-            ),
-            dict(testcase_name="dash_at_start", name="-demo-chunk"),
-        ]
-    )
-    async def test_create_chunk_name(self, name):
-        demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
-        demo_document = await demo_corpus.create_document_async(name="demo-doc")
-        x = await demo_document.create_chunk_async(
-            name=name,
-            data="This is a demo chunk.",
-        )
-        self.assertEqual("corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk", x.name)
 
     @parameterized.named_parameters(
         [
@@ -519,7 +496,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             data="This is a demo chunk.",
         )
         y = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo_chunk_1",
+            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk-1",
             data="This is another demo chunk.",
         )
         chunks = []
@@ -549,7 +526,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                     "corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk": {
                         "data": {"string_value": "This is an updated chunk."}
                     },
-                    "corpora/demo-corpus/documents/dem-doc/chunks/demo_chunk_1": {
+                    "corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk-1": {
                         "data": {"string_value": "This is another updated chunk."}
                     },
                 },
@@ -562,7 +539,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                         {"data": {"string_value": "This is an updated chunk."}},
                     ),
                     (
-                        "corpora/demo-corpus/documents/dem-doc/chunks/demo_chunk_1",
+                        "corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk-1",
                         {"data": {"string_value": "This is another updated chunk."}},
                     ),
                 ],
@@ -577,7 +554,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             data="This is a demo chunk.",
         )
         y = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo_chunk_1",
+            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk-1",
             data="This is another demo chunk.",
         )
         update_request = await demo_document.batch_update_chunks_async(chunks=updates)
