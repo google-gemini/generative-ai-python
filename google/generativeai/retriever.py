@@ -25,7 +25,7 @@ from google.generativeai.client import get_default_retriever_client
 from google.generativeai.client import get_default_retriever_async_client
 from google.generativeai.types import retriever_types
 from google.generativeai.types.model_types import idecode_time
-from google.generativeai.types.retriever_types import _VALID_NAME
+from google.generativeai.types import retriever_types
 
 
 def create_corpus(
@@ -55,7 +55,7 @@ def create_corpus(
         client = get_default_retriever_client()
 
     corpus = None
-    if re.match(_VALID_NAME, name) and len(name) < 40:
+    if retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:
@@ -82,7 +82,7 @@ async def create_corpus_async(
         client = get_default_retriever_async_client()
 
     corpus = None
-    if re.match(_VALID_NAME, name) and len(name) < 40:
+    if retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:

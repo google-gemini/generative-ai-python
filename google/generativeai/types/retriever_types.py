@@ -34,6 +34,9 @@ from google.generativeai.utils import flatten_update_paths
 
 _VALID_NAME = r"[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$"
 
+def valid_name(name)
+  return re.match(_VALID_NAME, name) and len(name) < 40
+
 Operator = glm.Condition.Operator
 State = glm.Chunk.State
 
@@ -199,7 +202,7 @@ class Corpus:
             client = get_default_retriever_client()
 
         document = None
-        if re.match(_VALID_NAME, name) and len(name) < 40:
+        if valid_name(name):
             document_name = f"{self.name}/documents/{name}"
             document = glm.Document(
                 name=document_name, display_name=display_name, custom_metadata=custom_metadata
@@ -225,7 +228,7 @@ class Corpus:
             client = get_default_retriever_async_client()
 
         document = None
-        if re.match(_VALID_NAME, name) and len(name) < 40:
+        if valid_name(name):
             document_name = f"{self.name}/documents/{name}"
             document = glm.Document(
                 name=document_name, display_name=display_name, custom_metadata=custom_metadata
@@ -531,7 +534,7 @@ class Document(abc.ABC):
             client = get_default_retriever_client()
 
         chunk_name, chunk = "", None
-        if re.match(_VALID_NAME, name) and len(name) < 40:
+        if valid_name(name):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(
@@ -565,7 +568,7 @@ class Document(abc.ABC):
             client = get_default_retriever_async_client()
 
         chunk_name, chunk = "", None
-        if re.match(_VALID_NAME, name) and len(name) < 40:
+        if valid_name(name):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(
