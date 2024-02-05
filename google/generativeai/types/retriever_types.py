@@ -32,7 +32,7 @@ from google.generativeai.types import citation_types
 from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
 
-_VALID_NAME = r"^[^-][a-z0-9\-]+[^-]$"
+_VALID_NAME = r"[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$"
 
 Operator = glm.Condition.Operator
 State = glm.Chunk.State
