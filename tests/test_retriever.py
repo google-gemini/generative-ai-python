@@ -46,7 +46,7 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return glm.Corpus(
                 name="corpora/demo_corpus",
-                display_name="demo_corpus",
+                display_name="demo-corpus",
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
             )
@@ -58,7 +58,7 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return glm.Corpus(
                 name="corpora/demo_corpus",
-                display_name="demo_corpus",
+                display_name="demo-corpus",
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
             )
@@ -70,7 +70,7 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return glm.Corpus(
                 name="corpora/demo_corpus",
-                display_name="demo_corpus_1",
+                display_name="demo-corpus_1",
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
             )
@@ -83,13 +83,13 @@ class UnitTests(parameterized.TestCase):
             return [
                 glm.Corpus(
                     name="corpora/demo_corpus_1",
-                    display_name="demo_corpus_1",
+                    display_name="demo-corpus_1",
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                 ),
                 glm.Corpus(
                     name="corpora/demo_corpus_2",
-                    display_name="demo_corpus_2",
+                    display_name="demo-corpus_2",
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                 ),
@@ -105,7 +105,7 @@ class UnitTests(parameterized.TestCase):
                     glm.RelevantChunk(
                         chunk_relevance_score=0.08,
                         chunk=glm.Chunk(
-                            name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                            name="demo-chunk",
                             data={"string_value": "This is a demo chunk."},
                             custom_metadata=[],
                             state=0,
@@ -127,7 +127,7 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return glm.Document(
                 name="corpora/demo_corpus/documents/demo_doc",
-                display_name="demo_doc",
+                display_name="demo-doc",
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
             )
@@ -139,7 +139,7 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return glm.Document(
                 name="corpora/demo_corpus/documents/demo_doc",
-                display_name="demo_doc",
+                display_name="demo-doc",
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
             )
@@ -151,7 +151,7 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return glm.Document(
                 name="corpora/demo_corpus/documents/demo_doc",
-                display_name="demo_doc_1",
+                display_name="demo-doc-1",
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
             )
@@ -164,13 +164,13 @@ class UnitTests(parameterized.TestCase):
             return [
                 glm.Document(
                     name="corpora/demo_corpus/documents/demo_doc_1",
-                    display_name="demo_doc_1",
+                    display_name="demo-doc-1",
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                 ),
                 glm.Document(
                     name="corpora/demo_corpus/documents/demo_doc_2",
-                    display_name="demo_doc_2",
+                    display_name="demo-doc-2",
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                 ),
@@ -192,7 +192,7 @@ class UnitTests(parameterized.TestCase):
                     glm.RelevantChunk(
                         chunk_relevance_score=0.08,
                         chunk=glm.Chunk(
-                            name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                            name="demo-chunk",
                             data={"string_value": "This is a demo chunk."},
                             custom_metadata=[],
                             state=0,
@@ -209,7 +209,7 @@ class UnitTests(parameterized.TestCase):
         ) -> retriever_service.Chunk:
             self.observed_requests.append(request)
             return glm.Chunk(
-                name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                name="demo-chunk",
                 data={"string_value": "This is a demo chunk."},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
@@ -243,7 +243,7 @@ class UnitTests(parameterized.TestCase):
         ) -> retriever_service.Chunk:
             self.observed_requests.append(request)
             return glm.Chunk(
-                name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                name="demo-chunk",
                 data={"string_value": "This is a demo chunk."},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
@@ -256,7 +256,7 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return [
                 glm.Chunk(
-                    name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                    name="demo-chunk",
                     data={"string_value": "This is a demo chunk."},
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
@@ -273,7 +273,7 @@ class UnitTests(parameterized.TestCase):
         def update_chunk(request: glm.UpdateChunkRequest) -> glm.Chunk:
             self.observed_requests.append(request)
             return glm.Chunk(
-                name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                name="demo-chunk",
                 data={"string_value": "This is an updated demo chunk."},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
@@ -287,7 +287,7 @@ class UnitTests(parameterized.TestCase):
             return glm.BatchUpdateChunksResponse(
                 chunks=[
                     glm.Chunk(
-                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        name="demo-chunk",
                         data={"string_value": "This is an updated chunk."},
                         create_time="2000-01-01T01:01:01.123456Z",
                         update_time="2000-01-01T01:01:01.123456Z",
@@ -313,32 +313,32 @@ class UnitTests(parameterized.TestCase):
         ) -> None:
             self.observed_requests.append(request)
 
-    def test_create_corpus(self, name="demo_corpus"):
+    def test_create_corpus(self, name="demo-corpus"):
         x = retriever.create_corpus(name=name)
         self.assertIsInstance(x, retriever_service.Corpus)
-        self.assertEqual("demo_corpus", x.display_name)
+        self.assertEqual("demo-corpus", x.display_name)
         self.assertEqual("corpora/demo_corpus", x.name)
 
-    def test_get_corpus(self, name="demo_corpus"):
+    def test_get_corpus(self, name="demo-corpus"):
         x = retriever.create_corpus(name=name)
         c = retriever.get_corpus(name=x.name)
-        self.assertEqual("demo_corpus", c.display_name)
+        self.assertEqual("demo-corpus", c.display_name)
 
     def test_update_corpus(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        update_request = demo_corpus.update(updates={"display_name": "demo_corpus_1"})
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        update_request = demo_corpus.update(updates={"display_name": "demo-corpus_1"})
         self.assertIsInstance(self.observed_requests[-1], glm.UpdateCorpusRequest)
-        self.assertEqual("demo_corpus_1", demo_corpus.display_name)
+        self.assertEqual("demo-corpus_1", demo_corpus.display_name)
 
     def test_list_corpora(self):
         x = list(retriever.list_corpora(page_size=1))
         self.assertEqual(len(x), 2)
 
     def test_query_corpus(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         demo_chunk = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         q = demo_corpus.query(query="What kind of chunk is this?")
@@ -348,7 +348,7 @@ class UnitTests(parameterized.TestCase):
                 retriever_service.RelevantChunk(
                     chunk_relevance_score=0.08,
                     chunk=retriever_service.Chunk(
-                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        name="demo-chunk",
                         data="This is a demo chunk.",
                         custom_metadata=[],
                         state=0,
@@ -360,47 +360,47 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_delete_corpus(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         delete_request = retriever.delete_corpus(name="corpora/demo_corpus", force=True)
         self.assertIsInstance(self.observed_requests[-1], glm.DeleteCorpusRequest)
 
-    def test_create_document(self, name="demo_doc"):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        x = demo_corpus.create_document(name=name)
+    def test_create_document(self, display_name="demo-doc"):
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        x = demo_corpus.create_document(name=display_name)
         self.assertIsInstance(x, retriever_service.Document)
-        self.assertEqual("demo_doc", x.display_name)
+        self.assertEqual("demo-doc", x.display_name)
 
-    def test_get_document(self, name="demo_doc"):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        x = demo_corpus.create_document(name=name)
+    def test_get_document(self, display_name="demo-doc"):
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        x = demo_corpus.create_document(name=display_name)
         d = demo_corpus.get_document(name=x.name)
-        self.assertEqual("demo_doc", d.display_name)
+        self.assertEqual("demo-doc", d.display_name)
 
     def test_update_document(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
-        update_request = demo_document.update(updates={"display_name": "demo_doc_1"})
-        self.assertEqual("demo_doc_1", demo_document.display_name)
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
+        update_request = demo_document.update(updates={"display_name": "demo-doc-1"})
+        self.assertEqual("demo-doc-1", demo_document.display_name)
 
     def test_delete_document(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
-        demo_doc2 = demo_corpus.create_document(name="demo_doc_2")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
+        demo_doc2 = demo_corpus.create_document(name="demo-doc-2")
         delete_request = demo_corpus.delete_document(name="corpora/demo_corpus/documents/demo_doc")
         self.assertIsInstance(self.observed_requests[-1], glm.DeleteDocumentRequest)
 
     def test_list_documents(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
-        demo_doc2 = demo_corpus.create_document(name="demo_doc_2")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
+        demo_doc2 = demo_corpus.create_document(name="demo-doc-2")
         self.assertLen(list(demo_corpus.list_documents()), 2)
 
     def test_query_document(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         demo_chunk = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         q = demo_document.query(query="What kind of chunk is this?")
@@ -410,7 +410,7 @@ class UnitTests(parameterized.TestCase):
                 retriever_service.RelevantChunk(
                     chunk_relevance_score=0.08,
                     chunk=retriever_service.Chunk(
-                        name="corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        name="demo-chunk",
                         data="This is a demo chunk.",
                         custom_metadata=[],
                         state=0,
@@ -422,15 +422,16 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_create_chunk(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         x = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         self.assertIsInstance(x, retriever_service.Chunk)
-        self.assertEqual("corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk", x.name)
+        self.assertEqual("demo-chunk", x.name)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
+
 
     @parameterized.named_parameters(
         [
@@ -463,32 +464,32 @@ class UnitTests(parameterized.TestCase):
         ]
     )
     def test_batch_create_chunks(self, chunks):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         chunks = demo_document.batch_create_chunks(chunks=chunks)
         self.assertIsInstance(self.observed_requests[-1], glm.BatchCreateChunksRequest)
         self.assertEqual("This is a demo chunk.", chunks[0].data.string_value)
         self.assertEqual("This is another demo chunk.", chunks[1].data.string_value)
 
     def test_get_chunk(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         x = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         ch = demo_document.get_chunk(name=x.name)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), ch.data)
 
     def test_list_chunks(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         x = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         y = demo_document.create_chunk(
-            name="demo_chunk_1",
+            name="demo-chunk-1",
             data="This is another demo chunk.",
         )
 
@@ -497,10 +498,10 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(list_req, 2)
 
     def test_update_chunk(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         x = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         x.update(updates={"data": {"string_value": "This is an updated demo chunk."}})
@@ -514,7 +515,7 @@ class UnitTests(parameterized.TestCase):
             dict(
                 testcase_name="dictionary_of_updates",
                 updates={
-                    "corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk": {
+                    "corpora/demo_corpus/documents/demo_doc/chunks/demo-chunk": {
                         "data": {"string_value": "This is an updated chunk."}
                     },
                     "corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk_1": {
@@ -526,7 +527,7 @@ class UnitTests(parameterized.TestCase):
                 testcase_name="list_of_tuples",
                 updates=[
                     (
-                        "corpora/demo_corpus/documents/demo_doc/chunks/demo_chunk",
+                        "corpora/demo_corpus/documents/demo_doc/chunks/demo-chunk",
                         {"data": {"string_value": "This is an updated chunk."}},
                     ),
                     (
@@ -538,14 +539,14 @@ class UnitTests(parameterized.TestCase):
         ],
     )
     def test_batch_update_chunks_data_structures(self, updates):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         x = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         y = demo_document.create_chunk(
-            name="demo_chunk_1",
+            name="demo-chunk-1",
             data="This is another demo chunk.",
         )
         update_request = demo_document.batch_update_chunks(chunks=updates)
@@ -558,24 +559,26 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_delete_chunk(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         x = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
-        delete_request = demo_document.delete_chunk(name="demo_chunk")
+        delete_request = demo_document.delete_chunk(
+            name="demo-chunk"
+        )
         self.assertIsInstance(self.observed_requests[-1], glm.DeleteChunkRequest)
 
     def test_batch_delete_chunks(self):
-        demo_corpus = retriever.create_corpus(name="demo_corpus")
-        demo_document = demo_corpus.create_document(name="demo_doc")
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
         x = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         y = demo_document.create_chunk(
-            name="demo_chunk",
+            name="demo-chunk",
             data="This is another demo chunk.",
         )
         delete_request = demo_document.batch_delete_chunks(chunks=[x.name, y.name])

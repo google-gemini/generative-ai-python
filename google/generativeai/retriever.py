@@ -25,8 +25,7 @@ from google.generativeai.client import get_default_retriever_client
 from google.generativeai.client import get_default_retriever_async_client
 from google.generativeai.types import retriever_types
 from google.generativeai.types.model_types import idecode_time
-
-_VALID_NAME = r"^[^-][a-zA-Z\d-][^-]+$"
+from google.generativeai.types.retriever_types import _VALID_NAME
 
 
 def create_corpus(
@@ -62,9 +61,9 @@ def create_corpus(
     else:
         raise ValueError(
             """
-            `Corpus` name must be formatted as corpora/<corpus_name>. Enter a `corpus_name` that 
-            contains alphanumeric characters and/or dashes, but the name must not begin or end 
-            with a dash. The name entered for the `Corpus` must be less than 40 characters.
+            Enter an alphanumeric name which can contain dashes that is less than 40 characters, 
+            but the name must not begin or end with a dash for the `Corpus`. The name 
+            entered will be formatted as corpora/<corpus_name>.
             """
         )
 
