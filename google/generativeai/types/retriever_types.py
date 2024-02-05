@@ -416,7 +416,7 @@ class Corpus:
     def delete_document(
         self,
         name: str,
-        force: Optional[bool] = None,
+        force: bool = False,
         client: glm.RetrieverServiceClient | None = None,
     ):
         """
@@ -435,7 +435,7 @@ class Corpus:
     async def delete_document_async(
         self,
         name: str,
-        force: Optional[bool] = None,
+        force: bool = False,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ):
         """This is the async version of `Corpus.delete_document`."""

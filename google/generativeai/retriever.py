@@ -134,7 +134,7 @@ async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | 
     return response
 
 
-def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | None = None):  # fmt: skip
+def delete_corpus(name: str, force: bool = False, client: glm.RetrieverServiceClient | None = None):  # fmt: skip
     """
     Delete a `Corpus` from the service.
 
@@ -149,7 +149,7 @@ def delete_corpus(name: str, force: bool, client: glm.RetrieverServiceClient | N
     client.delete_corpus(request)
 
 
-async def delete_corpus_async(name: str, force: bool, client: glm.RetrieverServiceAsyncClient | None = None):  # fmt: skip
+async def delete_corpus_async(name: str, force: bool = False, client: glm.RetrieverServiceAsyncClient | None = None):  # fmt: skip
     """This is the async version of `retriever.delete_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
