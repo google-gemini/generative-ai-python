@@ -33,9 +33,12 @@ from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
 
 _VALID_NAME = r"[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$"
+_NAME_ERROR_MESSAGE = "`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the "
+
 
 def valid_name(name):
-  return re.match(_VALID_NAME, name) and len(name) < 40
+    return re.match(_VALID_NAME, name) and len(name) < 40
+
 
 Operator = glm.Condition.Operator
 State = glm.Chunk.State
@@ -209,7 +212,7 @@ class Corpus:
             )
         else:
             raise ValueError(
-                f"`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Document`. The name entered will be formatted as {self.name}/documents/<document_name>."
+                f"{_NAME_ERROR_MESSAGE}`Document`. The name entered will be formatted as {self.name}/documents/<document_name>."
             )
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
@@ -235,7 +238,7 @@ class Corpus:
             )
         else:
             raise ValueError(
-                f"`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Document`. The name entered will be formatted as {self.name}/documents/<document_name>."
+                f"{_NAME_ERROR_MESSAGE}`Document`. The name entered will be formatted as {self.name}/documents/<document_name>."
             )
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
@@ -538,7 +541,7 @@ class Document(abc.ABC):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(
-                f"`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Chunk`. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
+                f"{_NAME_ERROR_MESSAGE}`Chunk`. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
             )
 
         if isinstance(data, str):
@@ -572,7 +575,7 @@ class Document(abc.ABC):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(
-                f"`name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Chunk`. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
+                f"{_NAME_ERROR_MESSAGE}`Chunk`. The name entered will be formatted as {self.name}/chunk/<chunk_name>."
             )
 
         if isinstance(data, str):

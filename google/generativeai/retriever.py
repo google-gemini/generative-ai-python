@@ -23,7 +23,6 @@ import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_retriever_client
 from google.generativeai.client import get_default_retriever_async_client
-from google.generativeai.types import retriever_types
 from google.generativeai.types.model_types import idecode_time
 from google.generativeai.types import retriever_types
 
@@ -60,7 +59,7 @@ def create_corpus(
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:
         raise ValueError(
-            " `name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Corpus`. The name entered will be formatted as corpora/<corpus_name>."
+            f"{retriever_types._NAME_ERROR_MESSAGE}`Corpus`. The name entered will be formatted as corpora/<corpus_name>."
         )
 
     request = glm.CreateCorpusRequest(corpus=corpus)
@@ -87,7 +86,7 @@ async def create_corpus_async(
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:
         raise ValueError(
-            " `name` parameter contains non-alphanumeric characters or is longer than 40 characters. Enter an alphanumeric name which can contain dashes that is less than 40 characters, but the name must not begin or end with a dash for the `Corpus`. The name entered will be formatted as corpora/<corpus_name>."
+            f"{retriever_types._NAME_ERROR_MESSAGE}`Corpus`. The name entered will be formatted as corpora/<corpus_name>."
         )
 
     request = glm.CreateCorpusRequest(corpus=corpus)
