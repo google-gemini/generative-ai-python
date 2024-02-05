@@ -513,7 +513,7 @@ class Document(abc.ABC):
 
     def create_chunk(
         self,
-        name: str,
+        name: str | None,
         data: str | ChunkData,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceClient | None = None,
@@ -561,7 +561,7 @@ class Document(abc.ABC):
 
     async def create_chunk_async(
         self,
-        name: str,
+        name: str | None,
         data: str | ChunkData,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
