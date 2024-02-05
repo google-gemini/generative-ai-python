@@ -23,11 +23,7 @@ import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_retriever_client
 from google.generativeai.client import get_default_retriever_async_client
-from google.generativeai import string_utils
 from google.generativeai.types import retriever_types
-from google.generativeai.types import model_types
-from google.generativeai import models
-from google.generativeai.types import safety_types
 from google.generativeai.types.model_types import idecode_time
 
 _CORPORA_NAME_REGEX = re.compile(r"^corpora/[a-z0-9-]+")

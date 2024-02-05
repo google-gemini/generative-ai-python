@@ -45,14 +45,20 @@ State = glm.Chunk.State
 OperatorOptions = Union[str, int, Operator]
 StateOptions = Union[str, int, State]
 
-CreateChunkOptions = Union[Mapping[str, str], tuple[str, str]]
+ChunkOptions = Union[
+    glm.Chunk,
+    str,
+    tuple[str, str],
+    tuple[str, str, Any],
+    Mapping[str, Any],
+]  # fmt: no
 
 BatchCreateChunkOptions = Union[
     glm.BatchCreateChunksRequest,
-    list[glm.CreateChunkRequest],
-    Iterable[str],
-    Iterable[CreateChunkOptions],
-]
+    Mapping[str, str],
+    Mapping[str, tuple[str, str]],
+    Iterable[ChunkOptions],
+]  # fmt: no
 
 UpdateChunkOptions = Union[glm.UpdateChunkRequest, Mapping[str, Any], tuple[str, Any]]
 
@@ -610,6 +616,63 @@ class Document(abc.ABC):
         response = await client.create_chunk(request)
         return decode_chunk(response)
 
+    def _make_chunk(self, chunk: ChunkOptions) -> glm.Chunk:
+        del self
+        if isinstance(chunk, glm.Chunk):
+            return chunk
+        elif isinstance(chunk, str):
+            return glm.Chunk(data={"string_value": chunk})
+        elif isinstance(chunk, tuple):
+            if len(chunk) == 2:
+                name, data = chunk  # pytype: disable=bad-unpacking
+                custom_metadata = None
+            elif len(chunk) == 3:
+                name, data, custom_metadata = chunk  # pytype: disable=bad-unpacking
+            else:
+                raise ValueError(
+                    f"Tuples should have length 2 or 3, got length: {len(chunk)}\n"
+                    f"value: {chunk}"
+                )
+
+            return glm.Chunk(
+                name=name,
+                data={"string_value": data},
+                custom_metadata=custom_metadata,
+            )
+        elif isinstance(chunk, Mapping):
+            if isinstance(chunk["data"], str):
+                chunk = dict(chunk)
+                chunk["data"] = {"string_value": chunk["data"]}
+            return glm.Chunk(chunk)
+        else:
+            raise TypeError(
+                f"Could not convert instance of `{type(chunk)}` chunk:" f"value: {chunk}"
+            )
+
+    def _make_batch_create_chunk_request(
+        self, chunks: BatchCreateChunkOptions
+    ) -> glm.BatchCreateChunksRequest:
+        if isinstance(chunks, glm.BatchCreateChunksRequest):
+            return chunks
+
+        if isinstance(chunks, Mapping):
+            chunks = chunks.items()
+            chunks = (
+                # Flatten tuples
+                (key,) + value if isinstance(value, tuple) else (key, value)
+                for key, value in chunks
+            )
+
+        requests = []
+        for i, chunk in enumerate(chunks):
+            chunk = self._make_chunk(chunk)
+            if chunk.name == "":
+                chunk.name = str(i)
+
+            requests.append(glm.CreateChunkRequest(parent=self.name, chunk=chunk))
+
+        return glm.BatchCreateChunksRequest(parent=self.name, requests=requests)
+
     def batch_create_chunks(
         self,
         chunks: BatchCreateChunkOptions,
@@ -627,63 +690,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        if isinstance(chunks, glm.BatchCreateChunksRequest):
-            response = client.batch_create_chunks(chunks)
-            response = type(response).to_dict(response)
-            return response
-
-        _requests = []
-        name, data, custom_metadata = None, None, None
-        if isinstance(chunks, Iterable):
-            for chunk in chunks:
-                if isinstance(chunk, glm.CreateChunkRequest):
-                    _requests.append(chunk)
-                elif isinstance(chunk, str):
-                    c = glm.CreateChunkRequest(
-                        parent=self.name, chunk=glm.Chunk(data={"string_value": chunk})
-                    )
-                    _requests.append(c)
-                elif isinstance(chunk, Mapping):
-                    for key, value in chunk.items():
-                        if re.match(_CHUNK_NAME_REGEX, value):
-                            name = value
-                        elif isinstance(value, str):
-                            data = chunk[key]
-                        elif isinstance(value, Iterable):
-                            custom_metadata = value
-                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
-                            parent=self.name,
-                            chunk=glm.Chunk(
-                                name=name,
-                                data={"string_value": data},
-                                custom_metadata=custom_metadata,
-                            ),
-                        )
-                        _requests.append(c)
-                elif isinstance(chunk, tuple):
-                    for item in chunk:
-                        if re.match(_CHUNK_NAME_REGEX, item):
-                            name = item
-                        elif isinstance(item, str):
-                            data = item
-                        elif isinstance(item, Iterable):
-                            custom_metadata = item
-                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
-                            parent=self.name,
-                            chunk=glm.Chunk(
-                                name=name,
-                                data={"string_value": data},
-                                custom_metadata=custom_metadata,
-                            ),
-                        )
-
-                else:
-                    raise TypeError(
-                        "Batched chunk requests must be in the format of a dictionary or tuple,"
-                        "with the name as the key and the data as the value."
-                    )
-
-        request = glm.BatchCreateChunksRequest(parent=self.name, requests=_requests)
+        request = self._make_batch_create_chunk_request(chunks)
         response = client.batch_create_chunks(request)
         return [decode_chunk(chunk) for chunk in response.chunks]
 
@@ -696,63 +703,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        if isinstance(chunks, glm.BatchCreateChunksRequest):
-            response = await client.batch_create_chunks(chunks)
-            response = type(response).to_dict(response)
-            return response
-
-        _requests = []
-        name, data, custom_metadata = None, None, None
-        if isinstance(chunks, Iterable):
-            for chunk in chunks:
-                if isinstance(chunk, glm.CreateChunkRequest):
-                    _requests.append(chunk)
-                elif isinstance(chunk, str):
-                    c = glm.CreateChunkRequest(
-                        parent=self.name, chunk=glm.Chunk(data={"string_value": chunk})
-                    )
-                    _requests.append(c)
-                elif isinstance(chunk, Mapping):
-                    for key, value in chunk.items():
-                        if re.match(_CHUNK_NAME_REGEX, value):
-                            name = value
-                        elif isinstance(value, str):
-                            data = chunk[key]
-                        elif isinstance(value, Iterable):
-                            custom_metadata = value
-                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
-                            parent=self.name,
-                            chunk=glm.Chunk(
-                                name=name,
-                                data={"string_value": data},
-                                custom_metadata=custom_metadata,
-                            ),
-                        )
-                        _requests.append(c)
-                elif isinstance(chunk, tuple):
-                    for item in chunk:
-                        if re.match(_CHUNK_NAME_REGEX, item):
-                            name = item
-                        elif isinstance(item, str):
-                            data = item
-                        elif isinstance(item, Iterable):
-                            custom_metadata = item
-                        c = glm.CreateChunkRequest(  # Create a glm.CreateChunkRequest
-                            parent=self.name,
-                            chunk=glm.Chunk(
-                                name=name,
-                                data={"string_value": data},
-                                custom_metadata=custom_metadata,
-                            ),
-                        )
-
-                else:
-                    raise TypeError(
-                        "Batched chunk requests must be in the format of a dictionary or tuple,"
-                        "with the name as the key and the data as the value."
-                    )
-
-        request = glm.BatchCreateChunksRequest(parent=self.name, requests=_requests)
+        request = self._make_batch_create_chunk_request(chunks)
         response = await client.batch_create_chunks(request)
         return [decode_chunk(chunk) for chunk in response.chunks]
 

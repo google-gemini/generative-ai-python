@@ -214,7 +214,7 @@ class UnitTests(parameterized.TestCase):
                 {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
             ]
         )
-        print(type(grounding_passages))
+
         a = answer.generate_answer(
             model="models/aqa",
             contents=contents,
