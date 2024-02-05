@@ -82,7 +82,7 @@ def create_corpus(
 
 
 async def create_corpus_async(
-    name: Optional[str] = None,
+    name: str,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceAsyncClient | None = None,
 ) -> retriever_types.Corpus:

@@ -32,12 +32,6 @@ from google.generativeai.types import citation_types
 from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
 
-
-# _DOCUMENT_NAME_REGEX = re.compile(r"^corpora/[a-z0-9-]+/documents/[a-z0-9-]+$")
-# _CHUNK_NAME_REGEX = re.compile(r"^corpora/([^/]+?)(/documents/([^/]+?)(/chunks/([^/]+?))?)?$")
-# _REMOVE = string.punctuation
-# _REMOVE = _REMOVE.replace("-", "")  # Don't remove hyphens
-# _PATTERN = r"[{}]".format(_REMOVE)  # Create the pattern
 _VALID_NAME = r"^[^-][a-zA-Z\d-][^-]+$"
 
 Operator = glm.Condition.Operator
@@ -641,7 +635,7 @@ class Document(abc.ABC):
                     _requests.append(c)
                 elif isinstance(chunk, Mapping):
                     for key, value in chunk.items():
-                        if re.match(_CHUNK_NAME_REGEX, value):
+                        if re.match(_VALID_NAME, value):
                             name = value
                         elif isinstance(value, str):
                             data = chunk[key]
@@ -658,7 +652,7 @@ class Document(abc.ABC):
                         _requests.append(c)
                 elif isinstance(chunk, tuple):
                     for item in chunk:
-                        if re.match(_CHUNK_NAME_REGEX, item):
+                        if re.match(_VALID_NAME, item):
                             name = item
                         elif isinstance(item, str):
                             data = item
@@ -710,7 +704,7 @@ class Document(abc.ABC):
                     _requests.append(c)
                 elif isinstance(chunk, Mapping):
                     for key, value in chunk.items():
-                        if re.match(_CHUNK_NAME_REGEX, value):
+                        if re.match(_VALID_NAME, value):
                             name = value
                         elif isinstance(value, str):
                             data = chunk[key]
@@ -727,7 +721,7 @@ class Document(abc.ABC):
                         _requests.append(c)
                 elif isinstance(chunk, tuple):
                     for item in chunk:
-                        if re.match(_CHUNK_NAME_REGEX, item):
+                        if re.match(_VALID_NAME, item):
                             name = item
                         elif isinstance(item, str):
                             data = item
