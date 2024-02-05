@@ -34,16 +34,24 @@ _EMBED_CONTENT_ASYNC_DOC = """The async version of `genai.embed_content`."""
 _EMBED_CONTENT_DOC = """Calls the API to create embeddings for content passed in.
 
     Args:
-        model: Which model to call, as a string or a `types.Model`.
+        model:
+            Which [model](https://ai.google.dev/models/gemini#embedding) to
+            call, as a string or a `types.Model`.
 
-        content: Content to embed.
+        content:
+            Content to embed.
 
-        task_type: Optional task type for which the embeddings will be used. Can only be set for `models/embedding-001`.
+        task_type:
+            Optional task type for which the embeddings will be used. Can only
+            be set for `models/embedding-001`.
 
-        title: An optional title for the text. Only applicable when task_type is `RETRIEVAL_DOCUMENT`.
+        title:
+            An optional title for the text. Only applicable when task_type is
+            `RETRIEVAL_DOCUMENT`.
 
     Return:
-        Dictionary containing the embedding (list of float values) for the input content.
+        Dictionary containing the embedding (list of float values) for the
+        input content.
     """
 
 DEFAULT_EMB_MODEL = "models/embedding-001"
