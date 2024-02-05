@@ -408,7 +408,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
         demo_document = await demo_corpus.create_document_async(name="demo-doc")
         demo_chunk = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         q = await demo_document.query_async(query="What kind of chunk is this?")
@@ -433,7 +433,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
         demo_document = await demo_corpus.create_document_async(name="demo-doc")
         x = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         self.assertIsInstance(x, retriever_service.Chunk)
@@ -482,7 +482,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
         demo_document = await demo_corpus.create_document_async(name="demo-doc")
         x = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         ch = await demo_document.get_chunk_async(name=x.name)
@@ -492,11 +492,11 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
         demo_document = await demo_corpus.create_document_async(name="demo-doc")
         x = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         y = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk-1",
+            name="demo-chunk-1",
             data="This is another demo chunk.",
         )
         chunks = []
@@ -509,7 +509,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
         demo_document = await demo_corpus.create_document_async(name="demo-doc")
         x = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         await x.update_async(updates={"data": {"string_value": "This is an updated demo chunk."}})
@@ -550,11 +550,11 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
         demo_document = await demo_corpus.create_document_async(name="demo-doc")
         x = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         y = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk-1",
+            name="demo-chunk-1",
             data="This is another demo chunk.",
         )
         update_request = await demo_document.batch_update_chunks_async(chunks=updates)
@@ -570,7 +570,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
         demo_document = await demo_corpus.create_document_async(name="demo-doc")
         x = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         delete_request = await demo_document.delete_chunk_async(
@@ -582,11 +582,11 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
         demo_document = await demo_corpus.create_document_async(name="demo-doc")
         x = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
+            name="demo-chunk",
             data="This is a demo chunk.",
         )
         y = await demo_document.create_chunk_async(
-            name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
+            name="demo-chunk",
             data="This is another demo chunk.",
         )
         delete_request = await demo_document.batch_delete_chunks_async(chunks=[x.name, y.name])
