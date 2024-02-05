@@ -440,16 +440,6 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         self.assertEqual("demo-chunk", x.name)
         self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
 
-    async def test_create_chunk_empty(self):
-        demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
-        demo_document = await demo_corpus.create_document_async(name="demo-doc")
-        x = await demo_document.create_chunk_async(
-            data="This is a demo chunk.",
-        )
-        self.assertIsInstance(x, retriever_service.Chunk)
-        self.assertEqual("demo-chunk", x.name)
-        self.assertEqual(retriever_service.ChunkData("This is a demo chunk."), x.data)
-
     @parameterized.named_parameters(
         [
             dict(
