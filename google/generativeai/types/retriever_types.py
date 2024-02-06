@@ -159,9 +159,9 @@ class Condition:
 @dataclasses.dataclass
 class CustomMetadata:
     key: str
-    string_value: str
-    string_list_value: list[str]
-    numeric_value: float
+    string_value: str | None
+    string_list_value: list[str] | None
+    numeric_value: float | None
 
 
 @string_utils.prettyprint
