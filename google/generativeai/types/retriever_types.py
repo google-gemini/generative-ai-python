@@ -184,7 +184,7 @@ class Corpus:
 
     def create_document(
         self,
-        name: str,
+        name: Optional[str] = None,
         display_name: Optional[str] = None,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceClient | None = None,
@@ -222,7 +222,7 @@ class Corpus:
 
     async def create_document_async(
         self,
-        name: str,
+        name: Optional[str] = None,
         display_name: Optional[str] = None,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,

@@ -28,7 +28,7 @@ from google.generativeai.types import retriever_types
 
 
 def create_corpus(
-    name: str,
+    name: Optional[str] = None,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
 ) -> retriever_types.Corpus:
@@ -70,7 +70,7 @@ def create_corpus(
 
 
 async def create_corpus_async(
-    name: str,
+    name: Optional[str] = None,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceAsyncClient | None = None,
 ) -> retriever_types.Corpus:
