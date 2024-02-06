@@ -1124,10 +1124,10 @@ class Chunk(abc.ABC):
         self,
         name: str,
         data: ChunkData | str,
-        custom_metadata: list[CustomMetadata] | None,
+        custom_metadata: Iterable[CustomMetadata] | None,
         state: State,
-        create_time: datetime.datetime | str,
-        update_time: datetime.datetime | str,
+        create_time: Optional[Union[datetime.datetime, str]] = None,
+        update_time: Optional[Union[datetime.datetime, str]] = None,
     ):
         self.name = name
         if isinstance(data, str):
@@ -1139,14 +1139,18 @@ class Chunk(abc.ABC):
         else:
             self.custom_metadata = [CustomMetadata(*cm) for cm in custom_metadata]
         self.state = state
-        if isinstance(create_time, datetime.datetime):
-            self.create_time = create_time
-        else:
-            self.create_time = datetime.datetime.strptime(create_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-        if isinstance(update_time, datetime.datetime):
-            self.update_time = update_time
-        else:
-            self.update_time = datetime.datetime.strptime(update_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+        
+        if create_time:
+            if isinstance(create_time, datetime.datetime):
+                self.create_time = create_time
+            else:
+                self.create_time = datetime.datetime.strptime(create_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+        
+        if update_time:
+            if isinstance(update_time, datetime.datetime):
+                self.update_time = update_time
+            else:
+                self.update_time = datetime.datetime.strptime(update_time, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     def _apply_update(self, path, value):
         parts = path.split(".")
