@@ -33,7 +33,7 @@ from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
 
 _VALID_NAME = r"[a-z0-9]([a-z0-9-]{0,38}[a-z0-9])$"
-NAME_ERROR_MSG = """The `name` must consist of alphanumeric characters (or -) and be 40 or fewer characters. The name you entered:
+NAME_ERROR_MSG = """The `name` must consist of alphanumeric characters (or -) and be 40 or fewer characters; or be empty. The name you entered:
 \tlen(name)== {length}
 \tname={name}
 """
@@ -208,7 +208,11 @@ class Corpus:
             client = get_default_retriever_client()
 
         document = None
-        if valid_name(name):
+        if name is None:
+            document = glm.Document(
+                name=document_name, display_name=display_name, custom_metadata=custom_metadata
+            )
+        elif valid_name(name):
             document_name = f"{self.name}/documents/{name}"
             document = glm.Document(
                 name=document_name, display_name=display_name, custom_metadata=custom_metadata
@@ -232,7 +236,11 @@ class Corpus:
             client = get_default_retriever_async_client()
 
         document = None
-        if valid_name(name):
+        if name is None:
+            document = glm.Document(
+                name=document_name, display_name=display_name, custom_metadata=custom_metadata
+            )
+        elif valid_name(name):
             document_name = f"{self.name}/documents/{name}"
             document = glm.Document(
                 name=document_name, display_name=display_name, custom_metadata=custom_metadata
