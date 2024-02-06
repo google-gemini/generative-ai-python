@@ -55,7 +55,7 @@ def create_corpus(
 
     corpus = None
     if name is None:
-        corpus = glm.Corpus(name=corpus_name, display_name=display_name) 
+        corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     elif retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
@@ -82,7 +82,7 @@ async def create_corpus_async(
 
     corpus = None
     if name is None:
-        corpus = glm.Corpus(name=corpus_name, display_name=display_name) 
+        corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     elif retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
