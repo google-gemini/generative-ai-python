@@ -207,7 +207,7 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
-        document = None
+        document, document_name = None, None
         if name is None:
             document = glm.Document(
                 name=document_name, display_name=display_name, custom_metadata=custom_metadata
@@ -235,7 +235,7 @@ class Corpus:
         if client is None:
             client = get_default_retriever_async_client()
 
-        document = None
+        document, document_name = None, None
         if name is None:
             document = glm.Document(
                 name=document_name, display_name=display_name, custom_metadata=custom_metadata
