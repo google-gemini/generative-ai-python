@@ -644,6 +644,9 @@ class CUJTests(parameterized.TestCase):
         source = inspect.getsource(obj)
         asource = inspect.getsource(aobj)
 
+        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
+        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
+
         asource = (
             asource.replace("anext", "next")
             .replace("aiter", "iter")

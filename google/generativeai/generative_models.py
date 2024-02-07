@@ -17,96 +17,6 @@ from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
 from google.generativeai.types import safety_types
 
-_GENERATE_CONTENT_ASYNC_DOC = """The async version of `GenerativeModel.generate_content`."""
-
-_GENERATE_CONTENT_DOC = """A multipurpose function to generate responses from the model.
-
-This `GenerativeModel.generate_content` method can handle multimodal input, and multi-turn
-conversations.
-
->>> model = genai.GenerativeModel('models/gemini-pro')
->>> response = model.generate_content('Tell me a story about a magic backpack')
->>> response.text
-
-### Streaming
-
-This method supports streaming with the `stream=True`. The result has the same type as the non streaming case,
-but you can iterate over the response chunks as they become available:
-
->>> response = model.generate_content('Tell me a story about a magic backpack', stream=True)
->>> for chunk in response:
-...   print(chunk.text)
-
-### Multi-turn
-
-This method supports multi-turn chats but is **stateless**: the entire conversation history needs to be sent with each
-request. This takes some manual management but gives you complete control:
-
->>> messages = [{'role':'user', 'parts': ['hello']}]
->>> response = model.generate_content(messages) # "Hello, how can I help"
->>> messages.append(response.candidates[0].content)
->>> messages.append({'role':'user', 'parts': ['How does quantum physics work?']})
->>> response = model.generate_content(messages) 
-
-For a simpler multi-turn interface see `GenerativeModel.start_chat`.
-
-### Input type flexibility
-
-While the underlying API strictly expects a `list[glm.Content]` objects, this method
-will convert the user input into the correct type. The hierarchy of types that can be
-converted is below. Any of these objects can be passed as an equivalent `dict`.
-
-* `Iterable[glm.Content]`
-* `glm.Content`
-* `Iterable[glm.Part]`
-* `glm.Part`
-* `str`, `Image`, or `glm.Blob`
-
-In an `Iterable[glm.Content]` each `content` is a separate message.
-But note that an `Iterable[glm.Part]` is taken as the parts of a single message.
-
-Arguments:
-    contents: The contents serving as the model's prompt.
-    generation_config: Overrides for the model's generation config.
-    safety_settings: Overrides for the model's safety settings.
-    stream: If True, yield response chunks as they are generated. 
-    tools: `glm.Tools` more info coming soon.
-"""
-
-_SEND_MESSAGE_ASYNC_DOC = """The async version of `ChatSession.send_message`."""
-
-_SEND_MESSAGE_DOC = """Sends the conversation history with the added message and returns the model's response.
-
-Appends the request and response to the conversation history.
-
->>> model = genai.GenerativeModel(model="gemini-pro")
->>> chat = model.start_chat()
->>> response = chat.send_message("Hello")
->>> print(response.text)
-"Hello! How can I assist you today?"
->>> len(chat.history)
-2
-
-Call it with `stream=True` to receive response chunks as they are generated:
-
->>> chat = model.start_chat()
->>> response = chat.send_message("Explain quantum physics", stream=True)
->>> for chunk in response:
-...   print(chunk.text, end='')
-
-Once iteration over chunks is complete, the `response` and `ChatSession` are in states identical to the
-`stream=False` case. Some properties are not available until iteration is complete.
-
-Like `GenerativeModel.generate_content` this method lets you override the model's `generation_config` and
-`safety_settings`.
-
-Arguments:
-     content: The message contents.
-     generation_config: Overrides for the model's generation config.
-     safety_settings: Overrides for the model's safety settings.
-     stream: If True, yield response chunks as they are generated.
-"""
-
 
 class GenerativeModel:
     """
@@ -221,7 +131,6 @@ class GenerativeModel:
             **kwargs,
         )
 
-    @string_utils.set_doc(_GENERATE_CONTENT_DOC)
     def generate_content(
         self,
         contents: content_types.ContentsType,
@@ -231,6 +140,59 @@ class GenerativeModel:
         stream: bool = False,
         **kwargs,
     ) -> generation_types.GenerateContentResponse:
+        """A multipurpose function to generate responses from the model.
+
+        This `GenerativeModel.generate_content` method can handle multimodal input, and multi-turn
+        conversations.
+
+        >>> model = genai.GenerativeModel('models/gemini-pro')
+        >>> response = model.generate_content('Tell me a story about a magic backpack')
+        >>> response.text
+
+        ### Streaming
+
+        This method supports streaming with the `stream=True`. The result has the same type as the non streaming case,
+        but you can iterate over the response chunks as they become available:
+
+        >>> response = model.generate_content('Tell me a story about a magic backpack', stream=True)
+        >>> for chunk in response:
+        ...   print(chunk.text)
+
+        ### Multi-turn
+
+        This method supports multi-turn chats but is **stateless**: the entire conversation history needs to be sent with each
+        request. This takes some manual management but gives you complete control:
+
+        >>> messages = [{'role':'user', 'parts': ['hello']}]
+        >>> response = model.generate_content(messages) # "Hello, how can I help"
+        >>> messages.append(response.candidates[0].content)
+        >>> messages.append({'role':'user', 'parts': ['How does quantum physics work?']})
+        >>> response = model.generate_content(messages)
+
+        For a simpler multi-turn interface see `GenerativeModel.start_chat`.
+
+        ### Input type flexibility
+
+        While the underlying API strictly expects a `list[glm.Content]` objects, this method
+        will convert the user input into the correct type. The hierarchy of types that can be
+        converted is below. Any of these objects can be passed as an equivalent `dict`.
+
+        * `Iterable[glm.Content]`
+        * `glm.Content`
+        * `Iterable[glm.Part]`
+        * `glm.Part`
+        * `str`, `Image`, or `glm.Blob`
+
+        In an `Iterable[glm.Content]` each `content` is a separate message.
+        But note that an `Iterable[glm.Part]` is taken as the parts of a single message.
+
+        Arguments:
+            contents: The contents serving as the model's prompt.
+            generation_config: Overrides for the model's generation config.
+            safety_settings: Overrides for the model's safety settings.
+            stream: If True, yield response chunks as they are generated.
+            tools: `glm.Tools` more info coming soon.
+        """
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
@@ -248,7 +210,6 @@ class GenerativeModel:
             response = self._client.generate_content(request)
             return generation_types.GenerateContentResponse.from_response(response)
 
-    @string_utils.set_doc(_GENERATE_CONTENT_ASYNC_DOC)
     async def generate_content_async(
         self,
         contents: content_types.ContentsType,
@@ -258,6 +219,7 @@ class GenerativeModel:
         stream: bool = False,
         **kwargs,
     ) -> generation_types.AsyncGenerateContentResponse:
+        """The async version of `GenerativeModel.generate_content`."""
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
@@ -345,7 +307,6 @@ class ChatSession:
         self._last_sent: glm.Content | None = None
         self._last_received: generation_types.BaseGenerateContentResponse | None = None
 
-    @string_utils.set_doc(_SEND_MESSAGE_DOC)
     def send_message(
         self,
         content: content_types.ContentType,
@@ -355,6 +316,37 @@ class ChatSession:
         stream: bool = False,
         **kwargs,
     ) -> generation_types.GenerateContentResponse:
+        """Sends the conversation history with the added message and returns the model's response.
+
+        Appends the request and response to the conversation history.
+
+        >>> model = genai.GenerativeModel(model="gemini-pro")
+        >>> chat = model.start_chat()
+        >>> response = chat.send_message("Hello")
+        >>> print(response.text)
+        "Hello! How can I assist you today?"
+        >>> len(chat.history)
+        2
+
+        Call it with `stream=True` to receive response chunks as they are generated:
+
+        >>> chat = model.start_chat()
+        >>> response = chat.send_message("Explain quantum physics", stream=True)
+        >>> for chunk in response:
+        ...   print(chunk.text, end='')
+
+        Once iteration over chunks is complete, the `response` and `ChatSession` are in states identical to the
+        `stream=False` case. Some properties are not available until iteration is complete.
+
+        Like `GenerativeModel.generate_content` this method lets you override the model's `generation_config` and
+        `safety_settings`.
+
+        Arguments:
+             content: The message contents.
+             generation_config: Overrides for the model's generation config.
+             safety_settings: Overrides for the model's safety settings.
+             stream: If True, yield response chunks as they are generated.
+        """
         content = content_types.to_content(content)
         if not content.role:
             content.role = self._USER_ROLE
@@ -388,7 +380,6 @@ class ChatSession:
 
         return response
 
-    @string_utils.set_doc(_SEND_MESSAGE_ASYNC_DOC)
     async def send_message_async(
         self,
         content: content_types.ContentType,
@@ -398,6 +389,7 @@ class ChatSession:
         stream: bool = False,
         **kwargs,
     ) -> generation_types.AsyncGenerateContentResponse:
+        """The async version of `ChatSession.send_message`."""
         content = content_types.to_content(content)
         if not content.role:
             content.role = self._USER_ROLE
