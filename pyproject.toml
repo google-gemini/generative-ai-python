@@ -3,3 +3,6 @@ inputs = ['google', 'tests']
 
 [tool.black]
 line-length = 100
+
+[tools.setuptools]
+packages = ['google']
