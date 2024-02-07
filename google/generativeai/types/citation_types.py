@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+from typing import List
 
-from typing import Optional, List
+from typing_extensions import TypedDict
 
 from google.ai import generativelanguage as glm
 from google.generativeai import string_utils
 
-from typing import TypedDict
 
 __all__ = [
     "CitationMetadataDict",

@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 from __future__ import annotations
 
 import os
@@ -26,7 +12,12 @@ from google.api_core import client_options as client_options_lib
 from google.api_core import gapic_v1
 from google.api_core import operations_v1
 
-from google.generativeai import version
+try:
+    from google.generativeai import version
+
+    __version__ = version.__version__
+except ImportError:
+    __version__ = "0.0.0"
 
 USER_AGENT = "genai-py"
 
@@ -37,9 +28,7 @@ class _ClientManager:
     default_metadata: Sequence[Tuple[str, str]] = ()
     discuss_client: glm.DiscussServiceClient | None = None
     discuss_async_client: glm.DiscussServiceAsyncClient | None = None
-    model_client: glm.ModelServiceClient | None = None
-    text_client: glm.TextServiceClient | None = None
-    operations_client = None
+    clients: dict[str, Any] = dataclasses.field(default_factory=dict)
 
     def configure(
         self,
@@ -53,7 +42,7 @@ class _ClientManager:
         # We could accept a dict since all the `Transport` classes take the same args,
         # but that seems rare. Users that need it can just switch to the low level API.
         transport: str | None = None,
-        client_options: client_options_lib.ClientOptions | dict | None = None,
+        client_options: client_options_lib.ClientOptions | dict[str, Any] | None = None,
         client_info: gapic_v1.client_info.ClientInfo | None = None,
         default_metadata: Sequence[Tuple[str, str]] = (),
     ) -> None:
@@ -92,7 +81,7 @@ class _ClientManager:
 
             client_options.api_key = api_key
 
-        user_agent = f"{USER_AGENT}/{version.__version__}"
+        user_agent = f"{USER_AGENT}/{__version__}"
         if client_info:
             # Be respectful of any existing agent setting.
             if client_info.user_agent:
@@ -113,12 +102,16 @@ class _ClientManager:
 
         self.client_config = client_config
         self.default_metadata = default_metadata
-        self.discuss_client = None
-        self.text_client = None
-        self.model_client = None
-        self.operations_client = None
 
-    def make_client(self, cls):
+        self.clients = {}
+
+    def make_client(self, name):
+        if name.endswith("_async"):
+            name = name.split("_")[0]
+            cls = getattr(glm, name.title() + "ServiceAsyncClient")
+        else:
+            cls = getattr(glm, name.title() + "ServiceClient")
+
         # Attempt to configure using defaults.
         if not self.client_config:
             configure()
@@ -156,35 +149,24 @@ class _ClientManager:
 
         return client
 
-    def get_default_discuss_client(self) -> glm.DiscussServiceClient:
-        if self.discuss_client is None:
-            self.discuss_client = self.make_client(glm.DiscussServiceClient)
-        return self.discuss_client
+    def get_default_client(self, name):
+        name = name.lower()
+        if name == "operations":
+            return self.get_default_operations_client()
 
-    def get_default_text_client(self) -> glm.TextServiceClient:
-        if self.text_client is None:
-            self.text_client = self.make_client(glm.TextServiceClient)
-        return self.text_client
-
-    def get_default_discuss_async_client(self) -> glm.DiscussServiceAsyncClient:
-        if self.discuss_async_client is None:
-            self.discuss_async_client = self.make_client(glm.DiscussServiceAsyncClient)
-        return self.discuss_async_client
-
-    def get_default_model_client(self) -> glm.ModelServiceClient:
-        if self.model_client is None:
-            self.model_client = self.make_client(glm.ModelServiceClient)
-        return self.model_client
+        client = self.clients.get(name)
+        if client is None:
+            client = self.make_client(name)
+            self.clients[name] = client
+        return client
 
     def get_default_operations_client(self) -> operations_v1.OperationsClient:
-        if self.operations_client is None:
-            self.model_client = get_default_model_client()
-            self.operations_client = self.model_client._transport.operations_client
-
-        return self.operations_client
-
-
-_client_manager = _ClientManager()
+        client = self.clients.get("operations", None)
+        if client is None:
+            model_client = self.get_default_client("Model")
+            client = model_client._transport.operations_client
+            self.clients["operations"] = client
+        return client
 
 
 def configure(
@@ -229,21 +211,41 @@ def configure(
     )
 
 
+_client_manager = _ClientManager()
+_client_manager.configure()
+
+
 def get_default_discuss_client() -> glm.DiscussServiceClient:
-    return _client_manager.get_default_discuss_client()
-
-
-def get_default_text_client() -> glm.TextServiceClient:
-    return _client_manager.get_default_text_client()
-
-
-def get_default_operations_client() -> operations_v1.OperationsClient:
-    return _client_manager.get_default_operations_client()
+    return _client_manager.get_default_client("discuss")
 
 
 def get_default_discuss_async_client() -> glm.DiscussServiceAsyncClient:
-    return _client_manager.get_default_discuss_async_client()
+    return _client_manager.get_default_client("discuss_async")
+
+
+def get_default_generative_client() -> glm.GenerativeServiceClient:
+    return _client_manager.get_default_client("generative")
+
+
+def get_default_generative_async_client() -> glm.GenerativeServiceAsyncClient:
+    return _client_manager.get_default_client("generative_async")
+
+
+def get_default_text_client() -> glm.TextServiceClient:
+    return _client_manager.get_default_client("text")
+
+
+def get_default_operations_client() -> operations_v1.OperationsClient:
+    return _client_manager.get_default_client("operations")
 
 
 def get_default_model_client() -> glm.ModelServiceAsyncClient:
-    return _client_manager.get_default_model_client()
+    return _client_manager.get_default_client("model")
+
+
+def get_default_retriever_client() -> glm.RetrieverClient:
+    return _client_manager.get_default_client("retriever")
+
+
+def get_default_retriever_async_client() -> glm.RetrieverAsyncClient:
+    return _client_manager.get_default_client("retriever_async")

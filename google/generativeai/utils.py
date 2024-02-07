@@ -12,18 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""A collection of type definitions used throughout the library."""
+from __future__ import annotations
 
-from google.generativeai.types.discuss_types import *
-from google.generativeai.types.model_types import *
-from google.generativeai.types.text_types import *
-from google.generativeai.types.citation_types import *
-from google.generativeai.types.content_types import *
-from google.generativeai.types.generation_types import *
-from google.generativeai.types.safety_types import *
 
-del discuss_types
-del model_types
-del text_types
-del citation_types
-del safety_types
+def flatten_update_paths(updates):
+    new_updates = {}
+    for key, value in updates.items():
+        if isinstance(value, dict):
+            for sub_key, sub_value in flatten_update_paths(value).items():
+                new_updates[f"{key}.{sub_key}"] = sub_value
+        else:
+            new_updates[key] = value
+
+    return new_updates

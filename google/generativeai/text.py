@@ -107,7 +107,9 @@ def _make_generate_text_request(
     """
     model = model_types.make_model_name(model)
     prompt = _make_text_prompt(prompt=prompt)
-    safety_settings = safety_types.normalize_safety_settings(safety_settings)
+    safety_settings = safety_types.normalize_safety_settings(
+        safety_settings, harm_category_set="old"
+    )
     if isinstance(stop_sequences, str):
         stop_sequences = [stop_sequences]
     if stop_sequences:
@@ -260,8 +262,7 @@ def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: str,
     client: glm.TextServiceClient = None,
-) -> text_types.EmbeddingDict:
-    ...
+) -> text_types.EmbeddingDict: ...
 
 
 @overload
@@ -269,8 +270,7 @@ def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: Sequence[str],
     client: glm.TextServiceClient = None,
-) -> text_types.BatchEmbeddingDict:
-    ...
+) -> text_types.BatchEmbeddingDict: ...
 
 
 def generate_embeddings(

@@ -16,13 +16,15 @@
 
 import abc
 import dataclasses
-from typing import Any, Dict, TypedDict, Union, Iterable, Optional, Tuple, List
+from typing import Any, Dict, Union, Iterable, Optional, Tuple, List
+from typing_extensions import TypedDict
 
 import google.ai.generativelanguage as glm
 from google.generativeai import string_utils
 
 from google.generativeai.types import safety_types
 from google.generativeai.types import citation_types
+
 
 __all__ = [
     "MessageDict",

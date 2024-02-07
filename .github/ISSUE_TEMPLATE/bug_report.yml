@@ -1,6 +1,6 @@
 name: Bug report
 description: Use this template to report bugs
-labels: ["type:bug"]
+labels: ["type:bug", "component:python sdk"]
 body:
   - type: markdown
     attributes:

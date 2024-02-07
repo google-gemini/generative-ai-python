@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""A high level client library for generative AI.
+"""Google AI Python SDK
 
 ## Setup
 
@@ -20,60 +20,41 @@
 pip install google-generativeai
 ```
 
+## GenerativeModel
+
+Use `genai.GenerativeModel` to access the API:
+
 ```
-import google.generativeai as palm
+import google.generativeai as genai
 import os
 
-palm.configure(api_key=os.environ['API_KEY'])
+genai.configure(api_key=os.environ['API_KEY'])
+
+model = genai.GenerativeModel(name='gemini-pro')
+response = model.generate_content('Please summarise this document: ...')
+
+print(response.text)
 ```
 
-## Text
-
-Use the `palm.generate_text` function to have the model complete some initial
-text.
-
-```
-response = palm.generate_text(prompt="The opposite of hot is")
-print(response.result) #  'cold.'
-```
-
-## Chat
-
-Use the `palm.chat` function to have a discussion with a model:
-
-```
-response = palm.chat(messages=["Hello."])
-print(response.last) #  'Hello! What can I help you with?'
-response.reply("Can you tell me a joke?")
-```
-
-## Models
-
-Use the model service discover models and find out more about them:
-
-Use `palm.get_model` to get details if you know a model's name:
-
-```
-model = palm.get_model('models/chat-bison-001') # 🦬
-```
-
-Use `palm.list_models` to discover models:
-
-```
-import pprint
-for model in palm.list_models():
-    pprint.pprint(model) # 🦎🦦🦬🦄
-```
-
+See the [python quickstart](https://ai.google.dev/tutorials/python_quickstart) for more details.
 """
 from __future__ import annotations
 
-from google.generativeai import types
 from google.generativeai import version
+
+from google.generativeai import types
+from google.generativeai.types import GenerationConfig
+
 
 from google.generativeai.discuss import chat
 from google.generativeai.discuss import chat_async
 from google.generativeai.discuss import count_message_tokens
+
+from google.generativeai.embedding import embed_content
+from google.generativeai.embedding import embed_content_async
+
+from google.generativeai.generative_models import GenerativeModel
+from google.generativeai.generative_models import ChatSession
 
 from google.generativeai.text import generate_text
 from google.generativeai.text import generate_embeddings

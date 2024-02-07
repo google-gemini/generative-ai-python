@@ -17,7 +17,6 @@ import io
 import os
 import pathlib
 
-
 import setuptools  # type: ignore
 
 package_root = pathlib.Path(__file__).parent.resolve()
@@ -31,22 +30,16 @@ description = "Google Generative AI High level API client library and tools."
 version = '1.0.0'
 
 dependencies = [
-    "google-ai-generativelanguage==0.3.3",
-    "google-auth",
+    "google-ai-generativelanguage==0.4.0",
+    "google-auth>=2.15.0",  # 2.15 adds API key auth support
     "google-api-core",
+    "typing-extensions",
     "protobuf",
     "tqdm",
 ]
 
 extras_require = {
-    "dev": [
-        "absl-py",
-        "black",
-        "nose2",
-        "pandas",
-        "pytype",
-        "pyyaml",
-    ],
+    "dev": ["absl-py", "black", "nose2", "pandas", "pytype", "pyyaml", "Pillow", "ipython"],
 }
 
 url = "https://github.com/google/generative-ai-python"
@@ -76,6 +69,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",  # Colab
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],

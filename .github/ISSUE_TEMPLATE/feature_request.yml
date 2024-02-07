@@ -1,6 +1,6 @@
 name: Feature request
 description: Use this template to suggest a new feature
-labels: ["type:feature request"]
+labels: ["type:feature request", "component:python sdk"]
 body:
   - type: markdown
     attributes:

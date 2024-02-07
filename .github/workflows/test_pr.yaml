@@ -8,10 +8,25 @@ on:
     paths:
     - "google/**"
     - "tests/**"
+    - "pyproject.toml"
+    - "setup.py"
   # Allow manual runs
   workflow_dispatch:
 
 jobs:
+  test3_12:
+    name: Test Py3.12
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    - name: Run tests
+      run: |
+        python --version
+        pip install .[dev]
+        python -m unittest
   test3_11:
     name: Test Py3.11
     runs-on: ubuntu-latest
@@ -23,8 +38,8 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install -q -e .[dev]
-        python -m unittest discover --pattern '*test*.py'
+        pip install .[dev]
+        python -m unittest
   test3_10:
     name: Test Py3.10
     runs-on: ubuntu-latest
@@ -36,8 +51,8 @@ jobs:
     - name: Run tests
       run: |
         python --version
-        pip install -q -e .[dev]
-        python -m unittest discover --pattern '*test*.py'
+        pip install -q .[dev]
+        python -m unittest
   test3_9:
     name: Test Py3.9
     runs-on: ubuntu-latest
@@ -75,7 +90,7 @@ jobs:
     - name: Run pytype
       run: |
         python --version
-        pip install -q -e .[dev]
+        pip install .[dev]
         pip install -q gspread ipython
         pytype
   format:
@@ -89,7 +104,7 @@ jobs:
     - name: Check format
       run: |
         python --version
-        pip install -q -e .
+        pip install -q .
         pip install -q black
         black . --check
 

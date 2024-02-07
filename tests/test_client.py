@@ -1,18 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import os
 from unittest import mock
 
@@ -126,6 +111,22 @@ class ClientTests(parameterized.TestCase):
 
         text_client.classm()
         self.assertTrue(ClientTests.DummyClient.called_classm)
+
+    def test_same_config(self):
+        cm1 = client._ClientManager()
+        cm1.configure(api_key="abc")
+
+        cm2 = client._ClientManager()
+        cm2.configure(client_options=dict(api_key="abc"))
+
+        self.assertEqual(
+            cm1.client_config["client_info"].__dict__, cm2.client_config["client_info"].__dict__
+        )
+        self.assertEqual(
+            cm1.client_config["client_options"].__dict__,
+            cm2.client_config["client_options"].__dict__,
+        )
+        self.assertEqual(cm1.default_metadata, cm2.default_metadata)
 
 
 if __name__ == "__main__":

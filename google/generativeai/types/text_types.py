@@ -14,9 +14,11 @@
 # limitations under the License.
 from __future__ import annotations
 
+import sys
 import abc
 import dataclasses
-from typing import Any, Dict, List, TypedDict
+from typing import Any, Dict, List
+from typing_extensions import TypedDict
 
 from google.generativeai import string_utils
 from google.generativeai.types import safety_types

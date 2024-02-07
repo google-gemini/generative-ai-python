@@ -24,13 +24,22 @@ import os
 import pathlib
 import re
 import textwrap
+import typing
+
 
 from absl import app
 from absl import flags
 
 import google
-from google import generativeai as palm
 from google.ai import generativelanguage as glm
+
+import grpc
+
+# For showing the conditional imports and types in `content_types.py`
+# grpc must be imported first.
+typing.TYPE_CHECKING = True
+from google import generativeai as palm
+
 
 from tensorflow_docs.api_generator import generate_lib
 from tensorflow_docs.api_generator import public_api

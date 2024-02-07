@@ -1,26 +1,16 @@
-# -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 from __future__ import annotations
 
 from typing import Mapping
 
+import typing
+from typing import Dict, Iterable, List, Union
+
+from typing_extensions import TypedDict
+
+
 from google.ai import generativelanguage as glm
 from google.generativeai import string_utils
 
-import typing
-from typing import Iterable, Dict, Iterable, List, TypedDict, Union
 
 __all__ = [
     "HarmCategory",
@@ -42,7 +32,7 @@ BlockedReason = glm.ContentFilter.BlockedReason
 HarmCategoryOptions = Union[str, int, HarmCategory]
 
 # fmt: off
-_HARM_CATEGORIES: Dict[HarmCategoryOptions, HarmCategory] = {
+_OLD_HARM_CATEGORIES: Dict[HarmCategoryOptions, HarmCategory] = {
     HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
     0: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
     "harm_category_unspecified": HarmCategory.HARM_CATEGORY_UNSPECIFIED,
@@ -83,13 +73,55 @@ _HARM_CATEGORIES: Dict[HarmCategoryOptions, HarmCategory] = {
     "dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS,
     "danger": HarmCategory.HARM_CATEGORY_DANGEROUS,
 }
+
+_NEW_HARM_CATEGORIES = {
+    7: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    "harm_category_harassment": HarmCategory.HARM_CATEGORY_HARASSMENT,
+    "harassment": HarmCategory.HARM_CATEGORY_HARASSMENT,
+
+    8: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    'harm_category_hate_speech': HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    'hate_speech': HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    'hate': HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+
+    9: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "harm_category_sexually_explicit": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "harm_category_sexual": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "sexual": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "sex": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+
+    10: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "harm_category_dangerous_content": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "harm_category_dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "danger": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+}
 # fmt: on
 
 
-def to_harm_category(x: HarmCategoryOptions) -> HarmCategory:
+def to_old_harm_category(x: HarmCategoryOptions) -> HarmCategory:
     if isinstance(x, str):
         x = x.lower()
-    return _HARM_CATEGORIES[x]
+    return _OLD_HARM_CATEGORIES[x]
+
+
+def to_new_harm_category(x: HarmCategoryOptions) -> HarmCategory:
+    if isinstance(x, str):
+        x = x.lower()
+    return _NEW_HARM_CATEGORIES[x]
+
+
+def to_harm_category(x, harm_category_set):
+    if harm_category_set == "old":
+        return to_old_harm_category(x)
+    elif harm_category_set == "new":
+        return to_new_harm_category(x)
+    else:
+        raise ValueError("harm_category_set must be 'new' or 'old'")
 
 
 HarmBlockThresholdOptions = Union[str, int, HarmBlockThreshold]
@@ -184,8 +216,24 @@ class LooseSafetySettingDict(TypedDict):
 
 
 EasySafetySetting = Mapping[HarmCategoryOptions, HarmBlockThresholdOptions]
+EasySafetySettingDict = dict[HarmCategoryOptions, HarmBlockThresholdOptions]
 
 SafetySettingOptions = Union[EasySafetySetting, Iterable[LooseSafetySettingDict], None]
+
+
+def to_easy_safety_dict(settings: SafetySettingOptions, harm_category_set) -> EasySafetySettingDict:
+    if settings is None:
+        return {}
+    elif isinstance(settings, Mapping):
+        return {
+            to_harm_category(key, harm_category_set): to_block_threshold(value)
+            for key, value in settings.items()
+        }
+    else:  # Iterable
+        return {
+            to_harm_category(d["category"], harm_category_set): to_block_threshold(d["threshold"])
+            for d in settings
+        }
 
 
 def normalize_safety_settings(
@@ -196,18 +244,19 @@ def normalize_safety_settings(
     if isinstance(settings, Mapping):
         return [
             {
-                "category": to_harm_category(key),
+                "category": to_harm_category(key, harm_category_set),
                 "threshold": to_block_threshold(value),
             }
             for key, value in settings.items()
         ]
-    return [
-        {
-            "category": to_harm_category(d["category"]),
-            "threshold": to_block_threshold(d["threshold"]),
-        }
-        for d in settings
-    ]
+    else:
+        return [
+            {
+                "category": to_harm_category(d["category"], harm_category_set),
+                "threshold": to_block_threshold(d["threshold"]),
+            }
+            for d in settings
+        ]
 
 
 def convert_setting_to_enum(setting: dict) -> SafetySettingDict:
