@@ -22,25 +22,13 @@ import setuptools  # type: ignore
 
 package_root = pathlib.Path(__file__).parent.resolve()
 
-name = "google-generativeai"
+name = "google-generativeai_gen"
 
 description = "Google Generative AI High level API client library and tools."
 
 
-def get_version():
-    version = {}
-    version_source = (package_root / "google/generativeai/version.py").read_text()
-    exec(version_source, version)
-    version = version["__version__"]
-    return version
 
-
-version = get_version()
-
-if version[0] == "0":
-    release_status = "Development Status :: 4 - Beta"
-else:
-    release_status = "Development Status :: 5 - Production/Stable"
+version = '1.0.0'
 
 dependencies = [
     "google-ai-generativelanguage==0.3.3",
@@ -77,8 +65,6 @@ setuptools.setup(
     description=description,
     long_description=readme,
     long_description_content_type="text/markdown",
-    author="Google LLC",
-    author_email="googleapis-packages@google.com",
     license="Apache 2.0",
     url=url,
     classifiers=[
