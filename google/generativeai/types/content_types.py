@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 import io
+import inspect
 import mimetypes
-import pathlib
 import typing
-from typing import Any, TypedDict, Union
+from typing import Any, Callable, Mapping, Sequence, TypedDict, Union
+
+import pydantic
 
 from google.ai import generativelanguage as glm
 
@@ -239,9 +241,208 @@ def to_contents(contents: ContentsType) -> list[glm.Content]:
     contents = [to_content(contents)]
     return contents
 
+def generate_schema(
+        f: Callable[..., Any],
+        *,
+        descriptions: Mapping[str, str] = {},
+        required: Sequence[str] = [],
+    ) -> dict[str:Any]:
+    """Generates the OpenAPI Schema for a python function.
 
-ToolsType = Union[Iterable[glm.Tool], glm.Tool, dict[str, Any], None]
+    Args:
+        f (Callable):
+            Required. The function to generate an OpenAPI Schema for.
+        descriptions (Mapping[str, str]):
+            Optional. A `{name: description}` mapping for annotating input
+            arguments of the function with user-provided descriptions. It
+            defaults to an empty dictionary (i.e. there will not be any
+            description for any of the inputs).
+        required (Sequence[str]):
+            Optional. For the user to specify the set of required arguments in
+            function calls to `f`. If specified, it will be automatically
+            inferred from `f`.
 
+    Returns:
+        dict[str, Any]: The OpenAPI Schema for the function `f` in JSON format.
+    """
+    defaults = dict(inspect.signature(f).parameters)
+    fields_dict = {
+        name: (
+            # 1. We infer the argument type here: use Any rather than None so
+            # it will not try to auto-infer the type based on the default value.
+            (
+                param.annotation if param.annotation != inspect.Parameter.empty
+                else Any
+            ),
+            pydantic.Field(
+                # 2. We do not support default values for now.
+                # default=(
+                #     param.default if param.default != inspect.Parameter.empty
+                #     else None
+                # ),
+                # 3. We support user-provided descriptions.
+                description=descriptions.get(name, None),
+            )
+        )
+        for name, param in defaults.items()
+        # We do not support *args or **kwargs
+        if param.kind in (
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            inspect.Parameter.KEYWORD_ONLY,
+            inspect.Parameter.POSITIONAL_ONLY,
+        )
+    }
+    parameters = pydantic.create_model(f.__name__, **fields_dict).schema()
+    # Postprocessing
+    # 4. Suppress unnecessary title generation:
+    #    * https://github.com/pydantic/pydantic/issues/1051
+    #    * http://cl/586221780
+    parameters.pop('title')
+    for name, function_arg in parameters.get("properties", {}).items():
+        function_arg.pop("title")
+        annotation = defaults[name].annotation
+        # 5. Nullable fields:
+        #     * https://github.com/pydantic/pydantic/issues/1270
+        #     * https://stackoverflow.com/a/58841311
+        #     * https://github.com/pydantic/pydantic/discussions/4872
+        if (
+                typing.get_origin(annotation) is typing.Union
+                and type(None) in typing.get_args(annotation)
+            ):
+            function_arg["nullable"] = True
+    # 6. Annotate required fields.
+    if required:
+        # We use the user-provided "required" fields if specified.
+        parameters["required"] = required
+    else:
+        # Otherwise we infer it from the function signature.
+        parameters["required"] = [
+            k for k in defaults if (
+                defaults[k].default == inspect.Parameter.empty
+                and defaults[k].kind in (
+                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    inspect.Parameter.KEYWORD_ONLY,
+                    inspect.Parameter.POSITIONAL_ONLY,
+                )
+            )
+        ]
+    schema = dict(name=f.__name__, description=f.__doc__, parameters=parameters)
+    return schema
+
+
+
+
+ToolsType = Union[
+    Iterable[glm.Tool],
+    glm.Tool,
+    dict[str, Any],
+    None]
+
+
+def _rename_schema_fields(schema):
+  schema = schema.copy()
+
+  type_ = schema.pop('type', None)
+  if type_ is not None:
+    schema['type_'] = type_.upper()
+
+  format_ = schema.pop('format', None)
+  if format_ is not None:
+    schema['format_'] = format_
+
+  items = schema.pop('items', None)
+  if items is not None:
+    schema['items'] = rename_schema_fields(items)
+
+  properties = schema.pop('properties', None)
+  if properties is not None:
+    schema['properties'] = {k: rename_schema_fields(v) for k,v in properties.items()}
+
+  return schema
+
+
+@dataclasses.dataclass
+class FunctionDeclaration:
+  name:str
+  description:str
+  parameters:Any
+
+  def _encode(self):
+    p = rename_schema_fields(self.parameters)
+
+    return glm.FunctionDeclaration(
+        name=self.name,
+        description=self.description,
+        parameters=p
+    )
+
+@dataclasses.dataclass
+class CallableFunctionDeclaration(FunctionDeclaration):
+  function: Callable[..., Any]
+
+  @classmethod
+  def from_function(cls, f, descriptions:dict[str, Any]|None=None):
+    if descriptions is None:
+      descriptions={}
+
+    schema = generate_schema.generate_schema(f, descriptions=descriptions)
+
+    return cls(
+        **schema,
+        function = f)
+
+  def __call__(self, fc: glm.FunctionCall) -> glm.FunctionResponse:
+    args = {}
+
+
+@dataclasses.dataclass
+class Tool:
+  functions: list[FunctionDeclaration]
+
+  def __init__(self, functions):
+    # The main path doesn't use this but is seems useful.
+    self.functions = list(functions)
+    self._index = {}
+    for fd in self.functions:
+      name = fd.name
+      if name in self._index:
+          raise ValueError('')
+      self._index[fd.name] = fd
+
+  def __call__(self, fc: glm.FunctionCall) -> glm.FunctionResponse:
+    name = fc.name
+    declaration = self._index[name]
+    if not callable(declaration):
+      return None
+
+    return declaration(fc)
+
+
+@dataclasses.dataclass(init=False)
+class FunctionLibrary:
+  tools: list[Tool]
+
+  def __init__(self, tools):
+    self.tools = list(tools)
+    self._index = {}
+    for tool in self.tools:
+      for declaration in tool:
+        name = declaration.name
+        if name in self._index:
+            raise ValueError('')
+        self._index[declaration.name] = declaration
+
+  def __call__(self, fc: glm.FunctionCall) -> glm.Content | None:
+    name = fc.name
+    declaration = self._index[name]
+    if not callable(declaration):
+      return None
+
+    response = declaration(fc)
+    return glm.Content(
+        role='user',
+        parts=[response]
+    )
 
 def to_tools(tools: ToolsType) -> list[glm.Tool]:
     if tools is None:
