@@ -68,7 +68,6 @@ setuptools.setup(
     license="Apache 2.0",
     url=url,
     classifiers=[
-        release_status,
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
