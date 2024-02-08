@@ -276,7 +276,6 @@ class BaseGenerateContentResponse:
         result: glm.GenerateContentResponse,
         chunks: Iterable[glm.GenerateContentResponse],
     ):
-        iterator, chunks = self._stash_iterators_for_repr(iterator, chunks)
         self._done = done
         self._iterator = iterator
         self._result = result
@@ -285,26 +284,6 @@ class BaseGenerateContentResponse:
             self._error = BlockedPromptException(result)
         else:
             self._error = None
-
-    def _stash_iterators_for_repr(
-        self,
-        iterator: (
-            None
-            | Iterable[glm.GenerateContentResponse]
-            | AsyncIterable[glm.GenerateContentResponse]
-        ),
-        chunks: Iterable[glm.GenerateContentResponse],
-    ) -> Tuple[
-        (None | Iterable[glm.GenerateContentResponse] | AsyncIterable[glm.GenerateContentResponse]),
-        Iterable[glm.GenerateContentResponse],
-    ]:
-        self._iterator_as_list = None
-        if iterator is not None:
-            iterator, iterator_copy = itertools.tee(iterator)
-            self._iterator_as_list = list(iterator_copy)
-        chunks, chunks_copy = itertools.tee(chunks)
-        self._chunks_as_list = list(chunks_copy)
-        return iterator, chunks
 
     @property
     def candidates(self):
@@ -478,8 +457,8 @@ class GenerateContentResponse(BaseGenerateContentResponse):
             pass
 
     def __repr__(self) -> str:
-        iterator_repr = self._iterable_to_string(self._iterator_as_list)
-        chunks_repr = self._iterable_to_string(self._chunks_as_list)
+        iterator_repr = self._iterable_to_string(self._iterator)
+        chunks_repr = self._iterable_to_string(self._chunks)
         result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
 
         return textwrap.dedent(
