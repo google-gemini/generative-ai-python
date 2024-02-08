@@ -7,7 +7,7 @@ from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
 import textwrap
-from typing import List, TypedDict, Union
+from typing import List, Tuple, TypedDict, Union
 
 import google.protobuf.json_format
 import google.api_core.exceptions
@@ -276,19 +276,35 @@ class BaseGenerateContentResponse:
         result: glm.GenerateContentResponse,
         chunks: Iterable[glm.GenerateContentResponse],
     ):
+        iterator, chunks = self._stash_iterators_for_repr(iterator, chunks)
         self._done = done
         self._iterator = iterator
-        if self._iterator is not None:
-            self._iterator_as_list = list(self._iterator)
-        else:
-            self._iterator_as_list = None
         self._result = result
         self._chunks = list(chunks)
-        self._chunks_as_list = list(chunks)
         if result.prompt_feedback.block_reason:
             self._error = BlockedPromptException(result)
         else:
             self._error = None
+
+    def _stash_iterators_for_repr(
+        self,
+        iterator: (
+            None
+            | Iterable[glm.GenerateContentResponse]
+            | AsyncIterable[glm.GenerateContentResponse]
+        ),
+        chunks: Iterable[glm.GenerateContentResponse],
+    ) -> Tuple[
+        (None | Iterable[glm.GenerateContentResponse] | AsyncIterable[glm.GenerateContentResponse]),
+        Iterable[glm.GenerateContentResponse],
+    ]:
+        self._iterator_as_list = None
+        if iterator is not None:
+            iterator, iterator_copy = itertools.tee(iterator)
+            self._iterator_as_list = list(iterator_copy)
+        chunks, chunks_copy = itertools.tee(chunks)
+        self._chunks_as_list = list(chunks_copy)
+        return iterator, chunks
 
     @property
     def candidates(self):
@@ -476,7 +492,7 @@ class GenerateContentResponse(BaseGenerateContentResponse):
             )"""
         )
 
-    def _iterable_to_string(self, iterable: List[glm.GenerateContentResponse]):
+    def _iterable_to_string(self, iterable: List[glm.GenerateContentResponse]) -> str:
         if iterable is None:
             return "[]"
 
