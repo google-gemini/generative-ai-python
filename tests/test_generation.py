@@ -498,7 +498,7 @@ class UnitTests(parameterized.TestCase):
 
         result = repr(response)
         expected = textwrap.dedent(
-            """
+            """\
             GenerateContentResponse(
                 done=True,
                 iterator=[],
@@ -517,7 +517,7 @@ class UnitTests(parameterized.TestCase):
 
         result = repr(response)
         expected = textwrap.dedent(
-            """
+            """\
             GenerateContentResponse(
                 done=False,
                 iterator=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'b'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'c'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'd'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})]),

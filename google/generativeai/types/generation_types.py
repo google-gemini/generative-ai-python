@@ -467,7 +467,7 @@ class GenerateContentResponse(BaseGenerateContentResponse):
         result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
 
         return textwrap.dedent(
-            f"""
+            f"""\
             GenerateContentResponse(
                 done={self._done},
                 iterator={iterator_repr},
