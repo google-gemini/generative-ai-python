@@ -7,7 +7,7 @@ from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
 import textwrap
-from typing import TypedDict, Union
+from typing import List, TypedDict, Union
 
 import google.protobuf.json_format
 import google.api_core.exceptions
@@ -278,8 +278,13 @@ class BaseGenerateContentResponse:
     ):
         self._done = done
         self._iterator = iterator
+        if self._iterator is not None:
+            self._iterator_as_list = list(self._iterator)
+        else:
+            self._iterator_as_list = None
         self._result = result
         self._chunks = list(chunks)
+        self._chunks_as_list = list(chunks)
         if result.prompt_feedback.block_reason:
             self._error = BlockedPromptException(result)
         else:
@@ -455,6 +460,32 @@ class GenerateContentResponse(BaseGenerateContentResponse):
 
         for _ in self:
             pass
+
+    def __repr__(self) -> str:
+        iterator_repr = self._iterable_to_string(self._iterator_as_list)
+        chunks_repr = self._iterable_to_string(self._chunks_as_list)
+        result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
+
+        return textwrap.dedent(
+            f"""
+            GenerateContentResponse(
+                done={self._done},
+                iterator={iterator_repr},
+                result={result},
+                chunks={chunks_repr},
+            )"""
+        )
+
+    def _iterable_to_string(self, iterable: List[glm.GenerateContentResponse]):
+        if iterable is None:
+            return "[]"
+
+        repr_string = []
+        for cr in iterable:
+            repr_string.append(f"glm.GenerateContentResponse({type(cr).to_dict(cr)})")
+
+        repr_string = f"iter([{', '.join(repr_string)}])"
+        return repr_string
 
 
 @string_utils.set_doc(ASYNC_GENERATE_CONTENT_RESPONSE_DOC)
