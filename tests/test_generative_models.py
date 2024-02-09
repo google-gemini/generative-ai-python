@@ -729,6 +729,7 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(expected3, result3)
 
     def test_repr_error_info_for_stream_prompt_feedback_blocked(self):
+        # response._error => BlockedPromptException
         chunks = [
             glm.GenerateContentResponse(
                 {
@@ -759,6 +760,7 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(expected, result)
 
     def test_repr_error_info_for_chat_error_in_stream(self):
+        # response._error => ValueError
         def throw():
             for c in "123":
                 yield simple_response(c)
@@ -802,6 +804,7 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(expected, result)
 
     def test_repr_error_info_for_chat_streaming_unexpected_stop(self):
+        # response._error => StopCandidateException
         self.responses["stream_generate_content"] = [
             iter(
                 [
