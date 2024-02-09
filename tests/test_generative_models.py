@@ -728,6 +728,36 @@ class CUJTests(parameterized.TestCase):
         )
         self.assertEqual(expected3, result3)
 
+    def test_repr_error_info_for_stream_prompt_feedback_blocked(self):
+        chunks = [
+            glm.GenerateContentResponse(
+                {
+                    "prompt_feedback": {"block_reason": "SAFETY"},
+                }
+            )
+        ]
+        self.responses["stream_generate_content"] = [(chunk for chunk in chunks)]
+
+        model = generative_models.GenerativeModel("gemini-pro")
+        response = model.generate_content("Bad stuff!", stream=True)
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=False,
+                iterator=<generator>,
+                result=glm.GenerateContentResponse({'prompt_feedback': {'block_reason': 1, 'safety_ratings': []}, 'candidates': []}),
+                chunks=iter([glm.GenerateContentResponse({'prompt_feedback': {'block_reason': 1, 'safety_ratings': []}, 'candidates': []})])
+            ),
+            error=<BlockedPromptException> prompt_feedback {
+              block_reason: SAFETY
+            }
+            """
+        )
+        self.assertEqual(expected, result)
+
 
 if __name__ == "__main__":
     absltest.main()
