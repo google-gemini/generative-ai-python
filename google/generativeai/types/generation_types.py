@@ -458,17 +458,17 @@ class GenerateContentResponse(BaseGenerateContentResponse):
 
     def __repr__(self) -> str:
         if self._done:
-            iterator = "None"
+            _iterator = "None"
         else:
-            iterator = f"<{self._iterator.__class__.__name__}>"
+            _iterator = f"<{self._iterator.__class__.__name__}>"
 
-        chunks = self._iterable_to_string(self._chunks)
-        result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
+        _chunks = self._iterable_to_string(self._chunks)
+        _result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
 
         if self._error:
-            error = f",\nerror={self._error.__class__.__name__}, {self._error}"
+            _error = f",\nerror={self._error.__class__.__name__}, {self._error}"
         else:
-            error = ""
+            _error = ""
 
         return (
             textwrap.dedent(
@@ -476,12 +476,12 @@ class GenerateContentResponse(BaseGenerateContentResponse):
                 response:
                 GenerateContentResponse(
                     done={self._done},
-                    iterator={iterator},
-                    result={result},
-                    chunks={chunks}
+                    iterator={_iterator},
+                    result={_result},
+                    chunks={_chunks}
                 )"""
             )
-            + error
+            + _error
         )
 
     def _iterable_to_string(self, iterable: List[glm.GenerateContentResponse]) -> str:
