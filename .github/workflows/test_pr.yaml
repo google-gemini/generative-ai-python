@@ -66,20 +66,20 @@ jobs:
         python --version
         pip install .[dev]
         python -m unittest
-  pytype3_10:
-    name: pytype 3.10
+  pytype3_11:
+    name: pytype 3.11
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.11'
     - name: Run pytype
       run: |
         python --version
         pip install .[dev]
         pip install -q gspread ipython
-        pytype
+        pytype google tests
   format:
     name: Check format with black
     runs-on: ubuntu-latest

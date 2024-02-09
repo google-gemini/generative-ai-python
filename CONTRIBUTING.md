@@ -80,7 +80,7 @@ Use `pytype` (configured in `pyproject.toml`)
 
 ```
 pip install pytype
-pytype
+pytype .
 ```
 
 ### Formatting:
