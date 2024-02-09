@@ -89,11 +89,11 @@ class GenerativeModel:
 
     def __str__(self):
         return textwrap.dedent(
-            f""" \
+            f"""\
             genai.GenerativeModel(
-               model_name='{self.model_name}',
-               generation_config={self._generation_config}.
-               safety_settings={self._safety_settings}
+                model_name='{self.model_name}',
+                generation_config={self._generation_config}.
+                safety_settings={self._safety_settings}
             )"""
         )
 
@@ -488,3 +488,20 @@ class ChatSession:
         self._history = content_types.to_contents(history)
         self._last_self = None
         self._last_received = None
+
+    def __repr__(self) -> str:
+        _model = str(self.model).replace("\n", "\n" + " " * 4)
+        _history = (
+            ",\n    "
+            + f"history=[{', '.join(['glm.Content('+str( type(x).to_dict(x) )+')' for x in self._history ])}]\n)"
+        )
+
+        return (
+            textwrap.dedent(
+                f"""\
+                ChatSession(
+                    model="""
+            )
+            + _model
+            + _history
+        )
