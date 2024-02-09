@@ -499,11 +499,12 @@ class UnitTests(parameterized.TestCase):
         result = repr(response)
         expected = textwrap.dedent(
             """\
+            response:
             GenerateContentResponse(
                 done=True,
-                iterator=[],
+                iterator=None,
                 result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'Hello world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
-                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'Hello world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})]),
+                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'Hello world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
             )"""
         )
         self.assertEqual(expected, result)
@@ -518,11 +519,12 @@ class UnitTests(parameterized.TestCase):
         result = repr(response)
         expected = textwrap.dedent(
             """\
+            response:
             GenerateContentResponse(
                 done=False,
-                iterator=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'b'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'c'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'd'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})]),
+                iterator=<list_iterator>,
                 result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'a'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
-                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'a'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})]),
+                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'a'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
             )"""
         )
         self.assertEqual(expected, result)
