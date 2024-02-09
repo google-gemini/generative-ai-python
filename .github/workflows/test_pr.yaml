@@ -79,7 +79,8 @@ jobs:
         python --version
         pip install .[dev]
         pip install -q gspread ipython
-        pytype google tests
+        touch google/__init__.py   # https://github.com/google/pytype/issues/464
+        pytype
   format:
     name: Check format with black
     runs-on: ubuntu-latest
