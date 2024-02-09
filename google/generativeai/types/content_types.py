@@ -411,7 +411,7 @@ def _make_callable_function_declaration_str():
     return CallableFunctionDeclaration.__str__
 
 
-StructType = dict[str:"ValueType"]
+StructType = dict[str, "ValueType"]
 ValueType = Union[float, str, bool, StructType, list["ValueType"], None]
 
 
@@ -538,7 +538,7 @@ class ToolDict(TypedDict):
     function_declarations: list[FunctionDeclarationType]
 
 
-ToolType = [
+ToolType = Union[
     Tool,
     glm.Tool,
     ToolDict,
