@@ -466,7 +466,7 @@ class GenerateContentResponse(BaseGenerateContentResponse):
         _result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
 
         if self._error:
-            _error = f",\nerror={self._error.__class__.__name__}, {self._error}"
+            _error = f",\nerror=<{self._error.__class__.__name__}> {self._error}"
         else:
             _error = ""
 
