@@ -179,6 +179,8 @@ def list_corpora(
     request = glm.ListCorporaRequest(page_size=page_size)
     for corpus in client.list_corpora(request):
         corpus = type(corpus).to_dict(corpus)
+        idecode_time(corpus, "create_time")
+        idecode_time(corpus, "update_time")
         yield retriever_types.Corpus(**corpus)
 
 
@@ -194,4 +196,6 @@ async def list_corpora_async(
     request = glm.ListCorporaRequest(page_size=page_size)
     async for corpus in await client.list_corpora(request):
         corpus = type(corpus).to_dict(corpus)
+        idecode_time(corpus, "create_time")
+        idecode_time(corpus, "update_time")
         yield retriever_types.Corpus(**corpus)

@@ -601,9 +601,9 @@ class Document(abc.ABC):
         return decode_chunk(response)
 
     def _make_chunk(self, chunk: ChunkOptions) -> glm.Chunk:
-        del self
+        # del self
         if isinstance(chunk, glm.Chunk):
-            return chunk
+            return glm.Chunk(chunk)
         elif isinstance(chunk, str):
             return glm.Chunk(data={"string_value": chunk})
         elif isinstance(chunk, tuple):
@@ -652,6 +652,8 @@ class Document(abc.ABC):
             chunk = self._make_chunk(chunk)
             if chunk.name == "":
                 chunk.name = str(i)
+
+            chunk.name = f"{self.name}/chunks/{chunk.name}"
 
             requests.append(glm.CreateChunkRequest(parent=self.name, chunk=chunk))
 
@@ -1117,8 +1119,8 @@ class Chunk(abc.ABC):
     data: ChunkData
     custom_metadata: list[CustomMetadata] | None
     state: State
-    create_time: datetime.datetime
-    update_time: datetime.datetime
+    create_time: datetime.datetime | None
+    update_time: datetime.datetime | None
 
     def __init__(
         self,
@@ -1126,8 +1128,8 @@ class Chunk(abc.ABC):
         data: ChunkData | str,
         custom_metadata: Iterable[CustomMetadata] | None,
         state: State,
-        create_time: datetime.datetime | str | None,
-        update_time: datetime.datetime | str | None,
+        create_time: datetime.datetime | str | None = None,
+        update_time: datetime.datetime | str | None = None,
     ):
         self.name = name
         if isinstance(data, str):
@@ -1138,14 +1140,19 @@ class Chunk(abc.ABC):
             self.custom_metadata = []
         else:
             self.custom_metadata = [CustomMetadata(*cm) for cm in custom_metadata]
-        self.state = state
 
-        if isinstance(create_time, datetime.datetime):
+        self.state = to_state(state)
+
+        if create_time is None:
+            self.create_time = None
+        elif isinstance(create_time, datetime.datetime):
             self.create_time = create_time
         else:
             self.create_time = datetime.datetime.strptime(create_time, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-        if isinstance(update_time, datetime.datetime):
+        if update_time is None:
+            self.update_time = None
+        elif isinstance(update_time, datetime.datetime):
             self.update_time = update_time
         else:
             self.update_time = datetime.datetime.strptime(update_time, "%Y-%m-%dT%H:%M:%S.%fZ")

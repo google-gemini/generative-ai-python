@@ -61,7 +61,9 @@ class MagicsEngine:
     ) -> tuple[parsed_args_lib.ParsedArgs, parsed_args_lib.PostProcessingTokens]:
         return cmd_line_parser.CmdLineParser().parse_line(line, placeholders)
 
-    def _get_handler(self, line: str, placeholders: AbstractSet[str]) -> tuple[
+    def _get_handler(
+        self, line: str, placeholders: AbstractSet[str]
+    ) -> tuple[
         command.Command,
         parsed_args_lib.ParsedArgs,
         Sequence[post_process_utils.ParsedPostProcessExpr],
