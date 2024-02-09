@@ -2,6 +2,7 @@ import collections
 from collections.abc import Iterable
 import copy
 import pathlib
+import textwrap
 import unittest.mock
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -659,6 +660,24 @@ class CUJTests(parameterized.TestCase):
 
         asource = re.sub(" *?# type: ignore", "", asource)
         self.assertEqual(source, asource)
+
+    def test_repr_for_unary_non_streamed_response(self):
+        model = generative_models.GenerativeModel(model_name="gemini-pro")
+        self.responses["generate_content"].append(simple_response("world!"))
+        response = model.generate_content("Hello")
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=True,
+                iterator=None,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
+            )"""
+        )
+        self.assertEqual(expected, result)
 
 
 if __name__ == "__main__":
