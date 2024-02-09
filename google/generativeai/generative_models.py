@@ -495,7 +495,7 @@ class ChatSession:
         _model = str(self.model).replace("\n", "\n" + " " * 4)
         _history = (
             ",\n    "
-            + f"history=[{', '.join(['glm.Content('+_dict_repr.repr(type(x).to_dict(x))+')' for x in self._history ])}]\n)"
+            + f"history=[{', '.join(['glm.Content('+_dict_repr.repr(type(x).to_dict(x))+')' for x in self.history ])}]\n)"
         )
 
         return (
