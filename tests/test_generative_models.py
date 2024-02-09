@@ -758,6 +758,49 @@ class CUJTests(parameterized.TestCase):
         )
         self.assertEqual(expected, result)
 
+    def test_repr_error_info_for_chat_error_in_stream(self):
+        def throw():
+            for c in "123":
+                yield simple_response(c)
+            raise ValueError()
+
+        def no_throw():
+            for c in "abc":
+                yield simple_response(c)
+
+        self.responses["stream_generate_content"] = [
+            no_throw(),
+            throw(),
+            no_throw(),
+        ]
+
+        model = generative_models.GenerativeModel("gemini-pro-vision")
+        chat = model.start_chat()
+
+        # Send a message, the response is okay..
+        chat.send_message("hello1", stream=True).resolve()
+
+        # Send a second message, it fails
+        response = chat.send_message("hello2", stream=True)
+        with self.assertRaises(ValueError):
+            # Iteration fails
+            for chunk in response:
+                pass
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=True,
+                iterator=None,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': '123'}], 'role': ''}, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': '1'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': '2'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': '3'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
+            ),
+            error=<ValueError> """
+        )
+        self.assertEqual(expected, result)
+
 
 if __name__ == "__main__":
     absltest.main()
