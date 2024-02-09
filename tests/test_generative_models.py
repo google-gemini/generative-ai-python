@@ -801,6 +801,58 @@ class CUJTests(parameterized.TestCase):
         )
         self.assertEqual(expected, result)
 
+    def test_repr_error_info_for_chat_streaming_unexpected_stop(self):
+        self.responses["stream_generate_content"] = [
+            iter(
+                [
+                    simple_response("a"),
+                    simple_response("b"),
+                    simple_response("c"),
+                    glm.GenerateContentResponse(
+                        {
+                            "candidates": [{"finish_reason": "SAFETY"}],
+                        }
+                    ),
+                ]
+            )
+        ]
+
+        model = generative_models.GenerativeModel("gemini-pro-vision")
+        chat = model.start_chat()
+
+        response = chat.send_message("hello", stream=True)
+        for chunk in response:
+            # The result doesn't know it's a chat result so it can't throw.
+            # Unless we give it some way to know?
+            pass
+
+        with self.assertRaises(generation_types.BrokenResponseError):
+            # But when preparing the next message, we can throw:
+            response = chat.send_message("hello2", stream=True)
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=True,
+                iterator=None,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'abc'}], 'role': ''}, 'finish_reason': 3, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'a'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'b'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'c'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'finish_reason': 3, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
+            ),
+            error=<StopCandidateException> index: 0
+            content {
+              parts {
+                text: "abc"
+              }
+            }
+            finish_reason: SAFETY
+            citation_metadata {
+            }
+            """
+        )
+        self.assertEqual(expected, result)
+
 
 if __name__ == "__main__":
     absltest.main()
