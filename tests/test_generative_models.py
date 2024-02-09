@@ -679,6 +679,55 @@ class CUJTests(parameterized.TestCase):
         )
         self.assertEqual(expected, result)
 
+    def test_repr_for_streaming_start_to_finish(self):
+        chunks = ["first", " second", " third"]
+        self.responses["stream_generate_content"] = [(simple_response(text) for text in chunks)]
+
+        model = generative_models.GenerativeModel("gemini-pro")
+        response = model.generate_content("Hello", stream=True)
+        iterator = iter(response)
+
+        result1 = repr(response)
+        expected1 = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=False,
+                iterator=<generator>,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
+            )"""
+        )
+        self.assertEqual(expected1, result1)
+
+        next(iterator)
+        result2 = repr(response)
+        expected2 = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=False,
+                iterator=<generator>,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first second'}], 'role': ''}, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': ' second'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
+            )"""
+        )
+        self.assertEqual(expected2, result2)
+
+        next(iterator)
+        result3 = repr(response)
+        expected3 = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=False,
+                iterator=<generator>,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first second third'}], 'role': ''}, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': ' second'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}), glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': ' third'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
+            )"""
+        )
+        self.assertEqual(expected3, result3)
+
 
 if __name__ == "__main__":
     absltest.main()
