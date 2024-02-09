@@ -6,6 +6,7 @@ from collections.abc import Iterable
 import dataclasses
 import textwrap
 from typing import Union
+import reprlib
 
 # pylint: disable=bad-continuation, line-too-long
 
@@ -490,10 +491,11 @@ class ChatSession:
         self._last_received = None
 
     def __repr__(self) -> str:
+        _dict_repr = reprlib.Repr()
         _model = str(self.model).replace("\n", "\n" + " " * 4)
         _history = (
             ",\n    "
-            + f"history=[{', '.join(['glm.Content('+str( type(x).to_dict(x) )+')' for x in self._history ])}]\n)"
+            + f"history=[{', '.join(['glm.Content('+_dict_repr.repr(type(x).to_dict(x))+')' for x in self._history ])}]\n)"
         )
 
         return (
