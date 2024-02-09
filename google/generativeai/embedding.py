@@ -120,8 +120,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
-) -> text_types.EmbeddingDict:
-    ...
+) -> text_types.EmbeddingDict: ...
 
 
 @overload
@@ -131,8 +130,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
-) -> text_types.BatchEmbeddingDict:
-    ...
+) -> text_types.BatchEmbeddingDict: ...
 
 
 @string_utils.set_doc(_EMBED_CONTENT_DOC)
@@ -187,8 +185,7 @@ async def embed_content_async(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
-) -> text_types.EmbeddingDict:
-    ...
+) -> text_types.EmbeddingDict: ...
 
 
 @overload
@@ -198,8 +195,7 @@ async def embed_content_async(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
-) -> text_types.BatchEmbeddingDict:
-    ...
+) -> text_types.BatchEmbeddingDict: ...
 
 
 @string_utils.set_doc(_EMBED_CONTENT_ASYNC_DOC)
