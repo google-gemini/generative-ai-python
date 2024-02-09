@@ -856,6 +856,40 @@ class CUJTests(parameterized.TestCase):
         )
         self.assertEqual(expected, result)
 
+    def test_repr_for_multi_turn_chat(self):
+        # Multi turn chat
+        model = generative_models.GenerativeModel("gemini-pro")
+        chat = model.start_chat()
+
+        self.responses["generate_content"] = [
+            simple_response("first"),
+            simple_response("second"),
+            simple_response("third"),
+        ]
+
+        msg1 = "I really like fantasy books."
+        response = chat.send_message(msg1)
+
+        msg2 = "I also like this image."
+        response = chat.send_message([msg2, PIL.Image.open(TEST_IMAGE_PATH)])
+
+        msg3 = "What things do I like?."
+        response = chat.send_message(msg3)
+
+        result = repr(chat)
+        expected = textwrap.dedent(
+            """\
+            ChatSession(
+                model=genai.GenerativeModel(
+                    model_name='models/gemini-pro',
+                    generation_config={}.
+                    safety_settings={}
+                ),
+                history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'first'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), glm.Content({'parts': [{'text': 'second'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
+            )"""
+        )
+        self.assertEqual(expected, result)
+
 
 if __name__ == "__main__":
     absltest.main()
