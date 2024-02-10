@@ -14,10 +14,12 @@
 # limitations under the License.
 import copy
 import math
+from typing import Union
 import unittest
 import unittest.mock as mock
 
 import google.ai.generativelanguage as glm
+from google.api_core import gapic_v1
 
 from google.generativeai import answer
 from google.generativeai import client
@@ -46,6 +48,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def generate_answer(
             request: glm.GenerateAnswerRequest,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
         ) -> glm.GenerateAnswerResponse:
             self.observed_requests.append(request)
             return glm.GenerateAnswerResponse(

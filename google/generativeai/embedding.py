@@ -20,6 +20,7 @@ import itertools
 from typing import Iterable, overload, TypeVar, Union, Mapping
 
 import google.ai.generativelanguage as glm
+from google.api_core import gapic_v1
 
 from google.generativeai.client import get_default_generative_client
 from google.generativeai.client import get_default_generative_async_client
@@ -95,6 +96,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
+    timeout: Union[float, object] = gapic_v1.method.DEFAULT,
 ) -> text_types.EmbeddingDict: ...
 
 
@@ -105,6 +107,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
+    timeout: Union[float, object] = gapic_v1.method.DEFAULT,
 ) -> text_types.BatchEmbeddingDict: ...
 
 
@@ -114,6 +117,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient = None,
+    timeout: Union[float, object] = gapic_v1.method.DEFAULT,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
     """Calls the API to create embeddings for content passed in.
 
@@ -160,7 +164,10 @@ def embed_content(
         )
         for batch in _batched(requests, EMBEDDING_MAX_BATCH_SIZE):
             embedding_request = glm.BatchEmbedContentsRequest(model=model, requests=batch)
-            embedding_response = client.batch_embed_contents(embedding_request)
+            embedding_response = client.batch_embed_contents(
+                embedding_request,
+                timeout=timeout,
+            )
             embedding_dict = type(embedding_response).to_dict(embedding_response)
             result["embedding"].extend(e["values"] for e in embedding_dict["embeddings"])
         return result
@@ -168,7 +175,10 @@ def embed_content(
         embedding_request = glm.EmbedContentRequest(
             model=model, content=content_types.to_content(content), task_type=task_type, title=title
         )
-        embedding_response = client.embed_content(embedding_request)
+        embedding_response = client.embed_content(
+            embedding_request,
+            timeout=timeout,
+        )
         embedding_dict = type(embedding_response).to_dict(embedding_response)
         embedding_dict["embedding"] = embedding_dict["embedding"]["values"]
         return embedding_dict

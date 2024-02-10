@@ -14,10 +14,12 @@
 # limitations under the License.
 import copy
 import math
+from typing import Union
 import unittest
 import unittest.mock as mock
 
 import google.ai.generativelanguage as glm
+from google.api_core import gapic_v1
 
 from google.generativeai import embedding
 
@@ -45,6 +47,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def embed_content(
             request: glm.EmbedContentRequest,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
         ) -> glm.EmbedContentResponse:
             self.observed_requests.append(request)
             return glm.EmbedContentResponse(embedding=glm.ContentEmbedding(values=[1, 2, 3]))

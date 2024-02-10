@@ -11,6 +11,7 @@ from typing import Union
 
 
 from google.ai import generativelanguage as glm
+from google.api_core import gapic_v1
 from google.generativeai import client
 from google.generativeai import string_utils
 from google.generativeai.types import content_types
@@ -138,6 +139,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
+        timeout: Union[float, object] = gapic_v1.method.DEFAULT,
         **kwargs,
     ) -> generation_types.GenerateContentResponse:
         """A multipurpose function to generate responses from the model.
@@ -204,10 +206,10 @@ class GenerativeModel:
 
         if stream:
             with generation_types.rewrite_stream_error():
-                iterator = self._client.stream_generate_content(request)
+                iterator = self._client.stream_generate_content(request, timeout=timeout)
             return generation_types.GenerateContentResponse.from_iterator(iterator)
         else:
-            response = self._client.generate_content(request)
+            response = self._client.generate_content(request, timeout=timeout)
             return generation_types.GenerateContentResponse.from_response(response)
 
     async def generate_content_async(
@@ -217,6 +219,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
+        timeout: Union[float, object] = gapic_v1.method.DEFAULT,
         **kwargs,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `GenerativeModel.generate_content`."""
@@ -231,28 +234,41 @@ class GenerativeModel:
 
         if stream:
             with generation_types.rewrite_stream_error():
-                iterator = await self._async_client.stream_generate_content(request)
+                iterator = await self._async_client.stream_generate_content(
+                    request, timeout=timeout
+                )
             return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
         else:
-            response = await self._async_client.generate_content(request)
+            response = await self._async_client.generate_content(request, timeout=timeout)
             return generation_types.AsyncGenerateContentResponse.from_response(response)
 
     # fmt: off
     def count_tokens(
-        self, contents: content_types.ContentsType
+        self,
+        contents: content_types.ContentsType,
+        timeout: Union[float, object] = gapic_v1.method.DEFAULT,
     ) -> glm.CountTokensResponse:
         if self._client is None:
             self._client = client.get_default_generative_client()
         contents = content_types.to_contents(contents)
-        return self._client.count_tokens(glm.CountTokensRequest(model=self.model_name, contents=contents))
+        return self._client.count_tokens(
+            glm.CountTokensRequest(model=self.model_name, contents=contents),
+            timeout=timeout,
+        )
 
     async def count_tokens_async(
-        self, contents: content_types.ContentsType
+        self,
+        contents: content_types.ContentsType,
+        timeout: Union[float, object] = gapic_v1.method.DEFAULT,
     ) -> glm.CountTokensResponse:
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
         contents = content_types.to_contents(contents)
-        return await self._async_client.count_tokens(glm.CountTokensRequest(model=self.model_name, contents=contents))
+        return await self._async_client.count_tokens(
+            glm.CountTokensRequest(model=self.model_name, contents=contents),
+            timeout=timeout,
+        )
+
     # fmt: on
 
     def start_chat(

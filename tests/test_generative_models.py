@@ -2,10 +2,12 @@ import collections
 from collections.abc import Iterable
 import copy
 import pathlib
+from typing import Union
 import unittest.mock
 from absl.testing import absltest
 from absl.testing import parameterized
 import google.ai.generativelanguage as glm
+from google.api_core import gapic_v1
 from google.generativeai import client as client_lib
 from google.generativeai import generative_models
 from google.generativeai.types import content_types
@@ -42,6 +44,7 @@ class CUJTests(parameterized.TestCase):
         @add_client_method
         def generate_content(
             request: glm.GenerateContentRequest,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
         ) -> glm.GenerateContentResponse:
             self.assertIsInstance(request, glm.GenerateContentRequest)
             self.observed_requests.append(request)
@@ -51,6 +54,7 @@ class CUJTests(parameterized.TestCase):
         @add_client_method
         def stream_generate_content(
             request: glm.GetModelRequest,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["stream_generate_content"].pop(0)
@@ -59,6 +63,7 @@ class CUJTests(parameterized.TestCase):
         @add_client_method
         def count_tokens(
             request: glm.CountTokensRequest,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["count_tokens"].pop(0)
