@@ -44,7 +44,14 @@ __all__ = [
     "ContentType",
     "StrictContentType",
     "ContentsType",
+    "FunctionDeclaration",
+    "CallableFunctionDeclaration",
+    "FunctionDeclarationType",
+    "Tool",
+    "ToolDict",
     "ToolsType",
+    "FunctionLibrary",
+    "FunctionLibraryType",
 ]
 
 
@@ -620,10 +627,10 @@ def _make_tools(tools: ToolsType):
         return FunctionLibrary(tools=[[fun]])
 
 
-FunctionLibraryType = Union[FunctionLibrary, ToolsType, None]
+FunctionLibraryType = Union[FunctionLibrary, ToolsType]
 
 
-def to_function_library(lib: FunctionLibraryType) -> FunctionLibrary | None:
+def to_function_library(lib: FunctionLibraryType | None) -> FunctionLibrary | None:
     if lib is None:
         return lib
     elif isinstance(lib, FunctionLibrary):

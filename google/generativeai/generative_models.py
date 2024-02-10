@@ -195,11 +195,14 @@ class GenerativeModel:
         contents: content_types.ContentsType,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
-        **kwargs,
+        tools: content_types.FunctionLibrary | None,
     ) -> glm.GenerateContentRequest:
         """Creates a `glm.GenerateContentRequest` from raw inputs."""
         if not contents:
             raise TypeError("contents must not be empty")
+
+        if tools is None:
+            tools = self._tools
 
         contents = content_types.to_contents(contents)
 
@@ -217,8 +220,7 @@ class GenerativeModel:
             contents=contents,
             generation_config=merged_gc,
             safety_settings=merged_ss,
-            tools=self._tools.to_proto(),
-            **kwargs,
+            tools=tools.to_proto(),
         )
 
     @string_utils.set_doc(_GENERATE_CONTENT_DOC)
@@ -229,13 +231,13 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
-        **kwargs,
+        tools: content_types.FunctionLibraryType | None = None,
     ) -> generation_types.GenerateContentResponse:
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
             safety_settings=safety_settings,
-            **kwargs,
+            tools=content_types.to_function_library(tools),
         )
         if self._client is None:
             self._client = client.get_default_generative_client()
@@ -256,13 +258,13 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
-        **kwargs,
+        tools: content_types.FunctionLibraryType | None = None,
     ) -> generation_types.AsyncGenerateContentResponse:
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
             safety_settings=safety_settings,
-            **kwargs,
+            tools=content_types.to_function_library(tools),
         )
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
@@ -353,7 +355,7 @@ class ChatSession:
         generation_config: generation_types.GenerationConfigType = None,
         safety_settings: safety_types.SafetySettingOptions = None,
         stream: bool = False,
-        **kwargs,
+        tools: content_types.FunctionLibraryType | None = None,
     ) -> generation_types.GenerateContentResponse:
         content = content_types.to_content(content)
         if not content.role:
@@ -369,7 +371,7 @@ class ChatSession:
             generation_config=generation_config,
             safety_settings=safety_settings,
             stream=stream,
-            **kwargs,
+            tools=tools,
         )
 
         if response.prompt_feedback.block_reason:
@@ -396,7 +398,7 @@ class ChatSession:
         generation_config: generation_types.GenerationConfigType = None,
         safety_settings: safety_types.SafetySettingOptions = None,
         stream: bool = False,
-        **kwargs,
+        tools: content_types.FunctionLibraryType | None = None,
     ) -> generation_types.AsyncGenerateContentResponse:
         content = content_types.to_content(content)
         if not content.role:
@@ -412,7 +414,7 @@ class ChatSession:
             generation_config=generation_config,
             safety_settings=safety_settings,
             stream=stream,
-            **kwargs,
+            tools=tools,
         )
 
         if response.prompt_feedback.block_reason:
