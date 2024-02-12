@@ -205,10 +205,16 @@ class GenerativeModel:
 
         if stream:
             with generation_types.rewrite_stream_error():
-                iterator = self._client.stream_generate_content(request, timeout=timeout)
+                iterator = self._client.stream_generate_content(
+                    request,
+                    timeout=timeout,
+                )
             return generation_types.GenerateContentResponse.from_iterator(iterator)
         else:
-            response = self._client.generate_content(request, timeout=timeout)
+            response = self._client.generate_content(
+                request,
+                timeout=timeout,
+            )
             return generation_types.GenerateContentResponse.from_response(response)
 
     async def generate_content_async(
@@ -234,11 +240,15 @@ class GenerativeModel:
         if stream:
             with generation_types.rewrite_stream_error():
                 iterator = await self._async_client.stream_generate_content(
-                    request, timeout=timeout
+                    request,
+                    timeout=timeout,
                 )
             return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
         else:
-            response = await self._async_client.generate_content(request, timeout=timeout)
+            response = await self._async_client.generate_content(
+                request,
+                timeout=timeout,
+            )
             return generation_types.AsyncGenerateContentResponse.from_response(response)
 
     # fmt: off
