@@ -369,6 +369,11 @@ class ChatSession:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
     ) -> generation_types.GenerateContentResponse:
+        if self.enable_automatic_function_calling and stream:
+            raise ValueError(
+                "The `google.generativeai` SDK does not yet support `stream=True` with "
+                "`enable_automatic_function_calling=True`"
+            )
 
         tools_lib = self.model._get_tools_lib(tools)
 
