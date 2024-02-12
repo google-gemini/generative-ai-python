@@ -51,6 +51,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def batch_embed_contents(
             request: glm.BatchEmbedContentsRequest,
+            timeout: float | None = None,
         ) -> glm.BatchEmbedContentsResponse:
             self.observed_requests.append(request)
             return glm.BatchEmbedContentsResponse(

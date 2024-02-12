@@ -53,6 +53,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def batch_embed_contents(
             request: glm.BatchEmbedContentsRequest,
+            timeout: float | None = None,
         ) -> glm.BatchEmbedContentsResponse:
             self.observed_requests.append(request)
             return glm.BatchEmbedContentsResponse(
