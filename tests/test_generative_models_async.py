@@ -68,6 +68,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def count_tokens(
             request: glm.CountTokensRequest,
+            timeout: float | None = None,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["count_tokens"].pop(0)
