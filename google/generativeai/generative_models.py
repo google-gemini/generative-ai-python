@@ -5,13 +5,11 @@ from __future__ import annotations
 from collections.abc import Iterable
 import dataclasses
 import textwrap
-from typing import Union
 
 # pylint: disable=bad-continuation, line-too-long
 
 
 from google.ai import generativelanguage as glm
-from google.api_core import gapic_v1
 from google.generativeai import client
 from google.generativeai import string_utils
 from google.generativeai.types import content_types
@@ -139,7 +137,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
-        timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+        timeout: float | None = None,
         **kwargs,
     ) -> generation_types.GenerateContentResponse:
         """A multipurpose function to generate responses from the model.
@@ -220,7 +218,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
-        timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+        timeout: float | None = None,
         **kwargs,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `GenerativeModel.generate_content`."""
@@ -247,7 +245,7 @@ class GenerativeModel:
     def count_tokens(
         self,
         contents: content_types.ContentsType,
-        timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+        timeout: float | None = None,
     ) -> glm.CountTokensResponse:
         if self._client is None:
             self._client = client.get_default_generative_client()
@@ -260,7 +258,7 @@ class GenerativeModel:
     async def count_tokens_async(
         self,
         contents: content_types.ContentsType,
-        timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+        timeout: float | None = None,
     ) -> glm.CountTokensResponse:
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()

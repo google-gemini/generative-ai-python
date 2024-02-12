@@ -20,7 +20,6 @@ import itertools
 from typing import Iterable, Union, Mapping, Optional, Any
 
 import google.ai.generativelanguage as glm
-from google.api_core import gapic_v1
 
 from google.generativeai.client import get_default_generative_client
 from google.generativeai import string_utils
@@ -166,7 +165,7 @@ def generate_answer(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+    timeout: float | None = None,
 ):
     """
     Calls the API and returns a `types.Answer` containing the answer.

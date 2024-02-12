@@ -20,7 +20,6 @@ import itertools
 from typing import Iterable, overload, TypeVar, Union, Mapping
 
 import google.ai.generativelanguage as glm
-from google.api_core import gapic_v1
 
 from google.generativeai.client import get_default_generative_client
 from google.generativeai.client import get_default_generative_async_client
@@ -96,7 +95,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+    timeout: float | None = None,
 ) -> text_types.EmbeddingDict: ...
 
 
@@ -107,7 +106,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+    timeout: float | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
 
 
@@ -117,7 +116,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     client: glm.GenerativeServiceClient = None,
-    timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+    timeout: float | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
     """Calls the API to create embeddings for content passed in.
 

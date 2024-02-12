@@ -17,10 +17,8 @@ import collections
 import sys
 from collections.abc import Iterable
 import os
-from typing import Union
 import unittest
 
-from google.api_core import gapic_v1
 
 from google.generativeai import client as client_lib
 from google.generativeai import generative_models
@@ -51,7 +49,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def generate_content(
             request: glm.GenerateContentRequest,
-            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            timeout: float | None = None,
         ) -> glm.GenerateContentResponse:
             self.assertIsInstance(request, glm.GenerateContentRequest)
             self.observed_requests.append(request)
@@ -61,7 +59,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def stream_generate_content(
             request: glm.GetModelRequest,
-            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            timeout: float | None = None,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["stream_generate_content"].pop(0)
