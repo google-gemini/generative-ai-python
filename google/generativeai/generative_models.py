@@ -194,6 +194,7 @@ class GenerativeModel:
             safety_settings: Overrides for the model's safety settings.
             stream: If True, yield response chunks as they are generated.
             tools: `glm.Tools` more info coming soon.
+            timeout: The timeout for this request.
         """
         request = self._prepare_request(
             contents=contents,

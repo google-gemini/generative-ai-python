@@ -136,6 +136,8 @@ def embed_content(
         title:
             An optional title for the text. Only applicable when task_type is
             `RETRIEVAL_DOCUMENT`.
+        timeout:
+            The timeout for this request.
 
     Return:
         Dictionary containing the embedding (list of float values) for the
