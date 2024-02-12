@@ -202,7 +202,7 @@ class GenerativeModel:
         if not contents:
             raise TypeError("contents must not be empty")
 
-        tools_lib = self._get_tools_lib(self, tools)
+        tools_lib = self._get_tools_lib(tools)
 
         contents = content_types.to_contents(contents)
 
@@ -307,6 +307,7 @@ class GenerativeModel:
         self,
         *,
         history: Iterable[content_types.StrictContentType] | None = None,
+        enable_automatic_function_calling: bool = False,
     ) -> ChatSession:
         """Returns a `genai.ChatSession` attached to this model.
 
@@ -322,6 +323,7 @@ class GenerativeModel:
         return ChatSession(
             model=self,
             history=history,
+            enable_automatic_function_calling=enable_automatic_function_calling,
         )
 
 
@@ -390,17 +392,18 @@ class ChatSession:
             tools=tools_lib,
         )
 
-        self.check_response(response=response, stream=stream)
+        self._check_response(response=response, stream=stream)
 
         if self.enable_automatic_function_calling and tools_lib is not None:
-            content, response, history = self._handle_afc(
+            self.history, content, response = self._handle_afc(
                 content=content,
                 response=response,
                 history=history,
                 generation_config=generation_config,
                 safety_settings=safety_settings,
                 stream=stream,
-                tools=tools_lib)
+                tools_lib=tools_lib,
+            )
 
         self._last_sent = content
         self._last_received = response
@@ -422,22 +425,21 @@ class ChatSession:
     def _handle_afc(
         self, *, content, response, history, generation_config, safety_settings, stream, tools_lib
     ) -> tuple[list[glm.Content], glm.Content, generation_types.BaseGenerateContentResponse]:
-        history.append(response.candidates[0].content)
-
         while function_calls := response.function_calls:
             if not all(callable(tools_lib[fc]) for fc in function_calls):
                 break
+            history.append(response.candidates[0].content)
 
-            function_responses: list[glm.Part] = []
+            function_response_parts: list[glm.Part] = []
             for fc in function_calls:
                 fr = tools_lib(fc)
                 assert fr is not None, (
                     "This should never happen, it should only return None if the declaration"
                     "is not callable, and that's guarded against above."
                 )
-                function_responses.append(fr)
+                function_response_parts.append(fr)
 
-            send = glm.Conten(role=self._USER_ROLE, parts=function_responses)
+            send = glm.Content(role=self._USER_ROLE, parts=function_response_parts)
             history.append(send)
 
             response = self.model.generate_content(
@@ -448,15 +450,10 @@ class ChatSession:
                 tools=tools_lib,
             )
 
-            self.check_response(response=response, stream=stream)
+            self._check_response(response=response, stream=stream)
 
-            history.append(response.candidates[0].content)
-
-        *history, content, _ = history
+        *history, content = history
         return history, content, response
-
-
-
 
     @string_utils.set_doc(_SEND_MESSAGE_ASYNC_DOC)
     async def send_message_async(

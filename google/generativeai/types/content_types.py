@@ -362,22 +362,7 @@ def _rename_schema_fields(schema):
     return schema
 
 
-def _make_function_declaration_str():
-    @string_utils.prettyprint
-    @dataclasses.dataclass
-    class FunctionDeclaration:
-        name: str
-        description: str
-        parameters: dict[str:Any] | None = None
-
-    return FunctionDeclaration.__str__
-
-
 class FunctionDeclaration:
-
-    __str__ = _make_function_declaration_str()
-    __repr__ = __str__
-
     def __init__(self, *, name: str, description: str, parameters: dict[str:Any] | None = None):
         if parameters is None:
             parameters = {}
@@ -406,27 +391,11 @@ class FunctionDeclaration:
         return self._proto
 
 
-def _make_callable_function_declaration_str():
-    @string_utils.prettyprint
-    @dataclasses.dataclass
-    class CallableFunctionDeclaration:
-        name: str
-        function: Callable[..., Any]
-        description: str
-        parameters: dict[str:Any] | None = None
-
-    return CallableFunctionDeclaration.__str__
-
-
 StructType = dict[str, "ValueType"]
 ValueType = Union[float, str, bool, StructType, list["ValueType"], None]
 
 
 class CallableFunctionDeclaration(FunctionDeclaration):
-
-    __str__ = _make_callable_function_declaration_str()
-    __repr__ = __str__
-
     def __init__(
         self,
         *,
@@ -435,7 +404,7 @@ class CallableFunctionDeclaration(FunctionDeclaration):
         parameters: dict[str:Any] | None = None,
         function: Callable[..., Any],
     ):
-        super().__init__(self, name=name, description=description, parameters=parameters)
+        super().__init__(name=name, description=description, parameters=parameters)
         self.function = function
 
     @classmethod
@@ -445,13 +414,12 @@ class CallableFunctionDeclaration(FunctionDeclaration):
         if descriptions is None:
             descriptions = {}
 
-        schema = _generate_schema.generate_schema(function, descriptions=descriptions)
+        schema = _generate_schema(function, descriptions=descriptions)
 
         return cls(**schema, function=function)
 
     def __call__(self, fc: glm.FunctionCall) -> glm.FunctionResponse:
-        args = type(fc.args).to_dict(fc.args)
-        result = self.function(**args)
+        result = self.function(**fc.args)
         if not isinstance(result, dict):
             result = {"result": result}
         return glm.FunctionResponse(name=fc.name, response=result)
@@ -491,24 +459,12 @@ def _encode_fd(fd: FunctionDeclaration | glm.FunctionDeclaration) -> glm.Functio
     return fd.to_proto()
 
 
-def _make_tool_str():
-    @string_utils.prettyprint
-    @dataclasses.dataclass
-    class Tool:
-        function_declarations: list[FunctionDeclaration | glm.FunctionDeclaration]
-
-    return Tool.__str__
-
-
 class Tool:
-    __str__ = _make_tool_str()
-    __repr__ = __str__
-
     def __init__(self, function_declarations: Iterable[FunctionDeclarationType]):
         # The main path doesn't use this but is seems useful.
         self._function_declarations = [_make_function_declaration(f) for f in function_declarations]
         self._index = {}
-        for fd in self.functions:
+        for fd in self._function_declarations:
             name = fd.name
             if name in self._index:
                 raise ValueError("")
@@ -519,7 +475,7 @@ class Tool:
         )
 
     @property
-    def function_declaration(self):
+    def function_declarations(self) -> list[FunctionDeclaration | glm.FunctionDeclaration]:
         return self._function_declarations
 
     def __getitem__(
@@ -569,24 +525,14 @@ def _make_tool(tool: ToolType) -> Tool:
         )
 
 
-def _make_function_library_str():
-    @dataclasses.dataclass(init=False)
-    class FunctionLibrary:
-        tools: list[Tool]
-
-    return FunctionLibrary.__str__
-
-
 class FunctionLibrary:
-    __str__ = _make_function_library_str()
-    __repr__ = __str__
 
     def __init__(self, tools: Iterable[ToolType]):
         tools = _make_tools(tools)
         self._tools = list(tools)
         self._index = {}
-        for tool in self.tools:
-            for declaration in tool:
+        for tool in self._tools:
+            for declaration in tool.function_declarations:
                 name = declaration.name
                 if name in self._index:
                     raise ValueError("")
@@ -606,25 +552,25 @@ class FunctionLibrary:
             return None
 
         response = declaration(fc)
-        return response
+        return glm.Part(function_response=response)
 
     def to_proto(self):
-        return [tool.to_proto() for tool in self.tools]
+        return [tool.to_proto() for tool in self._tools]
 
 
 ToolsType = Union[Iterable[ToolType], Iterable[FunctionDeclarationType], FunctionDeclarationType]
 
 
-def _make_tools(tools: ToolsType):
+def _make_tools(tools: ToolsType) -> list[Tool]:
     if isinstance(tools, Iterable):
         try:
-            return FunctionLibrary(tools)
+            return [_make_tool(t) for t in tools]
         except (TypeError, KeyError):
             tool = tools
-            return FunctionLibrary(tools=[tool])
+            return [_make_tool(tool)]
     else:
         fun = tools
-        return FunctionLibrary(tools=[[fun]])
+        return [_make_tool([fun])]
 
 
 FunctionLibraryType = Union[FunctionLibrary, ToolsType]

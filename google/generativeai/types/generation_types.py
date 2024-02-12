@@ -347,6 +347,14 @@ class BaseGenerateContentResponse:
     def prompt_feedback(self):
         return self._result.prompt_feedback
 
+    @property
+    def function_calls(self) -> list[glm.FunctionCall]:
+        result = []
+        for part in self.parts:
+            if "function_call" in part:
+                result.append(part.function_call)
+        return result
+
 
 @contextlib.contextmanager
 def rewrite_stream_error():
