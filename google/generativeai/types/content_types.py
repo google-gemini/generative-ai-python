@@ -522,7 +522,7 @@ class Tool:
     def function_declaration(self):
         return self._function_declarations
 
-    def __get_item__(
+    def __getitem__(
         self, name: str | glm.FunctionCall
     ) -> FunctionDeclaration | glm.FunctionDeclaration:
         if not isinstance(name, str):
@@ -592,7 +592,7 @@ class FunctionLibrary:
                     raise ValueError("")
                 self._index[declaration.name] = declaration
 
-    def __get_item__(
+    def __getitem__(
         self, name: str | glm.FunctionCall
     ) -> FunctionDeclaration | glm.FunctionDeclaration:
         if not isinstance(name, str):
@@ -600,13 +600,13 @@ class FunctionLibrary:
 
         return self._index[name]
 
-    def __call__(self, fc: glm.FunctionCall) -> glm.Content | None:
+    def __call__(self, fc: glm.FunctionCall) -> glm.Part | None:
         declaration = self[fc]
         if not callable(declaration):
             return None
 
         response = declaration(fc)
-        return glm.Content(role="user", parts=[response])
+        return response
 
     def to_proto(self):
         return [tool.to_proto() for tool in self.tools]

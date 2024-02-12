@@ -182,8 +182,9 @@ class GenerativeModel:
             f""" \
             genai.GenerativeModel(
                model_name='{self.model_name}',
-               generation_config={self._generation_config}.
-               safety_settings={self._safety_settings}
+               generation_config={self._generation_config},
+               safety_settings={self._safety_settings},
+               tools={self._tools},
             )"""
         )
 
@@ -195,14 +196,13 @@ class GenerativeModel:
         contents: content_types.ContentsType,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
-        tools: content_types.FunctionLibrary | None,
+        tools: content_types.FunctionLibraryType | None,
     ) -> glm.GenerateContentRequest:
         """Creates a `glm.GenerateContentRequest` from raw inputs."""
         if not contents:
             raise TypeError("contents must not be empty")
 
-        if tools is None:
-            tools = self._tools
+        tools_lib = self._get_tools_lib(self, tools)
 
         contents = content_types.to_contents(contents)
 
@@ -220,8 +220,16 @@ class GenerativeModel:
             contents=contents,
             generation_config=merged_gc,
             safety_settings=merged_ss,
-            tools=tools.to_proto(),
+            tools=tools_lib.to_proto(),
         )
+
+    def _get_tools_lib(
+        self, tools: content_types.FunctionLibraryType
+    ) -> content_types.FunctionLibrary | None:
+        if tools is None:
+            return self._tools
+        else:
+            return content_types.to_function_library(tools)
 
     @string_utils.set_doc(_GENERATE_CONTENT_DOC)
     def generate_content(
@@ -237,7 +245,7 @@ class GenerativeModel:
             contents=contents,
             generation_config=generation_config,
             safety_settings=safety_settings,
-            tools=content_types.to_function_library(tools),
+            tools=tools,
         )
         if self._client is None:
             self._client = client.get_default_generative_client()
@@ -264,7 +272,7 @@ class GenerativeModel:
             contents=contents,
             generation_config=generation_config,
             safety_settings=safety_settings,
-            tools=content_types.to_function_library(tools),
+            tools=tools,
         )
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
@@ -341,11 +349,13 @@ class ChatSession:
         self,
         model: GenerativeModel,
         history: Iterable[content_types.StrictContentType] | None = None,
+        enable_automatic_function_calling: bool = False,
     ):
         self.model: GenerativeModel = model
         self._history: list[glm.Content] = content_types.to_contents(history)
         self._last_sent: glm.Content | None = None
         self._last_received: generation_types.BaseGenerateContentResponse | None = None
+        self.enable_automatic_function_calling = enable_automatic_function_calling
 
     @string_utils.set_doc(_SEND_MESSAGE_DOC)
     def send_message(
@@ -357,23 +367,47 @@ class ChatSession:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
     ) -> generation_types.GenerateContentResponse:
+
+        tools_lib = self.model._get_tools_lib(tools)
+
         content = content_types.to_content(content)
+
         if not content.role:
             content.role = self._USER_ROLE
+
         history = self.history[:]
         history.append(content)
 
         generation_config = generation_types.to_generation_config_dict(generation_config)
         if generation_config.get("candidate_count", 1) > 1:
             raise ValueError("Can't chat with `candidate_count > 1`")
+
         response = self.model.generate_content(
             contents=history,
             generation_config=generation_config,
             safety_settings=safety_settings,
             stream=stream,
-            tools=tools,
+            tools=tools_lib,
         )
 
+        self.check_response(response=response, stream=stream)
+
+        if self.enable_automatic_function_calling and tools_lib is not None:
+            content, response, history = self._handle_afc(
+                content=content,
+                response=response,
+                history=history,
+                generation_config=generation_config,
+                safety_settings=safety_settings,
+                stream=stream,
+                tools=tools_lib)
+
+        self._last_sent = content
+        self._last_received = response
+
+        return response
+
+    def _check_response(self, *, response, stream):
         if response.prompt_feedback.block_reason:
             raise generation_types.BlockedPromptException(response.prompt_feedback)
 
@@ -385,10 +419,44 @@ class ChatSession:
             ):
                 raise generation_types.StopCandidateException(response.candidates[0])
 
-        self._last_sent = content
-        self._last_received = response
+    def _handle_afc(
+        self, *, content, response, history, generation_config, safety_settings, stream, tools_lib
+    ) -> tuple[list[glm.Content], glm.Content, generation_types.BaseGenerateContentResponse]:
+        history.append(response.candidates[0].content)
 
-        return response
+        while function_calls := response.function_calls:
+            if not all(callable(tools_lib[fc]) for fc in function_calls):
+                break
+
+            function_responses: list[glm.Part] = []
+            for fc in function_calls:
+                fr = tools_lib(fc)
+                assert fr is not None, (
+                    "This should never happen, it should only return None if the declaration"
+                    "is not callable, and that's guarded against above."
+                )
+                function_responses.append(fr)
+
+            send = glm.Conten(role=self._USER_ROLE, parts=function_responses)
+            history.append(send)
+
+            response = self.model.generate_content(
+                contents=history,
+                generation_config=generation_config,
+                safety_settings=safety_settings,
+                stream=stream,
+                tools=tools_lib,
+            )
+
+            self.check_response(response=response, stream=stream)
+
+            history.append(response.candidates[0].content)
+
+        *history, content, _ = history
+        return history, content, response
+
+
+
 
     @string_utils.set_doc(_SEND_MESSAGE_ASYNC_DOC)
     async def send_message_async(
