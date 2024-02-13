@@ -474,7 +474,7 @@ class ChatSession:
             ) from last._error
 
         sent = self._last_sent
-        received = self._last_received.candidates[0].content
+        received = last.candidates[0].content
         if not received.role:
             received.role = self._MODEL_ROLE
         self._history.extend([sent, received])
@@ -487,16 +487,32 @@ class ChatSession:
     @history.setter
     def history(self, history):
         self._history = content_types.to_contents(history)
-        self._last_self = None
+        self._last_sent = None
         self._last_received = None
 
     def __repr__(self) -> str:
         _dict_repr = reprlib.Repr()
         _model = str(self.model).replace("\n", "\n" + " " * 4)
-        _history = (
-            ",\n    "
-            + f"history=[{', '.join(['glm.Content('+_dict_repr.repr(type(x).to_dict(x))+')' for x in self.history ])}]\n)"
-        )
+
+        def content_repr(x):
+            return f"glm.Content({_dict_repr.repr(type(x).to_dict(x))})"
+
+        history = list(self._history)
+        if self._last_sent is not None:
+            history.append(self._last_sent)
+        history = [content_repr(x) for x in history]
+
+        last_received = self._last_received
+        if last_received is not None:
+            if last_received._done:
+                content = self._last_received.candidates[0].content
+                if not content.role:
+                    content.role = self._MODEL_ROLE
+                history.append(content_repr(content))
+            else:
+                history.append("<STREAMING IN PROGRESS>")
+
+        _history = ",\n    " + f"history=[{', '.join(history)}]\n)"
 
         return (
             textwrap.dedent(

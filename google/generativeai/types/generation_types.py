@@ -347,6 +347,34 @@ class BaseGenerateContentResponse:
     def prompt_feedback(self):
         return self._result.prompt_feedback
 
+    def __str__(self) -> str:
+        if self._done:
+            _iterator = "None"
+        else:
+            _iterator = f"<{self._iterator.__class__.__name__}>"
+
+        _result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
+
+        if self._error:
+            _error = f",\nerror=<{self._error.__class__.__name__}> {self._error}"
+        else:
+            _error = ""
+
+        return (
+            textwrap.dedent(
+                f"""\
+                response:
+                {type(self).__name__}(
+                    done={self._done},
+                    iterator={_iterator},
+                    result={_result},
+                )"""
+            )
+            + _error
+        )
+
+    __repr__ = __str__
+
 
 @contextlib.contextmanager
 def rewrite_stream_error():
@@ -455,45 +483,6 @@ class GenerateContentResponse(BaseGenerateContentResponse):
 
         for _ in self:
             pass
-
-    def __repr__(self) -> str:
-        if self._done:
-            _iterator = "None"
-        else:
-            _iterator = f"<{self._iterator.__class__.__name__}>"
-
-        _chunks = self._iterable_to_string(self._chunks)
-        _result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
-
-        if self._error:
-            _error = f",\nerror=<{self._error.__class__.__name__}> {self._error}"
-        else:
-            _error = ""
-
-        return (
-            textwrap.dedent(
-                f"""\
-                response:
-                GenerateContentResponse(
-                    done={self._done},
-                    iterator={_iterator},
-                    result={_result},
-                    chunks={_chunks}
-                )"""
-            )
-            + _error
-        )
-
-    def _iterable_to_string(self, iterable: List[glm.GenerateContentResponse]) -> str:
-        if iterable is None:
-            return "[]"
-
-        repr_string = []
-        for cr in iterable:
-            repr_string.append(f"glm.GenerateContentResponse({type(cr).to_dict(cr)})")
-
-        repr_string = f"iter([{', '.join(repr_string)}])"
-        return repr_string
 
 
 @string_utils.set_doc(ASYNC_GENERATE_CONTENT_RESPONSE_DOC)

@@ -504,7 +504,6 @@ class UnitTests(parameterized.TestCase):
                 done=True,
                 iterator=None,
                 result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'Hello world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
-                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'Hello world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
             )"""
         )
         self.assertEqual(expected, result)
@@ -524,7 +523,6 @@ class UnitTests(parameterized.TestCase):
                 done=False,
                 iterator=<list_iterator>,
                 result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'a'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
-                chunks=iter([glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'a'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]})])
             )"""
         )
         self.assertEqual(expected, result)
