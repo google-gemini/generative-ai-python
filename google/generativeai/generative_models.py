@@ -504,7 +504,9 @@ class ChatSession:
 
         last_received = self._last_received
         if last_received is not None:
-            if last_received._done:
+            if last_received._error is not None:
+                history.append("<STREAMING ERROR>")
+            elif last_received._done:
                 content = self._last_received.candidates[0].content
                 if not content.role:
                     content.role = self._MODEL_ROLE
