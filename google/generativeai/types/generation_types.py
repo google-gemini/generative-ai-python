@@ -274,12 +274,15 @@ class BaseGenerateContentResponse:
             | AsyncIterable[glm.GenerateContentResponse]
         ),
         result: glm.GenerateContentResponse,
-        chunks: Iterable[glm.GenerateContentResponse],
+        chunks: Iterable[glm.GenerateContentResponse] | None,
     ):
         self._done = done
         self._iterator = iterator
         self._result = result
-        self._chunks = list(chunks)
+        if chunks is None:
+            self._chunks = [result]
+        else:
+            self._chunks = list(chunks)
         if result.prompt_feedback.block_reason:
             self._error = BlockedPromptException(result)
         else:
@@ -428,7 +431,6 @@ class GenerateContentResponse(BaseGenerateContentResponse):
             done=False,
             iterator=iterator,
             result=response,
-            chunks=[response],
         )
 
     @classmethod
@@ -437,7 +439,6 @@ class GenerateContentResponse(BaseGenerateContentResponse):
             done=True,
             iterator=None,
             result=response,
-            chunks=[response],
         )
 
     def __iter__(self):
