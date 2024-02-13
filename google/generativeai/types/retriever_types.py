@@ -517,11 +517,11 @@ class Corpus:
             client: glm.PermissionServiceClient | None = None,
     ) -> permission_types.Permission:
         """
-        Create a new `Permission` on a resource (self).
+        Create a new permission on a resource (self).
 
         Args:
-            parent: The resource name of the parent resource in which the permissions will be listed.
-            role: `role` that will be granted by the permission.
+            parent: The resource name of the parent resource in which the permission will be listed.
+            role: role that will be granted by the permission.
             grantee_type: The type of the grantee for the permission.
             email_address: The email address of the grantee.
 
@@ -529,8 +529,8 @@ class Corpus:
             `permission_types.Permission` object with specified parent, role, grantee type, and email address.
         
         Raises:
-            ValueError: When `email_address` is specified and `grantee_type` is set to EVERYONE.
-            ValueError: When `email_address` is not specified and `grantee_type` is not set to EVERYONE.
+            ValueError: When email_address is specified and grantee_type is set to EVERYONE.
+            ValueError: When email_address is not specified and grantee_type is not set to EVERYONE.
         """
         if client is None:
             client = get_dafault_permission_client()
@@ -580,13 +580,13 @@ class Corpus:
             client: glm.PermissionServiceClient | None = None,
     ) -> Iterable[permission_types.Permission]:
         """
-        List permissions enforced on a resource (self).
+        List `permission_types.Permission`s enforced on a resource (self).
 
         Args:
-            parent: The resource name of the parent resource in which the permissions will be listed.
+            parent: The resource name of the parent resource in which the permission will be listed.
             page_size: The maximum number of permissions to return (per page). The service may return fewer permissions.
 
-        Return:
+        Returns:
             Paginated list of `permission_types.Permission` objects.
         """
         if client is None:

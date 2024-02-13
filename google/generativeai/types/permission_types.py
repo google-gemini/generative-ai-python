@@ -98,7 +98,7 @@ class Permission:
             client: glm.PermissionServiceClient | None = None,
     ) -> None:
         """
-        Delete (self) permission.
+        Delete permission (self).
         """
         if client is None:
             client = get_dafault_permission_client()
@@ -130,12 +130,13 @@ class Permission:
             client: glm.PermissionServiceClient | None = None,
     ) -> Permission:
         """
-        Update a list of fields for a specified document.
+        Update a list of fields for a specified permission.
 
         Args:
             updates: The list of fields to update.
+                     Currently only `role` is supported as an update path.
 
-        Return:
+        Returns:
             `Permission` object with specified updates.
         """
         if client is None:
