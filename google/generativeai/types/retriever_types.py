@@ -269,6 +269,9 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
+        if "/" not in name:
+            name = f"{self.name}/documents/{name}"
+
         request = glm.GetDocumentRequest(name=name)
         response = client.get_document(request)
         return decode_document(response)
@@ -281,6 +284,9 @@ class Corpus:
         """This is the async version of `Corpus.get_document`."""
         if client is None:
             client = get_default_retriever_async_client()
+
+        if "/" not in name:
+            name = f"{self.name}/documents/{name}"
 
         request = glm.GetDocumentRequest(name=name)
         response = await client.get_document(request)
@@ -436,6 +442,9 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
+        if "/" not in name:
+            name = f"{self.name}/documents/{name}"
+
         request = glm.DeleteDocumentRequest(name=name, force=bool(force))
         client.delete_document(request)
 
@@ -448,6 +457,9 @@ class Corpus:
         """This is the async version of `Corpus.delete_document`."""
         if client is None:
             client = get_default_retriever_async_client()
+
+        if "/" not in name:
+            name = f"{self.name}/documents/{name}"
 
         request = glm.DeleteDocumentRequest(name=name, force=bool(force))
         await client.delete_document(request)
@@ -710,6 +722,9 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
+        if "/" not in name:
+            name = f"{self.name}/chunks/{name}"
+
         request = glm.GetChunkRequest(name=name)
         response = client.get_chunk(request)
         return decode_chunk(response)
@@ -722,6 +737,9 @@ class Document(abc.ABC):
         """This is the async version of `Document.get_chunk`."""
         if client is None:
             client = get_default_retriever_async_client()
+
+        if "/" not in name:
+            name = f"{self.name}/chunks/{name}"
 
         request = glm.GetChunkRequest(name=name)
         response = await client.get_chunk(request)
@@ -1021,6 +1039,9 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
+        if "/" not in name:
+            name = f"{self.name}/chunks/{name}"
+
         request = glm.DeleteChunkRequest(name=name)
         client.delete_chunk(request)
 
@@ -1030,6 +1051,9 @@ class Document(abc.ABC):
         """This is the async version of `Document.delete_chunk`."""
         if client is None:
             client = get_default_retriever_async_client()
+
+        if "/" not in name:
+            name = f"{self.name}/chunks/{name}"
 
         request = glm.DeleteChunkRequest(name=name)
         await client.delete_chunk(request)

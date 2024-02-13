@@ -111,6 +111,9 @@ def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> r
     if client is None:
         client = get_default_retriever_client()
 
+    if "/" not in name:
+        name = "corpora/" + name
+
     request = glm.GetCorpusRequest(name=name)
     response = client.get_corpus(request)
     response = type(response).to_dict(response)
@@ -124,6 +127,9 @@ async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | 
     """This is the async version of `retriever.get_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
+
+    if "/" not in name:
+        name = "corpora/" + name
 
     request = glm.GetCorpusRequest(name=name)
     response = await client.get_corpus(request)
@@ -145,6 +151,9 @@ def delete_corpus(name: str, force: bool = False, client: glm.RetrieverServiceCl
     if client is None:
         client = get_default_retriever_client()
 
+    if "/" not in name:
+        name = "corpora/" + name
+
     request = glm.DeleteCorpusRequest(name=name, force=force)
     client.delete_corpus(request)
 
@@ -153,6 +162,9 @@ async def delete_corpus_async(name: str, force: bool = False, client: glm.Retrie
     """This is the async version of `retriever.delete_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
+
+    if "/" not in name:
+        name = "corpora/" + name
 
     request = glm.DeleteCorpusRequest(name=name, force=force)
     await client.delete_corpus(request)
