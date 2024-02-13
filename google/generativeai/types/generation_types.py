@@ -274,7 +274,7 @@ class BaseGenerateContentResponse:
             | AsyncIterable[glm.GenerateContentResponse]
         ),
         result: glm.GenerateContentResponse,
-        chunks: Iterable[glm.GenerateContentResponse] | None,
+        chunks: Iterable[glm.GenerateContentResponse] | None = None,
     ):
         self._done = done
         self._iterator = iterator
@@ -498,7 +498,6 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
             done=False,
             iterator=iterator,
             result=response,
-            chunks=[response],
         )
 
     @classmethod
@@ -507,7 +506,6 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
             done=True,
             iterator=None,
             result=response,
-            chunks=[response],
         )
 
     async def __aiter__(self):
