@@ -20,8 +20,8 @@ from google.generativeai.types import permission_types
 
 
 def get_permission(
-        name: str,
-        client: glm.PermissionServiceClient | None = None,
+    name: str,
+    client: glm.PermissionServiceClient | None = None,
 ) -> permission_types.Permission:
     """Get a permission by name.
 
@@ -33,9 +33,10 @@ def get_permission(
     """
     return permission_types.Permission.get_permission(name=name, client=client)
 
+
 async def get_permission_async(
-        name: str,
-        client: glm.PermissionServiceAsyncClient | None = None,
+    name: str,
+    client: glm.PermissionServiceAsyncClient | None = None,
 ) -> permission_types.Permission:
     """
     This is the async version of `permission.get_permission`.

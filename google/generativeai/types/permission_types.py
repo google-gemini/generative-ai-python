@@ -38,15 +38,12 @@ _GRANTEE_TYPE: dict[GranteeTypeOptions, GranteeType] = {
     0: GranteeType.GRANTEE_TYPE_UNSPECIFIED,
     "grantee_type_unspecified": GranteeType.GRANTEE_TYPE_UNSPECIFIED,
     "unspecified": GranteeType.GRANTEE_TYPE_UNSPECIFIED,
-
     GranteeType.USER: GranteeType.USER,
     1: GranteeType.USER,
     "user": GranteeType.USER,
-
     GranteeType.GROUP: GranteeType.GROUP,
     2: GranteeType.GROUP,
     "group": GranteeType.GROUP,
-
     GranteeType.EVERYONE: GranteeType.EVERYONE,
     3: GranteeType.EVERYONE,
     "everyone": GranteeType.EVERYONE,
@@ -57,29 +54,29 @@ _ROLE: dict[RoleOptions, Role] = {
     0: Role.ROLE_UNSPECIFIED,
     "role_unspecified": Role.ROLE_UNSPECIFIED,
     "unspecified": Role.ROLE_UNSPECIFIED,
-
     Role.OWNER: Role.OWNER,
     1: Role.OWNER,
     "owner": Role.OWNER,
-
     Role.WRITER: Role.WRITER,
     2: Role.WRITER,
     "writer": Role.WRITER,
-
     Role.READER: Role.READER,
     3: Role.READER,
     "reader": Role.READER,
 }
+
 
 def to_grantee_type(x: GranteeTypeOptions) -> GranteeType:
     if isinstance(x, str):
         x = x.lower()
     return _GRANTEE_TYPE[x]
 
+
 def to_role(x: RoleOptions) -> Role:
     if isinstance(x, str):
         x = x.lower()
     return _ROLE[x]
+
 
 @string_utils.prettyprint
 @dataclasses.dataclass
@@ -94,8 +91,8 @@ class Permission:
     email_address: Optional[str] = None
 
     def delete(
-            self,
-            client: glm.PermissionServiceClient | None = None,
+        self,
+        client: glm.PermissionServiceClient | None = None,
     ) -> None:
         """
         Delete permission (self).
@@ -104,10 +101,10 @@ class Permission:
             client = get_dafault_permission_client()
         delete_request = glm.DeletePermissionRequest(name=self.name)
         client.delete_permission(request=delete_request)
-    
+
     async def delete_async(
-            self,
-            client: glm.PermissionServiceAsyncClient | None = None,
+        self,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> None:
         """
         This is the async version of `Permission.delete`.
@@ -116,18 +113,18 @@ class Permission:
             client = get_dafault_permission_async_client()
         delete_request = glm.DeletePermissionRequest(name=self.name)
         await client.delete_permission(request=delete_request)
-    
+
     # TODO (magashe): Add a method to validate update value. As of now only `role` is supported as a mask path
     def _apply_update(self, path, value):
         parts = path.split(".")
         for part in parts[:-1]:
             self = getattr(self, part)
         setattr(self, parts[-1], value)
-    
+
     def update(
-            self,
-            updates: dict[str, Any],
-            client: glm.PermissionServiceClient | None = None,
+        self,
+        updates: dict[str, Any],
+        client: glm.PermissionServiceClient | None = None,
     ) -> Permission:
         """
         Update a list of fields for a specified permission.
@@ -149,18 +146,17 @@ class Permission:
             field_mask.paths.append(path)
         for path, value in updates.items():
             self._apply_update(path, value)
-        
+
         update_request = glm.UpdatePermissionRequest(
-            permission=self.to_dict(),
-            update_mask=field_mask
+            permission=self.to_dict(), update_mask=field_mask
         )
         client.update_permission(request=update_request)
         return self
-    
+
     async def update_async(
-            self,
-            updates: dict[str, Any],
-            client: glm.PermissionServiceAsyncClient | None = None,
+        self,
+        updates: dict[str, Any],
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> Permission:
         """
         This is the async version of `Permission.update`.
@@ -175,34 +171,33 @@ class Permission:
             field_mask.paths.append(path)
         for path, value in updates.items():
             self._apply_update(path, value)
-        
+
         update_request = glm.UpdatePermissionRequest(
-            permission=self.to_dict(),
-            update_mask=field_mask
+            permission=self.to_dict(), update_mask=field_mask
         )
         await client.update_permission(request=update_request)
         return self
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "name": self.name, 
-            "role": self.role, 
-            "grantee_type": self.grantee_type, 
-            "email_address": self.email_address
+            "name": self.name,
+            "role": self.role,
+            "grantee_type": self.grantee_type,
+            "email_address": self.email_address,
         }
 
     @classmethod
     def get_permission(
-            cls,
-            name: str,
-            client: glm.PermissionServiceClient | None = None,
+        cls,
+        name: str,
+        client: glm.PermissionServiceClient | None = None,
     ) -> Permission:
         """
         Get information about a specific permission.
 
         Args:
             name: The name of the permission to get.
-        
+
         Returns:
             Requested permission as an instance of `Permission`.
         """
@@ -212,12 +207,12 @@ class Permission:
         get_perm_response = client.get_permission(request=get_perm_request)
         get_perm_response = type(get_perm_response).to_dict(get_perm_response)
         return cls(**get_perm_response)
-    
+
     @classmethod
     async def get_permission_async(
-            cls,
-            name: str,
-            client: glm.PermissionServiceAsyncClient | None = None,
+        cls,
+        name: str,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> Permission:
         """
         This is the async version of `Permission.get_permission`.
@@ -228,4 +223,3 @@ class Permission:
         get_perm_response = await client.get_permission(request=get_perm_request)
         get_perm_response = type(get_perm_response).to_dict(get_perm_response)
         return cls(**get_perm_response)
-        

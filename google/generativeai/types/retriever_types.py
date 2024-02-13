@@ -487,7 +487,7 @@ class Corpus:
         )
         async for doc in await client.list_documents(request):
             yield decode_document(doc)
-    
+
     def _make_create_permission_request(
         self,
         role: permission_types.RoleOptions,
@@ -495,10 +495,10 @@ class Corpus:
         email_address: Optional[str] = None,
     ) -> glm.CreatePermissionRequest:
         role = permission_types.to_role(role)
-        
+
         if grantee_type:
             grantee_type = permission_types.to_grantee_type(grantee_type)
-        
+
         permission = glm.Permission(
             role=role,
             grantee_type=grantee_type,
@@ -510,11 +510,11 @@ class Corpus:
         )
 
     def create_permission(
-            self,
-            role: permission_types.RoleOptions,
-            grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
-            email_address: Optional[str] = None,
-            client: glm.PermissionServiceClient | None = None,
+        self,
+        role: permission_types.RoleOptions,
+        grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
+        email_address: Optional[str] = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> permission_types.Permission:
         """
         Create a new permission on a resource (self).
@@ -527,20 +527,32 @@ class Corpus:
 
         Returns:
             `permission_types.Permission` object with specified parent, role, grantee type, and email address.
-        
+
         Raises:
             ValueError: When email_address is specified and grantee_type is set to EVERYONE.
             ValueError: When email_address is not specified and grantee_type is not set to EVERYONE.
         """
         if client is None:
             client = get_dafault_permission_client()
-        
-        if email_address and permission_types.to_grantee_type(grantee_type) == permission_types.GranteeType.EVERYONE:
-            raise ValueError(f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`.")
-        
-        if not email_address and permission_types.to_grantee_type(grantee_type) != permission_types.GranteeType.EVERYONE:
-            raise ValueError(f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`.")
-        
+
+        if (
+            email_address
+            and permission_types.to_grantee_type(grantee_type)
+            == permission_types.GranteeType.EVERYONE
+        ):
+            raise ValueError(
+                f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`."
+            )
+
+        if (
+            not email_address
+            and permission_types.to_grantee_type(grantee_type)
+            != permission_types.GranteeType.EVERYONE
+        ):
+            raise ValueError(
+                f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`."
+            )
+
         request = self._make_create_permission_request(
             role=role, grantee_type=grantee_type, email_address=email_address
         )
@@ -549,24 +561,36 @@ class Corpus:
         return permission_types.Permission(**permission_response)
 
     async def create_permission_async(
-            self,
-            role: permission_types.RoleOptions,
-            grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
-            email_address: Optional[str] = None,
-            client: glm.PermissionServiceAsyncClient | None = None,
+        self,
+        role: permission_types.RoleOptions,
+        grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
+        email_address: Optional[str] = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> permission_types.Permission:
         """
         This is the async version of `Corpus.create_permission`.
         """
         if client is None:
             client = get_dafault_permission_async_client()
-        
-        if email_address and permission_types.to_grantee_type(grantee_type) == permission_types.GranteeType.EVERYONE:
-            raise ValueError(f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`.")
-        
-        if not email_address and permission_types.to_grantee_type(grantee_type) != permission_types.GranteeType.EVERYONE:
-            raise ValueError(f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`.")
-        
+
+        if (
+            email_address
+            and permission_types.to_grantee_type(grantee_type)
+            == permission_types.GranteeType.EVERYONE
+        ):
+            raise ValueError(
+                f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`."
+            )
+
+        if (
+            not email_address
+            and permission_types.to_grantee_type(grantee_type)
+            != permission_types.GranteeType.EVERYONE
+        ):
+            raise ValueError(
+                f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`."
+            )
+
         request = self._make_create_permission_request(
             role=role, grantee_type=grantee_type, email_address=email_address
         )
@@ -575,9 +599,9 @@ class Corpus:
         return permission_types.Permission(**permission_response)
 
     def list_permissions(
-            self,
-            page_size: Optional[int] = None,
-            client: glm.PermissionServiceClient | None = None,
+        self,
+        page_size: Optional[int] = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> Iterable[permission_types.Permission]:
         """
         List `permission_types.Permission`s enforced on a resource (self).
@@ -591,23 +615,23 @@ class Corpus:
         """
         if client is None:
             client = get_dafault_permission_client()
-        
+
         request = glm.ListPermissionsRequest(parent=self.name, page_size=page_size)
         for permission in client.list_permissions(request):
             permission = type(permission).to_dict(permission)
             yield permission_types.Permission(**permission)
-    
+
     async def list_permissions_async(
-            self,
-            page_size: Optional[int] = None,
-            client: glm.PermissionServiceAsyncClient | None = None,
+        self,
+        page_size: Optional[int] = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> AsyncIterable[permission_types.Permission]:
         """
         This is the async version of `Corpus.list_permissions`.
         """
         if client is None:
             client = get_dafault_permission_async_client()
-        
+
         request = glm.ListPermissionsRequest(parent=self.name, page_size=page_size)
         async for permission in await client.list_permissions(request):
             permission = type(permission).to_dict(permission)
