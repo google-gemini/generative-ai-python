@@ -357,6 +357,7 @@ class BaseGenerateContentResponse:
             if "function_call" in part:
                 result.append(part.function_call)
         return result
+
     def __str__(self) -> str:
         if self._done:
             _iterator = "None"
