@@ -29,31 +29,6 @@ from google.generativeai.types import text_types
 from google.generativeai.types import model_types
 from google.generativeai.types import content_types
 
-_EMBED_CONTENT_ASYNC_DOC = """The async version of `genai.embed_content`."""
-
-_EMBED_CONTENT_DOC = """Calls the API to create embeddings for content passed in.
-
-    Args:
-        model:
-            Which [model](https://ai.google.dev/models/gemini#embedding) to
-            call, as a string or a `types.Model`.
-
-        content:
-            Content to embed.
-
-        task_type:
-            Optional task type for which the embeddings will be used. Can only
-            be set for `models/embedding-001`.
-
-        title:
-            An optional title for the text. Only applicable when task_type is
-            `RETRIEVAL_DOCUMENT`.
-
-    Return:
-        Dictionary containing the embedding (list of float values) for the
-        input content.
-    """
-
 DEFAULT_EMB_MODEL = "models/embedding-001"
 EMBEDDING_MAX_BATCH_SIZE = 100
 
@@ -133,7 +108,6 @@ def embed_content(
 ) -> text_types.BatchEmbeddingDict: ...
 
 
-@string_utils.set_doc(_EMBED_CONTENT_DOC)
 def embed_content(
     model: model_types.BaseModelNameOptions,
     content: content_types.ContentType | Iterable[content_types.ContentType],
@@ -141,6 +115,28 @@ def embed_content(
     title: str | None = None,
     client: glm.GenerativeServiceClient = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
+    """Calls the API to create embeddings for content passed in.
+
+    Args:
+        model:
+            Which [model](https://ai.google.dev/models/gemini#embedding) to
+            call, as a string or a `types.Model`.
+
+        content:
+            Content to embed.
+
+        task_type:
+            Optional task type for which the embeddings will be used. Can only
+            be set for `models/embedding-001`.
+
+        title:
+            An optional title for the text. Only applicable when task_type is
+            `RETRIEVAL_DOCUMENT`.
+
+    Return:
+        Dictionary containing the embedding (list of float values) for the
+        input content.
+    """
     model = model_types.make_model_name(model)
 
     if client is None:
@@ -198,7 +194,6 @@ async def embed_content_async(
 ) -> text_types.BatchEmbeddingDict: ...
 
 
-@string_utils.set_doc(_EMBED_CONTENT_ASYNC_DOC)
 async def embed_content_async(
     model: model_types.BaseModelNameOptions,
     content: content_types.ContentType | Iterable[content_types.ContentType],
@@ -206,6 +201,7 @@ async def embed_content_async(
     title: str | None = None,
     client: glm.GenerativeServiceAsyncClient = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
+    """The async version of `genai.embed_content`."""
     model = model_types.make_model_name(model)
 
     if client is None:
