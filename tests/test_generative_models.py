@@ -883,6 +883,74 @@ class CUJTests(parameterized.TestCase):
         )
         self.assertEqual(expected, result)
 
+    def test_repr_for_incomplete_streaming_chat(self):
+        # Multi turn chat
+        model = generative_models.GenerativeModel("gemini-pro")
+        chat = model.start_chat()
+
+        self.responses["stream_generate_content"] = [
+            (chunk for chunk in [simple_response("a"), simple_response("b"), simple_response("c")])
+        ]
+
+        msg1 = "I really like fantasy books."
+        response = chat.send_message(msg1, stream=True)
+
+        result = repr(chat)
+        expected = textwrap.dedent(
+            """\
+            ChatSession(
+                model=genai.GenerativeModel(
+                    model_name='models/gemini-pro',
+                    generation_config={}.
+                    safety_settings={}
+                ),
+                history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
+            )"""
+        )
+        self.assertEqual(expected, result)
+
+    def test_repr_for_broken_streaming_chat(self):
+        # Multi turn chat
+        model = generative_models.GenerativeModel("gemini-pro")
+        chat = model.start_chat()
+
+        self.responses["stream_generate_content"] = [
+            (
+                chunk
+                for chunk in [
+                    simple_response("first"),
+                    # FinishReason.SAFETY = 3
+                    glm.GenerateContentResponse(
+                        {
+                            "candidates": [
+                                {"finish_reason": 3, "content": {"parts": [{"text": "second"}]}}
+                            ]
+                        }
+                    ),
+                ]
+            )
+        ]
+
+        msg1 = "I really like fantasy books."
+        response = chat.send_message(msg1, stream=True)
+
+        for chunk in response:
+            pass
+
+        result = repr(chat)
+        expected = textwrap.dedent(
+            """\
+            ChatSession(
+                model=genai.GenerativeModel(
+                    model_name='models/gemini-pro',
+                    generation_config={}.
+                    safety_settings={}
+                ),
+                history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
+            )"""
+        )
+        self.assertEqual(expected, result)
+
 
 if __name__ == "__main__":
     absltest.main()

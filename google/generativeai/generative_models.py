@@ -497,7 +497,11 @@ class ChatSession:
         def content_repr(x):
             return f"glm.Content({_dict_repr.repr(type(x).to_dict(x))})"
 
-        history = list(self._history)
+        try:
+            history = list(self.history)
+        except (generation_types.BrokenResponseError, generation_types.IncompleteIterationError):
+            history = list(self._history)
+
         if self._last_sent is not None:
             history.append(self._last_sent)
         history = [content_repr(x) for x in history]
@@ -506,11 +510,6 @@ class ChatSession:
         if last_received is not None:
             if last_received._error is not None:
                 history.append("<STREAMING ERROR>")
-            elif last_received._done:
-                content = self._last_received.candidates[0].content
-                if not content.role:
-                    content.role = self._MODEL_ROLE
-                history.append(content_repr(content))
             else:
                 history.append("<STREAMING IN PROGRESS>")
 
