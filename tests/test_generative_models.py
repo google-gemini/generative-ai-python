@@ -2,6 +2,7 @@ import collections
 from collections.abc import Iterable
 import copy
 import pathlib
+import textwrap
 import unittest.mock
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -659,6 +660,296 @@ class CUJTests(parameterized.TestCase):
 
         asource = re.sub(" *?# type: ignore", "", asource)
         self.assertEqual(source, asource)
+
+    def test_repr_for_unary_non_streamed_response(self):
+        model = generative_models.GenerativeModel(model_name="gemini-pro")
+        self.responses["generate_content"].append(simple_response("world!"))
+        response = model.generate_content("Hello")
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=True,
+                iterator=None,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+            )"""
+        )
+        self.assertEqual(expected, result)
+
+    def test_repr_for_streaming_start_to_finish(self):
+        chunks = ["first", " second", " third"]
+        self.responses["stream_generate_content"] = [(simple_response(text) for text in chunks)]
+
+        model = generative_models.GenerativeModel("gemini-pro")
+        response = model.generate_content("Hello", stream=True)
+        iterator = iter(response)
+
+        result1 = repr(response)
+        expected1 = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=False,
+                iterator=<generator>,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+            )"""
+        )
+        self.assertEqual(expected1, result1)
+
+        next(iterator)
+        result2 = repr(response)
+        expected2 = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=False,
+                iterator=<generator>,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first second'}], 'role': ''}, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+            )"""
+        )
+        self.assertEqual(expected2, result2)
+
+        next(iterator)
+        result3 = repr(response)
+        expected3 = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=False,
+                iterator=<generator>,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first second third'}], 'role': ''}, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+            )"""
+        )
+        self.assertEqual(expected3, result3)
+
+    def test_repr_error_info_for_stream_prompt_feedback_blocked(self):
+        # response._error => BlockedPromptException
+        chunks = [
+            glm.GenerateContentResponse(
+                {
+                    "prompt_feedback": {"block_reason": "SAFETY"},
+                }
+            )
+        ]
+        self.responses["stream_generate_content"] = [(chunk for chunk in chunks)]
+
+        model = generative_models.GenerativeModel("gemini-pro")
+        response = model.generate_content("Bad stuff!", stream=True)
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=False,
+                iterator=<generator>,
+                result=glm.GenerateContentResponse({'prompt_feedback': {'block_reason': 1, 'safety_ratings': []}, 'candidates': []}),
+            ),
+            error=<BlockedPromptException> prompt_feedback {
+              block_reason: SAFETY
+            }
+            """
+        )
+        self.assertEqual(expected, result)
+
+    def test_repr_error_info_for_chat_error_in_stream(self):
+        # response._error => ValueError
+        def throw():
+            for c in "123":
+                yield simple_response(c)
+            raise ValueError()
+
+        def no_throw():
+            for c in "abc":
+                yield simple_response(c)
+
+        self.responses["stream_generate_content"] = [
+            no_throw(),
+            throw(),
+            no_throw(),
+        ]
+
+        model = generative_models.GenerativeModel("gemini-pro-vision")
+        chat = model.start_chat()
+
+        # Send a message, the response is okay..
+        chat.send_message("hello1", stream=True).resolve()
+
+        # Send a second message, it fails
+        response = chat.send_message("hello2", stream=True)
+        with self.assertRaises(ValueError):
+            # Iteration fails
+            for chunk in response:
+                pass
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=True,
+                iterator=None,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': '123'}], 'role': ''}, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+            ),
+            error=<ValueError> """
+        )
+        self.assertEqual(expected, result)
+
+    def test_repr_error_info_for_chat_streaming_unexpected_stop(self):
+        # response._error => StopCandidateException
+        self.responses["stream_generate_content"] = [
+            iter(
+                [
+                    simple_response("a"),
+                    simple_response("b"),
+                    simple_response("c"),
+                    glm.GenerateContentResponse(
+                        {
+                            "candidates": [{"finish_reason": "SAFETY"}],
+                        }
+                    ),
+                ]
+            )
+        ]
+
+        model = generative_models.GenerativeModel("gemini-pro-vision")
+        chat = model.start_chat()
+
+        response = chat.send_message("hello", stream=True)
+        for chunk in response:
+            # The result doesn't know it's a chat result so it can't throw.
+            # Unless we give it some way to know?
+            pass
+
+        with self.assertRaises(generation_types.BrokenResponseError):
+            # But when preparing the next message, we can throw:
+            response = chat.send_message("hello2", stream=True)
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=True,
+                iterator=None,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'abc'}], 'role': ''}, 'finish_reason': 3, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+            ),
+            error=<StopCandidateException> index: 0
+            content {
+              parts {
+                text: "abc"
+              }
+            }
+            finish_reason: SAFETY
+            citation_metadata {
+            }
+            """
+        )
+        self.assertEqual(expected, result)
+
+    def test_repr_for_multi_turn_chat(self):
+        # Multi turn chat
+        model = generative_models.GenerativeModel("gemini-pro")
+        chat = model.start_chat()
+
+        self.responses["generate_content"] = [
+            simple_response("first"),
+            simple_response("second"),
+            simple_response("third"),
+        ]
+
+        msg1 = "I really like fantasy books."
+        response = chat.send_message(msg1)
+
+        msg2 = "I also like this image."
+        response = chat.send_message([msg2, PIL.Image.open(TEST_IMAGE_PATH)])
+
+        msg3 = "What things do I like?."
+        response = chat.send_message(msg3)
+
+        result = repr(chat)
+        expected = textwrap.dedent(
+            """\
+            ChatSession(
+                model=genai.GenerativeModel(
+                    model_name='models/gemini-pro',
+                    generation_config={}.
+                    safety_settings={}
+                ),
+                history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'first'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), glm.Content({'parts': [{'text': 'second'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
+            )"""
+        )
+        self.assertEqual(expected, result)
+
+    def test_repr_for_incomplete_streaming_chat(self):
+        # Multi turn chat
+        model = generative_models.GenerativeModel("gemini-pro")
+        chat = model.start_chat()
+
+        self.responses["stream_generate_content"] = [
+            (chunk for chunk in [simple_response("a"), simple_response("b"), simple_response("c")])
+        ]
+
+        msg1 = "I really like fantasy books."
+        response = chat.send_message(msg1, stream=True)
+
+        result = repr(chat)
+        expected = textwrap.dedent(
+            """\
+            ChatSession(
+                model=genai.GenerativeModel(
+                    model_name='models/gemini-pro',
+                    generation_config={}.
+                    safety_settings={}
+                ),
+                history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
+            )"""
+        )
+        self.assertEqual(expected, result)
+
+    def test_repr_for_broken_streaming_chat(self):
+        # Multi turn chat
+        model = generative_models.GenerativeModel("gemini-pro")
+        chat = model.start_chat()
+
+        self.responses["stream_generate_content"] = [
+            (
+                chunk
+                for chunk in [
+                    simple_response("first"),
+                    # FinishReason.SAFETY = 3
+                    glm.GenerateContentResponse(
+                        {
+                            "candidates": [
+                                {"finish_reason": 3, "content": {"parts": [{"text": "second"}]}}
+                            ]
+                        }
+                    ),
+                ]
+            )
+        ]
+
+        msg1 = "I really like fantasy books."
+        response = chat.send_message(msg1, stream=True)
+
+        for chunk in response:
+            pass
+
+        result = repr(chat)
+        expected = textwrap.dedent(
+            """\
+            ChatSession(
+                model=genai.GenerativeModel(
+                    model_name='models/gemini-pro',
+                    generation_config={}.
+                    safety_settings={}
+                ),
+                history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
+            )"""
+        )
+        self.assertEqual(expected, result)
 
 
 if __name__ == "__main__":
