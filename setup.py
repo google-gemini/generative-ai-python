@@ -49,7 +49,7 @@ dependencies = [
     "pydantic",
     "tqdm",
     "typing-extensions",
-    "pydantic"
+    "pydantic",
 ]
 
 extras_require = {

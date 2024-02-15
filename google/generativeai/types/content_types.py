@@ -341,6 +341,9 @@ def _generate_schema(
 
 
 def _rename_schema_fields(schema):
+    if schema is None:
+        return schema
+
     schema = schema.copy()
 
     type_ = schema.pop("type", None)
@@ -364,8 +367,6 @@ def _rename_schema_fields(schema):
 
 class FunctionDeclaration:
     def __init__(self, *, name: str, description: str, parameters: dict[str:Any] | None = None):
-        if parameters is None:
-            parameters = {}
         self._proto = glm.FunctionDeclaration(
             name=name, description=description, parameters=_rename_schema_fields(parameters)
         )
@@ -502,10 +503,7 @@ class ToolDict(TypedDict):
 
 
 ToolType = Union[
-    Tool,
-    glm.Tool,
-    ToolDict,
-    Iterable[FunctionDeclarationType],
+    Tool, glm.Tool, ToolDict, Iterable[FunctionDeclarationType], FunctionDeclarationType
 ]
 
 
@@ -519,10 +517,13 @@ def _make_tool(tool: ToolType) -> Tool:
     elif isinstance(tool, Iterable):
         return Tool(function_declarations=tool)
     else:
-        raise TypeError(
-            "Expected an instance of `genai.ToolType`. Got a:\n" f"  {type(fun)=}",
-            fun,
-        )
+        try:
+            return _make_function_declaration(tool)
+        except Exception as e:
+            raise TypeError(
+                "Expected an instance of `genai.ToolType`. Got a:\n" f"  {type(fun)=}",
+                fun,
+            ) from e
 
 
 class FunctionLibrary:
@@ -558,7 +559,7 @@ class FunctionLibrary:
         return [tool.to_proto() for tool in self._tools]
 
 
-ToolsType = Union[Iterable[ToolType], Iterable[FunctionDeclarationType], FunctionDeclarationType]
+ToolsType = Union[Iterable[ToolType], ToolType]
 
 
 def _make_tools(tools: ToolsType) -> list[Tool]:
@@ -566,11 +567,10 @@ def _make_tools(tools: ToolsType) -> list[Tool]:
         try:
             return [_make_tool(t) for t in tools]
         except (TypeError, KeyError):
-            tool = tools
-            return [_make_tool(tool)]
-    else:
-        fun = tools
-        return [_make_tool([fun])]
+            pass
+
+    tool = tools
+    return [_make_tool(tool)]
 
 
 FunctionLibraryType = Union[FunctionLibrary, ToolsType]

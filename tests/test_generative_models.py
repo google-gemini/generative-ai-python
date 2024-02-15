@@ -875,8 +875,9 @@ class CUJTests(parameterized.TestCase):
             ChatSession(
                 model=genai.GenerativeModel(
                     model_name='models/gemini-pro',
-                    generation_config={}.
-                    safety_settings={}
+                    generation_config={},
+                    safety_settings={},
+                    tools=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'first'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), glm.Content({'parts': [{'text': 'second'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
             )"""
@@ -901,8 +902,9 @@ class CUJTests(parameterized.TestCase):
             ChatSession(
                 model=genai.GenerativeModel(
                     model_name='models/gemini-pro',
-                    generation_config={}.
-                    safety_settings={}
+                    generation_config={},
+                    safety_settings={},
+                    tools=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
             )"""
@@ -943,8 +945,9 @@ class CUJTests(parameterized.TestCase):
             ChatSession(
                 model=genai.GenerativeModel(
                     model_name='models/gemini-pro',
-                    generation_config={}.
-                    safety_settings={}
+                    generation_config={},
+                    safety_settings={},
+                    tools=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
             )"""

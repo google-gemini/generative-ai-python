@@ -203,12 +203,15 @@ class UnitTests(parameterized.TestCase):
         ],
     )
     def test_to_tools(self, tools):
-        tools = content_types.to_tools(tools)
+        function_library = content_types.to_function_library(tools)
+        tools = function_library.to_proto()
+
         expected = dict(
             function_declarations=[
                 dict(name="datetime", description="Returns the current UTC date and time.")
             ]
         )
+
         self.assertEqual(type(tools[0]).to_dict(tools[0]), expected)
 
 
