@@ -495,7 +495,7 @@ class ChatSession:
         self._check_response(response=response, stream=stream)
 
         if self.enable_automatic_function_calling and tools_lib is not None:
-            self.history, content, response = self._handle_afc_async(
+            self.history, content, response = await self._handle_afc_async(
                 response=response,
                 history=history,
                 generation_config=generation_config,
@@ -510,7 +510,7 @@ class ChatSession:
         return response
 
     async def _handle_afc_async(
-        self, *, content, response, history, generation_config, safety_settings, stream, tools_lib
+        self, *, response, history, generation_config, safety_settings, stream, tools_lib
     ) -> tuple[list[glm.Content], glm.Content, generation_types.BaseGenerateContentResponse]:
         while function_calls := response.function_calls:
             if not all(callable(tools_lib[fc]) for fc in function_calls):

@@ -204,6 +204,8 @@ class UnitTests(parameterized.TestCase):
     )
     def test_to_tools(self, tools):
         function_library = content_types.to_function_library(tools)
+        if function_library is None:
+            raise ValueError("This shouldn't happen")
         tools = function_library.to_proto()
 
         expected = dict(

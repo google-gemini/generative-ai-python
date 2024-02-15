@@ -637,6 +637,11 @@ class CUJTests(parameterized.TestCase):
             generative_models.ChatSession.send_message,
             generative_models.ChatSession.send_message_async,
         ],
+        [
+            "ChatSession._handle_afc",
+            generative_models.ChatSession._handle_afc,
+            generative_models.ChatSession._handle_afc_async,
+        ],
     )
     def test_async_code_match(self, obj, aobj):
         import inspect

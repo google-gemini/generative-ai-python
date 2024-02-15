@@ -256,7 +256,7 @@ def _generate_schema(
     *,
     descriptions: Mapping[str, str] = {},
     required: Sequence[str] = [],
-) -> dict[str:Any]:
+) -> dict[str, Any]:
     """Generates the OpenAPI Schema for a python function.
 
     Args:
@@ -366,7 +366,7 @@ def _rename_schema_fields(schema):
 
 
 class FunctionDeclaration:
-    def __init__(self, *, name: str, description: str, parameters: dict[str:Any] | None = None):
+    def __init__(self, *, name: str, description: str, parameters: dict[str, Any] | None = None):
         self._proto = glm.FunctionDeclaration(
             name=name, description=description, parameters=_rename_schema_fields(parameters)
         )
@@ -385,8 +385,9 @@ class FunctionDeclaration:
 
     @classmethod
     def from_proto(cls, proto) -> FunctionDeclaration:
-        self = cls("", "", {})
+        self = cls(name="", description="", parameters={})
         self._proto = proto
+        return self
 
     def to_proto(self) -> glm.FunctionDeclaration:
         return self._proto
@@ -402,7 +403,7 @@ class CallableFunctionDeclaration(FunctionDeclaration):
         *,
         name: str,
         description: str,
-        parameters: dict[str:Any] | None = None,
+        parameters: dict[str, Any] | None = None,
         function: Callable[..., Any],
     ):
         super().__init__(name=name, description=description, parameters=parameters)
@@ -518,11 +519,11 @@ def _make_tool(tool: ToolType) -> Tool:
         return Tool(function_declarations=tool)
     else:
         try:
-            return _make_function_declaration(tool)
+            return Tool(function_declarations=[_make_function_declaration(tool)])
         except Exception as e:
             raise TypeError(
-                "Expected an instance of `genai.ToolType`. Got a:\n" f"  {type(fun)=}",
-                fun,
+                "Expected an instance of `genai.ToolType`. Got a:\n" f"  {type(tool)=}",
+                tool,
             ) from e
 
 
