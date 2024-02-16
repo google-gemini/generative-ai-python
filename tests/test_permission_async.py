@@ -62,8 +62,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             self.observed_requests.append(request)
             return glm.Permission(
                 name="corpora/demo_corpus/permissions/123456789",
-                role=2,
-                grantee_type=3,
+                role=permission_services.to_role("writer"),
+                grantee_type=permission_services.to_grantee_type("everyone"),
             )
 
         @add_client_method
@@ -80,8 +80,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             self.observed_requests.append(request)
             return glm.Permission(
                 name="corpora/demo_corpus/permissions/123456789",
-                role=2,
-                grantee_type=3,
+                role=permission_services.to_role("writer"),
+                grantee_type=permission_services.to_grantee_type("everyone"),
             )
 
         @add_client_method
@@ -93,13 +93,13 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             async def results():
                 yield glm.Permission(
                     name="corpora/demo_corpus/permissions/123456789",
-                    role=2,
-                    grantee_type=3,
+                    role=permission_services.to_role("writer"),
+                    grantee_type=permission_services.to_grantee_type("everyone"),
                 )
                 yield glm.Permission(
                     name="corpora/demo_corpus/permissions/987654321",
-                    role=3,
-                    grantee_type=3,
+                    role=permission_services.to_role("reader"),
+                    grantee_type=permission_services.to_grantee_type("everyone"),
                     email_address="_",
                 )
 
@@ -112,62 +112,41 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             self.observed_requests.append(request)
             return glm.Permission(
                 name="corpora/demo_corpus/permissions/123456789",
-                role=3,
-                grantee_type=3,
+                role=permission_services.to_role("reader"),
+                grantee_type=permission_services.to_grantee_type("everyone"),
             )
 
-    @parameterized.named_parameters(
-        [
-            dict(
-                testcase_name="create_permission_success",
-                role=2,
-                grantee_type=3,
-                email_address=None,
-            ),
-            dict(
-                testcase_name="create_permission_failure_email_set_when_grantee_type_is_everyone",
-                role=2,
-                grantee_type=3,
-                email_address="_",
-            ),
-            dict(
-                testcase_name="create_permission_failure_email_not_set_when_grantee_type_is_not_everyone",
-                role=2,
-                grantee_type=1,
-                email_address=None,
-            ),
-        ]
-    )
-    async def test_create_permission(self, role, grantee_type, email_address):
+    async def test_create_permission_success(self):
         x = await retriever.create_corpus_async("demo-corpus")
-        if (role, grantee_type, email_address) == (2, 3, None):
+        perm = await x.create_permission_async(
+            role="writer", grantee_type="everyone", email_address=None
+        )
+        self.assertIsInstance(perm, permission_services.Permission)
+        self.assertIsInstance(self.observed_requests[-1], glm.CreatePermissionRequest)
+
+    async def test_create_permission_failure_email_set_when_grantee_type_is_everyone(self):
+        x = await retriever.create_corpus_async("demo-corpus")
+        with self.assertRaises(ValueError):
             perm = await x.create_permission_async(
-                role=role, grantee_type=grantee_type, email_address=email_address
+                role="writer", grantee_type="everyone", email_address="_"
             )
-            self.assertIsInstance(perm, permission_services.Permission)
-            self.assertIsInstance(self.observed_requests[-1], glm.CreatePermissionRequest)
 
-        elif (role, grantee_type, email_address) == (2, 3, ""):
-            with self.assertRaises(ValueError):
-                perm = await x.create_permission_async(
-                    role=role, grantee_type=grantee_type, email_address=email_address
-                )
-
-        elif (role, grantee_type, email_address) == (2, 1, None):
-            with self.assertRaises(ValueError):
-                perm = await x.create_permission_async(
-                    role=role, grantee_type=grantee_type, email_address=email_address
-                )
+    async def test_create_permission_failure_email_not_set_when_grantee_type_is_not_everyone(self):
+        x = await retriever.create_corpus_async("demo-corpus")
+        with self.assertRaises(ValueError):
+            perm = await x.create_permission_async(
+                role="writer", grantee_type="user", email_address=None
+            )
 
     async def test_delete_permission(self):
         x = await retriever.create_corpus_async("demo-corpus")
-        perm = await x.create_permission_async(2, 3)
+        perm = await x.create_permission_async("writer", "everyone")
         await perm.delete_async()
         self.assertIsInstance(self.observed_requests[-1], glm.DeletePermissionRequest)
 
     async def test_get_permission(self):
         x = await retriever.create_corpus_async("demo-corpus")
-        perm = await x.create_permission_async(2, 3)
+        perm = await x.create_permission_async("writer", "everyone")
         fetch_perm = await permission.get_permission_async(name=perm.name)
         self.assertIsInstance(fetch_perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
@@ -175,8 +154,8 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
     async def test_list_permission(self):
         x = await retriever.create_corpus_async("demo-corpus")
-        perm1 = await x.create_permission_async(2, 3)
-        perm2 = await x.create_permission_async(3, 2, "_")
+        perm1 = await x.create_permission_async("writer", "everyone")
+        perm2 = await x.create_permission_async("reader", "group", "_")
         perms = [perm async for perm in x.list_permissions_async(page_size=1)]
         self.assertEqual(len(perms), 2)
         self.assertEqual(perm1, perms[0])
@@ -185,15 +164,20 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             self.assertIsInstance(perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.ListPermissionsRequest)
 
-    @parameterized.named_parameters(
-        [dict(testcase_name="update_permission_success", updates={"role": 2})]
-    )
-    async def test_update_permission(self, updates):
+    async def test_update_permission_success(self):
         x = await retriever.create_corpus_async("demo-corpus")
-        perm = await x.create_permission_async(2, 3)
-        updated_perm = await perm.update_async(updates=updates)
+        perm = await x.create_permission_async("writer", "everyone")
+        updated_perm = await perm.update_async({"role": permission_services.to_role("reader")})
         self.assertIsInstance(updated_perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.UpdatePermissionRequest)
+
+    async def test_update_permission_failure_restricted_update_path(self):
+        x = await retriever.create_corpus_async("demo-corpus")
+        perm = await x.create_permission_async("writer", "everyone")
+        with self.assertRaises(ValueError):
+            updated_perm = await perm.update_async(
+                {"grantee_type": permission_services.to_grantee_type("user")}
+            )
 
 
 if __name__ == "__main__":

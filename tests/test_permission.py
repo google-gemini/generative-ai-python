@@ -62,8 +62,8 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return glm.Permission(
                 name="corpora/demo_corpus/permissions/123456789",
-                role=2,
-                grantee_type=3,
+                role=permission_services.to_role("writer"),
+                grantee_type=permission_services.to_grantee_type("everyone"),
             )
 
         @add_client_method
@@ -80,8 +80,8 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return glm.Permission(
                 name="corpora/demo_corpus/permissions/123456789",
-                role=2,
-                grantee_type=3,
+                role=permission_services.to_role("writer"),
+                grantee_type=permission_services.to_grantee_type("everyone"),
             )
 
         @add_client_method
@@ -92,13 +92,13 @@ class UnitTests(parameterized.TestCase):
             return [
                 glm.Permission(
                     name="corpora/demo_corpus/permissions/123456789",
-                    role=2,
-                    grantee_type=3,
+                    role=permission_services.to_role("writer"),
+                    grantee_type=permission_services.to_grantee_type("everyone"),
                 ),
                 glm.Permission(
                     name="corpora/demo_corpus/permissions/987654321",
-                    role=3,
-                    grantee_type=3,
+                    role=permission_services.to_role("reader"),
+                    grantee_type=permission_services.to_grantee_type("everyone"),
                     email_address="_",
                 ),
             ]
@@ -110,62 +110,35 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return glm.Permission(
                 name="corpora/demo_corpus/permissions/123456789",
-                role=3,
-                grantee_type=3,
+                role=permission_services.to_role("reader"),
+                grantee_type=permission_services.to_grantee_type("everyone"),
             )
 
-    @parameterized.named_parameters(
-        [
-            dict(
-                testcase_name="create_permission_success",
-                role=2,
-                grantee_type=3,
-                email_address=None,
-            ),
-            dict(
-                testcase_name="create_permission_failure_email_set_when_grantee_type_is_everyone",
-                role=2,
-                grantee_type=3,
-                email_address="_",
-            ),
-            dict(
-                testcase_name="create_permission_failure_email_not_set_when_grantee_type_is_not_everyone",
-                role=2,
-                grantee_type=1,
-                email_address=None,
-            ),
-        ]
-    )
-    def test_create_permission(self, role, grantee_type, email_address):
+    def test_create_permission_success(self):
         x = retriever.create_corpus("demo-corpus")
-        if (role, grantee_type, email_address) == (2, 3, None):
-            perm = x.create_permission(
-                role=role, grantee_type=grantee_type, email_address=email_address
-            )
-            self.assertIsInstance(perm, permission_services.Permission)
-            self.assertIsInstance(self.observed_requests[-1], glm.CreatePermissionRequest)
+        perm = x.create_permission(role="writer", grantee_type="everyone", email_address=None)
+        self.assertIsInstance(perm, permission_services.Permission)
+        self.assertIsInstance(self.observed_requests[-1], glm.CreatePermissionRequest)
 
-        elif (role, grantee_type, email_address) == (2, 3, ""):
-            with self.assertRaises(ValueError):
-                perm = x.create_permission(
-                    role=role, grantee_type=grantee_type, email_address=email_address
-                )
+    def test_create_permission_failure_email_set_when_grantee_type_is_everyone(self):
+        x = retriever.create_corpus("demo-corpus")
+        with self.assertRaises(ValueError):
+            perm = x.create_permission(role="writer", grantee_type="everyone", email_address="_")
 
-        elif (role, grantee_type, email_address) == (2, 1, None):
-            with self.assertRaises(ValueError):
-                perm = x.create_permission(
-                    role=role, grantee_type=grantee_type, email_address=email_address
-                )
+    def test_create_permission_failure_email_not_set_when_grantee_type_is_not_everyone(self):
+        x = retriever.create_corpus("demo-corpus")
+        with self.assertRaises(ValueError):
+            perm = x.create_permission(role="writer", grantee_type="user", email_address=None)
 
     def test_delete_permission(self):
         x = retriever.create_corpus("demo-corpus")
-        perm = x.create_permission(2, 3)
+        perm = x.create_permission("writer", "everyone")
         perm.delete()
         self.assertIsInstance(self.observed_requests[-1], glm.DeletePermissionRequest)
 
     def test_get_permission(self):
         x = retriever.create_corpus("demo-corpus")
-        perm = x.create_permission(2, 3)
+        perm = x.create_permission("writer", "everyone")
         fetch_perm = permission.get_permission(name=perm.name)
         self.assertIsInstance(fetch_perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
@@ -173,8 +146,8 @@ class UnitTests(parameterized.TestCase):
 
     def test_list_permission(self):
         x = retriever.create_corpus("demo-corpus")
-        perm1 = x.create_permission(2, 3)
-        perm2 = x.create_permission(3, 2, "_")
+        perm1 = x.create_permission("writer", "everyone")
+        perm2 = x.create_permission("reader", "group", "_")
         perms = list(x.list_permissions())
         self.assertEqual(len(perms), 2)
         self.assertEqual(perm1, perms[0])
@@ -183,25 +156,20 @@ class UnitTests(parameterized.TestCase):
             self.assertIsInstance(perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.ListPermissionsRequest)
 
-    @parameterized.named_parameters(
-        [
-            dict(testcase_name="update_permission_success", updates={"role": 2}),
-            dict(
-                testcase_name="update_permission_failure_restricted_update_path",
-                updates={"grantee_type": 3},
-            ),
-        ]
-    )
-    def test_update_permission(self, updates):
+    def test_update_permission_success(self):
         x = retriever.create_corpus("demo-corpus")
-        perm = x.create_permission(2, 3)
-        if "role" in updates:
-            updated_perm = perm.update(updates=updates)
-            self.assertIsInstance(updated_perm, permission_services.Permission)
-            self.assertIsInstance(self.observed_requests[-1], glm.UpdatePermissionRequest)
-        elif "grantee_type" in updates:
-            with self.assertRaises(ValueError):
-                updated_perm = perm.update(updates=updates)
+        perm = x.create_permission("writer", "everyone")
+        updated_perm = perm.update({"role": permission_services.to_role("reader")})
+        self.assertIsInstance(updated_perm, permission_services.Permission)
+        self.assertIsInstance(self.observed_requests[-1], glm.UpdatePermissionRequest)
+
+    def test_update_permission_failure_restricted_update_path(self):
+        x = retriever.create_corpus("demo-corpus")
+        perm = x.create_permission("writer", "everyone")
+        with self.assertRaises(ValueError):
+            updated_perm = perm.update(
+                {"grantee_type": permission_services.to_grantee_type("user")}
+            )
 
     @parameterized.named_parameters(
         [
