@@ -31,7 +31,7 @@ def get_permission(
     Returns:
         The permission as an instance of `permission_types.Permission`.
     """
-    return permission_types.Permission.get_permission(name=name, client=client)
+    return permission_types.Permission.get(name=name, client=client)
 
 
 async def get_permission_async(
@@ -41,4 +41,4 @@ async def get_permission_async(
     """
     This is the async version of `permission.get_permission`.
     """
-    return await permission_types.Permission.get_permission_async(name=name, client=client)
+    return await permission_types.Permission.get_async(name=name, client=client)

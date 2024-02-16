@@ -187,7 +187,7 @@ class Permission:
         }
 
     @classmethod
-    def get_permission(
+    def get(
         cls,
         name: str,
         client: glm.PermissionServiceClient | None = None,
@@ -209,13 +209,13 @@ class Permission:
         return cls(**get_perm_response)
 
     @classmethod
-    async def get_permission_async(
+    async def get_async(
         cls,
         name: str,
         client: glm.PermissionServiceAsyncClient | None = None,
     ) -> Permission:
         """
-        This is the async version of `Permission.get_permission`.
+        This is the async version of `Permission.get`.
         """
         if client is None:
             client = get_dafault_permission_async_client()
