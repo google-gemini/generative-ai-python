@@ -221,6 +221,22 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
+        # Handle the custom_metadata parameter
+        c_data = []
+        if custom_metadata:
+            for cm in custom_metadata:
+                if cm.string_list_value:
+                    c_data.append(
+                        glm.CustomMetadata(
+                            key=cm.key,
+                            string_list_value=glm.StringList(values=cm.string_list_value),
+                        )
+                    )
+                elif cm.string_value:
+                    c_data.append(glm.CustomMetadata(key=cm.key, string_value=cm.string_value))
+                elif cm.numeric_value:
+                    c_data.append(glm.CustomMetadata(key=cm.key, numeric_value=cm.numeric_value))
+
         document, document_name = None, None
         if name is None:
             document = glm.Document(
@@ -248,6 +264,22 @@ class Corpus:
         """This is the async version of `Corpus.create_document`."""
         if client is None:
             client = get_default_retriever_async_client()
+
+        # Handle the custom_metadata parameter
+        c_data = []
+        if custom_metadata:
+            for cm in custom_metadata:
+                if cm.string_list_value:
+                    c_data.append(
+                        glm.CustomMetadata(
+                            key=cm.key,
+                            string_list_value=glm.StringList(values=cm.string_list_value),
+                        )
+                    )
+                elif cm.string_value:
+                    c_data.append(glm.CustomMetadata(key=cm.key, string_value=cm.string_value))
+                elif cm.numeric_value:
+                    c_data.append(glm.CustomMetadata(key=cm.key, numeric_value=cm.numeric_value))
 
         document, document_name = None, None
         if name is None:
