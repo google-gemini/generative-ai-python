@@ -275,6 +275,14 @@ class UnitTests(parameterized.TestCase):
             return glm.Chunk(
                 name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
                 data={"string_value": "This is an updated demo chunk."},
+                custom_metadata=[
+                    glm.CustomMetadata(
+                        key="tags",
+                        string_list_value=glm.StringList(
+                            values=["Google For Developers", "Project IDX", "Blog", "Announcement"]
+                        ),
+                    )
+                ],
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
             )
@@ -512,6 +520,17 @@ class UnitTests(parameterized.TestCase):
         x = demo_document.create_chunk(
             name="demo-chunk",
             data="This is a demo chunk.",
+            custom_metadata=[
+                retriever_service.CustomMetadata(
+                    key="tag",
+                    string_list_value=[
+                        "Google For Developers",
+                        "Project IDX",
+                        "Blog",
+                        "Announcement",
+                    ],
+                )
+            ],
         )
         x.update(updates={"data": {"string_value": "This is an updated demo chunk."}})
         self.assertEqual(
