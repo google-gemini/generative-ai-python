@@ -327,6 +327,12 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual("demo-corpus", x.display_name)
         self.assertEqual("corpora/demo_corpus", x.name)
 
+    def test_create_corpus_no_name(self):
+        x = retriever.create_corpus()
+        self.assertIsInstance(x, retriever_service.Corpus)
+        self.assertEqual("demo-corpus", x.display_name)
+        self.assertEqual("corpora/demo_corpus", x.name)
+
     def test_get_corpus(self, name="demo-corpus"):
         x = retriever.create_corpus(name=name)
         c = retriever.get_corpus(name=x.name)
@@ -376,6 +382,12 @@ class UnitTests(parameterized.TestCase):
     def test_create_document(self, display_name="demo-doc"):
         demo_corpus = retriever.create_corpus(name="demo-corpus")
         x = demo_corpus.create_document(name=display_name)
+        self.assertIsInstance(x, retriever_service.Document)
+        self.assertEqual("demo-doc", x.display_name)
+
+    def test_create_document_no_name(self):
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        x = demo_corpus.create_document()
         self.assertIsInstance(x, retriever_service.Document)
         self.assertEqual("demo-doc", x.display_name)
 
