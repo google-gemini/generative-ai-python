@@ -7,7 +7,7 @@ from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
 import textwrap
-from typing import TypedDict, Union
+from typing import List, Tuple, TypedDict, Union
 
 import google.protobuf.json_format
 import google.api_core.exceptions
@@ -274,12 +274,15 @@ class BaseGenerateContentResponse:
             | AsyncIterable[glm.GenerateContentResponse]
         ),
         result: glm.GenerateContentResponse,
-        chunks: Iterable[glm.GenerateContentResponse],
+        chunks: Iterable[glm.GenerateContentResponse] | None = None,
     ):
         self._done = done
         self._iterator = iterator
         self._result = result
-        self._chunks = list(chunks)
+        if chunks is None:
+            self._chunks = [result]
+        else:
+            self._chunks = list(chunks)
         if result.prompt_feedback.block_reason:
             self._error = BlockedPromptException(result)
         else:
@@ -347,6 +350,34 @@ class BaseGenerateContentResponse:
     def prompt_feedback(self):
         return self._result.prompt_feedback
 
+    def __str__(self) -> str:
+        if self._done:
+            _iterator = "None"
+        else:
+            _iterator = f"<{self._iterator.__class__.__name__}>"
+
+        _result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
+
+        if self._error:
+            _error = f",\nerror=<{self._error.__class__.__name__}> {self._error}"
+        else:
+            _error = ""
+
+        return (
+            textwrap.dedent(
+                f"""\
+                response:
+                {type(self).__name__}(
+                    done={self._done},
+                    iterator={_iterator},
+                    result={_result},
+                )"""
+            )
+            + _error
+        )
+
+    __repr__ = __str__
+
 
 @contextlib.contextmanager
 def rewrite_stream_error():
@@ -400,7 +431,6 @@ class GenerateContentResponse(BaseGenerateContentResponse):
             done=False,
             iterator=iterator,
             result=response,
-            chunks=[response],
         )
 
     @classmethod
@@ -409,7 +439,6 @@ class GenerateContentResponse(BaseGenerateContentResponse):
             done=True,
             iterator=None,
             result=response,
-            chunks=[response],
         )
 
     def __iter__(self):
@@ -469,7 +498,6 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
             done=False,
             iterator=iterator,
             result=response,
-            chunks=[response],
         )
 
     @classmethod
@@ -478,7 +506,6 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
             done=True,
             iterator=None,
             result=response,
-            chunks=[response],
         )
 
     async def __aiter__(self):
