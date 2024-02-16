@@ -170,6 +170,11 @@ class Permission:
             client = get_dafault_permission_async_client()
 
         updates = flatten_update_paths(updates)
+        for update_path in updates:
+            if update_path != "role":
+                raise ValueError(
+                    f"As of now, only `role` can be updated for `Permission`. Got: `{update_path}` instead."
+                )
         field_mask = field_mask_pb2.FieldMask()
 
         for path in updates.keys():
