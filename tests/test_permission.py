@@ -184,13 +184,18 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(self.observed_requests[-1], glm.ListPermissionsRequest)
 
     @parameterized.named_parameters(
-        [dict(testcase_name="update_permission_success", updates={"role": 2}),
-         dict(testcase_name="update_permission_failure_restricted_update_path", updates={"grantee_type": 3})]
+        [
+            dict(testcase_name="update_permission_success", updates={"role": 2}),
+            dict(
+                testcase_name="update_permission_failure_restricted_update_path",
+                updates={"grantee_type": 3},
+            ),
+        ]
     )
     def test_update_permission(self, updates):
         x = retriever.create_corpus("demo-corpus")
         perm = x.create_permission(2, 3)
-        if "role" in  updates:
+        if "role" in updates:
             updated_perm = perm.update(updates=updates)
             self.assertIsInstance(updated_perm, permission_services.Permission)
             self.assertIsInstance(self.observed_requests[-1], glm.UpdatePermissionRequest)

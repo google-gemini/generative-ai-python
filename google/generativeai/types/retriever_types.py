@@ -498,21 +498,13 @@ class Corpus:
 
         if grantee_type:
             grantee_type = permission_types.to_grantee_type(grantee_type)
-        
-        if (
-            email_address
-            and grantee_type
-            == permission_types.GranteeType.EVERYONE
-        ):
+
+        if email_address and grantee_type == permission_types.GranteeType.EVERYONE:
             raise ValueError(
                 f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`."
             )
 
-        if (
-            not email_address
-            and grantee_type
-            != permission_types.GranteeType.EVERYONE
-        ):
+        if not email_address and grantee_type != permission_types.GranteeType.EVERYONE:
             raise ValueError(
                 f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`."
             )
