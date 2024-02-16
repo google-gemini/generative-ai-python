@@ -498,6 +498,24 @@ class Corpus:
 
         if grantee_type:
             grantee_type = permission_types.to_grantee_type(grantee_type)
+        
+        if (
+            email_address
+            and grantee_type
+            == permission_types.GranteeType.EVERYONE
+        ):
+            raise ValueError(
+                f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`."
+            )
+
+        if (
+            not email_address
+            and grantee_type
+            != permission_types.GranteeType.EVERYONE
+        ):
+            raise ValueError(
+                f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`."
+            )
 
         permission = glm.Permission(
             role=role,
@@ -535,24 +553,6 @@ class Corpus:
         if client is None:
             client = get_dafault_permission_client()
 
-        if (
-            email_address
-            and permission_types.to_grantee_type(grantee_type)
-            == permission_types.GranteeType.EVERYONE
-        ):
-            raise ValueError(
-                f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`."
-            )
-
-        if (
-            not email_address
-            and permission_types.to_grantee_type(grantee_type)
-            != permission_types.GranteeType.EVERYONE
-        ):
-            raise ValueError(
-                f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`."
-            )
-
         request = self._make_create_permission_request(
             role=role, grantee_type=grantee_type, email_address=email_address
         )
@@ -572,24 +572,6 @@ class Corpus:
         """
         if client is None:
             client = get_dafault_permission_async_client()
-
-        if (
-            email_address
-            and permission_types.to_grantee_type(grantee_type)
-            == permission_types.GranteeType.EVERYONE
-        ):
-            raise ValueError(
-                f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`."
-            )
-
-        if (
-            not email_address
-            and permission_types.to_grantee_type(grantee_type)
-            != permission_types.GranteeType.EVERYONE
-        ):
-            raise ValueError(
-                f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`."
-            )
 
         request = self._make_create_permission_request(
             role=role, grantee_type=grantee_type, email_address=email_address
