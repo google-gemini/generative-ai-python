@@ -205,34 +205,15 @@ class UnitTests(parameterized.TestCase):
             x,
         )
 
-    def test_generate_answer(self):
-        # Test handling return value of generate_answer().
-        contents = [glm.Content(parts=[glm.Part(text="I have wings.")])]
+    def test_generate_answer_called_with_request_options(self):
+        self.client.generate_answer = mock.MagicMock()
+        request = mock.ANY
+        request_options = {"timeout": 120}
 
-        grounding_passages = glm.GroundingPassages(
-            passages=[
-                {"id": "0", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
-                {"id": "1", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
-                {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
-            ]
-        )
+        answer.generate_answer(contents=[], inline_passages=[], request_options=request_options)
 
-        a = answer.generate_answer(
-            model="models/aqa",
-            contents=contents,
-            inline_passages=grounding_passages,
-            answer_style="ABSTRACTIVE",
-        )
-        self.assertIsInstance(a, glm.GenerateAnswerResponse)
-        self.assertEqual(
-            a,
-            glm.GenerateAnswerResponse(
-                answer=glm.Candidate(
-                    index=1,
-                    content=(glm.Content(parts=[glm.Part(text="Demo answer.")])),
-                ),
-                answerable_probability=0.500,
-            ),
+        self.client.generate_answer.assert_called_once_with(
+            request, request_options=request_options
         )
 
 
