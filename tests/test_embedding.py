@@ -125,6 +125,21 @@ class UnitTests(parameterized.TestCase):
                 model=DEFAULT_EMB_MODEL, content=text, task_type="unspecified", title="Exploring AI"
             )
 
+    def test_generate_answer_called_with_request_options(self):
+        self.client.embed_content = mock.MagicMock()
+        request = mock.ANY
+        request_options = {"timeout": 120}
+
+        text = "What are you?"
+        with self.assertRaises(AttributeError):
+            embedding.embed_content(
+                model=DEFAULT_EMB_MODEL,
+                content=text,
+                request_options={"timeout": 120},
+            )
+
+        self.client.embed_content.assert_called_once_with(request, request_options=request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
