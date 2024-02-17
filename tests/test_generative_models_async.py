@@ -122,6 +122,16 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         response = await model.count_tokens_async(contents)
         self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
 
+    async def test_count_tokens_called_with_request_options(self):
+        self.client.count_tokens = unittest.mock.AsyncMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        model = generative_models.GenerativeModel("gemini-pro-vision")
+        response = await model.count_tokens_async(contents=[], request_options=request_options)
+
+        self.client.count_tokens.assert_called_once_with(request, request_options=request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
