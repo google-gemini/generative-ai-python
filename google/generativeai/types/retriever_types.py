@@ -112,19 +112,19 @@ _OPERATOR: dict[OperatorOptions, Operator] = {
 
 _STATE: dict[StateOptions, State] = {
     State.STATE_UNSPECIFIED: State.STATE_UNSPECIFIED,
-    "0": State.STATE_UNSPECIFIED,
+    0: State.STATE_UNSPECIFIED,
     "state_unspecifed": State.STATE_UNSPECIFIED,
     "unspecified": State.STATE_UNSPECIFIED,
     State.STATE_PENDING_PROCESSING: State.STATE_PENDING_PROCESSING,
-    "1": State.STATE_PENDING_PROCESSING,
+    1: State.STATE_PENDING_PROCESSING,
     "pending_processing": State.STATE_PENDING_PROCESSING,
     "pending": State.STATE_PENDING_PROCESSING,
     State.STATE_ACTIVE: State.STATE_ACTIVE,
-    "2": State.STATE_ACTIVE,
+    2: State.STATE_ACTIVE,
     "state_active": State.STATE_ACTIVE,
     "active": State.STATE_ACTIVE,
     State.STATE_FAILED: State.STATE_FAILED,
-    "10": State.STATE_FAILED,  # TODO: This is specified as 10 in the proto, should it be 3 or 10?
+    10: State.STATE_FAILED,
     "state_failed": State.STATE_FAILED,
     "failed": State.STATE_FAILED,
 }
