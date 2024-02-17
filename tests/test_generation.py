@@ -1,5 +1,6 @@
 import inspect
 import string
+import textwrap
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -488,6 +489,43 @@ class UnitTests(parameterized.TestCase):
             self.assertEqual(
                 type(raw_response).to_dict(raw_response), type(chunk._result).to_dict(chunk._result)
             )
+
+    def test_repr_for_generate_content_response_from_response(self):
+        raw_response = glm.GenerateContentResponse(
+            {"candidates": [{"content": {"parts": [{"text": "Hello world!"}]}}]}
+        )
+        response = generation_types.GenerateContentResponse.from_response(raw_response)
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=True,
+                iterator=None,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'Hello world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+            )"""
+        )
+        self.assertEqual(expected, result)
+
+    def test_repr_for_generate_content_response_from_iterator(self):
+        chunks = [
+            glm.GenerateContentResponse({"candidates": [{"content": {"parts": [{"text": a}]}}]})
+            for a in "abcd"
+        ]
+        response = generation_types.GenerateContentResponse.from_iterator(iter(chunks))
+
+        result = repr(response)
+        expected = textwrap.dedent(
+            """\
+            response:
+            GenerateContentResponse(
+                done=False,
+                iterator=<list_iterator>,
+                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'a'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+            )"""
+        )
+        self.assertEqual(expected, result)
 
 
 if __name__ == "__main__":
