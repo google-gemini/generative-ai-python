@@ -739,6 +739,16 @@ class UnitTests(parameterized.TestCase):
         asource = re.sub(" *?# type: ignore", "", asource)
         self.assertEqual(source, asource)
 
+    def test_create_corpus_called_with_request_options(self):
+        self.client.create_corpus = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        with self.assertRaises(AttributeError):
+            retriever.create_corpus(name="hi", request_options=request_options)
+
+        self.client.create_corpus.assert_called_once_with(request, request_options=request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
