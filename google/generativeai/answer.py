@@ -165,7 +165,7 @@ def generate_answer(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    timeout: float | None = None,
+    request_options: dict[str, Any] | None = None,
 ):
     """
     Calls the API and returns a `types.Answer` containing the answer.
@@ -195,6 +195,6 @@ def generate_answer(
         answer_style=answer_style,
     )
 
-    response = client.generate_answer(request, timeout=timeout)
+    response = client.generate_answer(request, request_options=request_options)
 
     return response

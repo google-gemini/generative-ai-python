@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 import dataclasses
 import textwrap
+from typing import Any
 
 # pylint: disable=bad-continuation, line-too-long
 
@@ -137,7 +138,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
-        timeout: float | None = None,
+        request_options: dict[str, Any] | None = None,
         **kwargs,
     ) -> generation_types.GenerateContentResponse:
         """A multipurpose function to generate responses from the model.
@@ -207,13 +208,13 @@ class GenerativeModel:
             with generation_types.rewrite_stream_error():
                 iterator = self._client.stream_generate_content(
                     request,
-                    timeout=timeout,
+                    request_options=request_options,
                 )
             return generation_types.GenerateContentResponse.from_iterator(iterator)
         else:
             response = self._client.generate_content(
                 request,
-                timeout=timeout,
+                request_options=request_options,
             )
             return generation_types.GenerateContentResponse.from_response(response)
 
@@ -224,7 +225,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
-        timeout: float | None = None,
+        request_options: dict[str, Any] | None = None,
         **kwargs,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `GenerativeModel.generate_content`."""
@@ -241,13 +242,13 @@ class GenerativeModel:
             with generation_types.rewrite_stream_error():
                 iterator = await self._async_client.stream_generate_content(
                     request,
-                    timeout=timeout,
+                    request_options=request_options,
                 )
             return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
         else:
             response = await self._async_client.generate_content(
                 request,
-                timeout=timeout,
+                request_options=request_options,
             )
             return generation_types.AsyncGenerateContentResponse.from_response(response)
 
@@ -255,27 +256,27 @@ class GenerativeModel:
     def count_tokens(
         self,
         contents: content_types.ContentsType,
-        timeout: float | None = None,
+        request_options: dict[str, Any] | None = None,
     ) -> glm.CountTokensResponse:
         if self._client is None:
             self._client = client.get_default_generative_client()
         contents = content_types.to_contents(contents)
         return self._client.count_tokens(
             glm.CountTokensRequest(model=self.model_name, contents=contents),
-            timeout=timeout,
+                request_options=request_options,
         )
 
     async def count_tokens_async(
         self,
         contents: content_types.ContentsType,
-        timeout: float | None = None,
+        request_options: dict[str, Any] | None = None,
     ) -> glm.CountTokensResponse:
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
         contents = content_types.to_contents(contents)
         return await self._async_client.count_tokens(
             glm.CountTokensRequest(model=self.model_name, contents=contents),
-            timeout=timeout,
+                request_options=request_options,
         )
 
     # fmt: on

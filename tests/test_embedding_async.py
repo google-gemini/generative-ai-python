@@ -14,6 +14,7 @@
 # limitations under the License.
 import copy
 import math
+from typing import Any
 import unittest
 import unittest.mock as mock
 
@@ -44,6 +45,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def embed_content(
             request: glm.EmbedContentRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.EmbedContentResponse:
             self.observed_requests.append(request)
             return glm.EmbedContentResponse(embedding=glm.ContentEmbedding(values=[1, 2, 3]))
@@ -51,7 +53,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def batch_embed_contents(
             request: glm.BatchEmbedContentsRequest,
-            timeout: float | None = None,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.BatchEmbedContentsResponse:
             self.observed_requests.append(request)
             return glm.BatchEmbedContentsResponse(

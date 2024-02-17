@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Any
 import unittest
 import unittest.mock as mock
 
@@ -42,6 +43,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def create_corpus(
             request: glm.CreateCorpusRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
             return glm.Corpus(
@@ -54,6 +56,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def get_corpus(
             request: glm.GetCorpusRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
             return glm.Corpus(
@@ -66,6 +69,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def update_corpus(
             request: glm.UpdateCorpusRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
             return glm.Corpus(
@@ -78,6 +82,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def list_corpora(
             request: glm.ListCorporaRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.ListCorporaResponse:
             self.observed_requests.append(request)
             return [
@@ -98,6 +103,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def query_corpus(
             request: glm.QueryCorpusRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.QueryCorpusResponse:
             self.observed_requests.append(request)
             return glm.QueryCorpusResponse(
@@ -117,12 +123,16 @@ class UnitTests(parameterized.TestCase):
             )
 
         @add_client_method
-        def delete_corpus(request: glm.DeleteCorpusRequest) -> None:
+        def delete_corpus(
+            request: glm.DeleteCorpusRequest,
+            request_options: dict[str, Any] | None = None,
+        ) -> None:
             self.observed_requests.append(request)
 
         @add_client_method
         def create_document(
             request: glm.CreateDocumentRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> retriever_service.Document:
             self.observed_requests.append(request)
             return glm.Document(
@@ -135,6 +145,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def get_document(
             request: glm.GetDocumentRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> retriever_service.Document:
             self.observed_requests.append(request)
             return glm.Document(
@@ -147,6 +158,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def update_document(
             request: glm.UpdateDocumentRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.Document:
             self.observed_requests.append(request)
             return glm.Document(
@@ -159,6 +171,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def list_documents(
             request: glm.ListDocumentsRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.ListDocumentsResponse:
             self.observed_requests.append(request)
             return [
@@ -179,12 +192,14 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def delete_document(
             request: glm.DeleteDocumentRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> None:
             self.observed_requests.append(request)
 
         @add_client_method
         def query_document(
             request: glm.QueryDocumentRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.QueryDocumentResponse:
             self.observed_requests.append(request)
             return glm.QueryDocumentResponse(
@@ -206,6 +221,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def create_chunk(
             request: glm.CreateChunkRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> retriever_service.Chunk:
             self.observed_requests.append(request)
             return glm.Chunk(
@@ -218,6 +234,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def batch_create_chunks(
             request: glm.BatchCreateChunksRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.BatchCreateChunksResponse:
             self.observed_requests.append(request)
             return glm.BatchCreateChunksResponse(
@@ -240,6 +257,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def get_chunk(
             request: glm.GetChunkRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> retriever_service.Chunk:
             self.observed_requests.append(request)
             return glm.Chunk(
@@ -252,6 +270,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def list_chunks(
             request: glm.ListChunksRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.ListChunksResponse:
             self.observed_requests.append(request)
             return [
@@ -270,7 +289,10 @@ class UnitTests(parameterized.TestCase):
             ]
 
         @add_client_method
-        def update_chunk(request: glm.UpdateChunkRequest) -> glm.Chunk:
+        def update_chunk(
+            request: glm.UpdateChunkRequest,
+            request_options: dict[str, Any] | None = None,
+        ) -> glm.Chunk:
             self.observed_requests.append(request)
             return glm.Chunk(
                 name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
@@ -282,6 +304,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def batch_update_chunks(
             request: glm.BatchUpdateChunksRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.BatchUpdateChunksResponse:
             self.observed_requests.append(request)
             return glm.BatchUpdateChunksResponse(
@@ -304,12 +327,14 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def delete_chunk(
             request: glm.DeleteChunkRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> None:
             self.observed_requests.append(request)
 
         @add_client_method
         def batch_delete_chunks(
             request: glm.BatchDeleteChunksRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> None:
             self.observed_requests.append(request)
 

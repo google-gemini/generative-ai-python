@@ -17,6 +17,7 @@ import collections
 import sys
 from collections.abc import Iterable
 import os
+from typing import Any
 import unittest
 
 
@@ -49,7 +50,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def generate_content(
             request: glm.GenerateContentRequest,
-            timeout: float | None = None,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.GenerateContentResponse:
             self.assertIsInstance(request, glm.GenerateContentRequest)
             self.observed_requests.append(request)
@@ -59,7 +60,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def stream_generate_content(
             request: glm.GetModelRequest,
-            timeout: float | None = None,
+            request_options: dict[str, Any] | None = None,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["stream_generate_content"].pop(0)
@@ -68,7 +69,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def count_tokens(
             request: glm.CountTokensRequest,
-            timeout: float | None = None,
+            request_options: dict[str, Any] | None = None,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["count_tokens"].pop(0)

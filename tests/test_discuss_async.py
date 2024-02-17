@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import sys
+from typing import Any
 import unittest
 
 import google.ai.generativelanguage as glm
@@ -31,6 +32,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         async def fake_generate_message(
             request: glm.GenerateMessageRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.GenerateMessageResponse:
             nonlocal observed_request
             observed_request = request

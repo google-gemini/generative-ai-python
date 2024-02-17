@@ -2,6 +2,7 @@ import collections
 from collections.abc import Iterable
 import copy
 import pathlib
+from typing import Any
 import unittest.mock
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -42,7 +43,7 @@ class CUJTests(parameterized.TestCase):
         @add_client_method
         def generate_content(
             request: glm.GenerateContentRequest,
-            timeout: float | None = None,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.GenerateContentResponse:
             self.assertIsInstance(request, glm.GenerateContentRequest)
             self.observed_requests.append(request)
@@ -52,7 +53,7 @@ class CUJTests(parameterized.TestCase):
         @add_client_method
         def stream_generate_content(
             request: glm.GetModelRequest,
-            timeout: float | None = None,
+            request_options: dict[str, Any] | None = None,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["stream_generate_content"].pop(0)
@@ -61,7 +62,7 @@ class CUJTests(parameterized.TestCase):
         @add_client_method
         def count_tokens(
             request: glm.CountTokensRequest,
-            timeout: float | None = None,
+            request_options: dict[str, Any] | None = None,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["count_tokens"].pop(0)

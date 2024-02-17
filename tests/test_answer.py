@@ -14,6 +14,7 @@
 # limitations under the License.
 import copy
 import math
+from typing import Any
 import unittest
 import unittest.mock as mock
 
@@ -46,7 +47,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def generate_answer(
             request: glm.GenerateAnswerRequest,
-            timeout: float | None = None,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.GenerateAnswerResponse:
             self.observed_requests.append(request)
             return glm.GenerateAnswerResponse(

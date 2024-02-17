@@ -31,6 +31,7 @@ def create_corpus(
     name: str,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
+    request_options: dict[str, Any] | None = None,
 ) -> retriever_types.Corpus:
     """
     Create a new `Corpus` in the retriever service, and return it as a `retriever_types.Corpus` instance.
@@ -61,7 +62,7 @@ def create_corpus(
         raise ValueError(retriever_types.NAME_ERROR_MSG.format(length=len(name), name=name))
 
     request = glm.CreateCorpusRequest(corpus=corpus)
-    response = client.create_corpus(request)
+    response = client.create_corpus(request, request_options=request_options)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")
@@ -73,6 +74,7 @@ async def create_corpus_async(
     name: str,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceAsyncClient | None = None,
+    request_options: dict[str, Any] | None = None,
 ) -> retriever_types.Corpus:
     """This is the async version of `retriever.create_corpus`."""
     if client is None:
@@ -86,7 +88,7 @@ async def create_corpus_async(
         raise ValueError(retriever_types.NAME_ERROR_MSG.format(length=len(name), name=name))
 
     request = glm.CreateCorpusRequest(corpus=corpus)
-    response = await client.create_corpus(request)
+    response = await client.create_corpus(request, request_options=request_options)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")
@@ -94,7 +96,11 @@ async def create_corpus_async(
     return response
 
 
-def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> retriever_types.Corpus:  # fmt: skip
+def get_corpus(
+    name: str,
+    client: glm.RetrieverServiceClient | None = None,
+    request_options: dict[str, Any] | None = None,
+) -> retriever_types.Corpus:  # fmt: skip
     """
     Fetch a specific `Corpus` from the retriever service.
 
@@ -108,7 +114,7 @@ def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> r
         client = get_default_retriever_client()
 
     request = glm.GetCorpusRequest(name=name)
-    response = client.get_corpus(request)
+    response = client.get_corpus(request, request_options=request_options)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")
@@ -116,13 +122,17 @@ def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> r
     return response
 
 
-async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | None = None) -> retriever_types.Corpus:  # fmt: skip
+async def get_corpus_async(
+    name: str,
+    client: glm.RetrieverServiceAsyncClient | None = None,
+    request_options: dict[str, Any] | None = None,
+) -> retriever_types.Corpus:  # fmt: skip
     """This is the async version of `retriever.get_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
 
     request = glm.GetCorpusRequest(name=name)
-    response = await client.get_corpus(request)
+    response = await client.get_corpus(request, request_options=request_options)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
     idecode_time(response, "update_time")
@@ -130,7 +140,12 @@ async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | 
     return response
 
 
-def delete_corpus(name: str, force: bool = False, client: glm.RetrieverServiceClient | None = None):  # fmt: skip
+def delete_corpus(
+    name: str,
+    force: bool = False,
+    client: glm.RetrieverServiceClient | None = None,
+    request_options: dict[str, Any] | None = None,
+):  # fmt: skip
     """
     Delete a `Corpus` from the service.
 
@@ -142,22 +157,28 @@ def delete_corpus(name: str, force: bool = False, client: glm.RetrieverServiceCl
         client = get_default_retriever_client()
 
     request = glm.DeleteCorpusRequest(name=name, force=force)
-    client.delete_corpus(request)
+    client.delete_corpus(request, request_options=request_options)
 
 
-async def delete_corpus_async(name: str, force: bool = False, client: glm.RetrieverServiceAsyncClient | None = None):  # fmt: skip
+async def delete_corpus_async(
+    name: str,
+    force: bool = False,
+    client: glm.RetrieverServiceAsyncClient | None = None,
+    request_options: dict[str, Any] | None = None,
+):  # fmt: skip
     """This is the async version of `retriever.delete_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
 
     request = glm.DeleteCorpusRequest(name=name, force=force)
-    await client.delete_corpus(request)
+    await client.delete_corpus(request, request_options=request_options)
 
 
 def list_corpora(
     *,
     page_size: Optional[int] = None,
     client: glm.RetrieverServiceClient | None = None,
+    request_options: dict[str, Any] | None = None,
 ) -> Iterable[retriever_types.Corpus]:
     """
     List the Corpuses you own in the service.
@@ -173,7 +194,7 @@ def list_corpora(
         client = get_default_retriever_client()
 
     request = glm.ListCorporaRequest(page_size=page_size)
-    for corpus in client.list_corpora(request):
+    for corpus in client.list_corpora(request, request_options=request_options):
         corpus = type(corpus).to_dict(corpus)
         yield retriever_types.Corpus(**corpus)
 
@@ -182,12 +203,13 @@ async def list_corpora_async(
     *,
     page_size: Optional[int] = None,
     client: glm.RetrieverServiceClient | None = None,
+    request_options: dict[str, Any] | None = None,
 ) -> AsyncIterable[retriever_types.Corpus]:
     """This is the async version of `retriever.list_corpora`."""
     if client is None:
         client = get_default_retriever_async_client()
 
     request = glm.ListCorporaRequest(page_size=page_size)
-    async for corpus in await client.list_corpora(request):
+    async for corpus in await client.list_corpora(request, request_options=request_options):
         corpus = type(corpus).to_dict(corpus)
         yield retriever_types.Corpus(**corpus)

@@ -14,6 +14,7 @@
 # limitations under the License.
 import copy
 import math
+from typing import Any
 import unittest
 import unittest.mock as mock
 
@@ -46,6 +47,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def generate_text(
             request: glm.GenerateTextRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.GenerateTextResponse:
             self.observed_requests.append(request)
             return self.responses["generate_text"]
@@ -53,6 +55,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def embed_text(
             request: glm.EmbedTextRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.EmbedTextResponse:
             self.observed_requests.append(request)
             return self.responses["embed_text"]
@@ -60,6 +63,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def batch_embed_text(
             request: glm.EmbedTextRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.EmbedTextResponse:
             self.observed_requests.append(request)
 
@@ -70,6 +74,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def count_text_tokens(
             request: glm.CountTextTokensRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.CountTextTokensResponse:
             self.observed_requests.append(request)
             return self.responses["count_text_tokens"]

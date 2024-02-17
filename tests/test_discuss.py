@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import copy
+from typing import Any
 
 import unittest.mock
 
@@ -47,6 +48,7 @@ class UnitTests(parameterized.TestCase):
 
         def fake_generate_message(
             request: glm.GenerateMessageRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.GenerateMessageResponse:
             self.observed_request = request
             response = copy.copy(self.mock_response)

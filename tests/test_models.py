@@ -79,6 +79,7 @@ class UnitTests(parameterized.TestCase):
             *,
             page_size=None,
             page_token=None,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.ListModelsResponse:
             if request is None:
                 request = glm.ListModelsRequest(page_size=page_size, page_token=page_token)
@@ -93,6 +94,7 @@ class UnitTests(parameterized.TestCase):
             *,
             page_size=None,
             page_token=None,
+            request_options: dict[str, Any] | None = None,
         ) -> Iterable[glm.TunedModel]:
             if request is None:
                 request = glm.ListTunedModelsRequest(page_size=page_size, page_token=page_token)
@@ -102,7 +104,10 @@ class UnitTests(parameterized.TestCase):
             return (item for item in response)
 
         @add_client_method
-        def update_tuned_model(request: glm.UpdateTunedModelRequest) -> glm.TunedModel:
+        def update_tuned_model(
+            request: glm.UpdateTunedModelRequest,
+            request_options: dict[str, Any] | None = None,
+        ) -> glm.TunedModel:
             self.observed_requests.append(request)
             response = self.responses.get("update_tuned_model", None)
             if response is None:
@@ -117,7 +122,10 @@ class UnitTests(parameterized.TestCase):
             return response
 
         @add_client_method
-        def create_tuned_model(request):
+        def create_tuned_model(
+            request,
+            request_options: dict[str, Any] | None = None,
+        ):
             request = glm.CreateTunedModelRequest(request)
             self.observed_requests.append(request)
             return self.responses["create_tuned_model"]
