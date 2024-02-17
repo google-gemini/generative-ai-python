@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Any
 import unittest
 import unittest.mock as mock
 
@@ -46,6 +47,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def create_corpus(
             request: glm.CreateCorpusRequest,
+            request_options: dict[str, Any] | None = None,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
             return glm.Corpus(
