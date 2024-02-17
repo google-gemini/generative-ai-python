@@ -475,6 +475,30 @@ class UnitTests(parameterized.TestCase):
                 glm.GetTunedModelRequest(name="tunedModels/bipedal-pangolin-001"),
             )
 
+    def test_embed_text_called_with_request_options(self):
+        self.client.embed_text = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        with self.assertRaises(AttributeError):
+            result = text_service.generate_embeddings(
+                model="models/",
+                text="",
+                request_options=request_options,
+            )
+
+        self.client.embed_text.assert_called_once_with(request, request_options=request_options)
+
+    def test_generate_text_called_with_request_options(self):
+        self.client.generate_text = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        with self.assertRaises(AttributeError):
+            result = text_service.generate_text(prompt="", request_options=request_options)
+
+        self.client.generate_text.assert_called_once_with(request, request_options=request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
