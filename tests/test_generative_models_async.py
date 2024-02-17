@@ -122,6 +122,38 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         response = await model.count_tokens_async(contents)
         self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
 
+    async def test_stream_generate_content_called_with_request_options(self):
+        self.client.stream_generate_content = unittest.mock.AsyncMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        model = generative_models.GenerativeModel()
+
+        with self.assertRaises(StopAsyncIteration):
+            response = await model.generate_content_async(
+                contents=[""],
+                stream=True,
+                request_options=request_options,
+            )
+
+        self.client.stream_generate_content.assert_called_once_with(
+            request, request_options=request_options
+        )
+
+    async def test_generate_content_called_with_request_options(self):
+        self.client.generate_content = unittest.mock.AsyncMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        model = generative_models.GenerativeModel()
+        response = await model.generate_content_async(
+            contents=[""], request_options=request_options
+        )
+
+        self.client.generate_content.assert_called_once_with(
+            request, request_options=request_options
+        )
+
     async def test_count_tokens_called_with_request_options(self):
         self.client.count_tokens = unittest.mock.AsyncMock()
         request = unittest.mock.ANY
