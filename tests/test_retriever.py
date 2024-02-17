@@ -739,15 +739,23 @@ class UnitTests(parameterized.TestCase):
         asource = re.sub(" *?# type: ignore", "", asource)
         self.assertEqual(source, asource)
 
-    def test_create_corpus_called_with_request_options(self):
-        self.client.create_corpus = unittest.mock.MagicMock()
+    @parameterized.parameters(
+        {"method": "create_corpus"},
+        {"method": "get_corpus"},
+        {"method": "update_corpus"},
+        {"method": "list_corpora"},
+        {"method": "query_corpus"},
+        {"method": "delete_corpus"},
+    )
+    def test_corpus_called_with_request_options(self, method):
+        self.client[method] = unittest.mock.MagicMock()
         request = unittest.mock.ANY
         request_options = {"timeout": 120}
 
         with self.assertRaises(AttributeError):
-            retriever.create_corpus(name="hi", request_options=request_options)
+            getattr(retriever, method)(name="test", request_options=request_options)
 
-        self.client.create_corpus.assert_called_once_with(request, request_options=request_options)
+        self.client[method].assert_called_once_with(request, request_options=request_options)
 
 
 if __name__ == "__main__":
