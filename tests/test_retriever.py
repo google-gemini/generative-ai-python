@@ -756,6 +756,16 @@ class UnitTests(parameterized.TestCase):
 
         getattr(self.client, method).assert_called_once_with(request, **request_options)
 
+    def test_update_corpus_called_with_request_options(self):
+        self.client.update_corpus = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        update_request = demo_corpus.update(updates={}, request_options=request_options)
+
+        self.client.update_corpus.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
