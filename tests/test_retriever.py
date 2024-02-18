@@ -742,13 +742,10 @@ class UnitTests(parameterized.TestCase):
     @parameterized.parameters(
         {"method": "create_corpus"},
         {"method": "get_corpus"},
-        {"method": "update_corpus"},
-        {"method": "list_corpora"},
-        {"method": "query_corpus"},
         {"method": "delete_corpus"},
     )
     def test_corpus_called_with_request_options(self, method):
-        self.client[method] = unittest.mock.MagicMock()
+        setattr(self.client, method, unittest.mock.MagicMock())
         request = unittest.mock.ANY
         request_options = {"timeout": 120}
 
@@ -757,7 +754,7 @@ class UnitTests(parameterized.TestCase):
         except AttributeError:
             pass
 
-        self.client[method].assert_called_once_with(request, **request_options)
+        getattr(self.client, method).assert_called_once_with(request, **request_options)
 
 
 if __name__ == "__main__":

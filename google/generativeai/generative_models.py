@@ -284,6 +284,7 @@ class GenerativeModel:
     ) -> glm.CountTokensResponse:
         if request_options is None:
             request_options = {}
+
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
         contents = content_types.to_contents(contents)
