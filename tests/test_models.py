@@ -494,5 +494,22 @@ class UnitTests(parameterized.TestCase):
             page_size=page_size, **request_options
         )
 
+    def test_update_tuned_model_called_with_request_options(self):
+        self.client.update_tuned_model = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+        self.responses["get_tuned_model"] = glm.TunedModel(name="tunedModels/")
+
+        try:
+            models.update_tuned_model(
+                tuned_model="tunedModels/",
+                updates=dict(),
+                request_options=request_options,
+            )
+        except KeyError:
+            pass
+
+        self.client.update_tuned_model.assert_called_once_with(request, **request_options)
+
 if __name__ == "__main__":
     absltest.main()
