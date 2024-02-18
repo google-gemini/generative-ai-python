@@ -800,12 +800,18 @@ class UnitTests(parameterized.TestCase):
         retriever.delete_corpus(name="corpora/demo_corpus", request_options=request_options)
         self.client.delete_corpus.assert_called_once_with(request, **request_options)
 
+    def test_create_document_called_with_request_options(self):
+        self.client.create_document = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
         try:
-            retriever.delete_corpus(name="corpora/demo_corpus", request_options=request_options)
+            demo_corpus = retriever.create_corpus(name="demo-corpus")
+            demo_corpus.create_document(name="demo-doc", request_options=request_options)
         except AttributeError:
             pass
 
-        self.client.delete_corpus.assert_called_once_with(request, **request_options)
+        self.client.create_document.assert_called_once_with(request, **request_options)
 
 
 if __name__ == "__main__":
