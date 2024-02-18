@@ -532,10 +532,13 @@ def _generate_response(
     client: glm.DiscussServiceClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> ChatResponse:
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_discuss_client()
 
-    response = client.generate_message(request, request_options=request_options)
+    response = client.generate_message(request, **request_options)
 
     return _build_chat_response(request, response, client)
 
@@ -545,10 +548,13 @@ async def _generate_response_async(
     client: glm.DiscussServiceAsyncClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> ChatResponse:
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_discuss_async_client()
 
-    response = await client.generate_message(request, request_options=request_options)
+    response = await client.generate_message(request, **request_options)
 
     return _build_chat_response(request, response, client)
 
@@ -566,11 +572,12 @@ def count_message_tokens(
     model = model_types.make_model_name(model)
     prompt = _make_message_prompt(prompt, context=context, examples=examples, messages=messages)
 
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_discuss_client()
 
-    result = client.count_message_tokens(
-        model=model, prompt=prompt, request_options=request_options
-    )
+    result = client.count_message_tokens(model=model, prompt=prompt, **request_options)
 
     return type(result).to_dict(result)

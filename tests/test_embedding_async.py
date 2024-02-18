@@ -45,7 +45,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def embed_content(
             request: glm.EmbedContentRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.EmbedContentResponse:
             self.observed_requests.append(request)
             return glm.EmbedContentResponse(embedding=glm.ContentEmbedding(values=[1, 2, 3]))
@@ -53,7 +53,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def batch_embed_contents(
             request: glm.BatchEmbedContentsRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.BatchEmbedContentsResponse:
             self.observed_requests.append(request)
             return glm.BatchEmbedContentsResponse(

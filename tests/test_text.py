@@ -47,7 +47,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def generate_text(
             request: glm.GenerateTextRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.GenerateTextResponse:
             self.observed_requests.append(request)
             return self.responses["generate_text"]
@@ -55,7 +55,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def embed_text(
             request: glm.EmbedTextRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.EmbedTextResponse:
             self.observed_requests.append(request)
             return self.responses["embed_text"]
@@ -63,7 +63,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def batch_embed_text(
             request: glm.EmbedTextRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.EmbedTextResponse:
             self.observed_requests.append(request)
 
@@ -74,7 +74,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def count_text_tokens(
             request: glm.CountTextTokensRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.CountTextTokensResponse:
             self.observed_requests.append(request)
             return self.responses["count_text_tokens"]
@@ -487,9 +487,7 @@ class UnitTests(parameterized.TestCase):
                 request_options=request_options,
             )
 
-        self.client.count_text_tokens.assert_called_once_with(
-            request, request_options=request_options
-        )
+        self.client.count_text_tokens.assert_called_once_with(request, **request_options)
 
     def test_batch_embed_text_called_with_request_options(self):
         self.client.batch_embed_text = unittest.mock.MagicMock()
@@ -503,9 +501,7 @@ class UnitTests(parameterized.TestCase):
                 request_options=request_options,
             )
 
-        self.client.batch_embed_text.assert_called_once_with(
-            request, request_options=request_options
-        )
+        self.client.batch_embed_text.assert_called_once_with(request, **request_options)
 
     def test_embed_text_called_with_request_options(self):
         self.client.embed_text = unittest.mock.MagicMock()
@@ -519,7 +515,7 @@ class UnitTests(parameterized.TestCase):
                 request_options=request_options,
             )
 
-        self.client.embed_text.assert_called_once_with(request, request_options=request_options)
+        self.client.embed_text.assert_called_once_with(request, **request_options)
 
     def test_generate_text_called_with_request_options(self):
         self.client.generate_text = unittest.mock.MagicMock()
@@ -529,7 +525,7 @@ class UnitTests(parameterized.TestCase):
         with self.assertRaises(AttributeError):
             result = text_service.generate_text(prompt="", request_options=request_options)
 
-        self.client.generate_text.assert_called_once_with(request, request_options=request_options)
+        self.client.generate_text.assert_called_once_with(request, **request_options)
 
 
 if __name__ == "__main__":

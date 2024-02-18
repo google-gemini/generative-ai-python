@@ -47,7 +47,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def create_corpus(
             request: glm.CreateCorpusRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
             return glm.Corpus(

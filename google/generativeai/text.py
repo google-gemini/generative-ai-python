@@ -229,10 +229,13 @@ def _generate_response(
     Returns:
         `Completion`: A `Completion` object with the generated text and response information.
     """
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_text_client()
 
-    response = client.generate_text(request, request_options=request_options)
+    response = client.generate_text(request, **request_options)
     response = type(response).to_dict(response)
 
     response["filters"] = safety_types.convert_filters_to_enums(response["filters"])
@@ -252,12 +255,15 @@ def count_text_tokens(
 ) -> text_types.TokenCount:
     base_model = models.get_base_model_name(model)
 
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_text_client()
 
     result = client.count_text_tokens(
         glm.CountTextTokensRequest(model=base_model, prompt={"text": prompt}),
-        request_options=request_options,
+        **request_options,
     )
 
     return type(result).to_dict(result)
@@ -302,6 +308,9 @@ def generate_embeddings(
     """
     model = model_types.make_model_name(model)
 
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_text_client()
 
@@ -309,7 +318,7 @@ def generate_embeddings(
         embedding_request = glm.EmbedTextRequest(model=model, text=text)
         embedding_response = client.embed_text(
             embedding_request,
-            request_options=request_options,
+            **request_options,
         )
         embedding_dict = type(embedding_response).to_dict(embedding_response)
         embedding_dict["embedding"] = embedding_dict["embedding"]["value"]
@@ -320,7 +329,7 @@ def generate_embeddings(
             embedding_request = glm.BatchEmbedTextRequest(model=model, texts=batch)
             embedding_response = client.batch_embed_text(
                 embedding_request,
-                request_options=request_options,
+                **request_options,
             )
             embedding_dict = type(embedding_response).to_dict(embedding_response)
             result["embedding"].extend(e["value"] for e in embedding_dict["embeddings"])

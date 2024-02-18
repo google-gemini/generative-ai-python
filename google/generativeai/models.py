@@ -78,6 +78,9 @@ def get_base_model(
     Returns:
         A `types.Model`.
     """
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_model_client()
 
@@ -85,7 +88,7 @@ def get_base_model(
     if not name.startswith("models/"):
         raise ValueError(f"Base model names must start with `models/`, got: {name}")
 
-    result = client.get_model(name=name, request_options=request_options)
+    result = client.get_model(name=name, **request_options)
     result = type(result).to_dict(result)
     return model_types.Model(**result)
 
@@ -111,6 +114,9 @@ def get_tuned_model(
     Returns:
         A `types.TunedModel`.
     """
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_model_client()
 
@@ -119,7 +125,7 @@ def get_tuned_model(
     if not name.startswith("tunedModels/"):
         raise ValueError("Tuned model names must start with `tunedModels/`")
 
-    result = client.get_tuned_model(name=name, request_options=request_options)
+    result = client.get_tuned_model(name=name, **request_options)
 
     return model_types.decode_tuned_model(result)
 
@@ -171,10 +177,13 @@ def list_models(
         `types.Model` objects.
 
     """
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_model_client()
 
-    for model in client.list_models(page_size=page_size, request_options=request_options):
+    for model in client.list_models(page_size=page_size, **request_options):
         model = type(model).to_dict(model)
         yield model_types.Model(**model)
 
@@ -200,12 +209,15 @@ def list_tuned_models(
     Yields:
         `types.TunedModel` objects.
     """
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_model_client()
 
     for model in client.list_tuned_models(
         page_size=page_size,
-        request_options=request_options,
+        **request_options,
     ):
         model = type(model).to_dict(model)
         yield model_types.decode_tuned_model(model)
@@ -283,6 +295,8 @@ def create_tuned_model(
     Returns:
         A [`google.api_core.operation.Operation`](https://googleapis.dev/python/google-api-core/latest/operation.html)
     """
+    if request_options is None:
+        request_options = {}
 
     if client is None:
         client = get_default_model_client()
@@ -325,7 +339,7 @@ def create_tuned_model(
         tuning_task=tuning_task,
     )
     operation = client.create_tuned_model(
-        dict(tuned_model_id=id, tuned_model=tuned_model), request_options=request_options
+        dict(tuned_model_id=id, tuned_model=tuned_model), **request_options
     )
 
     return operations.CreateTunedModelOperation.from_core_operation(operation)
@@ -361,6 +375,9 @@ def update_tuned_model(
     request_options: dict[str, Any] | None = None,
 ) -> model_types.TunedModel:
     """Push updates to the tuned model. Only certain attributes are updatable."""
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_model_client()
 
@@ -372,7 +389,7 @@ def update_tuned_model(
                 "`updates` must be a `dict`.\n"
                 f"got: {type(updates)}"
             )
-        tuned_model = client.get_tuned_model(name=name, request_options=request_options)
+        tuned_model = client.get_tuned_model(name=name, **request_options)
 
         updates = flatten_update_paths(updates)
         field_mask = field_mask_pb2.FieldMask()
@@ -414,8 +431,11 @@ def delete_tuned_model(
     client: glm.ModelServiceClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> None:
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_model_client()
 
     name = model_types.make_model_name(tuned_model)
-    client.delete_tuned_model(name=name, request_options=request_options)
+    client.delete_tuned_model(name=name, **request_options)

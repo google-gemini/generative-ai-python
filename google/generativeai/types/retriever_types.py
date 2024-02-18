@@ -208,6 +208,9 @@ class Corpus:
         Raises:
             ValueError: When the name is not specified or formatted incorrectly.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
@@ -221,7 +224,7 @@ class Corpus:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
-        response = client.create_document(request, request_options=request_options)
+        response = client.create_document(request, **request_options)
         return decode_document(response)
 
     async def create_document_async(
@@ -233,6 +236,9 @@ class Corpus:
         request_options: dict[str, Any] | None = None,
     ) -> Document:
         """This is the async version of `Corpus.create_document`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -246,7 +252,7 @@ class Corpus:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
-        response = await client.create_document(request, request_options=request_options)
+        response = await client.create_document(request, **request_options)
         return decode_document(response)
 
     def get_document(
@@ -264,11 +270,14 @@ class Corpus:
         Return:
             `Document` of interest.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
         request = glm.GetDocumentRequest(name=name)
-        response = client.get_document(request, request_options=request_options)
+        response = client.get_document(request, **request_options)
         return decode_document(response)
 
     async def get_document_async(
@@ -278,11 +287,14 @@ class Corpus:
         request_options: dict[str, Any] | None = None,
     ) -> Document:
         """This is the async version of `Corpus.get_document`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
         request = glm.GetDocumentRequest(name=name)
-        response = await client.get_document(request, request_options=request_options)
+        response = await client.get_document(request, **request_options)
         return decode_document(response)
 
     def _apply_update(self, path, value):
@@ -306,6 +318,9 @@ class Corpus:
         Return:
             Updated version of the `Corpus` object.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
@@ -318,7 +333,7 @@ class Corpus:
             self._apply_update(path, value)
 
         request = glm.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
-        client.update_corpus(request, request_options=request_options)
+        client.update_corpus(request, **request_options)
         return self
 
     async def update_async(
@@ -328,6 +343,9 @@ class Corpus:
         request_options: dict[str, Any] | None = None,
     ):
         """This is the async version of `Corpus.update`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -340,7 +358,7 @@ class Corpus:
             self._apply_update(path, value)
 
         request = glm.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
-        await client.update_corpus(request, request_options=request_options)
+        await client.update_corpus(request, **request_options)
         return self
 
     def query(
@@ -362,6 +380,9 @@ class Corpus:
         Returns:
             List of relevant chunks.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
@@ -375,7 +396,7 @@ class Corpus:
             metadata_filters=metadata_filters,
             results_count=results_count,
         )
-        response = client.query_corpus(request, request_options=request_options)
+        response = client.query_corpus(request, **request_options)
         response = type(response).to_dict(response)
 
         # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
@@ -397,6 +418,9 @@ class Corpus:
         request_options: dict[str, Any] | None = None,
     ) -> Iterable[RelevantChunk]:
         """This is the async version of `Corpus.query`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -410,7 +434,7 @@ class Corpus:
             metadata_filters=metadata_filters,
             results_count=results_count,
         )
-        response = await client.query_corpus(request, request_options=request_options)
+        response = await client.query_corpus(request, **request_options)
         response = type(response).to_dict(response)
 
         # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
@@ -437,11 +461,14 @@ class Corpus:
             name: The `Document` name.
             force: If set to true, any `Chunk`s and objects related to this `Document` will also be deleted.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
         request = glm.DeleteDocumentRequest(name=name, force=bool(force))
-        client.delete_document(request, request_options=request_options)
+        client.delete_document(request, **request_options)
 
     async def delete_document_async(
         self,
@@ -451,11 +478,14 @@ class Corpus:
         request_options: dict[str, Any] | None = None,
     ):
         """This is the async version of `Corpus.delete_document`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
         request = glm.DeleteDocumentRequest(name=name, force=bool(force))
-        await client.delete_document(request, request_options=request_options)
+        await client.delete_document(request, **request_options)
 
     def list_documents(
         self,
@@ -473,6 +503,9 @@ class Corpus:
         Return:
             Paginated list of `Document`s.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
@@ -480,7 +513,7 @@ class Corpus:
             parent=self.name,
             page_size=page_size,
         )
-        for doc in client.list_documents(request, request_options=request_options):
+        for doc in client.list_documents(request, **request_options):
             yield decode_document(doc)
 
     async def list_documents_async(
@@ -490,6 +523,9 @@ class Corpus:
         request_options: dict[str, Any] | None = None,
     ) -> AsyncIterable[Document]:
         """This is the async version of `Corpus.list_documents`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -497,7 +533,7 @@ class Corpus:
             parent=self.name,
             page_size=page_size,
         )
-        async for doc in await client.list_documents(request, request_options=request_options):
+        async for doc in await client.list_documents(request, **request_options):
             yield decode_document(doc)
 
     def _make_create_permission_request(
@@ -671,6 +707,9 @@ class Document(abc.ABC):
         Raises:
             ValueError when chunk name not specified correctly.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
@@ -694,7 +733,7 @@ class Document(abc.ABC):
             )
 
         request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
-        response = client.create_chunk(request, request_options=request_options)
+        response = client.create_chunk(request, **request_options)
         return decode_chunk(response)
 
     async def create_chunk_async(
@@ -706,6 +745,9 @@ class Document(abc.ABC):
         request_options: dict[str, Any] | None = None,
     ) -> Chunk:
         """This is the async version of `Document.create_chunk`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -729,7 +771,7 @@ class Document(abc.ABC):
             )
 
         request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
-        response = await client.create_chunk(request, request_options=request_options)
+        response = await client.create_chunk(request, **request_options)
         return decode_chunk(response)
 
     def _make_chunk(self, chunk: ChunkOptions) -> glm.Chunk:
@@ -804,11 +846,14 @@ class Document(abc.ABC):
         Return:
             Information about the created chunks.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
         request = self._make_batch_create_chunk_request(chunks)
-        response = client.batch_create_chunks(request, request_options=request_options)
+        response = client.batch_create_chunks(request, **request_options)
         return [decode_chunk(chunk) for chunk in response.chunks]
 
     async def batch_create_chunks_async(
@@ -818,11 +863,14 @@ class Document(abc.ABC):
         request_options: dict[str, Any] | None = None,
     ):
         """This is the async version of `Document.batch_create_chunk`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
         request = self._make_batch_create_chunk_request(chunks)
-        response = await client.batch_create_chunks(request, request_options=request_options)
+        response = await client.batch_create_chunks(request, **request_options)
         return [decode_chunk(chunk) for chunk in response.chunks]
 
     def get_chunk(
@@ -840,11 +888,14 @@ class Document(abc.ABC):
         Returns:
             `Chunk` that was requested.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
         request = glm.GetChunkRequest(name=name)
-        response = client.get_chunk(request, request_options=request_options)
+        response = client.get_chunk(request, **request_options)
         return decode_chunk(response)
 
     async def get_chunk_async(
@@ -854,11 +905,14 @@ class Document(abc.ABC):
         request_options: dict[str, Any] | None = None,
     ):
         """This is the async version of `Document.get_chunk`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
         request = glm.GetChunkRequest(name=name)
-        response = await client.get_chunk(request, request_options=request_options)
+        response = await client.get_chunk(request, **request_options)
         return decode_chunk(response)
 
     def list_chunks(
@@ -876,11 +930,14 @@ class Document(abc.ABC):
         Return:
             List of chunks in the document.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
         request = glm.ListChunksRequest(parent=self.name, page_size=page_size)
-        for chunk in client.list_chunks(request, request_options=request_options):
+        for chunk in client.list_chunks(request, **request_options):
             yield decode_chunk(chunk)
 
     async def list_chunks_async(
@@ -890,11 +947,14 @@ class Document(abc.ABC):
         request_options: dict[str, Any] | None = None,
     ) -> AsyncIterable[Chunk]:
         """This is the async version of `Document.list_chunks`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
         request = glm.ListChunksRequest(parent=self.name, page_size=page_size)
-        async for chunk in await client.list_chunks(request, request_options=request_options):
+        async for chunk in await client.list_chunks(request, **request_options):
             yield decode_chunk(chunk)
 
     def query(
@@ -916,6 +976,9 @@ class Document(abc.ABC):
         Returns:
             List of relevant chunks.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
@@ -929,7 +992,7 @@ class Document(abc.ABC):
             metadata_filters=metadata_filters,
             results_count=results_count,
         )
-        response = client.query_document(request, request_options=request_options)
+        response = client.query_document(request, **request_options)
         response = type(response).to_dict(response)
 
         # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
@@ -951,6 +1014,9 @@ class Document(abc.ABC):
         request_options: dict[str, Any] | None = None,
     ) -> list[RelevantChunk]:
         """This is the async version of `Document.query`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -964,7 +1030,7 @@ class Document(abc.ABC):
             metadata_filters=metadata_filters,
             results_count=results_count,
         )
-        response = await client.query_document(request, request_options=request_options)
+        response = await client.query_document(request, **request_options)
         response = type(response).to_dict(response)
 
         # Create a RelevantChunk object for each chunk listed in response['relevant_chunks']
@@ -998,6 +1064,9 @@ class Document(abc.ABC):
         Return:
             `Chunk` object with specified updates.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
@@ -1009,7 +1078,7 @@ class Document(abc.ABC):
             self._apply_update(path, value)
 
         request = glm.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
-        response = client.update_document(request, request_options=request_options)
+        response = client.update_document(request, **request_options)
 
     async def update_async(
         self,
@@ -1018,6 +1087,9 @@ class Document(abc.ABC):
         request_options: dict[str, Any] | None = None,
     ):
         """This is the async version of `Document.update`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -1029,7 +1101,7 @@ class Document(abc.ABC):
             self._apply_update(path, value)
 
         request = glm.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
-        response = await client.update_document(request, request_options=request_options)
+        response = await client.update_document(request, **request_options)
 
     def batch_update_chunks(
         self,
@@ -1046,6 +1118,9 @@ class Document(abc.ABC):
         Return:
             Updated `Chunk`s.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
@@ -1068,7 +1143,7 @@ class Document(abc.ABC):
                     c._apply_update(path, value)
                 _requests.append(glm.UpdateChunkRequest(chunk=c.to_dict(), update_mask=field_mask))
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
-            response = client.batch_update_chunks(request, request_options=request_options)
+            response = client.batch_update_chunks(request, **request_options)
             response = type(response).to_dict(response)
             return response
         if isinstance(chunks, Iterable) and not isinstance(chunks, Mapping):
@@ -1091,7 +1166,7 @@ class Document(abc.ABC):
                         "dictionaries, or tuples of dictionaries."
                     )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
-            response = client.batch_update_chunks(request, request_options=request_options)
+            response = client.batch_update_chunks(request, **request_options)
             response = type(response).to_dict(response)
             return response
 
@@ -1102,6 +1177,9 @@ class Document(abc.ABC):
         request_options: dict[str, Any] | None = None,
     ):
         """This is the async version of `Document.batch_update_chunks`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -1124,7 +1202,7 @@ class Document(abc.ABC):
                     c._apply_update(path, value)
                 _requests.append(glm.UpdateChunkRequest(chunk=c.to_dict(), update_mask=field_mask))
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
-            response = await client.batch_update_chunks(request, request_options=request_options)
+            response = await client.batch_update_chunks(request, **request_options)
             response = type(response).to_dict(response)
             return response
         if isinstance(chunks, Iterable) and not isinstance(chunks, Mapping):
@@ -1147,7 +1225,7 @@ class Document(abc.ABC):
                         "dictionaries, or tuples of dictionaries."
                     )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
-            response = await client.batch_update_chunks(request, request_options=request_options)
+            response = await client.batch_update_chunks(request, **request_options)
             response = type(response).to_dict(response)
             return response
 
@@ -1155,7 +1233,7 @@ class Document(abc.ABC):
         self,
         name: str,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,  # fmt: skip
+        request_options: dict[str, Any] | None = None,  # fmt: {}
     ):
         """
         Delete a `Chunk`.
@@ -1163,24 +1241,30 @@ class Document(abc.ABC):
         Args:
             name: The `Chunk` name.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
         request = glm.DeleteChunkRequest(name=name)
-        client.delete_chunk(request, request_options=request_options)
+        client.delete_chunk(request, **request_options)
 
     async def delete_chunk_async(
         self,
         name: str,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,  # fmt: skip
+        request_options: dict[str, Any] | None = None,  # fmt: {}
     ):
         """This is the async version of `Document.delete_chunk`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
         request = glm.DeleteChunkRequest(name=name)
-        await client.delete_chunk(request, request_options=request_options)
+        await client.delete_chunk(request, **request_options)
 
     def batch_delete_chunks(
         self,
@@ -1194,18 +1278,21 @@ class Document(abc.ABC):
         Args:
             chunks: Names of `Chunks` to delete.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
         if all(isinstance(x, glm.DeleteChunkRequest) for x in chunks):
             request = glm.BatchDeleteChunksRequest(parent=self.name, requests=chunks)
-            client.batch_delete_chunks(request, request_options=request_options)
+            client.batch_delete_chunks(request, **request_options)
         elif isinstance(chunks, Iterable):
             _request_list = []
             for chunk_name in chunks:
                 _request_list.append(glm.DeleteChunkRequest(name=chunk_name))
             request = glm.BatchDeleteChunksRequest(parent=self.name, requests=_request_list)
-            client.batch_delete_chunks(request, request_options=request_options)
+            client.batch_delete_chunks(request, **request_options)
         else:
             raise ValueError(
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `glm.DeleteChunkRequest`s."
@@ -1218,18 +1305,21 @@ class Document(abc.ABC):
         request_options: dict[str, Any] | None = None,
     ):
         """This is the async version of `Document.batch_delete_chunks`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
         if all(isinstance(x, glm.DeleteChunkRequest) for x in chunks):
             request = glm.BatchDeleteChunksRequest(parent=self.name, requests=chunks)
-            await client.batch_delete_chunks(request, request_options=request_options)
+            await client.batch_delete_chunks(request, **request_options)
         elif isinstance(chunks, Iterable):
             _request_list = []
             for chunk_name in chunks:
                 _request_list.append(glm.DeleteChunkRequest(name=chunk_name))
             request = glm.BatchDeleteChunksRequest(parent=self.name, requests=_request_list)
-            await client.batch_delete_chunks(request, request_options=request_options)
+            await client.batch_delete_chunks(request, **request_options)
         else:
             raise ValueError(
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `glm.DeleteChunkRequest`s."
@@ -1321,6 +1411,9 @@ class Chunk(abc.ABC):
         Return:
             Updated `Chunk` object.
         """
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_client()
 
@@ -1331,7 +1424,7 @@ class Chunk(abc.ABC):
         for path, value in updates.items():
             self._apply_update(path, value)
         request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
-        client.update_chunk(request, request_options=request_options)
+        client.update_chunk(request, **request_options)
 
     async def update_async(
         self,
@@ -1340,6 +1433,9 @@ class Chunk(abc.ABC):
         request_options: dict[str, Any] | None = None,
     ):
         """This is the async version of `Chunk.update`."""
+        if request_options is None:
+            request_options = {}
+
         if client is None:
             client = get_default_retriever_async_client()
 
@@ -1350,7 +1446,7 @@ class Chunk(abc.ABC):
         for path, value in updates.items():
             self._apply_update(path, value)
         request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
-        await client.update_chunk(request, request_options=request_options)
+        await client.update_chunk(request, **request_options)
 
     def to_dict(self) -> dict[str, Any]:
         result = {

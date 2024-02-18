@@ -183,6 +183,9 @@ def generate_answer(
     Returns:
         A `types.Answer` containing the model's text answer response.
     """
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_generative_client()
 
@@ -195,6 +198,6 @@ def generate_answer(
         answer_style=answer_style,
     )
 
-    response = client.generate_answer(request, request_options=request_options)
+    response = client.generate_answer(request, **request_options)
 
     return response

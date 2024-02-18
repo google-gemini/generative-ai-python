@@ -47,7 +47,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def generate_answer(
             request: glm.GenerateAnswerRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.GenerateAnswerResponse:
             self.observed_requests.append(request)
             return glm.GenerateAnswerResponse(
@@ -212,9 +212,7 @@ class UnitTests(parameterized.TestCase):
 
         answer.generate_answer(contents=[], inline_passages=[], request_options=request_options)
 
-        self.client.generate_answer.assert_called_once_with(
-            request, request_options=request_options
-        )
+        self.client.generate_answer.assert_called_once_with(request, **request_options)
 
 
 if __name__ == "__main__":

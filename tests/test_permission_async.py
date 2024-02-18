@@ -47,7 +47,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def create_corpus(
             request: glm.CreateCorpusRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
             return glm.Corpus(

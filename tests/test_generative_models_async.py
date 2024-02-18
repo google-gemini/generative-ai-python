@@ -50,7 +50,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def generate_content(
             request: glm.GenerateContentRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.GenerateContentResponse:
             self.assertIsInstance(request, glm.GenerateContentRequest)
             self.observed_requests.append(request)
@@ -60,7 +60,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def stream_generate_content(
             request: glm.GetModelRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["stream_generate_content"].pop(0)
@@ -69,7 +69,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         @add_client_method
         async def count_tokens(
             request: glm.CountTokensRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["count_tokens"].pop(0)
@@ -136,9 +136,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                 request_options=request_options,
             )
 
-        self.client.stream_generate_content.assert_called_once_with(
-            request, request_options=request_options
-        )
+        self.client.stream_generate_content.assert_called_once_with(request, **request_options)
 
     async def test_generate_content_called_with_request_options(self):
         self.client.generate_content = unittest.mock.AsyncMock()
@@ -150,9 +148,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             contents=[""], request_options=request_options
         )
 
-        self.client.generate_content.assert_called_once_with(
-            request, request_options=request_options
-        )
+        self.client.generate_content.assert_called_once_with(request, **request_options)
 
     async def test_count_tokens_called_with_request_options(self):
         self.client.count_tokens = unittest.mock.AsyncMock()
@@ -162,7 +158,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         model = generative_models.GenerativeModel("gemini-pro-vision")
         response = await model.count_tokens_async(contents=[], request_options=request_options)
 
-        self.client.count_tokens.assert_called_once_with(request, request_options=request_options)
+        self.client.count_tokens.assert_called_once_with(request, **request_options)
 
 
 if __name__ == "__main__":

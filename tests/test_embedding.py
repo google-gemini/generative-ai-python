@@ -46,7 +46,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def embed_content(
             request: glm.EmbedContentRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.EmbedContentResponse:
             self.observed_requests.append(request)
             return glm.EmbedContentResponse(embedding=glm.ContentEmbedding(values=[1, 2, 3]))
@@ -54,7 +54,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def batch_embed_contents(
             request: glm.BatchEmbedContentsRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.BatchEmbedContentsResponse:
             self.observed_requests.append(request)
             return glm.BatchEmbedContentsResponse(
@@ -135,10 +135,10 @@ class UnitTests(parameterized.TestCase):
             embedding.embed_content(
                 model=DEFAULT_EMB_MODEL,
                 content=text,
-                request_options={"timeout": 120},
+                request_options=request_options,
             )
 
-        self.client.embed_content.assert_called_once_with(request, request_options=request_options)
+        self.client.embed_content.assert_called_once_with(request, **request_options)
 
 
 if __name__ == "__main__":

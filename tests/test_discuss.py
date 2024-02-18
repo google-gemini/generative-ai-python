@@ -48,7 +48,7 @@ class UnitTests(parameterized.TestCase):
 
         def fake_generate_message(
             request: glm.GenerateMessageRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.GenerateMessageResponse:
             self.observed_request = request
             response = copy.copy(self.mock_response)

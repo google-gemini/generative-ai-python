@@ -44,7 +44,7 @@ class CUJTests(parameterized.TestCase):
         @add_client_method
         def generate_content(
             request: glm.GenerateContentRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.GenerateContentResponse:
             self.assertIsInstance(request, glm.GenerateContentRequest)
             self.observed_requests.append(request)
@@ -54,7 +54,7 @@ class CUJTests(parameterized.TestCase):
         @add_client_method
         def stream_generate_content(
             request: glm.GetModelRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["stream_generate_content"].pop(0)
@@ -63,7 +63,7 @@ class CUJTests(parameterized.TestCase):
         @add_client_method
         def count_tokens(
             request: glm.CountTokensRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> Iterable[glm.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["count_tokens"].pop(0)

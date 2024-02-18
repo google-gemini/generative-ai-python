@@ -206,17 +206,20 @@ class GenerativeModel:
         if self._client is None:
             self._client = client.get_default_generative_client()
 
+        if request_options is None:
+            request_options = {}
+
         if stream:
             with generation_types.rewrite_stream_error():
                 iterator = self._client.stream_generate_content(
                     request,
-                    request_options=request_options,
+                    **request_options,
                 )
             return generation_types.GenerateContentResponse.from_iterator(iterator)
         else:
             response = self._client.generate_content(
                 request,
-                request_options=request_options,
+                **request_options,
             )
             return generation_types.GenerateContentResponse.from_response(response)
 
@@ -240,17 +243,20 @@ class GenerativeModel:
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
 
+        if request_options is None:
+            request_options = {}
+
         if stream:
             with generation_types.rewrite_stream_error():
                 iterator = await self._async_client.stream_generate_content(
                     request,
-                    request_options=request_options,
+                    **request_options,
                 )
             return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
         else:
             response = await self._async_client.generate_content(
                 request,
-                request_options=request_options,
+                **request_options,
             )
             return generation_types.AsyncGenerateContentResponse.from_response(response)
 
@@ -260,12 +266,15 @@ class GenerativeModel:
         contents: content_types.ContentsType,
         request_options: dict[str, Any] | None = None,
     ) -> glm.CountTokensResponse:
+        if request_options is None:
+            request_options = {}
+
         if self._client is None:
             self._client = client.get_default_generative_client()
         contents = content_types.to_contents(contents)
         return self._client.count_tokens(
             glm.CountTokensRequest(model=self.model_name, contents=contents),
-                request_options=request_options,
+                **request_options,
         )
 
     async def count_tokens_async(
@@ -273,12 +282,14 @@ class GenerativeModel:
         contents: content_types.ContentsType,
         request_options: dict[str, Any] | None = None,
     ) -> glm.CountTokensResponse:
+        if request_options is None:
+            request_options = {}
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
         contents = content_types.to_contents(contents)
         return await self._async_client.count_tokens(
             glm.CountTokensRequest(model=self.model_name, contents=contents),
-                request_options=request_options,
+                **request_options,
         )
 
     # fmt: on

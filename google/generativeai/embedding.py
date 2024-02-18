@@ -144,6 +144,9 @@ def embed_content(
     """
     model = model_types.make_model_name(model)
 
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_generative_client()
 
@@ -167,7 +170,7 @@ def embed_content(
             embedding_request = glm.BatchEmbedContentsRequest(model=model, requests=batch)
             embedding_response = client.batch_embed_contents(
                 embedding_request,
-                request_options=request_options,
+                **request_options,
             )
             embedding_dict = type(embedding_response).to_dict(embedding_response)
             result["embedding"].extend(e["values"] for e in embedding_dict["embeddings"])
@@ -178,7 +181,7 @@ def embed_content(
         )
         embedding_response = client.embed_content(
             embedding_request,
-            request_options=request_options,
+            **request_options,
         )
         embedding_dict = type(embedding_response).to_dict(embedding_response)
         embedding_dict["embedding"] = embedding_dict["embedding"]["values"]
@@ -218,6 +221,9 @@ async def embed_content_async(
     """The async version of `genai.embed_content`."""
     model = model_types.make_model_name(model)
 
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_generative_async_client()
 
@@ -241,7 +247,7 @@ async def embed_content_async(
             embedding_request = glm.BatchEmbedContentsRequest(model=model, requests=batch)
             embedding_response = await client.batch_embed_contents(
                 embedding_request,
-                request_options=request_options,
+                **request_options,
             )
             embedding_dict = type(embedding_response).to_dict(embedding_response)
             result["embedding"].extend(e["values"] for e in embedding_dict["embeddings"])
@@ -252,7 +258,7 @@ async def embed_content_async(
         )
         embedding_response = await client.embed_content(
             embedding_request,
-            request_options=request_options,
+            **request_options,
         )
         embedding_dict = type(embedding_response).to_dict(embedding_response)
         embedding_dict["embedding"] = embedding_dict["embedding"]["values"]

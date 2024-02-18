@@ -32,7 +32,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         async def fake_generate_message(
             request: glm.GenerateMessageRequest,
-            request_options: dict[str, Any] | None = None,
+            **kwargs,
         ) -> glm.GenerateMessageResponse:
             nonlocal observed_request
             observed_request = request
