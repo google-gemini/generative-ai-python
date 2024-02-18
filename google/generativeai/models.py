@@ -414,7 +414,8 @@ def update_tuned_model(
         )
 
     result = client.update_tuned_model(
-        glm.UpdateTunedModelRequest(tuned_model=tuned_model, update_mask=field_mask)
+        glm.UpdateTunedModelRequest(tuned_model=tuned_model, update_mask=field_mask),
+        **request_options,
     )
     return model_types.decode_tuned_model(result)
 
