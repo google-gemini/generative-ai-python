@@ -519,5 +519,26 @@ class UnitTests(parameterized.TestCase):
         models.delete_tuned_model("tunedModels/", request_options=request_options)
         self.client.delete_tuned_model.assert_called_once_with(name=name, **request_options)
 
+    def test_create_tuned_model_called_with_request_options(self):
+        self.client.create_tuned_model = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            models.create_tuned_model(
+                source_model="models/sneaky-fox-001",
+                training_data=[
+                    ("in", "out"),
+                    {"text_input": "in", "output": "out"},
+                    glm.TuningExample(text_input="in", output="out"),
+                ],
+                request_options=request_options,
+            )
+        except KeyError:
+            pass
+
+        self.client.create_tuned_model.assert_called_once_with(request, **request_options)
+
+
 if __name__ == "__main__":
     absltest.main()
