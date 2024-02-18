@@ -464,5 +464,17 @@ class UnitTests(parameterized.TestCase):
 
         self.client.get_model.assert_called_once_with(name=name, **request_options)
 
+    def test_get_tuned_model_called_with_request_options(self):
+        self.client.get_tuned_model = unittest.mock.MagicMock()
+        name = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            models.get_model(name="tunedModels/", request_options=request_options)
+        except KeyError:
+            pass
+
+        self.client.get_tuned_model.assert_called_once_with(name=name, **request_options)
+
 if __name__ == "__main__":
     absltest.main()
