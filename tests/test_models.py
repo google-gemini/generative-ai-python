@@ -64,7 +64,10 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def get_tuned_model(
-            request: Union[glm.GetTunedModelRequest, None] = None, *, name=None
+            request: Union[glm.GetTunedModelRequest, None] = None,
+            *,
+            name=None,
+            **kwargs,
         ) -> glm.TunedModel:
             if request is None:
                 request = glm.GetTunedModelRequest(name=name)
