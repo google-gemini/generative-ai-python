@@ -797,6 +797,9 @@ class UnitTests(parameterized.TestCase):
         request = unittest.mock.ANY
         request_options = {"timeout": 120}
 
+        retriever.delete_corpus(name="corpora/demo_corpus", request_options=request_options)
+        self.client.delete_corpus.assert_called_once_with(request, **request_options)
+
         try:
             retriever.delete_corpus(name="corpora/demo_corpus", request_options=request_options)
         except AttributeError:
