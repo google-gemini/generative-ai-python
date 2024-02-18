@@ -476,5 +476,13 @@ class UnitTests(parameterized.TestCase):
 
         self.client.get_tuned_model.assert_called_once_with(name=name, **request_options)
 
+    def test_list_models_called_with_request_options(self):
+        self.client.list_models = unittest.mock.MagicMock()
+        page_size = unittest.mock.ANY
+        request_options = {"timeout": 120}
+        list(models.list_models(request_options=request_options))
+
+        self.client.list_models.assert_called_once_with(page_size=page_size, **request_options)
+
 if __name__ == "__main__":
     absltest.main()
