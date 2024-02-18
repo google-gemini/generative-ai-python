@@ -511,5 +511,13 @@ class UnitTests(parameterized.TestCase):
 
         self.client.update_tuned_model.assert_called_once_with(request, **request_options)
 
+    def test_delete_tuned_model_called_with_request_options(self):
+        self.client.delete_tuned_model = unittest.mock.MagicMock()
+        name = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        models.delete_tuned_model("tunedModels/", request_options=request_options)
+        self.client.delete_tuned_model.assert_called_once_with(name=name, **request_options)
+
 if __name__ == "__main__":
     absltest.main()
