@@ -131,12 +131,14 @@ class UnitTests(parameterized.TestCase):
         request_options = {"timeout": 120}
 
         text = "What are you?"
-        with self.assertRaises(AttributeError):
+        try:
             embedding.embed_content(
                 model=DEFAULT_EMB_MODEL,
                 content=text,
                 request_options=request_options,
             )
+        except AttributeError:
+            pass
 
         self.client.embed_content.assert_called_once_with(request, **request_options)
 

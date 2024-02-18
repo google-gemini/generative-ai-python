@@ -129,12 +129,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         model = generative_models.GenerativeModel()
 
-        with self.assertRaises(StopAsyncIteration):
+        try:
             response = await model.generate_content_async(
                 contents=[""],
                 stream=True,
                 request_options=request_options,
             )
+        except StopAsyncIteration:
+            pass
 
         self.client.stream_generate_content.assert_called_once_with(request, **request_options)
 

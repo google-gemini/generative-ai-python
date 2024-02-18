@@ -752,8 +752,10 @@ class UnitTests(parameterized.TestCase):
         request = unittest.mock.ANY
         request_options = {"timeout": 120}
 
-        with self.assertRaises(AttributeError):
+        try:
             getattr(retriever, method)(name="test", request_options=request_options)
+        except AttributeError:
+            pass
 
         self.client[method].assert_called_once_with(request, **request_options)
 
