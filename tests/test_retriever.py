@@ -766,6 +766,14 @@ class UnitTests(parameterized.TestCase):
 
         self.client.update_corpus.assert_called_once_with(request, **request_options)
 
+    def test_list_corpora_called_with_request_options(self):
+        self.client.list_corpora = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        list(retriever.list_corpora(request_options=request_options))
+        self.client.list_corpora.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
