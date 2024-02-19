@@ -866,6 +866,26 @@ class UnitTests(parameterized.TestCase):
 
         self.client.delete_document.assert_called_once_with(request, **request_options)
 
+    def test_query_document_called_with_request_options(self):
+        self.client.query_document = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            demo_corpus = retriever.create_corpus(name="demo-corpus")
+            demo_document = demo_corpus.create_document(name="demo-doc")
+            demo_chunk = demo_document.create_chunk(
+                name="demo-chunk",
+                data="This is a demo chunk.",
+            )
+            q = demo_document.query(
+                query="What kind of chunk is this?", request_options=request_options
+            )
+        except AttributeError:
+            pass
+
+        self.client.query_document.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
