@@ -827,6 +827,19 @@ class UnitTests(parameterized.TestCase):
 
         self.client.get_document.assert_called_once_with(request, **request_options)
 
+    def test_update_document_called_with_request_options(self):
+        self.client.update_document = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
+        update_request = demo_document.update(
+            updates={"display_name": "demo-doc-1"}, request_options=request_options
+        )
+
+        self.client.update_document.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
