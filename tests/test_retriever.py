@@ -813,6 +813,20 @@ class UnitTests(parameterized.TestCase):
 
         self.client.create_document.assert_called_once_with(request, **request_options)
 
+    def test_get_document_called_with_request_options(self):
+        self.client.get_document = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            demo_corpus = retriever.create_corpus(name="demo-corpus")
+            x = demo_corpus.create_document(name="demo-doc")
+            d = demo_corpus.get_document(name=x.name, request_options=request_options)
+        except AttributeError:
+            pass
+
+        self.client.get_document.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
