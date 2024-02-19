@@ -366,6 +366,18 @@ class UnitTests(parameterized.TestCase):
             ],
         )
 
+    def test_generate_message_called_with_request_options(self):
+        self.client.generate_message = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            genai.chat(**{"context": "You are a cat."}, request_options=request_options)
+        except AttributeError:
+            pass
+
+        self.client.generate_message.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()

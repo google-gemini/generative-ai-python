@@ -465,7 +465,11 @@ class ChatResponse(discuss_types.ChatResponse):
         self.messages[-1] = message
 
     @string_utils.set_doc(discuss_types.ChatResponse.reply.__doc__)
-    def reply(self, message: discuss_types.MessageOptions) -> discuss_types.ChatResponse:
+    def reply(
+        self,
+        message: discuss_types.MessageOptions,
+        request_options: dict[str, Any] | None = None,
+    ) -> discuss_types.ChatResponse:
         if isinstance(self._client, glm.DiscussServiceAsyncClient):
             raise TypeError(f"reply can't be called on an async client, use reply_async instead.")
         if self.last is None:
@@ -481,7 +485,9 @@ class ChatResponse(discuss_types.ChatResponse):
         request["messages"] = list(request["messages"])
         request["messages"].append(_make_message(message))
         request = _make_generate_message_request(**request)
-        return _generate_response(request=request, client=self._client)
+        return _generate_response(
+            request=request, client=self._client, request_options=request_options
+        )
 
     @string_utils.set_doc(discuss_types.ChatResponse.reply.__doc__)
     async def reply_async(
