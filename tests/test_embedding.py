@@ -159,6 +159,21 @@ class UnitTests(parameterized.TestCase):
 
         self.client.batch_embed_contents.assert_called_once_with(request, **request_options)
 
+    def test_embed_content_called_with_request_options(self):
+        self.client.embed_content = mock.MagicMock()
+        request = mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            text = "What are you?"
+            embedding.embed_content(
+                model=DEFAULT_EMB_MODEL, content=text, request_options=request_options
+            )
+        except AttributeError:
+            pass
+
+        self.client.embed_content.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
