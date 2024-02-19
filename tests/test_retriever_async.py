@@ -644,6 +644,18 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         self.client.get_corpus.assert_called_once_with(request, **request_options)
 
+    async def test_update_corpus_called_with_request_options(self):
+        self.client.update_corpus = unittest.mock.AsyncMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        demo_corpus = await retriever.create_corpus_async(name="demo-corpus")
+        await demo_corpus.update_async(
+            updates={"display_name": "demo_corpus_1"}, request_options=request_options
+        )
+
+        self.client.update_corpus.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
