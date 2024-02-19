@@ -852,6 +852,20 @@ class UnitTests(parameterized.TestCase):
 
         self.client.list_documents.assert_called_once_with(request, **request_options)
 
+    def test_delete_document_called_with_request_options(self):
+        self.client.delete_document = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
+        demo_doc2 = demo_corpus.create_document(name="demo-doc-2")
+        delete_request = demo_corpus.delete_document(
+            name="corpora/demo-corpus/documents/demo_doc", request_options=request_options
+        )
+
+        self.client.delete_document.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
