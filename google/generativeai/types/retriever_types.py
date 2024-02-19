@@ -892,6 +892,7 @@ class Document(abc.ABC):
 
         Args:
             name: Name of `Chunk`.
+            request_options: Options for the request.
 
         Returns:
             `Chunk` that was requested.
@@ -1289,6 +1290,7 @@ class Document(abc.ABC):
 
         Args:
             chunks: Names of `Chunks` to delete.
+            request_options: Options for the request.
         """
         if request_options is None:
             request_options = {}
