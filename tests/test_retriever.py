@@ -965,6 +965,24 @@ class UnitTests(parameterized.TestCase):
 
         self.client.list_chunks.assert_called_once_with(request, **request_options)
 
+    def test_update_chunk_called_with_request_options(self):
+        self.client.update_chunk = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
+        x = demo_document.create_chunk(
+            name="demo-chunk",
+            data="This is a demo chunk.",
+        )
+        x.update(
+            updates={"data": {"string_value": "This is an updated demo chunk."}},
+            request_options=request_options,
+        )
+
+        self.client.update_chunk.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
