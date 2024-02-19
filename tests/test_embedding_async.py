@@ -124,6 +124,21 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
                 model=DEFAULT_EMB_MODEL, content=text, task_type="unspecified", title="Exploring AI"
             )
 
+    async def test_embed_content_called_with_request_options(self):
+        self.client.embed_content = unittest.mock.AsyncMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            text = "What are you?"
+            emb = await embedding.embed_content_async(
+                model=DEFAULT_EMB_MODEL, content=text, request_options=request_options
+            )
+        except AttributeError:
+            pass
+
+        self.client.embed_content.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
