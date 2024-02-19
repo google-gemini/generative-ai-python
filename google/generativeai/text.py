@@ -182,6 +182,7 @@ def generate_text(
           If specified, the API will stop at the first appearance of a stop
           sequence. The stop sequence will not be included as part of the response.
         client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+        request_options: Options for the request.
 
     Returns:
         A `types.Completion` containing the model's text completion response.
@@ -225,6 +226,7 @@ def _generate_response(
         request: The text generation request.
         client: The client to use for text generation. Defaults to None, in which
             case the default text client is used.
+        request_options: Options for the request.
 
     Returns:
         `Completion`: A `Completion` object with the generated text and response information.
@@ -302,6 +304,8 @@ def generate_embeddings(
               generate an embedding based on the input text.
 
         client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+
+        request_options: Options for the request.
 
     Returns:
         Dictionary containing the embedding (list of float values) for the input text.

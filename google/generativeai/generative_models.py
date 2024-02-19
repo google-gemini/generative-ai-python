@@ -196,6 +196,7 @@ class GenerativeModel:
             stream: If True, yield response chunks as they are generated.
             tools: `glm.Tools` more info coming soon.
             timeout: The timeout for this request.
+            request_options: Options for the request.
         """
         request = self._prepare_request(
             contents=contents,

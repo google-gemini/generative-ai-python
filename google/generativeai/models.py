@@ -44,6 +44,7 @@ def get_model(
     Args:
         name: The name of the model to fetch.
         client: The client to use.
+        request_options: Options for the request.
 
     Returns:
         A `types.Model` or `types.TunedModel` object.
@@ -74,6 +75,7 @@ def get_base_model(
     Args:
         name: The name of the model to fetch.
         client: The client to use.
+        request_options: Options for the request.
 
     Returns:
         A `types.Model`.
@@ -110,6 +112,7 @@ def get_tuned_model(
     Args:
         name: The name of the model to fetch.
         client: The client to use.
+        request_options: Options for the request.
 
     Returns:
         A `types.TunedModel`.
@@ -172,6 +175,7 @@ def list_models(
     Args:
         page_size: How many `types.Models` to fetch per page (api call).
         client: You may pass a `glm.ModelServiceClient` instead of using the default client.
+        request_options: Options for the request.
 
     Yields:
         `types.Model` objects.
@@ -205,6 +209,7 @@ def list_tuned_models(
     Args:
         page_size: How many `types.Models` to fetch per page (api call).
         client: You may pass a `glm.ModelServiceClient` instead of using the default client.
+        request_options: Options for the request.
 
     Yields:
         `types.TunedModel` objects.
@@ -291,6 +296,7 @@ def create_tuned_model(
         batch_size: The number of examples to use in each training batch.
         learning_rate: The step size multiplier for the gradient updates.
         client: Which client to use.
+        request_options: Options for the request.
 
     Returns:
         A [`google.api_core.operation.Operation`](https://googleapis.dev/python/google-api-core/latest/operation.html)

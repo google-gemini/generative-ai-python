@@ -383,6 +383,7 @@ def chat(
             setting `context`/`examples`/`messages`, but not both.
         client: If you're not relying on the default client, you pass a
             `glm.DiscussServiceClient` instead.
+        request_options: Options for the request.
 
     Returns:
         A `types.ChatResponse` containing the model's reply.

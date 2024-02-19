@@ -44,6 +44,7 @@ def create_corpus(
         display_name: The human readable display name. The display name must be fewer
             than 128 characters. All characters, including alphanumeric, spaces, and
             dashes are supported.
+        request_options: Options for the request.
 
     Return:
         `retriever_types.Corpus` object with specified name or display name.
@@ -112,6 +113,7 @@ def get_corpus(
 
     Args:
         name: The `Corpus` name.
+        request_options: Options for the request.
 
     Return:
         a `retriever_types.Corpus` of interest.
@@ -164,6 +166,7 @@ def delete_corpus(
     Args:
         name: The `Corpus` name.
         force: If set to true, any `Document`s and objects related to this `Corpus` will also be deleted.
+        request_options: Options for the request.
     """
     if request_options is None:
         request_options = {}
@@ -204,6 +207,7 @@ def list_corpora(
     Args:
         page_size: Maximum number of `Corpora` to request.
         page_token: A page token, received from a previous ListCorpora call.
+        request_options: Options for the request.
 
     Return:
         Paginated list of `Corpora`.

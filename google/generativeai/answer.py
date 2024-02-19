@@ -178,7 +178,7 @@ def generate_answer(
         answer_style: Style in which the grounded answer should be returned.
         safety_settings: Safety settings for generated output. Defaults to None.
         client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
-        timeout: The timeout for this request.
+        request_options: Options for the request.
 
     Returns:
         A `types.Answer` containing the model's text answer response.

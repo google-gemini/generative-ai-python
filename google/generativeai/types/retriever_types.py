@@ -201,6 +201,7 @@ class Corpus:
                 that are lowercase alphanumeric or dashes (-). The ID cannot start or end with a dash.
             display_name: The human-readable display name for the `Document`.
             custom_metadata: User provided custom metadata stored as key-value pairs used for querying.
+            request_options: Options for the request.
 
         Return:
             Document object with specified name or display name.
@@ -266,6 +267,7 @@ class Corpus:
 
         Args:
             name: The `Document` name.
+            request_options: Options for the request.
 
         Return:
             `Document` of interest.
@@ -314,6 +316,7 @@ class Corpus:
 
         Args:
             updates: List of fields to update in a `Corpus`.
+            request_options: Options for the request.
 
         Return:
             Updated version of the `Corpus` object.
@@ -376,6 +379,7 @@ class Corpus:
             query: Query string to perform semantic search.
             metadata_filters: Filter for `Chunk` metadata.
             results_count: The maximum number of `Chunk`s to return; must be less than 100.
+            request_options: Options for the request.
 
         Returns:
             List of relevant chunks.
@@ -460,6 +464,7 @@ class Corpus:
         Args:
             name: The `Document` name.
             force: If set to true, any `Chunk`s and objects related to this `Document` will also be deleted.
+            request_options: Options for the request.
         """
         if request_options is None:
             request_options = {}
@@ -499,6 +504,7 @@ class Corpus:
         Args:
             name: The name of the `Corpus` containing `Document`s.
             page_size: The maximum number of `Document`s to return (per page). The service may return fewer `Document`s.
+            request_options: Options for the request.
 
         Return:
             Paginated list of `Document`s.
@@ -700,6 +706,7 @@ class Document(abc.ABC):
             name: The `Chunk` resource name. The ID (name excluding the "corpora/*/documents/*/chunks/" prefix) can contain up to 40 characters that are lowercase alphanumeric or dashes (-).
             custom_metadata: User provided custom metadata stored as key-value pairs.
             state: States for the lifecycle of a `Chunk`.
+            request_options: Options for the request.
 
         Return:
             `Chunk` object with specified data.
@@ -842,6 +849,7 @@ class Document(abc.ABC):
 
         Args:
             chunks: `Chunks` to create.
+            request_options: Options for the request.
 
         Return:
             Information about the created chunks.
@@ -926,6 +934,7 @@ class Document(abc.ABC):
 
         Args:
             page_size: Maximum number of `Chunk`s to request.
+            request_options: Options for the request.
 
         Return:
             List of chunks in the document.
@@ -1060,6 +1069,7 @@ class Document(abc.ABC):
 
         Args:
             updates: The list of fields to update.
+            request_options: Options for the request.
 
         Return:
             `Chunk` object with specified updates.
@@ -1114,6 +1124,7 @@ class Document(abc.ABC):
 
         Args:
             chunks: Data structure specifying which `Chunk`s to update and what the required updats are.
+            request_options: Options for the request.
 
         Return:
             Updated `Chunk`s.
@@ -1240,6 +1251,7 @@ class Document(abc.ABC):
 
         Args:
             name: The `Chunk` name.
+            request_options: Options for the request.
         """
         if request_options is None:
             request_options = {}
@@ -1407,6 +1419,7 @@ class Chunk(abc.ABC):
 
         Args:
             updates: List of fields to update for a `Chunk`.
+            request_options: Options for the request.
 
         Return:
             Updated `Chunk` object.
