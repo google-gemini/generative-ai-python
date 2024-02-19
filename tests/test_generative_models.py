@@ -955,6 +955,17 @@ class CUJTests(parameterized.TestCase):
         )
         self.assertEqual(expected, result)
 
+    def test_count_tokens_called_with_request_options(self):
+        self.client.count_tokens = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
+        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model.count_tokens([{"role": "user", "parts": ["hello"]}], request_options=request_options)
+
+        self.client.count_tokens.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
