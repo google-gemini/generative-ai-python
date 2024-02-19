@@ -631,6 +631,19 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         delete_request = await demo_document.batch_delete_chunks_async(chunks=[x.name, y.name])
         self.assertIsInstance(self.observed_requests[-1], glm.BatchDeleteChunksRequest)
 
+    async def test_get_corpus_called_with_request_options(self):
+        self.client.get_corpus = unittest.mock.AsyncMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            x = await retriever.create_corpus_async(name="demo-corpus")
+            await retriever.get_corpus_async(name=x.name, request_options=request_options)
+        except AttributeError:
+            pass
+
+        self.client.get_corpus.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
