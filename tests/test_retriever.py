@@ -886,6 +886,22 @@ class UnitTests(parameterized.TestCase):
 
         self.client.query_document.assert_called_once_with(request, **request_options)
 
+    def test_create_chunk_called_with_request_options(self):
+        self.client.create_chunk = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            demo_corpus = retriever.create_corpus(name="demo-corpus")
+            demo_document = demo_corpus.create_document(name="demo-doc")
+            x = demo_document.create_chunk(
+                name="demo-chunk", data="This is a demo chunk.", request_options=request_options
+            )
+        except AttributeError:
+            pass
+
+        self.client.create_chunk.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
