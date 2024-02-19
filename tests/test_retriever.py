@@ -902,6 +902,29 @@ class UnitTests(parameterized.TestCase):
 
         self.client.create_chunk.assert_called_once_with(request, **request_options)
 
+    def test_batch_create_chunks_called_with_request_options(self):
+        self.client.batch_create_chunks = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        demo_corpus = retriever.create_corpus(name="demo-corpus")
+        demo_document = demo_corpus.create_document(name="demo-doc")
+        chunks = demo_document.batch_create_chunks(
+            chunks=[
+                (
+                    "corpora/demo-corpus/documents/demo-doc/chunks/dc",
+                    "This is a demo chunk.",
+                ),
+                (
+                    "corpora/demo-corpus/documents/demo-doc/chunks/dc1",
+                    "This is another demo chunk.",
+                ),
+            ],
+            request_options=request_options,
+        )
+
+        self.client.batch_create_chunks.assert_called_once_with(request, **request_options)
+
 
 if __name__ == "__main__":
     absltest.main()
