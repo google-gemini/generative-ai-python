@@ -462,10 +462,12 @@ class ChatSession:
 
     def _get_function_calls(self, response) -> list[glm.FunctionCall]:
         candidates = response.candidates
-        if len(candidates != 1):
-            raise ValueError(f"Automatic function calling only works with 1 candidate, got: {len(candidates)}")
-        parts = candidates[0].parts
-        function_calls = [part for part in parts if part and 'function_call' in part]
+        if len(candidates) != 1:
+            raise ValueError(
+                f"Automatic function calling only works with 1 candidate, got: {len(candidates)}"
+            )
+        parts = candidates[0].content.parts
+        function_calls = [part.function_call for part in parts if part and "function_call" in part]
         return function_calls
 
     def _handle_afc(
