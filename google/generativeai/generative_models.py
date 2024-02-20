@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 import dataclasses
 import textwrap
+from typing import Any
 from typing import Union
 import reprlib
 
@@ -139,6 +140,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
+        request_options: dict[str, Any] | None = None,
         **kwargs,
     ) -> generation_types.GenerateContentResponse:
         """A multipurpose function to generate responses from the model.
@@ -193,6 +195,7 @@ class GenerativeModel:
             safety_settings: Overrides for the model's safety settings.
             stream: If True, yield response chunks as they are generated.
             tools: `glm.Tools` more info coming soon.
+            request_options: Options for the request.
         """
         request = self._prepare_request(
             contents=contents,
@@ -203,12 +206,21 @@ class GenerativeModel:
         if self._client is None:
             self._client = client.get_default_generative_client()
 
+        if request_options is None:
+            request_options = {}
+
         if stream:
             with generation_types.rewrite_stream_error():
-                iterator = self._client.stream_generate_content(request)
+                iterator = self._client.stream_generate_content(
+                    request,
+                    **request_options,
+                )
             return generation_types.GenerateContentResponse.from_iterator(iterator)
         else:
-            response = self._client.generate_content(request)
+            response = self._client.generate_content(
+                request,
+                **request_options,
+            )
             return generation_types.GenerateContentResponse.from_response(response)
 
     async def generate_content_async(
@@ -218,6 +230,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         stream: bool = False,
+        request_options: dict[str, Any] | None = None,
         **kwargs,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `GenerativeModel.generate_content`."""
@@ -230,30 +243,56 @@ class GenerativeModel:
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
 
+        if request_options is None:
+            request_options = {}
+
         if stream:
             with generation_types.rewrite_stream_error():
-                iterator = await self._async_client.stream_generate_content(request)
+                iterator = await self._async_client.stream_generate_content(
+                    request,
+                    **request_options,
+                )
             return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
         else:
-            response = await self._async_client.generate_content(request)
+            response = await self._async_client.generate_content(
+                request,
+                **request_options,
+            )
             return generation_types.AsyncGenerateContentResponse.from_response(response)
 
     # fmt: off
     def count_tokens(
-        self, contents: content_types.ContentsType
+        self,
+        contents: content_types.ContentsType,
+        request_options: dict[str, Any] | None = None,
     ) -> glm.CountTokensResponse:
+        if request_options is None:
+            request_options = {}
+
         if self._client is None:
             self._client = client.get_default_generative_client()
         contents = content_types.to_contents(contents)
-        return self._client.count_tokens(glm.CountTokensRequest(model=self.model_name, contents=contents))
+        return self._client.count_tokens(
+            glm.CountTokensRequest(model=self.model_name, contents=contents),
+                **request_options,
+        )
 
     async def count_tokens_async(
-        self, contents: content_types.ContentsType
+        self,
+        contents: content_types.ContentsType,
+        request_options: dict[str, Any] | None = None,
     ) -> glm.CountTokensResponse:
+        if request_options is None:
+            request_options = {}
+
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
         contents = content_types.to_contents(contents)
-        return await self._async_client.count_tokens(glm.CountTokensRequest(model=self.model_name, contents=contents))
+        return await self._async_client.count_tokens(
+            glm.CountTokensRequest(model=self.model_name, contents=contents),
+                **request_options,
+        )
+
     # fmt: on
 
     def start_chat(

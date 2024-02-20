@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Any
 import unittest
 import unittest.mock as mock
 
@@ -46,6 +47,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def create_corpus(
             request: glm.CreateCorpusRequest,
+            **kwargs,
         ) -> glm.Corpus:
             self.observed_requests.append(request)
             return glm.Corpus(
@@ -223,6 +225,18 @@ class UnitTests(parameterized.TestCase):
 
         asource = re.sub(" *?# type: ignore", "", asource)
         self.assertEqual(source, asource)
+
+    def test_create_corpus_called_with_request_options(self):
+        self.client.create_corpus = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        try:
+            retriever.create_corpus("demo-corpus", request_options=request_options)
+        except AttributeError:
+            pass
+
+        self.client.create_corpus.assert_called_once_with(request, **request_options)
 
 
 if __name__ == "__main__":
