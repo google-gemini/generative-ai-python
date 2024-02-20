@@ -7,7 +7,7 @@ from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
 import textwrap
-from typing import List, Tuple, TypedDict, Union
+from typing import TypedDict, Union
 
 import google.protobuf.json_format
 import google.api_core.exceptions
@@ -349,14 +349,6 @@ class BaseGenerateContentResponse:
     @property
     def prompt_feedback(self):
         return self._result.prompt_feedback
-
-    @property
-    def function_calls(self) -> list[glm.FunctionCall]:
-        result = []
-        for part in self.parts:
-            if "function_call" in part:
-                result.append(part.function_call)
-        return result
 
     def __str__(self) -> str:
         if self._done:

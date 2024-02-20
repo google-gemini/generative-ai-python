@@ -460,10 +460,19 @@ class ChatSession:
             ):
                 raise generation_types.StopCandidateException(response.candidates[0])
 
+    def _get_function_calls(self, response) -> list[glm.FunctionCall]:
+        candidates = response.candidates
+        if len(candidates != 1):
+            raise ValueError(f"Automatic function calling only works with 1 candidate, got: {len(candidates)}")
+        parts = candidates[0].parts
+        function_calls = [part for part in parts if part and 'function_call' in part]
+        return function_calls
+
     def _handle_afc(
         self, *, response, history, generation_config, safety_settings, stream, tools_lib
     ) -> tuple[list[glm.Content], glm.Content, generation_types.BaseGenerateContentResponse]:
-        while function_calls := response.function_calls:
+
+        while function_calls := self._get_function_calls(response):
             if not all(callable(tools_lib[fc]) for fc in function_calls):
                 break
             history.append(response.candidates[0].content)
@@ -551,7 +560,8 @@ class ChatSession:
     async def _handle_afc_async(
         self, *, response, history, generation_config, safety_settings, stream, tools_lib
     ) -> tuple[list[glm.Content], glm.Content, generation_types.BaseGenerateContentResponse]:
-        while function_calls := response.function_calls:
+
+        while function_calls := self._get_function_calls(response):
             if not all(callable(tools_lib[fc]) for fc in function_calls):
                 break
             history.append(response.candidates[0].content)
