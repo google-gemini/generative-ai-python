@@ -28,7 +28,7 @@ from google.generativeai.types import retriever_types
 
 
 def create_corpus(
-    name: str,
+    name: Optional[str] = None,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceClient | None = None,
 ) -> retriever_types.Corpus:
@@ -53,8 +53,10 @@ def create_corpus(
     if client is None:
         client = get_default_retriever_client()
 
-    corpus = None
-    if retriever_types.valid_name(name):
+    corpus, corpus_name = None, None
+    if name is None:
+        corpus = glm.Corpus(name=corpus_name, display_name=display_name)
+    elif retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:
@@ -70,7 +72,7 @@ def create_corpus(
 
 
 async def create_corpus_async(
-    name: str,
+    name: Optional[str] = None,
     display_name: Optional[str] = None,
     client: glm.RetrieverServiceAsyncClient | None = None,
 ) -> retriever_types.Corpus:
@@ -78,8 +80,10 @@ async def create_corpus_async(
     if client is None:
         client = get_default_retriever_async_client()
 
-    corpus = None
-    if retriever_types.valid_name(name):
+    corpus, corpus_name = None, None
+    if name is None:
+        corpus = glm.Corpus(name=corpus_name, display_name=display_name)
+    elif retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
     else:
@@ -107,6 +111,9 @@ def get_corpus(name: str, client: glm.RetrieverServiceClient | None = None) -> r
     if client is None:
         client = get_default_retriever_client()
 
+    if "/" not in name:
+        name = "corpora/" + name
+
     request = glm.GetCorpusRequest(name=name)
     response = client.get_corpus(request)
     response = type(response).to_dict(response)
@@ -120,6 +127,9 @@ async def get_corpus_async(name: str, client: glm.RetrieverServiceAsyncClient | 
     """This is the async version of `retriever.get_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
+
+    if "/" not in name:
+        name = "corpora/" + name
 
     request = glm.GetCorpusRequest(name=name)
     response = await client.get_corpus(request)
@@ -141,6 +151,9 @@ def delete_corpus(name: str, force: bool = False, client: glm.RetrieverServiceCl
     if client is None:
         client = get_default_retriever_client()
 
+    if "/" not in name:
+        name = "corpora/" + name
+
     request = glm.DeleteCorpusRequest(name=name, force=force)
     client.delete_corpus(request)
 
@@ -149,6 +162,9 @@ async def delete_corpus_async(name: str, force: bool = False, client: glm.Retrie
     """This is the async version of `retriever.delete_corpus`."""
     if client is None:
         client = get_default_retriever_async_client()
+
+    if "/" not in name:
+        name = "corpora/" + name
 
     request = glm.DeleteCorpusRequest(name=name, force=force)
     await client.delete_corpus(request)
@@ -175,6 +191,8 @@ def list_corpora(
     request = glm.ListCorporaRequest(page_size=page_size)
     for corpus in client.list_corpora(request):
         corpus = type(corpus).to_dict(corpus)
+        idecode_time(corpus, "create_time")
+        idecode_time(corpus, "update_time")
         yield retriever_types.Corpus(**corpus)
 
 
@@ -190,4 +208,6 @@ async def list_corpora_async(
     request = glm.ListCorporaRequest(page_size=page_size)
     async for corpus in await client.list_corpora(request):
         corpus = type(corpus).to_dict(corpus)
+        idecode_time(corpus, "create_time")
+        idecode_time(corpus, "update_time")
         yield retriever_types.Corpus(**corpus)
