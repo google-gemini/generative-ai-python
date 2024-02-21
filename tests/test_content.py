@@ -336,6 +336,20 @@ class UnitTests(parameterized.TestCase):
 
         self.assertEqual(tools, expected)
 
+    def test_two_fun_is_one_tool(self):
+        def a():
+            pass
+        def b():
+            pass
+
+        function_library = content_types.to_function_library([a,b])
+        if function_library is None:
+            raise ValueError("This shouldn't happen")
+        tools = function_library.to_proto()
+
+        self.assertLen(tools, 1)
+        self.assertLen(tools[0].function_declarations, 2)
+
 
 if __name__ == "__main__":
     absltest.main()
