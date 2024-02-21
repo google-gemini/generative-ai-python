@@ -22,6 +22,11 @@ TEST_JPG_URL = "https://storage.googleapis.com/generativeai-downloads/data/test_
 TEST_JPG_DATA = TEST_JPG_PATH.read_bytes()
 
 
+# simple test function
+def datetime():
+    "Returns the current UTC date and time."
+
+
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_PNG_PATH)],
@@ -171,7 +176,87 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         [
-            "OneTool",
+            "FunctionLibrary",
+            content_types.FunctionLibrary(
+                tools=glm.Tool(
+                    function_declarations=[
+                        glm.FunctionDeclaration(
+                            name="datetime", description="Returns the current UTC date and time."
+                        )
+                    ]
+                )
+            ),
+        ],
+        [
+            "IterableTool-Tool",
+            [
+                content_types.Tool(
+                    function_declarations=[
+                        glm.FunctionDeclaration(
+                            name="datetime", description="Returns the current UTC date and time."
+                        )
+                    ]
+                )
+            ],
+        ],
+        [
+            "IterableTool-glm.Tool",
+            [
+                glm.Tool(
+                    function_declarations=[
+                        glm.FunctionDeclaration(
+                            name="datetime",
+                            description="Returns the current UTC date and time.",
+                        )
+                    ]
+                )
+            ],
+        ],
+        [
+            "IterableTool-ToolDict",
+            [
+                dict(
+                    function_declarations=[
+                        dict(
+                            name="datetime",
+                            description="Returns the current UTC date and time.",
+                        )
+                    ]
+                )
+            ],
+        ],
+        [
+            "IterableTool-IterableFD",
+            [
+                [
+                    glm.FunctionDeclaration(
+                        name="datetime",
+                        description="Returns the current UTC date and time.",
+                    )
+                ]
+            ],
+        ],
+        [
+            "IterableTool-FD",
+            [
+                glm.FunctionDeclaration(
+                    name="datetime",
+                    description="Returns the current UTC date and time.",
+                )
+            ],
+        ],
+        [
+            "Tool",
+            content_types.Tool(
+                function_declarations=[
+                    glm.FunctionDeclaration(
+                        name="datetime", description="Returns the current UTC date and time."
+                    )
+                ]
+            ),
+        ],
+        [
+            "glm.Tool",
             glm.Tool(
                 function_declarations=[
                     glm.FunctionDeclaration(
@@ -189,18 +274,50 @@ class UnitTests(parameterized.TestCase):
             ),
         ],
         [
-            "ListOfTools",
+            "IterableFD-FD",
             [
-                glm.Tool(
-                    function_declarations=[
-                        glm.FunctionDeclaration(
-                            name="datetime",
-                            description="Returns the current UTC date and time.",
-                        )
-                    ]
+                content_types.FunctionDeclaration(
+                    name="datetime", description="Returns the current UTC date and time."
                 )
             ],
         ],
+        [
+            "IterableFD-CFD",
+            [
+                content_types.CallableFunctionDeclaration(
+                    name="datetime",
+                    description="Returns the current UTC date and time.",
+                    function=datetime,
+                )
+            ],
+        ],
+        [
+            "IterableFD-dict",
+            [dict(name="datetime", description="Returns the current UTC date and time.")],
+        ],
+        ["IterableFD-Callable", [datetime]],
+        [
+            "FD",
+            content_types.FunctionDeclaration(
+                name="datetime", description="Returns the current UTC date and time."
+            ),
+        ],
+        [
+            "CFD",
+            content_types.CallableFunctionDeclaration(
+                name="datetime",
+                description="Returns the current UTC date and time.",
+                function=datetime,
+            ),
+        ],
+        [
+            "glm.FD",
+            glm.FunctionDeclaration(
+                name="datetime", description="Returns the current UTC date and time."
+            ),
+        ],
+        ["dict", dict(name="datetime", description="Returns the current UTC date and time.")],
+        ["Callable", datetime],
     )
     def test_to_tools(self, tools):
         function_library = content_types.to_function_library(tools)
@@ -208,13 +325,16 @@ class UnitTests(parameterized.TestCase):
             raise ValueError("This shouldn't happen")
         tools = function_library.to_proto()
 
+        tools = type(tools[0]).to_dict(tools[0])
+        tools['function_declarations'][0].pop('parameters', None)
+
         expected = dict(
             function_declarations=[
                 dict(name="datetime", description="Returns the current UTC date and time.")
             ]
         )
 
-        self.assertEqual(type(tools[0]).to_dict(tools[0]), expected)
+        self.assertEqual(tools, expected)
 
 
 if __name__ == "__main__":

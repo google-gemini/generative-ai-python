@@ -404,7 +404,7 @@ class ChatSession:
              stream: If True, yield response chunks as they are generated.
         """
         if self.enable_automatic_function_calling and stream:
-            raise ValueError(
+            raise NotImplementedError(
                 "The `google.generativeai` SDK does not yet support `stream=True` with "
                 "`enable_automatic_function_calling=True`"
             )
@@ -515,7 +515,7 @@ class ChatSession:
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `ChatSession.send_message`."""
         if self.enable_automatic_function_calling and stream:
-            raise ValueError(
+            raise NotImplementedError(
                 "The `google.generativeai` SDK does not yet support `stream=True` with "
                 "`enable_automatic_function_calling=True`"
             )

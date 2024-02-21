@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
-import dataclasses
+from collections.abc import Iterable, Mapping, Sequence
 import io
 import inspect
 import mimetypes
 import typing
-from typing import Any, Callable, Mapping, Sequence, TypedDict, Union
+from typing import Any, Callable, TypedDict, Union
 
 import pydantic
 
 from google.ai import generativelanguage as glm
-from google.generativeai import string_utils
 
 if typing.TYPE_CHECKING:
     import PIL.Image
@@ -260,16 +258,13 @@ def _generate_schema(
     """Generates the OpenAPI Schema for a python function.
 
     Args:
-        f (Callable):
-            Required. The function to generate an OpenAPI Schema for.
-        descriptions (Mapping[str, str]):
-            Optional. A `{name: description}` mapping for annotating input
+        f: The function to generate an OpenAPI Schema for.
+        descriptions: Optional. A `{name: description}` mapping for annotating input
             arguments of the function with user-provided descriptions. It
             defaults to an empty dictionary (i.e. there will not be any
             description for any of the inputs).
-        required (Sequence[str]):
-            Optional. For the user to specify the set of required arguments in
-            function calls to `f`. If specified, it will be automatically
+        required: Optional. For the user to specify the set of required arguments in
+            function calls to `f`. If unspecified, it will be automatically
             inferred from `f`.
 
     Returns:
@@ -367,6 +362,7 @@ def _rename_schema_fields(schema):
 
 class FunctionDeclaration:
     def __init__(self, *, name: str, description: str, parameters: dict[str, Any] | None = None):
+        """A  class wrapping a `glm.FunctionDeclaration`, describes a function for `genai.GenerativeModel`'s `tools`."""
         self._proto = glm.FunctionDeclaration(
             name=name, description=description, parameters=_rename_schema_fields(parameters)
         )
@@ -398,6 +394,11 @@ ValueType = Union[float, str, bool, StructType, list["ValueType"], None]
 
 
 class CallableFunctionDeclaration(FunctionDeclaration):
+    """An extension of `FunctionDeclaration` that can be built from a python function, and is callable.
+
+    Note: The python function must have type annotations.
+    """
+
     def __init__(
         self,
         *,
@@ -462,6 +463,8 @@ def _encode_fd(fd: FunctionDeclaration | glm.FunctionDeclaration) -> glm.Functio
 
 
 class Tool:
+    """A wrapper for `glm.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
+
     def __init__(self, function_declarations: Iterable[FunctionDeclarationType]):
         # The main path doesn't use this but is seems useful.
         self._function_declarations = [_make_function_declaration(f) for f in function_declarations]
@@ -514,7 +517,11 @@ def _make_tool(tool: ToolType) -> Tool:
     elif isinstance(tool, glm.Tool):
         return Tool(function_declarations=tool.function_declarations)
     elif isinstance(tool, dict):
-        return Tool(**tool)
+        if 'function_declarations' in tool:
+            return Tool(**tool)
+        else:
+            fd = tool
+            return Tool(function_declarations=[glm.FunctionDeclaration(**fd)])
     elif isinstance(tool, Iterable):
         return Tool(function_declarations=tool)
     else:
@@ -528,6 +535,7 @@ def _make_tool(tool: ToolType) -> Tool:
 
 
 class FunctionLibrary:
+    """A container for a set of `Tool` objects, manages lookup and execution of their functions."""
 
     def __init__(self, tools: Iterable[ToolType]):
         tools = _make_tools(tools)
@@ -537,7 +545,10 @@ class FunctionLibrary:
             for declaration in tool.function_declarations:
                 name = declaration.name
                 if name in self._index:
-                    raise ValueError("")
+                    raise ValueError(
+                        f"A `FunctionDeclaration` named {name} is already defined. "
+                        "Each `FunctionDeclaration` must be uniquely named."
+                    )
                 self._index[declaration.name] = declaration
 
     def __getitem__(
@@ -564,14 +575,15 @@ ToolsType = Union[Iterable[ToolType], ToolType]
 
 
 def _make_tools(tools: ToolsType) -> list[Tool]:
-    if isinstance(tools, Iterable):
+    if isinstance(tools, Iterable) and not isinstance(tools, Mapping):
         try:
             return [_make_tool(t) for t in tools]
         except (TypeError, KeyError):
-            pass
-
-    tool = tools
-    return [_make_tool(tool)]
+            tool = tools
+            return [_make_tool(tool)]
+    else:
+        tool = tools
+        return [_make_tool(tool)]
 
 
 FunctionLibraryType = Union[FunctionLibrary, ToolsType]
