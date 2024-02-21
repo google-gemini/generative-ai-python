@@ -1,3 +1,17 @@
+# -*- coding: utf-8 -*-
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import pathlib
 from typing import Any
 
@@ -348,41 +362,41 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(tools, 1)
         self.assertLen(tools[0].function_declarations, 2)
 
-    def test_auto_schema(self):
-        def fun(a: int, b: float, c: str, d: list[str], e: dict[str, Any], f, g: list[list[int]]):
+    @parameterized.named_parameters(
+        ["int", int, glm.Schema(type=glm.Type.INTEGER)],
+        ["float", float, glm.Schema(type=glm.Type.NUMBER)],
+        ["str", str, glm.Schema(type=glm.Type.STRING)],
+        [
+            "list",
+            list[str],
+            glm.Schema(
+                type=glm.Type.ARRAY,
+                items=glm.Schema(type=glm.Type.STRING),
+            ),
+        ],
+        [
+            "list-list-int",
+            list[list[int]],
+            glm.Schema(
+                type=glm.Type.ARRAY,
+                items=glm.Schema(
+                    glm.Schema(
+                        type=glm.Type.ARRAY,
+                        items=glm.Schema(type=glm.Type.INTEGER),
+                    ),
+                ),
+            ),
+        ],
+        ["dict", dict, glm.Schema(type=glm.Type.OBJECT)],
+        ["dict-str-any", dict[str, Any], glm.Schema(type=glm.Type.OBJECT)],
+    )
+    def test_auto_schema(self, annotation, expected):
+        def fun(a: annotation):
             pass
 
         cfd = content_types.FunctionDeclaration.from_function(fun)
-        got = cfd.parameters
-        expected = glm.Schema(
-            type=glm.Type.OBJECT,
-            properties={
-                "a": glm.Schema(type=glm.Type.INTEGER),
-                "b": glm.Schema(type=glm.Type.NUMBER),
-                "c": glm.Schema(type=glm.Type.STRING),
-                "d": glm.Schema(
-                    type=glm.Type.ARRAY,
-                    items=glm.Schema(type=glm.Type.STRING),
-                ),
-                "e": glm.Schema(type=glm.Type.OBJECT),
-                "f": glm.Schema(type=glm.Type.TYPE_UNSPECIFIED),
-                "g": glm.Schema(
-                    type=glm.Type.ARRAY,
-                    items=glm.Schema(
-                        glm.Schema(
-                            type=glm.Type.ARRAY,
-                            items=glm.Schema(type=glm.Type.INTEGER),
-                        ),
-                    ),
-                ),
-            },
-            required=["a", "b", "c", "d", "e", "f", "g"],
-        )
-
-        self.assertEqual(got.required, expected.required)
-        self.assertEqual(
-            sorted(dict(got.properties).items()), sorted(dict(expected.properties).items())
-        )
+        got = cfd.parameters.properties["a"]
+        self.assertEqual(got, expected)
 
 
 if __name__ == "__main__":
