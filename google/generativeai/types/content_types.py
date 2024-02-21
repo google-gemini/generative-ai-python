@@ -300,9 +300,9 @@ def _generate_schema(
     # 4. Suppress unnecessary title generation:
     #    * https://github.com/pydantic/pydantic/issues/1051
     #    * http://cl/586221780
-    parameters.pop("title")
+    parameters.pop("title", None)
     for name, function_arg in parameters.get("properties", {}).items():
-        function_arg.pop("title")
+        function_arg.pop("title", None)
         annotation = defaults[name].annotation
         # 5. Nullable fields:
         #     * https://github.com/pydantic/pydantic/issues/1270
@@ -388,6 +388,30 @@ class FunctionDeclaration:
     def to_proto(self) -> glm.FunctionDeclaration:
         return self._proto
 
+    @classmethod
+    def from_function(
+        cls, function: Callable[..., Any], descriptions: dict[str, Any] | None = None
+    ):
+        """Builds a `CallableFunctionDeclaration` from a python function.
+
+        The function should have type annotations.
+
+        This method is able to generate the schema for arguments annotated with types:
+
+        `AllowedTypes = float | int | str | list[AllowedTypes] | dict`
+
+        This method does not yet build a schema for `TypedDict`, that would allow you to specify the dictionary
+        contents. But you can build these manually.
+        """
+        del cls
+
+        if descriptions is None:
+            descriptions = {}
+
+        schema = _generate_schema(function, descriptions=descriptions)
+
+        return CallableFunctionDeclaration(**schema, function=function)
+
 
 StructType = dict[str, "ValueType"]
 ValueType = Union[float, str, bool, StructType, list["ValueType"], None]
@@ -409,17 +433,6 @@ class CallableFunctionDeclaration(FunctionDeclaration):
     ):
         super().__init__(name=name, description=description, parameters=parameters)
         self.function = function
-
-    @classmethod
-    def from_function(
-        cls, function: Callable[..., Any], descriptions: dict[str, Any] | None = None
-    ):
-        if descriptions is None:
-            descriptions = {}
-
-        schema = _generate_schema(function, descriptions=descriptions)
-
-        return cls(**schema, function=function)
 
     def __call__(self, fc: glm.FunctionCall) -> glm.FunctionResponse:
         result = self.function(**fc.args)

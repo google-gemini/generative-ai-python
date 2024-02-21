@@ -1,13 +1,10 @@
-import copy
 import pathlib
-import unittest.mock
+from typing import Any
 
 from absl.testing import absltest
 from absl.testing import parameterized
 import google.ai.generativelanguage as glm
-import google.generativeai as genai
 from google.generativeai.types import content_types
-from google.generativeai.types import safety_types
 import IPython.display
 import PIL.Image
 
@@ -350,6 +347,42 @@ class UnitTests(parameterized.TestCase):
 
         self.assertLen(tools, 1)
         self.assertLen(tools[0].function_declarations, 2)
+
+    def test_auto_schema(self):
+        def fun(a: int, b: float, c: str, d: list[str], e: dict[str, Any], f, g: list[list[int]]):
+            pass
+
+        cfd = content_types.FunctionDeclaration.from_function(fun)
+        got = cfd.parameters
+        expected = glm.Schema(
+            type=glm.Type.OBJECT,
+            properties={
+                "a": glm.Schema(type=glm.Type.INTEGER),
+                "b": glm.Schema(type=glm.Type.NUMBER),
+                "c": glm.Schema(type=glm.Type.STRING),
+                "d": glm.Schema(
+                    type=glm.Type.ARRAY,
+                    items=glm.Schema(type=glm.Type.STRING),
+                ),
+                "e": glm.Schema(type=glm.Type.OBJECT),
+                "f": glm.Schema(type=glm.Type.TYPE_UNSPECIFIED),
+                "g": glm.Schema(
+                    type=glm.Type.ARRAY,
+                    items=glm.Schema(
+                        glm.Schema(
+                            type=glm.Type.ARRAY,
+                            items=glm.Schema(type=glm.Type.INTEGER),
+                        ),
+                    ),
+                ),
+            },
+            required=["a", "b", "c", "d", "e", "f", "g"],
+        )
+
+        self.assertEqual(got.required, expected.required)
+        self.assertEqual(
+            sorted(dict(got.properties).items()), sorted(dict(expected.properties).items())
+        )
 
 
 if __name__ == "__main__":
