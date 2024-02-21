@@ -526,7 +526,7 @@ def _make_tool(tool: ToolType) -> Tool:
         return Tool(function_declarations=tool)
     else:
         try:
-            return Tool(function_declarations=[_make_function_declaration(tool)])
+            return Tool(function_declarations=[tool])
         except Exception as e:
             raise TypeError(
                 "Expected an instance of `genai.ToolType`. Got a:\n" f"  {type(tool)=}",
@@ -576,11 +576,13 @@ ToolsType = Union[Iterable[ToolType], ToolType]
 
 def _make_tools(tools: ToolsType) -> list[Tool]:
     if isinstance(tools, Iterable) and not isinstance(tools, Mapping):
-        try:
-            return [_make_tool(t) for t in tools]
-        except (TypeError, KeyError):
-            tool = tools
-            return [_make_tool(tool)]
+        tools = [_make_tool(t) for t in tools]
+        if len(tools) > 1 and all(len(t.function_declarations) == 1 for t in tools):
+            # flatten into a single tool.
+            tools = [
+                _make_tool([t.function_declarations[0] for t in tools])
+            ]
+        return tools
     else:
         tool = tools
         return [_make_tool(tool)]
