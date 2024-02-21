@@ -517,7 +517,7 @@ def _make_tool(tool: ToolType) -> Tool:
     elif isinstance(tool, glm.Tool):
         return Tool(function_declarations=tool.function_declarations)
     elif isinstance(tool, dict):
-        if 'function_declarations' in tool:
+        if "function_declarations" in tool:
             return Tool(**tool)
         else:
             fd = tool
@@ -579,9 +579,7 @@ def _make_tools(tools: ToolsType) -> list[Tool]:
         tools = [_make_tool(t) for t in tools]
         if len(tools) > 1 and all(len(t.function_declarations) == 1 for t in tools):
             # flatten into a single tool.
-            tools = [
-                _make_tool([t.function_declarations[0] for t in tools])
-            ]
+            tools = [_make_tool([t.function_declarations[0] for t in tools])]
         return tools
     else:
         tool = tools

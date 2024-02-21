@@ -326,7 +326,7 @@ class UnitTests(parameterized.TestCase):
         tools = function_library.to_proto()
 
         tools = type(tools[0]).to_dict(tools[0])
-        tools['function_declarations'][0].pop('parameters', None)
+        tools["function_declarations"][0].pop("parameters", None)
 
         expected = dict(
             function_declarations=[
@@ -339,10 +339,11 @@ class UnitTests(parameterized.TestCase):
     def test_two_fun_is_one_tool(self):
         def a():
             pass
+
         def b():
             pass
 
-        function_library = content_types.to_function_library([a,b])
+        function_library = content_types.to_function_library([a, b])
         if function_library is None:
             raise ValueError("This shouldn't happen")
         tools = function_library.to_proto()
