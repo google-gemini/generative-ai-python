@@ -389,9 +389,7 @@ class FunctionDeclaration:
         return self._proto
 
     @staticmethod
-    def from_function(
-        function: Callable[..., Any], descriptions: dict[str, str] | None = None
-    ):
+    def from_function(function: Callable[..., Any], descriptions: dict[str, str] | None = None):
         """Builds a `CallableFunctionDeclaration` from a python function.
 
         The function should have type annotations.
