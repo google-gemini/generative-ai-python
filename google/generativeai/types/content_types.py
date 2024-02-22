@@ -93,6 +93,8 @@ class BlobDict(TypedDict):
 def _convert_dict(d: Mapping) -> glm.Content | glm.Part | glm.Blob:
     if is_content_dict(d):
         content = dict(d)
+        if isinstance(parts := content["parts"], str):
+            content["parts"] = [parts]
         content["parts"] = [to_part(part) for part in content["parts"]]
         return glm.Content(content)
     elif is_part_dict(d):

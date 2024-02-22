@@ -137,12 +137,14 @@ class UnitTests(parameterized.TestCase):
         ["glm.Content", [glm.Content(parts=[{"text": "Hello world!"}])]],
         ["ContentDict", [{"parts": [{"text": "Hello world!"}]}]],
         ["ContentDict-unwraped", [{"parts": ["Hello world!"]}]],
+        ["ContentDict+str-part", [{"parts": "Hello world!"}]],
     )
     def test_to_contents(self, example):
         contents = content_types.to_contents(example)
         part = contents[0].parts[0]
 
         self.assertLen(contents, 1)
+
         self.assertLen(contents[0].parts, 1)
         self.assertIsInstance(part, glm.Part)
         self.assertEqual(part.text, "Hello world!")
