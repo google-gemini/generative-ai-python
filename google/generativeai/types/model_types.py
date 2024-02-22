@@ -29,6 +29,7 @@ import urllib.request
 from typing_extensions import TypedDict
 
 import google.ai.generativelanguage as glm
+from google.generativeai.types import permission_types
 from google.generativeai import string_utils
 
 
@@ -167,7 +168,7 @@ def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedM
 
 @string_utils.prettyprint
 @dataclasses.dataclass
-class TunedModel:
+class TunedModel(metaclass=permission_types.PermissionAdapterMeta):
     """A dataclass representation of a `glm.TunedModel`."""
 
     name: str | None = None

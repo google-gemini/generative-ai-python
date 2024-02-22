@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, Iterable, AsyncIterable
 
 import google.ai.generativelanguage as glm
 
@@ -233,3 +233,183 @@ class Permission:
         get_perm_response = await client.get_permission(request=get_perm_request)
         get_perm_response = type(get_perm_response).to_dict(get_perm_response)
         return cls(**get_perm_response)
+
+
+class PermissionAdapterMeta:
+
+    def _make_create_permission_request(
+        self,
+        role: RoleOptions,
+        grantee_type: Optional[GranteeTypeOptions] = None,
+        email_address: Optional[str] = None,
+    ) -> glm.CreatePermissionRequest:
+        role = to_role(role)
+
+        if grantee_type:
+            grantee_type = to_grantee_type(grantee_type)
+
+        if email_address and grantee_type == GranteeType.EVERYONE:
+            raise ValueError(
+                f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`."
+            )
+
+        if not email_address and grantee_type != GranteeType.EVERYONE:
+            raise ValueError(
+                f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`."
+            )
+
+        permission = glm.Permission(
+            role=role,
+            grantee_type=grantee_type,
+            email_address=email_address,
+        )
+        return glm.CreatePermissionRequest(
+            parent=self.name,
+            permission=permission,
+        )
+
+    def create_permission(
+        self,
+        role: RoleOptions,
+        grantee_type: Optional[GranteeTypeOptions] = None,
+        email_address: Optional[str] = None,
+        client: glm.PermissionServiceClient | None = None,
+    ) -> Permission:
+        """
+        Create a new permission on a resource (self).
+
+        Args:
+            parent: The resource name of the parent resource in which the permission will be listed.
+            role: role that will be granted by the permission.
+            grantee_type: The type of the grantee for the permission.
+            email_address: The email address of the grantee.
+
+        Returns:
+            `Permission` object with specified parent, role, grantee type, and email address.
+
+        Raises:
+            ValueError: When email_address is specified and grantee_type is set to EVERYONE.
+            ValueError: When email_address is not specified and grantee_type is not set to EVERYONE.
+        """
+        if client is None:
+            client = get_dafault_permission_client()
+
+        request = self._make_create_permission_request(
+            role=role, grantee_type=grantee_type, email_address=email_address
+        )
+        permission_response = client.create_permission(request=request)
+        permission_response = type(permission_response).to_dict(permission_response)
+        return Permission(**permission_response)
+
+    async def create_permission_async(
+        self,
+        role: RoleOptions,
+        grantee_type: Optional[GranteeTypeOptions] = None,
+        email_address: Optional[str] = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
+    ) -> Permission:
+        """
+        This is the async version of `PermissionAdapterMeta.create_permission`.
+        """
+        if client is None:
+            client = get_dafault_permission_async_client()
+
+        request = self._make_create_permission_request(
+            role=role, grantee_type=grantee_type, email_address=email_address
+        )
+        permission_response = await client.create_permission(request=request)
+        permission_response = type(permission_response).to_dict(permission_response)
+        return Permission(**permission_response)
+
+    def list_permissions(
+        self,
+        page_size: Optional[int] = None,
+        client: glm.PermissionServiceClient | None = None,
+    ) -> Iterable[Permission]:
+        """
+        List `Permission`s enforced on a resource (self).
+
+        Args:
+            parent: The resource name of the parent resource in which the permission will be listed.
+            page_size: The maximum number of permissions to return (per page). The service may return fewer permissions.
+
+        Returns:
+            Paginated list of `Permission` objects.
+        """
+        if client is None:
+            client = get_dafault_permission_client()
+
+        request = glm.ListPermissionsRequest(parent=self.name, page_size=page_size)
+        for permission in client.list_permissions(request):
+            permission = type(permission).to_dict(permission)
+            yield Permission(**permission)
+
+    async def list_permissions_async(
+        self,
+        page_size: Optional[int] = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
+    ) -> AsyncIterable[Permission]:
+        """
+        This is the async version of `PermissionAdapterMeta.list_permissions`.
+        """
+        if client is None:
+            client = get_dafault_permission_async_client()
+
+        request = glm.ListPermissionsRequest(parent=self.name, page_size=page_size)
+        async for permission in await client.list_permissions(request):
+            permission = type(permission).to_dict(permission)
+            yield Permission(**permission)
+    
+    def transfer_ownership(
+        self,
+        email_address: str,
+        client: glm.PermissionServiceClient | None = None,
+    ) -> None:
+        """
+        Transfer ownership of a resource (self) to a new owner.
+
+        Args:
+            name: Name of the resource to transfer ownership.
+            email_address: Email address of the new owner.
+        """
+        if client is None:
+            client = get_dafault_permission_client()
+        transfer_request = glm.TransferOwnershipRequest(name=self.name, email_address=email_address)
+        transfer_respone = client.transfer_ownership(request=transfer_request)
+    
+    async def transfer_ownership_async(
+            self,
+            email_address: str,
+            client: glm.PermissionServiceAsyncClient | None = None,
+    ) -> None:
+        """This is the async version of `PermissionAdapterMeta.transfer_ownership`."""
+        if client is None:
+            client = get_dafault_permission_async_client()
+        transfer_request = glm.TransferOwnershipRequest(name=self.name, email_address=email_address)
+        transfer_respone = await client.transfer_ownership(request=transfer_request)
+        
+    
+    __signatures__ = [
+        create_permission, create_permission_async, list_permissions, list_permissions_async, 
+        _make_create_permission_request, transfer_ownership
+    ]
+
+    @classmethod
+    def _get_valid_methods(cls, include: list[str] = None, exclude: list[str] = None) -> dict[str, callable]:
+        if include and exclude:
+            raise ValueError("Cannot specify both `include` and `exclude`.")
+        if include:
+            return {fc.__name__: fc for fc in cls.__signatures__ if fc.__name__ in include}
+        if exclude:
+            return {fc.__name__: fc for fc in cls.__signatures__ if fc.__name__ not in exclude}
+        return {fc.__name__: fc for fc in cls.__signatures__}
+
+
+    def __new__(self, cls_name, bases, cls_dict):
+        if cls_name == "Corpus":
+            cls_dict.update(self._get_valid_methods(exclude=["transfer_ownership", "transfer_ownership_async"]))
+        elif cls_name == "TunedModel":
+            cls_dict.update(self._get_valid_methods())
+        else:
+            raise NotImplementedError(f"Class `{cls_name}` is not supported.")
+        return type(cls_name, bases, cls_dict)
