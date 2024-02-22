@@ -388,9 +388,9 @@ class FunctionDeclaration:
     def to_proto(self) -> glm.FunctionDeclaration:
         return self._proto
 
-    @classmethod
+    @staticmethod
     def from_function(
-        cls, function: Callable[..., Any], descriptions: dict[str, Any] | None = None
+        function: Callable[..., Any], descriptions: dict[str, str] | None = None
     ):
         """Builds a `CallableFunctionDeclaration` from a python function.
 
@@ -403,7 +403,6 @@ class FunctionDeclaration:
         This method does not yet build a schema for `TypedDict`, that would allow you to specify the dictionary
         contents. But you can build these manually.
         """
-        del cls
 
         if descriptions is None:
             descriptions = {}
