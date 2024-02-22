@@ -641,6 +641,11 @@ class CUJTests(parameterized.TestCase):
             generative_models.ChatSession.send_message,
             generative_models.ChatSession.send_message_async,
         ],
+        [
+            "ChatSession._handle_afc",
+            generative_models.ChatSession._handle_afc,
+            generative_models.ChatSession._handle_afc_async,
+        ],
     )
     def test_async_code_match(self, obj, aobj):
         import inspect
@@ -879,8 +884,9 @@ class CUJTests(parameterized.TestCase):
             ChatSession(
                 model=genai.GenerativeModel(
                     model_name='models/gemini-pro',
-                    generation_config={}.
-                    safety_settings={}
+                    generation_config={},
+                    safety_settings={},
+                    tools=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'first'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), glm.Content({'parts': [{'text': 'second'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
             )"""
@@ -905,8 +911,9 @@ class CUJTests(parameterized.TestCase):
             ChatSession(
                 model=genai.GenerativeModel(
                     model_name='models/gemini-pro',
-                    generation_config={}.
-                    safety_settings={}
+                    generation_config={},
+                    safety_settings={},
+                    tools=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
             )"""
@@ -947,8 +954,9 @@ class CUJTests(parameterized.TestCase):
             ChatSession(
                 model=genai.GenerativeModel(
                     model_name='models/gemini-pro',
-                    generation_config={}.
-                    safety_settings={}
+                    generation_config={},
+                    safety_settings={},
+                    tools=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
             )"""
