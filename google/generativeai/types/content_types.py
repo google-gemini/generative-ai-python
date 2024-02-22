@@ -252,8 +252,8 @@ def to_contents(contents: ContentsType) -> list[glm.Content]:
 def _generate_schema(
     f: Callable[..., Any],
     *,
-    descriptions: Mapping[str, str] | None = {},
-    required: Sequence[str] | None = [],
+    descriptions: Mapping[str, str] | None = None,
+    required: Sequence[str] | None = None,
 ) -> dict[str, Any]:
     """Generates the OpenAPI Schema for a python function.
 
