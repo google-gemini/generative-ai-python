@@ -252,8 +252,8 @@ def to_contents(contents: ContentsType) -> list[glm.Content]:
 def _generate_schema(
     f: Callable[..., Any],
     *,
-    descriptions: Mapping[str, str] = {},
-    required: Sequence[str] = [],
+    descriptions: Mapping[str, str] | None = {},
+    required: Sequence[str] | None = [],
 ) -> dict[str, Any]:
     """Generates the OpenAPI Schema for a python function.
 
@@ -270,6 +270,10 @@ def _generate_schema(
     Returns:
         dict[str, Any]: The OpenAPI Schema for the function `f` in JSON format.
     """
+    if descriptions is None:
+        descriptions = {}
+    if required is None:
+        required = []
     defaults = dict(inspect.signature(f).parameters)
     fields_dict = {
         name: (
