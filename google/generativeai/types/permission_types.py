@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import dataclasses
 from typing import Optional, Union, Any, Iterable, AsyncIterable
+import re
 
 import google.ai.generativelanguage as glm
 
@@ -77,6 +78,10 @@ def to_role(x: RoleOptions) -> Role:
         x = x.lower()
     return _ROLE[x]
 
+_VALID_NAME = r"(tunedModels|corpora)/[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?/permissions/[a-z0-9]+"
+
+def valid_name(name: str) -> bool:
+    return re.match(_VALID_NAME, name) is not None
 
 @string_utils.prettyprint
 @dataclasses.dataclass
