@@ -58,7 +58,7 @@ def _construct_and_validate_name(
     if not permission_types.valid_name(name):
         raise ValueError(
             f"Invalid name format. Expected format: \
-                `(tunedModel|corpora)/<corpus_name>/permissions/<permission_id>`. Got: `{name}` instead."
+                `(tunedModel|corpora)/<resource_name>/permissions/<permission_id>`. Got: `{name}` instead."
         )
     return name
 

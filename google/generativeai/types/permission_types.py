@@ -383,9 +383,9 @@ class PermissionAdapterMeta:
         transfer_respone = client.transfer_ownership(request=transfer_request)
     
     async def transfer_ownership_async(
-            self,
-            email_address: str,
-            client: glm.PermissionServiceAsyncClient | None = None,
+        self,
+        email_address: str,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> None:
         """This is the async version of `PermissionAdapterMeta.transfer_ownership`."""
         if client is None:
@@ -396,7 +396,7 @@ class PermissionAdapterMeta:
     
     __signatures__ = [
         create_permission, create_permission_async, list_permissions, list_permissions_async, 
-        _make_create_permission_request, transfer_ownership
+        _make_create_permission_request, transfer_ownership, transfer_ownership_async
     ]
 
     @classmethod
