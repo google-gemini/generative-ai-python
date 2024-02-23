@@ -625,14 +625,14 @@ class Corpus(permission_types.PermissionAdapter):
         )
         async for doc in await client.list_documents(request, **request_options):
             yield decode_document(doc)
-    
+
     def transfer_ownership(
         self,
         email_address: str,
         client: glm.PermissionServiceClient | None = None,
     ) -> None:
         raise NotImplementedError("This method is not implemented for class Corpus")
-    
+
     async def transfer_ownership_async(
         self,
         email_address: str,

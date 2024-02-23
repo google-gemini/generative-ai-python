@@ -78,10 +78,13 @@ def to_role(x: RoleOptions) -> Role:
         x = x.lower()
     return _ROLE[x]
 
+
 _VALID_NAME = r"(tunedModels|corpora)/[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?/permissions/[a-z0-9]+"
+
 
 def valid_name(name: str) -> bool:
     return re.match(_VALID_NAME, name) is not None
+
 
 @string_utils.prettyprint
 @dataclasses.dataclass
@@ -364,7 +367,7 @@ class PermissionAdapter:
         async for permission in await client.list_permissions(request):
             permission = type(permission).to_dict(permission)
             yield Permission(**permission)
-    
+
     def transfer_ownership(
         self,
         email_address: str,
@@ -381,8 +384,7 @@ class PermissionAdapter:
             client = get_dafault_permission_client()
         transfer_request = glm.TransferOwnershipRequest(name=self.name, email_address=email_address)
         transfer_respone = client.transfer_ownership(request=transfer_request)
-        print(transfer_respone)
-    
+
     async def transfer_ownership_async(
         self,
         email_address: str,

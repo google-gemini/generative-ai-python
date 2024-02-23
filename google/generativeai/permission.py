@@ -20,10 +20,10 @@ from google.generativeai.types import permission_types
 
 
 def _construct_and_validate_name(
-        name: str | None = None,
-        corpus_name: str | None = None,
-        tunedModel_name: str | None = None,
-        permission_id: str | int | None = None
+    name: str | None = None,
+    corpus_name: str | None = None,
+    tunedModel_name: str | None = None,
+    permission_id: str | int | None = None,
 ) -> str:
     # resource_name is the name of the resource (corpus or tunedModel) for which the permission is being created.
     if name is None:
@@ -34,7 +34,7 @@ def _construct_and_validate_name(
             raise ValueError(
                 "Either `corpus_name` or `tunedModel_name` must be provided, not both."
             )
-        
+
         resource_name = corpus_name or tunedModel_name
         resource_identifier = "corpora" if corpus_name else "tunedModels"
 
@@ -47,7 +47,7 @@ def _construct_and_validate_name(
                 name = f"{resource_name}/"
             else:
                 name = f"{resource_identifier}/{resource_name}/"
-            
+
             if isinstance(permission_id, int) or "permissions/" not in permission_id:
                 name += f"permissions/{permission_id}"
 
@@ -61,6 +61,7 @@ def _construct_and_validate_name(
                 `(tunedModel|corpora)/<resource_name>/permissions/<permission_id>`. Got: `{name}` instead."
         )
     return name
+
 
 def get_permission(
     name: str | None = None,
