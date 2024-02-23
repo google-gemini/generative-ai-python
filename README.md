@@ -1,4 +1,4 @@
-# Google AI Python SDK
+# Google Python SDK for the Gemini API
 
 [![PyPI version](https://badge.fury.io/py/google-generativeai.svg)](https://badge.fury.io/py/google-generativeai)
 ![Python support](https://img.shields.io/pypi/pyversions/google-generativeai)
