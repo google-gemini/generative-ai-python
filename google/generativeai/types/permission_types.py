@@ -240,7 +240,7 @@ class Permission:
         return cls(**get_perm_response)
 
 
-class PermissionAdapterMeta:
+class PermissionAdapter:
 
     def _make_create_permission_request(
         self,
@@ -314,7 +314,7 @@ class PermissionAdapterMeta:
         client: glm.PermissionServiceAsyncClient | None = None,
     ) -> Permission:
         """
-        This is the async version of `PermissionAdapterMeta.create_permission`.
+        This is the async version of `PermissionAdapter.create_permission`.
         """
         if client is None:
             client = get_dafault_permission_async_client()
@@ -355,7 +355,7 @@ class PermissionAdapterMeta:
         client: glm.PermissionServiceAsyncClient | None = None,
     ) -> AsyncIterable[Permission]:
         """
-        This is the async version of `PermissionAdapterMeta.list_permissions`.
+        This is the async version of `PermissionAdapter.list_permissions`.
         """
         if client is None:
             client = get_dafault_permission_async_client()
@@ -381,40 +381,15 @@ class PermissionAdapterMeta:
             client = get_dafault_permission_client()
         transfer_request = glm.TransferOwnershipRequest(name=self.name, email_address=email_address)
         transfer_respone = client.transfer_ownership(request=transfer_request)
+        print(transfer_respone)
     
     async def transfer_ownership_async(
         self,
         email_address: str,
         client: glm.PermissionServiceAsyncClient | None = None,
     ) -> None:
-        """This is the async version of `PermissionAdapterMeta.transfer_ownership`."""
+        """This is the async version of `PermissionAdapter.transfer_ownership`."""
         if client is None:
             client = get_dafault_permission_async_client()
         transfer_request = glm.TransferOwnershipRequest(name=self.name, email_address=email_address)
         transfer_respone = await client.transfer_ownership(request=transfer_request)
-        
-    
-    __signatures__ = [
-        create_permission, create_permission_async, list_permissions, list_permissions_async, 
-        _make_create_permission_request, transfer_ownership, transfer_ownership_async
-    ]
-
-    @classmethod
-    def _get_valid_methods(cls, include: list[str] = None, exclude: list[str] = None) -> dict[str, callable]:
-        if include and exclude:
-            raise ValueError("Cannot specify both `include` and `exclude`.")
-        if include:
-            return {fc.__name__: fc for fc in cls.__signatures__ if fc.__name__ in include}
-        if exclude:
-            return {fc.__name__: fc for fc in cls.__signatures__ if fc.__name__ not in exclude}
-        return {fc.__name__: fc for fc in cls.__signatures__}
-
-
-    def __new__(self, cls_name, bases, cls_dict):
-        if cls_name == "Corpus":
-            cls_dict.update(self._get_valid_methods(exclude=["transfer_ownership", "transfer_ownership_async"]))
-        elif cls_name == "TunedModel":
-            cls_dict.update(self._get_valid_methods())
-        else:
-            raise NotImplementedError(f"Class `{cls_name}` is not supported.")
-        return type(cls_name, bases, cls_dict)

@@ -189,7 +189,7 @@ def create_metadata_filters(MetadataFilter):
 
 @string_utils.prettyprint
 @dataclasses.dataclass()
-class Corpus(metaclass=permission_types.PermissionAdapterMeta):
+class Corpus(permission_types.PermissionAdapter):
     """
     A `Corpus` is a collection of `Documents`.
     """
@@ -625,6 +625,20 @@ class Corpus(metaclass=permission_types.PermissionAdapterMeta):
         )
         async for doc in await client.list_documents(request, **request_options):
             yield decode_document(doc)
+    
+    def transfer_ownership(
+        self,
+        email_address: str,
+        client: glm.PermissionServiceClient | None = None,
+    ) -> None:
+        raise NotImplementedError("This method is not implemented for class Corpus")
+    
+    async def transfer_ownership_async(
+        self,
+        email_address: str,
+        client: glm.PermissionServiceAsyncClient | None = None,
+    ) -> None:
+        raise NotImplementedError("This method is not implemented for class Corpus")
 
     def to_dict(self) -> dict[str, Any]:
         result = {"name": self.name, "display_name": self.display_name}

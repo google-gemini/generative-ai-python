@@ -168,7 +168,7 @@ def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedM
 
 @string_utils.prettyprint
 @dataclasses.dataclass
-class TunedModel(metaclass=permission_types.PermissionAdapterMeta):
+class TunedModel(permission_types.PermissionAdapter):
     """A dataclass representation of a `glm.TunedModel`."""
 
     name: str | None = None
