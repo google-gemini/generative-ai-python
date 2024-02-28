@@ -74,6 +74,10 @@ def get_permission(
 
     Args:
         name: The name of the permission.
+        resource_name: The name of the supported resource for which the permission is being created.
+        permission_id: The name of the permission.
+        resource_type: The type of the resource (corpus or tunedModel as of now) for which the permission is being created. 
+                        If not provided, it will be inferred from `resource_name`.
 
     Returns:
         The permission as an instance of `permission_types.Permission`.
