@@ -178,19 +178,26 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
         self.assertEqual(fetch_perm, perm)
 
-    async def test_get_permission_with_corpus_name_and_id(self):
+    async def test_get_permission_with_resource_name_and_id_1(self):
         x = await retriever.create_corpus_async("demo-corpus")
         perm = await x.create_permission_async("writer", "everyone")
         fetch_perm = await permission.get_permission_async(
-            corpus_name="demo-corpus", permission_id=123456789
+            resource_name="corpora/demo-corpus", permission_id=123456789
         )
         self.assertIsInstance(fetch_perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
         self.assertEqual(fetch_perm, perm)
 
-    async def test_get_permission_with_tuned_model_name_and_id(self):
+    async def test_get_permission_with_resource_name_name_and_id_2(self):
         fetch_perm = await permission.get_permission_async(
-            tunedModel_name="demo-corpus", permission_id=123456789
+            resource_name="tunedModels/demo-corpus", permission_id=123456789
+        )
+        self.assertIsInstance(fetch_perm, permission_services.Permission)
+        self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
+    
+    async def test_get_permission_with_resource_type(self):
+        fetch_perm = await permission.get_permission_async(
+            resource_name="demo-model", permission_id=123456789, resource_type="tunedModels"
         )
         self.assertIsInstance(fetch_perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
@@ -200,44 +207,48 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             testcase_name="no_information_provided",
         ),
         dict(
-            testcase_name="both_corpus_name_and_tuned_model_name_provided",
-            corpus_name="demo-corpus",
-            tunedModel_name="demo-tunedModel",
-            permission_id="123456789",
-        ),
-        dict(
             testcase_name="permission_id_missing",
-            corpus_name="demo-corpus",
+            resource_name="demo-corpus",
         ),
         dict(
             testcase_name="resource_name_missing",
             permission_id="123456789",
         ),
         dict(
-            testcase_name="invalid_corpus_name", name="corpora/demo-corpus-/permissions/123456789"
+            testcase_name="invalid_corpus_name", 
+            name="corpora/demo-corpus-/permissions/123456789"
         ),
-        dict(testcase_name="invalid_permission_id", name="corpora/demo-corpus/permissions/*"),
+        dict(testcase_name="invalid_permission_id", 
+             name="corpora/demo-corpus/permissions/*"
+        ),
         dict(
             testcase_name="invalid_tuned_model_name",
             name="tunedModels/my_text_model/permissions/123456789",
         ),
         dict(
-            testcase_name="invalid_resource_name", name="dataset/demo-corpus/permissions/123456789"
+            testcase_name="unsupported_resource_name_1", 
+            name="dataset/demo-corpus/permissions/123456789"
+        ),
+        dict(
+            testcase_name="unsupported_resource_type_2", 
+            resource_name="my-dataset",
+            permission_id="123456789", 
+            resource_type="dataset"
         ),
     )
     async def test_get_permission_with_invalid_name_constructs(
         self,
         name=None,
-        corpus_name=None,
-        tunedModel_name=None,
+        resource_name=None,
         permission_id=None,
+        resource_type=None,
     ):
         with self.assertRaises(ValueError):
             fetch_perm = await permission.get_permission_async(
                 name=name,
-                corpus_name=corpus_name,
+                resource_name=resource_name,
                 permission_id=permission_id,
-                tunedModel_name=tunedModel_name,
+                resource_type=resource_type,
             )
 
     async def test_list_permission(self):
