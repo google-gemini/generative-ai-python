@@ -272,7 +272,7 @@ class PermissionAdapter:
             email_address=email_address,
         )
         return glm.CreatePermissionRequest(
-            parent=self.name,
+            parent=self.name,  # pytype: disable=attribute-error
             permission=permission,
         )
 
@@ -347,7 +347,9 @@ class PermissionAdapter:
         if client is None:
             client = get_dafault_permission_client()
 
-        request = glm.ListPermissionsRequest(parent=self.name, page_size=page_size)
+        request = glm.ListPermissionsRequest(
+            parent=self.name, page_size=page_size  # pytype: disable=attribute-error
+        )
         for permission in client.list_permissions(request):
             permission = type(permission).to_dict(permission)
             yield Permission(**permission)
@@ -363,7 +365,9 @@ class PermissionAdapter:
         if client is None:
             client = get_dafault_permission_async_client()
 
-        request = glm.ListPermissionsRequest(parent=self.name, page_size=page_size)
+        request = glm.ListPermissionsRequest(
+            parent=self.name, page_size=page_size  # pytype: disable=attribute-error
+        )
         async for permission in await client.list_permissions(request):
             permission = type(permission).to_dict(permission)
             yield Permission(**permission)
@@ -382,7 +386,9 @@ class PermissionAdapter:
         """
         if client is None:
             client = get_dafault_permission_client()
-        transfer_request = glm.TransferOwnershipRequest(name=self.name, email_address=email_address)
+        transfer_request = glm.TransferOwnershipRequest(
+            name=self.name, email_address=email_address  # pytype: disable=attribute-error
+        )
         transfer_respone = client.transfer_ownership(request=transfer_request)
 
     async def transfer_ownership_async(
@@ -393,5 +399,7 @@ class PermissionAdapter:
         """This is the async version of `PermissionAdapter.transfer_ownership`."""
         if client is None:
             client = get_dafault_permission_async_client()
-        transfer_request = glm.TransferOwnershipRequest(name=self.name, email_address=email_address)
+        transfer_request = glm.TransferOwnershipRequest(
+            name=self.name, email_address=email_address  # pytype: disable=attribute-error
+        )
         transfer_respone = await client.transfer_ownership(request=transfer_request)

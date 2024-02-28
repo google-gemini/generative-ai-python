@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import copy
-from typing import Any
+from typing import Any, Optional, Union
 import unittest
 import unittest.mock as mock
 
@@ -62,7 +62,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         @add_client_method
         def get_tuned_model(
-            request: glm.GetTunedModelRequest | None = None,
+            request: Optional[glm.GetTunedModelRequest] = None,
             *,
             name=None,
             **kwargs,
@@ -227,10 +227,10 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
     )
     async def test_get_permission_with_invalid_name_constructs(
         self,
-        name: str | None = None,
-        corpus_name: str | None = None,
-        tunedModel_name: str | None = None,
-        permission_id: int | str | None = None,
+        name=None,
+        corpus_name=None,
+        tunedModel_name=None,
+        permission_id=None,
     ):
         with self.assertRaises(ValueError):
             fetch_perm = await permission.get_permission_async(
