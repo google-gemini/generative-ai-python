@@ -66,24 +66,51 @@ _ROLE: dict[RoleOptions, Role] = {
     "reader": Role.READER,
 }
 
+_SUPPORTED_RESOURCE_TYPES = ["corpora", "tunedModels"]
+
+_RESOURCE_TYPE: dict[str, str] = {
+    "corpus": "corpora",
+    "corpora": "corpora",
+    "tunedmodel": "tunedModels",
+    "tunedmodels": "tunedModels",
+}
+
+_VALID_RESOURCE_NAME = r"[a-z0-9](([a-z0-9-]{0,61}[a-z0-9])?)$"
+_VALID_PERMISSION_ID = r"permissions/[a-z0-9]+"
+NAME_ERROR_MESSAGE = f"Invalid name format. Expected format: \
+    `({'|'.join(_SUPPORTED_RESOURCE_TYPES)})/<resource_name>/permissions/<permission_id>`"
+
 
 def to_grantee_type(x: GranteeTypeOptions) -> GranteeType:
     if isinstance(x, str):
         x = x.lower()
     return _GRANTEE_TYPE[x]
 
-
 def to_role(x: RoleOptions) -> Role:
     if isinstance(x, str):
         x = x.lower()
     return _ROLE[x]
 
-
-_VALID_NAME = r"(tunedModels|corpora)/[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?/permissions/[a-z0-9]+"
+def to_resource_type(x: str) -> str:
+    if isinstance(x, str):
+        x = x.lower()
+    resource_type = _RESOURCE_TYPE.get(x, None)
+    if not resource_type:
+        raise ValueError(
+            f"Invalid resource type. Expected one of: {_SUPPORTED_RESOURCE_TYPES}. Got: `{x}` instead."
+        )
+    return resource_type
 
 
 def valid_name(name: str) -> bool:
-    return re.match(_VALID_NAME, name) is not None
+    path_components = name.split("/", maxsplit=2) # this will be always a list of len 3
+    if path_components[0] not in _SUPPORTED_RESOURCE_TYPES:
+        return False
+    if re.match(_VALID_RESOURCE_NAME, path_components[1]) is None:
+        return False
+    if re.match(_VALID_PERMISSION_ID, path_components[2]) is None:
+        return False
+    return True
 
 
 @string_utils.prettyprint

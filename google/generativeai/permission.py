@@ -21,44 +21,43 @@ from google.generativeai.types import permission_types
 
 def _construct_and_validate_name(
     name: str | None = None,
-    corpus_name: str | None = None,
-    tunedModel_name: str | None = None,
+    resource_name: str | None = None,
     permission_id: str | int | None = None,
+    resource_type: str | None = None,
 ) -> str:
-    # resource_name is the name of the resource (corpus or tunedModel) for which the permission is being created.
-    if name is None:
+    # resource_name is the name of the supported resource (corpus or tunedModel as of now) for which the permission is being created.
+    if not name:
         # if name is not provided, then try to construct name via provided resource_name and permission_id.
-
-        # only one type of resource_name can be provided.
-        if corpus_name and tunedModel_name:
+        if not (resource_name and permission_id):
             raise ValueError(
-                "Either `corpus_name` or `tunedModel_name` must be provided, not both."
+                "Either `name` or (`resource_name` and `permission_id`) must be provided."
             )
 
-        resource_name = corpus_name or tunedModel_name
-        resource_identifier = "corpora" if corpus_name else "tunedModels"
-
-        if resource_name is None or permission_id is None:
-            raise ValueError(
-                "Either `name` or `resource_name` and `permission_id` must be provided."
-            )
+        if resource_type:
+            resource_type = permission_types.to_resource_type(resource_type)
         else:
-            if f"{resource_identifier}/" in resource_name:
-                name = f"{resource_name}/"
-            else:
-                name = f"{resource_identifier}/{resource_name}/"
+            # if resource_type is not provided, then try to infer it from resource_name.
+            resource_path_components = resource_name.split("/")
+            if len(resource_path_components) != 2:
+                raise ValueError(
+                    f"Invalid resource_name format. Expected format: `resource_type/resource_name`. Got: `{resource_name}` instead."
+                )
+            resource_type = permission_types.to_resource_type(resource_path_components[0])
+        
+        if f"{resource_type}/" in resource_name:
+            name = f"{resource_name}/"
+        else:
+            name = f"{resource_type}/{resource_name}/"
 
-            if isinstance(permission_id, int) or "permissions/" not in permission_id:
-                name += f"permissions/{permission_id}"
-
-            else:
-                name += permission_id
+        if isinstance(permission_id, int) or "permissions/" not in permission_id:
+            name += f"permissions/{permission_id}"
+        else:
+            name += permission_id
 
     # if name is provided, override resource_name and permission_id if provided.
     if not permission_types.valid_name(name):
         raise ValueError(
-            f"Invalid name format. Expected format: \
-                `(tunedModel|corpora)/<resource_name>/permissions/<permission_id>`. Got: `{name}` instead."
+            f"{permission_types.NAME_ERROR_MESSAGE}. Got: `{name}` instead."
         )
     return name
 
@@ -66,10 +65,10 @@ def _construct_and_validate_name(
 def get_permission(
     name: str | None = None,
     *,
-    corpus_name: str | None = None,
-    tunedModel_name: str | None = None,
-    permission_id: str | int | None = None,
     client: glm.PermissionServiceClient | None = None,
+    resource_name: str | None = None,
+    permission_id: str | int | None = None,
+    resource_type: str | None = None,
 ) -> permission_types.Permission:
     """Get a permission by name.
 
@@ -79,20 +78,30 @@ def get_permission(
     Returns:
         The permission as an instance of `permission_types.Permission`.
     """
-    name = _construct_and_validate_name(name, corpus_name, tunedModel_name, permission_id)
+    name = _construct_and_validate_name(
+        name=name,
+        resource_name=resource_name,
+        permission_id=permission_id,
+        resource_type=resource_type
+    )
     return permission_types.Permission.get(name=name, client=client)
 
 
 async def get_permission_async(
     name: str | None = None,
     *,
-    corpus_name: str | None = None,
-    tunedModel_name: str | None = None,
-    permission_id: str | int | None = None,
     client: glm.PermissionServiceAsyncClient | None = None,
+    resource_name: str | None = None,
+    permission_id: str | int | None = None,
+    resource_type: str | None = None,
 ) -> permission_types.Permission:
     """
     This is the async version of `permission.get_permission`.
     """
-    name = _construct_and_validate_name(name, corpus_name, tunedModel_name, permission_id)
+    name = _construct_and_validate_name(
+        name=name,
+        resource_name=resource_name,
+        permission_id=permission_id,
+        resource_type=resource_type
+    )
     return await permission_types.Permission.get_async(name=name, client=client)
