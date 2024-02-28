@@ -187,7 +187,7 @@ class UnitTests(parameterized.TestCase):
         )
         self.assertIsInstance(fetch_perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
-    
+
     def test_get_permission_with_resource_type(self):
         fetch_perm = permission.get_permission(
             resource_name="demo-model", permission_id=123456789, resource_type="tunedModels"
@@ -208,25 +208,22 @@ class UnitTests(parameterized.TestCase):
             permission_id="123456789",
         ),
         dict(
-            testcase_name="invalid_corpus_name", 
-            name="corpora/demo-corpus-/permissions/123456789"
+            testcase_name="invalid_corpus_name", name="corpora/demo-corpus-/permissions/123456789"
         ),
-        dict(testcase_name="invalid_permission_id", 
-                name="corpora/demo-corpus/permissions/*"
-        ),
+        dict(testcase_name="invalid_permission_id", name="corpora/demo-corpus/permissions/*"),
         dict(
             testcase_name="invalid_tuned_model_name",
             name="tunedModels/my_text_model/permissions/123456789",
         ),
         dict(
-            testcase_name="unsupported_resource_name_1", 
-            name="dataset/demo-corpus/permissions/123456789"
+            testcase_name="unsupported_resource_name_1",
+            name="dataset/demo-corpus/permissions/123456789",
         ),
         dict(
-            testcase_name="unsupported_resource_type_2", 
+            testcase_name="unsupported_resource_type_2",
             resource_name="my-dataset",
-            permission_id="123456789", 
-            resource_type="dataset"
+            permission_id="123456789",
+            resource_type="dataset",
         ),
     )
     def test_get_permission_with_invalid_name_constructs(

@@ -86,10 +86,12 @@ def to_grantee_type(x: GranteeTypeOptions) -> GranteeType:
         x = x.lower()
     return _GRANTEE_TYPE[x]
 
+
 def to_role(x: RoleOptions) -> Role:
     if isinstance(x, str):
         x = x.lower()
     return _ROLE[x]
+
 
 def to_resource_type(x: str) -> str:
     if isinstance(x, str):
@@ -103,7 +105,7 @@ def to_resource_type(x: str) -> str:
 
 
 def valid_name(name: str) -> bool:
-    path_components = name.split("/", maxsplit=2) # this will be always a list of len 3
+    path_components = name.split("/", maxsplit=2)  # this will be always a list of len 3
     if path_components[0] not in _SUPPORTED_RESOURCE_TYPES:
         return False
     if re.match(_VALID_RESOURCE_NAME, path_components[1]) is None:

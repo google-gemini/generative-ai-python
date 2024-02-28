@@ -43,7 +43,7 @@ def _construct_and_validate_name(
                     f"Invalid resource_name format. Expected format: `resource_type/resource_name`. Got: `{resource_name}` instead."
                 )
             resource_type = permission_types.to_resource_type(resource_path_components[0])
-        
+
         if f"{resource_type}/" in resource_name:
             name = f"{resource_name}/"
         else:
@@ -56,9 +56,7 @@ def _construct_and_validate_name(
 
     # if name is provided, override resource_name and permission_id if provided.
     if not permission_types.valid_name(name):
-        raise ValueError(
-            f"{permission_types.NAME_ERROR_MESSAGE}. Got: `{name}` instead."
-        )
+        raise ValueError(f"{permission_types.NAME_ERROR_MESSAGE}. Got: `{name}` instead.")
     return name
 
 
@@ -76,7 +74,7 @@ def get_permission(
         name: The name of the permission.
         resource_name: The name of the supported resource for which the permission is being created.
         permission_id: The name of the permission.
-        resource_type: The type of the resource (corpus or tunedModel as of now) for which the permission is being created. 
+        resource_type: The type of the resource (corpus or tunedModel as of now) for which the permission is being created.
                         If not provided, it will be inferred from `resource_name`.
 
     Returns:
@@ -86,7 +84,7 @@ def get_permission(
         name=name,
         resource_name=resource_name,
         permission_id=permission_id,
-        resource_type=resource_type
+        resource_type=resource_type,
     )
     return permission_types.Permission.get(name=name, client=client)
 
@@ -106,6 +104,6 @@ async def get_permission_async(
         name=name,
         resource_name=resource_name,
         permission_id=permission_id,
-        resource_type=resource_type
+        resource_type=resource_type,
     )
     return await permission_types.Permission.get_async(name=name, client=client)
