@@ -76,7 +76,7 @@ _RESOURCE_TYPE: dict[str, str] = {
 }
 
 _VALID_RESOURCE_NAME = r"[a-z0-9](([a-z0-9-]{0,61}[a-z0-9])?)$"
-_VALID_PERMISSION_ID = r"permissions/[a-z0-9]+"
+_VALID_PERMISSION_ID = r"(permissions/[a-z0-9]+)$"
 NAME_ERROR_MESSAGE = f"Invalid name format. Expected format: \
     `({'|'.join(_SUPPORTED_RESOURCE_TYPES)})/<resource_name>/permissions/<permission_id>`"
 
@@ -105,7 +105,9 @@ def to_resource_type(x: str) -> str:
 
 
 def valid_name(name: str) -> bool:
-    path_components = name.split("/", maxsplit=2)  # this will be always a list of len 3
+    path_components = name.split("/", maxsplit=2)  # this should always be a list of len 3
+    if len(path_components) != 3: # this guard is against the case when name is provided in a wrong format
+        return False
     if path_components[0] not in _SUPPORTED_RESOURCE_TYPES:
         return False
     if re.match(_VALID_RESOURCE_NAME, path_components[1]) is None:
