@@ -229,14 +229,8 @@ class UnitTests(parameterized.TestCase):
             testcase_name="invlalid_full_name_format_1",
             name="corpora/demo-corpus/permissions/123456789/extra",
         ),
-        dict(
-            testcase_name="invlalid_full_name_format_2",
-            name="corpora/2323"
-        ),
-        dict(
-            testcase_name="invlalid_full_name_format_3",
-            name="corpora"
-        )
+        dict(testcase_name="invlalid_full_name_format_2", name="corpora/2323"),
+        dict(testcase_name="invlalid_full_name_format_3", name="corpora"),
     )
     def test_get_permission_with_invalid_name_constructs(
         self,

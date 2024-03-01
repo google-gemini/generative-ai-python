@@ -106,7 +106,9 @@ def to_resource_type(x: str) -> str:
 
 def valid_name(name: str) -> bool:
     path_components = name.split("/", maxsplit=2)  # this should always be a list of len 3
-    if len(path_components) != 3: # this guard is against the case when name is provided in a wrong format
+    if (
+        len(path_components) != 3
+    ):  # this guard is against the case when name is provided in a wrong format
         return False
     if path_components[0] not in _SUPPORTED_RESOURCE_TYPES:
         return False
