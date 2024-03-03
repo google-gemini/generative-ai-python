@@ -26,7 +26,7 @@ cookie_picture = {
 prompt = "Give me a recipe for this:"
 
 response = model.generate_content(
-    content=[prompt, cookie_picture]
+    contents=[prompt, cookie_picture]
 )
 print(response.text)
 ```
