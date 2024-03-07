@@ -116,7 +116,7 @@ SourceNameType = [str, retriever_types.Corpus, glm.Corpus, retriever_types.Docum
 
 class SemanticRetrieverConfigDict(TypedDict):
     source: SourceNameType
-    query: content_types.ContentType
+    query: content_types.ContentsType
     metadata_filter: Optional[Iterable[MetadataFilter]]
     max_chunks_count: Optional[int] 
     minimum_relevance_score: Optional[float]
