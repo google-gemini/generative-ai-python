@@ -21,13 +21,18 @@ from typing import Iterable, Union, Mapping, Optional, Any
 
 import google.ai.generativelanguage as glm
 
-from google.generativeai.client import get_default_generative_client
+from google.generativeai.client import (
+    get_default_generative_client,
+    get_default_generative_async_client,
+)
 from google.generativeai import string_utils
 from google.generativeai.types import model_types
 from google.generativeai import models
 from google.generativeai.types import safety_types
 from google.generativeai.types import content_types
 from google.generativeai.types import answer_types
+from google.generativeai.types import retriever_types
+from google.generativeai.types.retriever_types import MetadataFilter
 
 DEFAULT_ANSWER_MODEL = "models/aqa"
 
@@ -107,11 +112,109 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
     return glm.GroundingPassages(passages=passages)
 
 
+SemanticRetrieverConfigDict = Union[
+    tuple[
+        str,
+        content_types.ContentsType,
+        Optional[Iterable[MetadataFilter]],
+        Optional[int],
+        Optional[float],
+    ],
+    tuple[
+        retriever_types.Corpus,
+        content_types.ContentsType,
+        Optional[Iterable[MetadataFilter]],
+        Optional[int],
+        Optional[float],
+    ],
+    tuple[
+        retriever_types.Document,
+        content_types.ContentsType,
+        Optional[Iterable[MetadataFilter]],
+        Optional[int],
+        Optional[float],
+    ],
+    Mapping[
+        str,
+        content_types.ContentsType,
+        Optional[Iterable[MetadataFilter]],
+        Optional[int],
+        Optional[float],
+    ],
+    Mapping[
+        retriever_types.Corpus,
+        content_types.ContentsType,
+        Optional[Iterable[MetadataFilter]],
+        Optional[int],
+        Optional[float],
+    ],
+    Mapping[
+        retriever_types.Document,
+        content_types.ContentsType,
+        Optional[Iterable[MetadataFilter]],
+        Optional[int],
+        Optional[float],
+    ],
+]
+
+SemanticRetrieverConfigOptions = Union[
+    SemanticRetrieverConfigDict,
+    glm.SemanticRetrieverConfig,
+]
+
+
+def _make_semantic_retriever_config(
+    source: SemanticRetrieverConfigOptions,
+) -> glm.SemanticRetrieverConfig:
+    if isinstance(source, glm.SemanticRetrieverConfig):
+        return source
+
+    # Mapping could contain the following fields - name, query, metadata_filter, max_chunks_count, minimum_relevance_score
+    if isinstance(source, Mapping):
+        if isinstance(source["source"], str):
+            source_name = source[
+                "source"
+            ]  # Name of the resource for retrieval, like `Corpus`` or `Document` name
+        elif isinstance(source["source"], retriever_types.Corpus) or isinstance(
+            source["source"], retriever_types.Document
+        ):
+            source_name = source["source"].name
+        query = source[
+            "query"
+        ]  # Query to use for similarity matching `Chunk`s in the given resource
+
+        if source["metadata_filters"]:
+            metadata_filters = source["metadata_filters"]
+        else:
+            metadata_filters = None
+
+        if source["max_chunks_count"]:
+            max_chunks_count = source["max_chunks_count"]
+        else:
+            max_chunks_count = None
+
+        if source["minimum_relevance_score"]:
+            minimum_relevance_score = source["minimum_relevance_score"]
+        else:
+            minimum_relevance_score = None
+
+        # Create the glm.SemanticRetrieverConfig based on dictionary fields
+        source = glm.SemanticRetrieverConfig(
+            source=source_name,
+            query=query,
+            metadata_filters=metadata_filters,
+            max_chunks_count=max_chunks_count,
+            minimum_relevance_score=minimum_relevance_score,
+        )
+
+        return source
+
+
 def _make_generate_answer_request(
     *,
     model: model_types.AnyModelNameOptions = DEFAULT_ANSWER_MODEL,
     contents: content_types.ContentsType,
-    grounding_source: GroundingPassagesOptions,
+    grounding_source: GroundingPassagesOptions | SemanticRetrieverConfigOptions,
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
@@ -141,19 +244,32 @@ def _make_generate_answer_request(
             safety_settings, harm_category_set="new"
         )
 
-    grounding_source = _make_grounding_passages(grounding_source)
+    if isinstance(grounding_source, GroundingPassagesOptions):
+        grounding_source = _make_grounding_passages(grounding_source)
+    elif isinstance(grounding_source, SemanticRetrieverConfigOptions):
+        grounding_source = _make_semantic_retriever_config(grounding_source)
 
     if answer_style:
         answer_style = to_answer_style(answer_style)
 
-    return glm.GenerateAnswerRequest(
-        model=model,
-        contents=contents,
-        inline_passages=grounding_source,
-        safety_settings=safety_settings,
-        temperature=temperature,
-        answer_style=answer_style,
-    )
+    if isinstance(grounding_source, GroundingPassagesOptions):
+        return glm.GenerateAnswerRequest(
+            model=model,
+            contents=contents,
+            inline_passages=grounding_source,
+            safety_settings=safety_settings,
+            temperature=temperature,
+            answer_style=answer_style,
+        )
+    elif isinstance(grounding_source, SemanticRetrieverConfigOptions):
+        return glm.GenerateAnswerRequest(
+            model=model,
+            contents=contents,
+            semantic_retriever=grounding_source,
+            safety_settings=safety_settings,
+            temperature=temperature,
+            answer_style=answer_style,
+        )
 
 
 def generate_answer(
@@ -194,5 +310,47 @@ def generate_answer(
     )
 
     response = client.generate_answer(request)
+
+    return response
+
+
+async def generate_answer_async(
+    *,
+    model: model_types.AnyModelNameOptions = DEFAULT_ANSWER_MODEL,
+    contents: content_types.ContentsType,
+    inline_passages: GroundingPassagesOptions,
+    answer_style: AnswerStyle | None = None,
+    safety_settings: safety_types.SafetySettingOptions | None = None,
+    temperature: float | None = None,
+    client: glm.GenerativeServiceClient | None = None,
+):
+    """
+    Calls the API and returns a `types.Answer` containing the answer.
+
+    Args:
+        model: Which model to call, as a string or a `types.Model`.
+        question: The question to be answered by the model, grounded in the
+                provided source.
+        grounding_source: Source indicating the passages in which the answer should be grounded.
+        answer_style: Style in which the grounded answer should be returned.
+        safety_settings: Safety settings for generated output. Defaults to None.
+        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+
+    Returns:
+        A `types.Answer` containing the model's text answer response.
+    """
+    if client is None:
+        client = get_default_generative_async_client()
+
+    request = _make_generate_answer_request(
+        model=model,
+        contents=contents,
+        grounding_source=inline_passages,
+        safety_settings=safety_settings,
+        temperature=temperature,
+        answer_style=answer_style,
+    )
+
+    response = await client.generate_answer(request)
 
     return response

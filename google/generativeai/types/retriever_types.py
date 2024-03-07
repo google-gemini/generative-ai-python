@@ -146,7 +146,7 @@ def to_state(x: StateOptions) -> State:
 @dataclasses.dataclass
 class MetadataFilter:
     key: str
-    conditions: Condition
+    conditions: Iterable[Condition]
 
 
 @string_utils.prettyprint
