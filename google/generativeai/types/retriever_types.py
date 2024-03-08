@@ -606,24 +606,25 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        if valid_name(name):
-            chunk_name = f"{self.name}/chunks/{name}"
-        elif name is None:
-            pass
-        else:
-            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
-
         # Handle the custom_metadata parameter
         c_data = []
         if custom_metadata:
             for cm in custom_metadata:
                 c_data.append(cm._to_proto())
 
+        if name is not None:
+            if valid_name(name):
+                chunk_name = f"{self.name}/chunks/{name}"
+            else:
+                raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
+        else:
+            chunk_name = name
+
         if isinstance(data, str):
             chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
         else:
             chunk = glm.Chunk(
-                name=name,
+                name=chunk_name,
                 data={"string_value": data.string_value},
                 custom_metadata=c_data,
             )
@@ -643,24 +644,25 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        if valid_name(name):
-            chunk_name = f"{self.name}/chunks/{name}"        
-        elif name is None:
-            pass
-        else:
-            raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
-
         # Handle the custom_metadata parameter
         c_data = []
         if custom_metadata:
             for cm in custom_metadata:
                 c_data.append(cm._to_proto())
 
+        if name is not None:
+            if valid_name(name):
+                chunk_name = f"{self.name}/chunks/{name}"
+            else:
+                raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
+        else:
+            chunk_name = name
+
         if isinstance(data, str):
             chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
         else:
             chunk = glm.Chunk(
-                name=name,
+                name=chunk_name,
                 data={"string_value": data.string_value},
                 custom_metadata=c_data,
             )
