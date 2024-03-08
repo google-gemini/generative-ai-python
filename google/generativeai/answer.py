@@ -17,7 +17,7 @@ from __future__ import annotations
 import dataclasses
 from collections.abc import Iterable
 import itertools
-from typing import Iterable, Union, Mapping, Optional, Any
+from typing import Any, Iterable, Union, Mapping, Optional, TypedDict
 
 import google.ai.generativelanguage as glm
 
@@ -112,55 +112,29 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
     return glm.GroundingPassages(passages=passages)
 
 
-SemanticRetrieverConfigDict = Union[
-    tuple[
-        str,
-        content_types.ContentsType,
-        Optional[Iterable[MetadataFilter]],
-        Optional[int],
-        Optional[float],
-    ],
-    tuple[
-        retriever_types.Corpus,
-        content_types.ContentsType,
-        Optional[Iterable[MetadataFilter]],
-        Optional[int],
-        Optional[float],
-    ],
-    tuple[
-        retriever_types.Document,
-        content_types.ContentsType,
-        Optional[Iterable[MetadataFilter]],
-        Optional[int],
-        Optional[float],
-    ],
-    Mapping[
-        str,
-        content_types.ContentsType,
-        Optional[Iterable[MetadataFilter]],
-        Optional[int],
-        Optional[float],
-    ],
-    Mapping[
-        retriever_types.Corpus,
-        content_types.ContentsType,
-        Optional[Iterable[MetadataFilter]],
-        Optional[int],
-        Optional[float],
-    ],
-    Mapping[
-        retriever_types.Document,
-        content_types.ContentsType,
-        Optional[Iterable[MetadataFilter]],
-        Optional[int],
-        Optional[float],
-    ],
-]
+SourceNameType = [str, retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document]
 
+class SemanticRetrieverConfigDict(TypedDict):
+    source: SourceNameType
+    query: content_types.ContentsType
+    metadata_filter: Optional[Iterable[MetadataFilter]]
+    max_chunks_count: Optional[int] 
+    minimum_relevance_score: Optional[float]
+    
 SemanticRetrieverConfigOptions = Union[
+    SourceNameType,
     SemanticRetrieverConfigDict,
     glm.SemanticRetrieverConfig,
 ]
+
+def _maybe_get_source_name(source)-> str|None:
+    if isinstance(source, str):
+        return source
+    elif isinstance(source, (retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document)):
+        return source.name
+    else:
+        return None
+
 
 
 def _make_semantic_retriever_config(
@@ -169,35 +143,13 @@ def _make_semantic_retriever_config(
     if isinstance(source, glm.SemanticRetrieverConfig):
         return source
 
-    # Mapping could contain the following fields - name, query, metadata_filter, max_chunks_count, minimum_relevance_score
-    if isinstance(source, Mapping):
-        if isinstance(source["source"], str):
-            source_name = source[
-                "source"
-            ]  # Name of the resource for retrieval, like `Corpus`` or `Document` name
-        elif isinstance(source["source"], retriever_types.Corpus) or isinstance(
-            source["source"], retriever_types.Document
-        ):
-            source_name = source["source"].name
-        query = source[
-            "query"
-        ]  # Query to use for similarity matching `Chunk`s in the given resource
+    name = _maybe_get_source_name(source)
+    if name is not None:
+        source = {'source': name}
 
-        metadata_filters = source.get('metadata_filters', None)
-        max_chunks_count = source.get('max_chunks_count', None)
-        minimum_relevance_score = source.get("minimum_relevance_score", None)
-
-        # Create the glm.SemanticRetrieverConfig based on dictionary fields
-        source = glm.SemanticRetrieverConfig(
-            source=source_name,
-            query=query,
-            metadata_filters=metadata_filters,
-            max_chunks_count=max_chunks_count,
-            minimum_relevance_score=minimum_relevance_score,
-        )
-
-        return source
-
+    source['name'] = _maybe_get_source_name(source['source'])
+        
+    return glm.SemanticRetrieverConfig(source)
 
 def _make_generate_answer_request(
     *,
