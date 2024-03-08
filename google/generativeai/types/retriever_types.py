@@ -148,6 +148,25 @@ class MetadataFilter:
     key: str
     conditions: Iterable[Condition]
 
+    def _to_proto(self):
+        kwargs = {}
+        conditions = []
+        for c in self.conditions:
+            if isinstance(c.value, str):
+                kwargs["string_value"] = c.value
+            elif isinstance(c.value, (int, float)):
+                kwargs["numeric_value"] = float(c.value)
+            else:
+                ValueError(
+                    f"The value for the condition must be either a string or an integer/float, but got {c.value}."
+                )
+            kwargs["operation"] = c.operation
+        
+            condition = glm.Condition(**kwargs)
+            conditions.append(condition)
+            
+        return glm.MetadataFilter(key=self.key, conditions=conditions)
+
 
 @string_utils.prettyprint
 @dataclasses.dataclass
@@ -182,19 +201,6 @@ class CustomMetadata:
 @dataclasses.dataclass
 class ChunkData:
     string_value: str
-
-
-def create_metadata_filters(MetadataFilter):
-    metadata_filter = {
-        "key": MetadataFilter.key,
-        "conditions": [
-            {
-                "value": MetadataFilter.conditions.value,
-                "operation": to_operator(MetadataFilter.conditions.operation),
-            }
-        ],
-    }
-    return metadata_filter
 
 
 @string_utils.prettyprint
@@ -392,8 +398,8 @@ class Corpus:
     def query(
         self,
         query: str,
-        metadata_filters: Optional[Iterable[MetadataFilter]] = None,
-        results_count: Optional[int] = None,
+        metadata_filters: Iterable[MetadataFilter] | None = None,
+        results_count: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> Iterable[RelevantChunk]:
         """
@@ -417,7 +423,7 @@ class Corpus:
         m_f_ = []
         if metadata_filters:
             for mf in metadata_filters:
-                m_f_.append(create_metadata_filters(mf))
+                m_f_.append(mf._to_proto())
 
         request = glm.QueryCorpusRequest(
             name=self.name,
@@ -441,8 +447,8 @@ class Corpus:
     async def query_async(
         self,
         query: str,
-        metadata_filters: Optional[Iterable[MetadataFilter]] = None,
-        results_count: Optional[int] = None,
+        metadata_filters: Iterable[MetadataFilter] | None = None,
+        results_count: int | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Iterable[RelevantChunk]:
         """This is the async version of `Corpus.query`."""
@@ -456,7 +462,7 @@ class Corpus:
         m_f_ = []
         if metadata_filters:
             for mf in metadata_filters:
-                m_f_.append(create_metadata_filters(mf))
+                m_f_.append(mf._to_proto())
 
         request = glm.QueryCorpusRequest(
             name=self.name,
@@ -517,7 +523,7 @@ class Corpus:
 
     def list_documents(
         self,
-        page_size: Optional[int] = None,
+        page_size: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> Iterable[Document]:
         """
@@ -542,7 +548,7 @@ class Corpus:
 
     async def list_documents_async(
         self,
-        page_size: Optional[int] = None,
+        page_size: int | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> AsyncIterable[Document]:
         """This is the async version of `Corpus.list_documents`."""
@@ -806,7 +812,7 @@ class Document(abc.ABC):
 
     def list_chunks(
         self,
-        page_size: Optional[int] = None,
+        page_size: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> Iterable[Chunk]:
         """
@@ -827,7 +833,7 @@ class Document(abc.ABC):
 
     async def list_chunks_async(
         self,
-        page_size: Optional[int] = None,
+        page_size: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> AsyncIterable[Chunk]:
         """This is the async version of `Document.list_chunks`."""
@@ -841,8 +847,8 @@ class Document(abc.ABC):
     def query(
         self,
         query: str,
-        metadata_filters: Optional[Iterable[MetadataFilter]] = None,
-        results_count: Optional[int] = None,
+        metadata_filters: Iterable[MetadataFilter] | None = None,
+        results_count: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> list[RelevantChunk]:
         """
@@ -866,7 +872,7 @@ class Document(abc.ABC):
         m_f_ = []
         if metadata_filters:
             for mf in metadata_filters:
-                m_f_.append(create_metadata_filters(mf))
+                m_f_.append(mf._to_proto())
 
         request = glm.QueryDocumentRequest(
             name=self.name,
@@ -890,8 +896,8 @@ class Document(abc.ABC):
     async def query_async(
         self,
         query: str,
-        metadata_filters: Optional[Iterable[MetadataFilter]] = None,
-        results_count: Optional[int] = None,
+        metadata_filters: Iterable[MetadataFilter] | None = None,
+        results_count: int | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> list[RelevantChunk]:
         """This is the async version of `Document.query`."""
@@ -905,7 +911,7 @@ class Document(abc.ABC):
         m_f_ = []
         if metadata_filters:
             for mf in metadata_filters:
-                m_f_.append(create_metadata_filters(mf))
+                m_f_.append(mf._to_proto())
 
         request = glm.QueryDocumentRequest(
             name=self.name,
