@@ -211,9 +211,9 @@ class Corpus:
 
     def create_document(
         self,
-        name: str | None,
-        display_name: str | None,
-        custom_metadata: Optional[list[CustomMetadata]] = None,
+        name: str | None = None,
+        display_name: str | None = None,
+        custom_metadata: Iterable[CustomMetadata] | None = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> Document:
         """
@@ -256,9 +256,9 @@ class Corpus:
 
     async def create_document_async(
         self,
-        name: str | None,
-        display_name: str | None,
-        custom_metadata: Optional[list[CustomMetadata]] = None,
+        name: str | None = None,
+        display_name: str | None = None,
+        custom_metadata: Iterable[CustomMetadata] | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Document:
         """This is the async version of `Corpus.create_document`."""
@@ -584,8 +584,8 @@ class Document(abc.ABC):
     def create_chunk(
         self,
         data: str | ChunkData,
-        name: Optional[str] = None,
-        custom_metadata: Optional[list[CustomMetadata]] = None,
+        name: str | None = None,
+        custom_metadata: Iterable[CustomMetadata] | None = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> Chunk:
         """
@@ -636,8 +636,8 @@ class Document(abc.ABC):
     async def create_chunk_async(
         self,
         data: str | ChunkData,
-        name: Optional[str] = None,
-        custom_metadata: Optional[list[CustomMetadata]] = None,
+        name: str | None = None,
+        custom_metadata: Iterable[CustomMetadata] | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Chunk:
         """This is the async version of `Document.create_chunk`."""

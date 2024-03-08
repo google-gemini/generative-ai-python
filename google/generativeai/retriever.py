@@ -28,8 +28,8 @@ from google.generativeai.types import retriever_types
 
 
 def create_corpus(
-    name: str | None,
-    display_name: str | None,
+    name: str | None = None,
+    display_name: str | None = None,
     client: glm.RetrieverServiceClient | None = None,
 ) -> retriever_types.Corpus:
     """
@@ -55,8 +55,6 @@ def create_corpus(
 
     if name is None:
         corpus = glm.Corpus()
-    elif name is None and display_name:
-        corpus = glm.Corpus(display_name=display_name)
     elif retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
@@ -73,8 +71,8 @@ def create_corpus(
 
 
 async def create_corpus_async(
-    name: str | None,
-    display_name: str | None,
+    name: str | None = None,
+    display_name: str | None = None,
     client: glm.RetrieverServiceAsyncClient | None = None,
 ) -> retriever_types.Corpus:
     """This is the async version of `retriever.create_corpus`."""
@@ -83,8 +81,6 @@ async def create_corpus_async(
 
     if name is None:
         corpus = glm.Corpus()
-    elif name is None and display_name:
-        corpus = glm.Corpus(display_name=display_name)
     elif retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
