@@ -54,7 +54,7 @@ def create_corpus(
         client = get_default_retriever_client()
 
     if name is None:
-        corpus = glm.Corpus()
+        corpus = glm.Corpus(name=name, display_name=display_name)
     elif retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)
@@ -80,7 +80,7 @@ async def create_corpus_async(
         client = get_default_retriever_async_client()
 
     if name is None:
-        corpus = glm.Corpus()
+        corpus = glm.Corpus(name=name, display_name=display_name)
     elif retriever_types.valid_name(name):
         corpus_name = "corpora/" + name  # Construct the name
         corpus = glm.Corpus(name=corpus_name, display_name=display_name)

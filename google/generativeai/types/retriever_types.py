@@ -241,7 +241,7 @@ class Corpus:
                 c_data.append(cm._to_proto())
 
         if name is None:
-            document = glm.Document(custom_metadata=c_data)
+            document = glm.Document(name=name, display_name=display_name, custom_metadata=c_data)
         elif valid_name(name):
             document_name = f"{self.name}/documents/{name}"
             document = glm.Document(
@@ -272,7 +272,7 @@ class Corpus:
                 c_data.append(cm._to_proto())
 
         if name is None:
-            document = glm.Document(custom_metadata=c_data)
+            document = glm.Document(name=name, display_name=display_name, custom_metadata=c_data)
         elif valid_name(name):
             document_name = f"{self.name}/documents/{name}"
             document = glm.Document(
@@ -606,10 +606,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        chunk_name, chunk = None, None
-        if name is None:
-            chunk_name = None
-        elif valid_name(name):
+        if valid_name(name):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
@@ -644,10 +641,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        chunk_name, chunk = None, None
-        if name is None:
-            chunk_name = None
-        elif valid_name(name):
+        if valid_name(name):
             chunk_name = f"{self.name}/chunks/{name}"
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
