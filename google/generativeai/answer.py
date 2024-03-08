@@ -183,20 +183,9 @@ def _make_semantic_retriever_config(
             "query"
         ]  # Query to use for similarity matching `Chunk`s in the given resource
 
-        if source["metadata_filters"]:
-            metadata_filters = source["metadata_filters"]
-        else:
-            metadata_filters = None
-
-        if source["max_chunks_count"]:
-            max_chunks_count = source["max_chunks_count"]
-        else:
-            max_chunks_count = None
-
-        if source["minimum_relevance_score"]:
-            minimum_relevance_score = source["minimum_relevance_score"]
-        else:
-            minimum_relevance_score = None
+        metadata_filters = source.get('metadata_filters', None)
+        max_chunks_count = source.get('max_chunks_count', None)
+        minimum_relevance_score = source.get("minimum_relevance_score", None)
 
         # Create the glm.SemanticRetrieverConfig based on dictionary fields
         source = glm.SemanticRetrieverConfig(
