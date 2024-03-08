@@ -39,6 +39,11 @@ class ClientTests(parameterized.TestCase):
         client_opts = client._client_manager.client_config["client_options"]
         self.assertEqual(client_opts.api_key, "AIzA_client")
 
+    @mock.patch.dict(os.environ, {"GOOGLE_API_KEY": ""})
+    def test_api_key_cannot_be_empty(self):
+        with self.assertRaisesRegex(ValueError, "api key must not be empty"):
+            client.configure()
+    
     def test_api_key_cannot_be_set_twice(self):
         client_opts = client_options.ClientOptions(api_key="AIzA_client_opts")
 
@@ -91,6 +96,7 @@ class ClientTests(parameterized.TestCase):
             cls.called_classm = True
 
     @mock.patch.object(glm, "TextServiceClient", DummyClient)
+    @mock.patch.dict(os.environ, {"GOOGLE_API_KEY": "AIzA_env"})
     def test_default_metadata(self):
         # The metadata wrapper injects this argument.
         metadata = [("hello", "world")]
