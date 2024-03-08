@@ -621,8 +621,8 @@ class Document(abc.ABC):
             chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
         else:
             chunk = glm.Chunk(
-                name=chunk_name,
-                data={"string_value": data},
+                name=name,
+                data={"string_value": data.string_value},
                 custom_metadata=c_data,
             )
 
@@ -656,8 +656,8 @@ class Document(abc.ABC):
             chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
         else:
             chunk = glm.Chunk(
-                name=chunk_name,
-                data={"string_value": data},
+                name=name,
+                data={"string_value": data.string_value},
                 custom_metadata=c_data,
             )
 
