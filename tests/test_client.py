@@ -43,7 +43,7 @@ class ClientTests(parameterized.TestCase):
     def test_api_key_cannot_be_empty(self):
         with self.assertRaisesRegex(ValueError, "api key must not be empty"):
             client.configure()
-    
+
     def test_api_key_cannot_be_set_twice(self):
         client_opts = client_options.ClientOptions(api_key="AIzA_client_opts")
 
