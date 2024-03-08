@@ -251,7 +251,9 @@ class Corpus:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
         request = glm.CreateDocumentRequest(parent=self.name, document=document)
+        print(request)
         response = client.create_document(request)
+        print(response)
         return decode_document(response)
 
     async def create_document_async(
@@ -563,8 +565,10 @@ class Corpus:
 
 def decode_document(document):
     document = type(document).to_dict(document)
+    print(document)
     idecode_time(document, "create_time")
     idecode_time(document, "update_time")
+    print(Document(**document))
     return Document(**document)
 
 
