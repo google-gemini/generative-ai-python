@@ -160,9 +160,22 @@ class Condition:
 @dataclasses.dataclass
 class CustomMetadata:
     key: str
-    string_value: Optional[str] = None
-    string_list_value: Optional[Iterable[str]] = None
-    numeric_value: Optional[float] = None
+    value: str | Iterable[str] | float
+
+    def _to_proto(self):
+        kwargs = {}
+        if isinstance(self.value, str):
+            kwargs["string_value"] = self.value
+        elif isinstance(self.value, Iterable):
+            kwargs["string_list_value"] = glm.StringList(values=self.value)
+        elif isinstance(self.value, (int, float)):
+            kwargs["numeric_value"] = float(self.value)
+        else:
+            ValueError(
+                f"The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float, but got {self.value}."
+            )
+
+        return glm.CustomMetadata(key=self.key, **kwargs)
 
 
 @string_utils.prettyprint
@@ -198,8 +211,8 @@ class Corpus:
 
     def create_document(
         self,
-        name: Optional[str] = None,
-        display_name: Optional[str] = None,
+        name: str | None,
+        display_name: str | None,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceClient | None = None,
     ) -> Document:
@@ -225,27 +238,14 @@ class Corpus:
         c_data = []
         if custom_metadata:
             for cm in custom_metadata:
-                if cm.string_list_value:
-                    c_data.append(
-                        glm.CustomMetadata(
-                            key=cm.key,
-                            string_list_value=glm.StringList(values=cm.string_list_value),
-                        )
-                    )
-                elif cm.string_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, string_value=cm.string_value))
-                elif cm.numeric_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, numeric_value=cm.numeric_value))
+                c_data.append(cm._to_proto())
 
-        document, document_name = None, None
         if name is None:
-            document = glm.Document(
-                name=document_name, display_name=display_name, custom_metadata=custom_metadata
-            )
+            document = glm.Document(custom_metadata=c_data)
         elif valid_name(name):
             document_name = f"{self.name}/documents/{name}"
             document = glm.Document(
-                name=document_name, display_name=display_name, custom_metadata=custom_metadata
+                name=document_name, display_name=display_name, custom_metadata=c_data
             )
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
@@ -256,8 +256,8 @@ class Corpus:
 
     async def create_document_async(
         self,
-        name: Optional[str] = None,
-        display_name: Optional[str] = None,
+        name: str | None,
+        display_name: str | None,
         custom_metadata: Optional[list[CustomMetadata]] = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
     ) -> Document:
@@ -269,27 +269,14 @@ class Corpus:
         c_data = []
         if custom_metadata:
             for cm in custom_metadata:
-                if cm.string_list_value:
-                    c_data.append(
-                        glm.CustomMetadata(
-                            key=cm.key,
-                            string_list_value=glm.StringList(values=cm.string_list_value),
-                        )
-                    )
-                elif cm.string_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, string_value=cm.string_value))
-                elif cm.numeric_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, numeric_value=cm.numeric_value))
+                c_data.append(cm._to_proto())
 
-        document, document_name = None, None
         if name is None:
-            document = glm.Document(
-                name=document_name, display_name=display_name, custom_metadata=custom_metadata
-            )
+            document = glm.Document(custom_metadata=c_data)
         elif valid_name(name):
             document_name = f"{self.name}/documents/{name}"
             document = glm.Document(
-                name=document_name, display_name=display_name, custom_metadata=custom_metadata
+                name=document_name, display_name=display_name, custom_metadata=c_data
             )
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
@@ -631,17 +618,7 @@ class Document(abc.ABC):
         c_data = []
         if custom_metadata:
             for cm in custom_metadata:
-                if cm.string_list_value:
-                    c_data.append(
-                        glm.CustomMetadata(
-                            key=cm.key,
-                            string_list_value=glm.StringList(values=cm.string_list_value),
-                        )
-                    )
-                elif cm.string_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, string_value=cm.string_value))
-                elif cm.numeric_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, numeric_value=cm.numeric_value))
+                c_data.append(cm._to_proto())
 
         if isinstance(data, str):
             chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
@@ -679,17 +656,7 @@ class Document(abc.ABC):
         c_data = []
         if custom_metadata:
             for cm in custom_metadata:
-                if cm.string_list_value:
-                    c_data.append(
-                        glm.CustomMetadata(
-                            key=cm.key,
-                            string_list_value=glm.StringList(values=cm.string_list_value),
-                        )
-                    )
-                elif cm.string_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, string_value=cm.string_value))
-                elif cm.numeric_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, numeric_value=cm.numeric_value))
+                c_data.append(cm._to_proto())
 
         if isinstance(data, str):
             chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)

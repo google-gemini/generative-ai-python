@@ -114,27 +114,31 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
 
 SourceNameType = [str, retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document]
 
+
 class SemanticRetrieverConfigDict(TypedDict):
-    source: SourceNameType
+    source: SourceNameType  # type: ignore
     query: content_types.ContentsType
     metadata_filter: Optional[Iterable[MetadataFilter]]
-    max_chunks_count: Optional[int] 
+    max_chunks_count: Optional[int]
     minimum_relevance_score: Optional[float]
-    
+
+
 SemanticRetrieverConfigOptions = Union[
     SourceNameType,
     SemanticRetrieverConfigDict,
     glm.SemanticRetrieverConfig,
 ]
 
-def _maybe_get_source_name(source)-> str|None:
+
+def _maybe_get_source_name(source) -> str | None:
     if isinstance(source, str):
         return source
-    elif isinstance(source, (retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document)):
+    elif isinstance(
+        source, (retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document)
+    ):
         return source.name
     else:
         return None
-
 
 
 def _make_semantic_retriever_config(
@@ -145,17 +149,19 @@ def _make_semantic_retriever_config(
 
     name = _maybe_get_source_name(source)
     if name is not None:
-        source = {'source': name}
+        source = {"source": name}
+    else:
+        source["name"] = _maybe_get_source_name(source["source"])
 
-    source['name'] = _maybe_get_source_name(source['source'])
-        
     return glm.SemanticRetrieverConfig(source)
+
 
 def _make_generate_answer_request(
     *,
     model: model_types.AnyModelNameOptions = DEFAULT_ANSWER_MODEL,
     contents: content_types.ContentsType,
-    grounding_source: GroundingPassagesOptions | SemanticRetrieverConfigOptions,
+    inline_passages: GroundingPassagesOptions | None,
+    semantic_retriever_config: SemanticRetrieverConfigOptions | None,
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
@@ -185,39 +191,37 @@ def _make_generate_answer_request(
             safety_settings, harm_category_set="new"
         )
 
-    if isinstance(grounding_source, GroundingPassagesOptions):
-        grounding_source = _make_grounding_passages(grounding_source)
-    elif isinstance(grounding_source, SemanticRetrieverConfigOptions):
-        grounding_source = _make_semantic_retriever_config(grounding_source)
+    if inline_passages is not None:
+        inline_passages = _make_grounding_passages(inline_passages)
+    elif semantic_retriever_config is not None:
+        semantic_retriever_config = _make_semantic_retriever_config(semantic_retriever_config)
+        if not semantic_retriever_config.query:
+            semantic_retriever_config.query = contents[-1]
+    else:
+        TypeError(
+            f"The source must be either an `inline_passages` or `semantic_retriever_config`, but got `inline_passages`: {inline_passages} or `semantic_retriever_config`: {semantic_retriever_config}."
+        )
 
     if answer_style:
         answer_style = to_answer_style(answer_style)
 
-    if isinstance(grounding_source, GroundingPassagesOptions):
-        return glm.GenerateAnswerRequest(
-            model=model,
-            contents=contents,
-            inline_passages=grounding_source,
-            safety_settings=safety_settings,
-            temperature=temperature,
-            answer_style=answer_style,
-        )
-    elif isinstance(grounding_source, SemanticRetrieverConfigOptions):
-        return glm.GenerateAnswerRequest(
-            model=model,
-            contents=contents,
-            semantic_retriever=grounding_source,
-            safety_settings=safety_settings,
-            temperature=temperature,
-            answer_style=answer_style,
-        )
+    return glm.GenerateAnswerRequest(
+        model=model,
+        contents=contents,
+        inline_passages=inline_passages,
+        semantic_retriever_config=semantic_retriever_config,
+        safety_settings=safety_settings,
+        temperature=temperature,
+        answer_style=answer_style,
+    )
 
 
 def generate_answer(
     *,
     model: model_types.AnyModelNameOptions = DEFAULT_ANSWER_MODEL,
     contents: content_types.ContentsType,
-    inline_passages: GroundingPassagesOptions,
+    inline_passages: GroundingPassagesOptions | None,
+    semantic_retriever_config: SemanticRetrieverConfigOptions | None,
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
@@ -244,7 +248,8 @@ def generate_answer(
     request = _make_generate_answer_request(
         model=model,
         contents=contents,
-        grounding_source=inline_passages,
+        inline_passages=inline_passages,
+        semantic_retriever_config=semantic_retriever_config,
         safety_settings=safety_settings,
         temperature=temperature,
         answer_style=answer_style,
@@ -259,7 +264,8 @@ async def generate_answer_async(
     *,
     model: model_types.AnyModelNameOptions = DEFAULT_ANSWER_MODEL,
     contents: content_types.ContentsType,
-    inline_passages: GroundingPassagesOptions,
+    inline_passages: GroundingPassagesOptions | None,
+    semantic_retriever_config: SemanticRetrieverConfigOptions | None,
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
@@ -286,7 +292,8 @@ async def generate_answer_async(
     request = _make_generate_answer_request(
         model=model,
         contents=contents,
-        grounding_source=inline_passages,
+        inline_passages=inline_passages,
+        semantic_retriever_config=semantic_retriever_config,
         safety_settings=safety_settings,
         temperature=temperature,
         answer_style=answer_style,
