@@ -608,6 +608,8 @@ class Document(abc.ABC):
 
         if valid_name(name):
             chunk_name = f"{self.name}/chunks/{name}"
+        elif name is None:
+            pass
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
@@ -642,7 +644,9 @@ class Document(abc.ABC):
             client = get_default_retriever_async_client()
 
         if valid_name(name):
-            chunk_name = f"{self.name}/chunks/{name}"
+            chunk_name = f"{self.name}/chunks/{name}"        
+        elif name is None:
+            pass
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
