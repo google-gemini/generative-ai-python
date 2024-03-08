@@ -79,8 +79,10 @@ class _ClientManager:
             if api_key is None:
                 # If no key is provided explicitly, attempt to load one from the
                 # environment.
-                api_key = os.getenv("GOOGLE_API_KEY")
-
+                api_key = os.getenv("GOOGLE_API_KEY", "")
+                if api_key == "":
+                    raise ValueError("api key must not be empty.")
+            
             client_options.api_key = api_key
 
         user_agent = f"{USER_AGENT}/{__version__}"
@@ -214,7 +216,6 @@ def configure(
 
 
 _client_manager = _ClientManager()
-_client_manager.configure()
 
 
 def get_default_discuss_client() -> glm.DiscussServiceClient:
