@@ -81,7 +81,7 @@ class _ClientManager:
                 # environment.
                 api_key = os.getenv("GOOGLE_API_KEY", "")
             if api_key == "":
-                raise ValueError("api key must not be empty.")
+                raise ValueError("api key can't be empty.")
 
             client_options.api_key = api_key
 
