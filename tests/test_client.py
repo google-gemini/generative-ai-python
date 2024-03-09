@@ -118,7 +118,6 @@ class ClientTests(parameterized.TestCase):
             cls.called_classm = True
 
     @mock.patch.object(glm, "TextServiceClient", DummyClient)
-    @mock.patch.dict(os.environ, {"GOOGLE_API_KEY": "AIzA_env"})
     def test_default_metadata(self):
         # The metadata wrapper injects this argument.
         metadata = [("hello", "world")]
