@@ -38,11 +38,11 @@ class ClientTests(parameterized.TestCase):
         client.configure(api_key="AIzA_client")
         client_opts = client._client_manager.client_config["client_options"]
         self.assertEqual(client_opts.api_key, "AIzA_client")
-    
+
     def test_api_key_cannot_be_empty_passed_directly(self):
         with self.assertRaisesRegex(ValueError, "api key can't be empty."):
             client.configure(api_key="")
-    
+
     @mock.patch.dict(os.environ, {"GOOGLE_API_KEY": ""})
     def test_api_key_cannot_be_empty_from_environment(self):
         with self.assertRaisesRegex(ValueError, "api key can't be empty."):
@@ -59,7 +59,7 @@ class ClientTests(parameterized.TestCase):
     def test_configureless_client_with_empty_api_key(self, factory_fn):
         with self.assertRaisesRegex(ValueError, "api key can't be empty."):
             _ = factory_fn()
-    
+
     def test_empty_api_key_cannot_be_set_twice(self):
         client_opts = client_options.ClientOptions(api_key="")
 

@@ -218,6 +218,7 @@ def configure(
 
 _client_manager = _ClientManager()
 
+
 def get_default_discuss_client() -> glm.DiscussServiceClient:
     return _client_manager.get_default_client("discuss")
 
