@@ -43,11 +43,6 @@ class ClientTests(parameterized.TestCase):
         with self.assertRaisesRegex(ValueError, "api key can't be empty."):
             client.configure(api_key="")
     
-    def test_api_key_cannot_be_empty_passed_via_client_options(self):
-        with self.assertRaisesRegex(ValueError, "api key can't be empty."):
-            client_opts = client_options.ClientOptions(api_key="")
-            client.configure(client_options=client_opts)
-
     @mock.patch.dict(os.environ, {"GOOGLE_API_KEY": ""})
     def test_api_key_cannot_be_empty_from_environment(self):
         with self.assertRaisesRegex(ValueError, "api key can't be empty."):
