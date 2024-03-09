@@ -66,21 +66,10 @@ _ROLE: dict[RoleOptions, Role] = {
     "reader": Role.READER,
 }
 
-_SUPPORTED_RESOURCE_TYPES = ["corpora", "tunedModels"]
-
-_RESOURCE_TYPE: dict[str, str] = {
-    "corpus": "corpora",
-    "corpora": "corpora",
-    "tunedmodel": "tunedModels",
-    "tunedmodels": "tunedModels",
-}
-
-_VALID_PERMISSION_NAME = (
-    rf"(({'|'.join(_SUPPORTED_RESOURCE_TYPES)})/"
-    + r"[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?/permissions/[a-z0-9]+)$"
+_VALID_PERMISSION_ID = r"permissions/([a-z0-9]+)$"
+INVALID_PERMISSION_ID_MSG = (
+    "permission_id must follow the pattern: `permissions/<id>`. Got: `{permission_id}` instead."
 )
-NAME_ERROR_MESSAGE = f"Invalid name format. Expected format: \
-    `({'|'.join(_SUPPORTED_RESOURCE_TYPES)})/<resource_name>/permissions/<permission_id>`"
 
 
 def to_grantee_type(x: GranteeTypeOptions) -> GranteeType:
@@ -95,19 +84,8 @@ def to_role(x: RoleOptions) -> Role:
     return _ROLE[x]
 
 
-def to_resource_type(x: str) -> str:
-    if isinstance(x, str):
-        x = x.lower()
-    resource_type = _RESOURCE_TYPE.get(x, None)
-    if not resource_type:
-        raise ValueError(
-            f"Invalid resource type. Expected one of: {_SUPPORTED_RESOURCE_TYPES}. Got: `{x}` instead."
-        )
-    return resource_type
-
-
-def valid_name(name: str) -> bool:
-    return re.match(_VALID_PERMISSION_NAME, name) is not None
+def valid_id(name: str) -> bool:
+    return re.match(_VALID_PERMISSION_ID, name) is not None
 
 
 @string_utils.prettyprint
@@ -185,7 +163,7 @@ class Permission:
             self._apply_update(path, value)
 
         update_request = glm.UpdatePermissionRequest(
-            permission=self.to_dict(), update_mask=field_mask
+            permission=self.to_proto(), update_mask=field_mask
         )
         client.update_permission(request=update_request)
         return self
@@ -215,18 +193,21 @@ class Permission:
             self._apply_update(path, value)
 
         update_request = glm.UpdatePermissionRequest(
-            permission=self.to_dict(), update_mask=field_mask
+            permission=self.to_proto(), update_mask=field_mask
         )
         await client.update_permission(request=update_request)
         return self
 
+    def to_proto(self) -> glm.Permission:
+        return glm.Permission(
+            name=self.name,
+            role=self.role,
+            grantee_type=self.grantee_type,
+            email_address=self.email_address,
+        )
+
     def to_dict(self) -> dict[str, Any]:
-        return {
-            "name": self.name,
-            "role": self.role,
-            "grantee_type": self.grantee_type,
-            "email_address": self.email_address,
-        }
+        return dataclasses.asdict(self)
 
     @classmethod
     def get(

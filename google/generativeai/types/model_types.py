@@ -48,6 +48,17 @@ TunedModelState = glm.TunedModel.State
 
 TunedModelStateOptions = Union[None, str, int, TunedModelState]
 
+_TUNED_MODEL_VALID_NAME = r"[a-z](([a-z0-9-]{0,61}[a-z0-9])?)$"
+TUNED_MODEL_NAME_ERROR_MSG = """The `name` must consist of alphanumeric characters (or -) and be at most 63 characters; The name you entered:
+\tlen(name)== {length}
+\tname={name}
+"""
+
+
+def valid_tuned_model_name(name: str) -> bool:
+    return re.match(_TUNED_MODEL_VALID_NAME, name) is not None
+
+
 # fmt: off
 _TUNED_MODEL_STATES: dict[TunedModelStateOptions, TunedModelState] = {
     TunedModelState.ACTIVE: TunedModelState.ACTIVE,

@@ -14,12 +14,72 @@
 # limitations under the License.
 from __future__ import annotations
 
+from typing import Callable
+
 import google.ai.generativelanguage as glm
 
 from google.generativeai.types import permission_types
+from google.generativeai.types import retriever_types
+from google.generativeai.types import model_types
 
 
-def _construct_and_validate_name(
+_RESOURCE_TYPE: dict[str, str] = {
+    "corpus": "corpora",
+    "corpora": "corpora",
+    "tunedmodel": "tunedModels",
+    "tunedmodels": "tunedModels",
+}
+
+_SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN: dict[str, tuple[Callable[[str], bool], str]] = {
+    "corpora": (retriever_types.valid_name, retriever_types.NAME_ERROR_MSG),
+    "tunedModels": (model_types.valid_tuned_model_name, model_types.TUNED_MODEL_NAME_ERROR_MSG),
+}
+
+_NAME_ERROR_MSG = f"Invalid name format. Expected format: \
+    `({'|'.join(list(_SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN.keys()))})/<resource_name>/permissions/<permission_id>`"
+
+_UNSUPPORTED_RESOURCE_TYPE_MSG = f"Unsupported resource type. Expected one of: {list(_SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN.keys())}"
+
+
+def _to_resource_type(x: str) -> str:
+    if isinstance(x, str):
+        x = x.lower()
+    resource_type = _RESOURCE_TYPE.get(x, None)
+    if not resource_type:
+        raise ValueError(f"{_UNSUPPORTED_RESOURCE_TYPE_MSG}. Got: `{x}` instead.")
+
+    return resource_type
+
+
+def _validate_resource_name(x: str, resource_type: str) -> None:
+    fn, error_msg = _SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN[resource_type]
+    if not fn(x):
+        raise ValueError(error_msg.format(length=len(x), name=x))
+
+
+def _validate_permission_id(x: str) -> None:
+    if not permission_types.valid_id(x):
+        raise ValueError(f"{permission_types.INVALID_PERMISSION_ID_MSG}. Got: `{x}` instead.")
+
+
+def _get_valid_name_components(name: str) -> str:
+    # name is of the format: resource_type/resource_name/permissions/permission_id
+    name_path_components = name.split("/")
+    if len(name_path_components) != 4:
+        raise ValueError(f"{_NAME_ERROR_MSG}. Got: `{name}` instead.")
+
+    resource_type, resource_name, permission_placeholder, permission_id = name_path_components
+    resource_type = _to_resource_type(resource_type)
+
+    permission_id = f"{permission_placeholder}/{permission_id}"
+
+    _validate_resource_name(resource_name, resource_type)
+    _validate_permission_id(permission_id)
+
+    return "/".join([resource_type, resource_name, permission_id])
+
+
+def _construct_name(
     name: str | None = None,
     resource_name: str | None = None,
     permission_id: str | int | None = None,
@@ -34,7 +94,7 @@ def _construct_and_validate_name(
             )
 
         if resource_type:
-            resource_type = permission_types.to_resource_type(resource_type)
+            resource_type = _to_resource_type(resource_type)
         else:
             # if resource_type is not provided, then try to infer it from resource_name.
             resource_path_components = resource_name.split("/")
@@ -42,7 +102,7 @@ def _construct_and_validate_name(
                 raise ValueError(
                     f"Invalid resource_name format. Expected format: `resource_type/resource_name`. Got: `{resource_name}` instead."
                 )
-            resource_type = permission_types.to_resource_type(resource_path_components[0])
+            resource_type = _to_resource_type(resource_path_components[0])
 
         if f"{resource_type}/" in resource_name:
             name = f"{resource_name}/"
@@ -54,9 +114,8 @@ def _construct_and_validate_name(
         else:
             name += permission_id
 
-    # if name is provided, override resource_name and permission_id if provided.
-    if not permission_types.valid_name(name):
-        raise ValueError(f"{permission_types.NAME_ERROR_MESSAGE}. Got: `{name}` instead.")
+    # if name is provided, override resource_name and permission_id
+    name = _get_valid_name_components(name)
     return name
 
 
@@ -68,19 +127,19 @@ def get_permission(
     permission_id: str | int | None = None,
     resource_type: str | None = None,
 ) -> permission_types.Permission:
-    """Get a permission by name.
+    """Get information about a permission by name.
 
     Args:
         name: The name of the permission.
-        resource_name: The name of the supported resource for which the permission is being created.
+        resource_name: The name of the supported resource for which the permission details are needed.
         permission_id: The name of the permission.
-        resource_type: The type of the resource (corpus or tunedModel as of now) for which the permission is being created.
+        resource_type: The type of the resource (corpus or tunedModel as of now) for which the permission details are needed.
                         If not provided, it will be inferred from `resource_name`.
 
     Returns:
         The permission as an instance of `permission_types.Permission`.
     """
-    name = _construct_and_validate_name(
+    name = _construct_name(
         name=name,
         resource_name=resource_name,
         permission_id=permission_id,
@@ -100,7 +159,7 @@ async def get_permission_async(
     """
     This is the async version of `permission.get_permission`.
     """
-    name = _construct_and_validate_name(
+    name = _construct_name(
         name=name,
         resource_name=resource_name,
         permission_id=permission_id,
