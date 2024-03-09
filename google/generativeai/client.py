@@ -80,6 +80,7 @@ class _ClientManager:
                 # If no key is provided explicitly, attempt to load one from the
                 # environment.
                 api_key = os.getenv("GOOGLE_API_KEY", "")
+            # if api_key is empty string, raise exception.
             if api_key == "":
                 raise ValueError("api key can't be empty.")
 
