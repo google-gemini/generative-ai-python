@@ -112,11 +112,13 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
     return glm.GroundingPassages(passages=passages)
 
 
-SourceNameType = Union[str, retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document]
+SourceNameType = Union[
+    str, retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document
+]
 
 
 class SemanticRetrieverConfigDict(TypedDict):
-    source: SourceNameType  # type: ignore
+    source: SourceNameType
     query: content_types.ContentsType
     metadata_filter: Optional[Iterable[MetadataFilter]]
     max_chunks_count: Optional[int]
@@ -146,12 +148,18 @@ def _make_semantic_retriever_config(
 ) -> glm.SemanticRetrieverConfig:
     if isinstance(source, glm.SemanticRetrieverConfig):
         return source
+    
+    if isinstance(source, SemanticRetrieverConfigDict):
+        print(source)
+        return glm.SemanticRetrieverConfig(source)
 
     name = _maybe_get_source_name(source)
     if name is not None:
         source = {"source": name}
+        print(source)
     else:
         source["source"] = _maybe_get_source_name(source["source"])
+        print(source)
 
     return glm.SemanticRetrieverConfig(source)
 

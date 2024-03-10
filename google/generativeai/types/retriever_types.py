@@ -161,10 +161,10 @@ class MetadataFilter:
                     f"The value for the condition must be either a string or an integer/float, but got {c.value}."
                 )
             kwargs["operation"] = c.operation
-        
+
             condition = glm.Condition(**kwargs)
             conditions.append(condition)
-            
+
         return glm.MetadataFilter(key=self.key, conditions=conditions)
 
 
