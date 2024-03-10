@@ -151,7 +151,7 @@ def _make_semantic_retriever_config(
     if name is not None:
         source = {"source": name}
     else:
-        source["name"] = _maybe_get_source_name(source["source"])
+        source["source"] = _maybe_get_source_name(source["source"])
 
     return glm.SemanticRetrieverConfig(source)
 
