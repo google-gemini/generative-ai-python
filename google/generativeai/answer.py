@@ -112,7 +112,7 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
     return glm.GroundingPassages(passages=passages)
 
 
-SourceNameType = [str, retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document]
+SourceNameType = Union[str, retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document]
 
 
 class SemanticRetrieverConfigDict(TypedDict):
