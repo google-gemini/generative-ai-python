@@ -148,18 +148,12 @@ def _make_semantic_retriever_config(
 ) -> glm.SemanticRetrieverConfig:
     if isinstance(source, glm.SemanticRetrieverConfig):
         return source
-    
-    if isinstance(source, SemanticRetrieverConfigDict):
-        print(source)
-        return glm.SemanticRetrieverConfig(source)
 
     name = _maybe_get_source_name(source)
     if name is not None:
         source = {"source": name}
-        print(source)
     else:
         source["source"] = _maybe_get_source_name(source["source"])
-        print(source)
 
     return glm.SemanticRetrieverConfig(source)
 
