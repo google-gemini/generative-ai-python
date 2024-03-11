@@ -194,6 +194,9 @@ class CustomMetadata:
                 f"The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float, but got {self.value}."
             )
 
+        print(kwargs)
+        print(**kwargs)
+
         return glm.CustomMetadata(key=self.key, **kwargs)
 
 
