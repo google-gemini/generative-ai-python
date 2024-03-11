@@ -196,6 +196,16 @@ class CustomMetadata:
 
         return glm.CustomMetadata(key=self.key, **kwargs)
 
+    @classmethod
+    def _from_dict(cls, cm):
+        key = cm["key"]
+        value = (
+            cm.get("string_value", None)
+            or cm.get("string_list_value", None)
+            or cm.get("numeric_value", None)
+        )
+        return cls(key=key, value=value)
+
 
 @string_utils.prettyprint
 @dataclasses.dataclass
@@ -1243,10 +1253,11 @@ class Chunk(abc.ABC):
             self.data = ChunkData(string_value=data)
         elif isinstance(data, dict):
             self.data = ChunkData(string_value=data["string_value"])
+
         if custom_metadata is None:
             self.custom_metadata = []
         else:
-            self.custom_metadata = [CustomMetadata(*cm) for cm in custom_metadata]
+            self.custom_metadata = [CustomMetadata._from_dict(cm) for cm in custom_metadata]
 
         self.state = to_state(state)
 
