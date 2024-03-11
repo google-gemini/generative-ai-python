@@ -208,7 +208,7 @@ def _make_generate_answer_request(
 
     else:
         TypeError(
-            f"The source must be either an `inline_passages` or `semantic_retriever_config`, but got `inline_passages`: {inline_passages} or `semantic_retriever_config`: {semantic_retriever_config}."
+            f"The source must be either an `inline_passages` xor `semantic_retriever_config`, but both are `None`"
         )
 
     if answer_style:
