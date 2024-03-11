@@ -67,9 +67,8 @@ _ROLE: dict[RoleOptions, Role] = {
 }
 
 _VALID_PERMISSION_ID = r"permissions/([a-z0-9]+)$"
-INVALID_PERMISSION_ID_MSG = (
-    "permission_id must follow the pattern: `permissions/<id>`. Got: `{permission_id}` instead."
-)
+INVALID_PERMISSION_ID_MSG = """`permission_id` must follow the pattern: `permissions/<id>` and must \
+consist of only alphanumeric characters. Got: `{permission_id}` instead."""
 
 
 def to_grantee_type(x: GranteeTypeOptions) -> GranteeType:
@@ -163,7 +162,7 @@ class Permission:
             self._apply_update(path, value)
 
         update_request = glm.UpdatePermissionRequest(
-            permission=self.to_proto(), update_mask=field_mask
+            permission=self._to_proto(), update_mask=field_mask
         )
         client.update_permission(request=update_request)
         return self
@@ -193,12 +192,12 @@ class Permission:
             self._apply_update(path, value)
 
         update_request = glm.UpdatePermissionRequest(
-            permission=self.to_proto(), update_mask=field_mask
+            permission=self._to_proto(), update_mask=field_mask
         )
         await client.update_permission(request=update_request)
         return self
 
-    def to_proto(self) -> glm.Permission:
+    def _to_proto(self) -> glm.Permission:
         return glm.Permission(
             name=self.name,
             role=self.role,
