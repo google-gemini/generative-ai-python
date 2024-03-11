@@ -145,6 +145,7 @@ def _maybe_get_source_name(source) -> str | None:
 
 def _make_semantic_retriever_config(
     source: SemanticRetrieverConfigOptions,
+    query: content_types.ContentsType,
 ) -> glm.SemanticRetrieverConfig:
     if isinstance(source, glm.SemanticRetrieverConfig):
         return source
@@ -154,6 +155,9 @@ def _make_semantic_retriever_config(
         source = {"source": name}
     else:
         source["source"] = _maybe_get_source_name(source["source"])
+
+    if source['query'] is None:
+        source.get('query', query)
 
     return glm.SemanticRetrieverConfig(source)
 
@@ -196,9 +200,8 @@ def _make_generate_answer_request(
     if inline_passages is not None:
         inline_passages = _make_grounding_passages(inline_passages)
     elif semantic_retriever_config is not None:
-        semantic_retriever_config = _make_semantic_retriever_config(semantic_retriever_config)
-        if not semantic_retriever_config.query:
-            semantic_retriever_config.query = contents[-1]
+        semantic_retriever_config = _make_semantic_retriever_config(semantic_retriever_config, contents[-1])
+
     else:
         TypeError(
             f"The source must be either an `inline_passages` or `semantic_retriever_config`, but got `inline_passages`: {inline_passages} or `semantic_retriever_config`: {semantic_retriever_config}."
