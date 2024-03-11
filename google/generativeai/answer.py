@@ -158,6 +158,8 @@ def _make_semantic_retriever_config(
 
     if source['query'] is None:
         source.get('query', query)
+    elif isinstance(source['query'], str):
+        source['query'] = content_types.to_contents(source['query'])
 
     return glm.SemanticRetrieverConfig(source)
 
