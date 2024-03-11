@@ -534,7 +534,7 @@ class ChatSession:
         if generation_config.get("candidate_count", 1) > 1:
             raise ValueError("Can't chat with `candidate_count > 1`")
 
-        response = await self.model.generate_content(
+        response = await self.model.generate_content_async(
             contents=history,
             generation_config=generation_config,
             safety_settings=safety_settings,
