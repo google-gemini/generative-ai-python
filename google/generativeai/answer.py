@@ -156,10 +156,10 @@ def _make_semantic_retriever_config(
     else:
         source["source"] = _maybe_get_source_name(source["source"])
 
-    if source['query'] is None:
-        source.get('query', query)
-    elif isinstance(source['query'], str):
-        source['query'] = content_types.to_content(source['query'])
+    if source["query"] is None:
+        source.get("query", query)
+    elif isinstance(source["query"], str):
+        source["query"] = content_types.to_content(source["query"])
 
     return glm.SemanticRetrieverConfig(source)
 
@@ -202,7 +202,9 @@ def _make_generate_answer_request(
     if inline_passages is not None:
         inline_passages = _make_grounding_passages(inline_passages)
     elif semantic_retriever_config is not None:
-        semantic_retriever_config = _make_semantic_retriever_config(semantic_retriever_config, contents[-1])
+        semantic_retriever_config = _make_semantic_retriever_config(
+            semantic_retriever_config, contents[-1]
+        )
 
     else:
         TypeError(

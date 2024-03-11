@@ -1011,7 +1011,6 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        # TODO (@snkancharla): Add idecode_time here in each conditional loop?
         if isinstance(chunks, glm.BatchUpdateChunksRequest):
             response = client.batch_update_chunks(chunks)
             response = type(response).to_dict(response)
@@ -1066,7 +1065,6 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        # TODO (@snkancharla): Add idecode_time here in each conditional loop?
         if isinstance(chunks, glm.BatchUpdateChunksRequest):
             response = await client.batch_update_chunks(chunks)
             response = type(response).to_dict(response)
