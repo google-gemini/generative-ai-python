@@ -186,7 +186,7 @@ class CustomMetadata:
         if isinstance(self.value, str):
             kwargs["string_value"] = self.value
         elif isinstance(self.value, Iterable):
-            kwargs["string_list_value"] = glm.StringList(values=self.value)
+            kwargs["string_list_value"] = glm.StringList(values=self.value)._to_proto(glm.StringList.DESCRIPTOR)
         elif isinstance(self.value, (int, float)):
             kwargs["numeric_value"] = float(self.value)
         else:
