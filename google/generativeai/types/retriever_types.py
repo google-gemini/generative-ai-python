@@ -205,16 +205,16 @@ class CustomMetadata:
             or cm.get("numeric_value", None)
         )
         return cls(key=key, value=value)
-    
-    def _to_dict(cls, cm):
+
+    def _to_dict(self):
         custom_metadata = {}
-        custom_metadata["key"] = cm.get("key")
-        if isinstance(cm["value"], str):
-            custom_metadata["string_value"] = cm["value"]
-        elif isinstance(cm["value"], Iterable):
-            custom_metadata["string_list_value"] = glm.StringList(values=cm["value"])
-        elif isinstance(cm["value"], (int, float)):
-            custom_metadata["numeric_value"] = float(cm["value"])
+        custom_metadata["key"] = self.key
+        if isinstance(self.value, str):
+            custom_metadata["string_value"] = self.value
+        elif isinstance(self.value, Iterable):
+            custom_metadata["string_list_value"] = glm.StringList(values=self.value)
+        elif isinstance(self.value, (int, float)):
+            custom_metadata["numeric_value"] = float(self.value)
         else:
             ValueError(
                 f"The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float, but got {self.value}."
@@ -1050,7 +1050,7 @@ class Document(abc.ABC):
                 updates = flatten_update_paths(value)
                 # At this time, only `data` can be updated
                 for item in updates:
-                    if item != 'data.string_value':
+                    if item != "data.string_value":
                         raise ValueError(
                             f"At this time, only `data` can be updated for `Chunk`. Got {item}."
                         )
@@ -1059,7 +1059,9 @@ class Document(abc.ABC):
                     field_mask.paths.append(path)
                 for path, value in updates.items():
                     chunk_to_update._apply_update(path, value)
-                _requests.append(glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask))
+                _requests.append(
+                    glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
+                )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = client.batch_update_chunks(request)
             response = type(response).to_dict(response)
@@ -1077,7 +1079,9 @@ class Document(abc.ABC):
                         field_mask.paths.append(path)
                     for path, value in updates.items():
                         chunk_to_update._apply_update(path, value)
-                    _requests.append({"chunk": chunk_to_update.to_dict(), "update_mask": field_mask})
+                    _requests.append(
+                        {"chunk": chunk_to_update.to_dict(), "update_mask": field_mask}
+                    )
                 else:
                     raise TypeError(
                         "The `chunks` parameter must be a list of glm.UpdateChunkRequests,"
