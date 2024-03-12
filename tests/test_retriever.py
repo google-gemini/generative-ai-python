@@ -535,7 +535,7 @@ class UnitTests(parameterized.TestCase):
             custom_metadata=[
                 retriever_service.CustomMetadata(
                     key="tag",
-                    string_list_value=[
+                    value=[
                         "Google For Developers",
                         "Project IDX",
                         "Blog",

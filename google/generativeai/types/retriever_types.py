@@ -1030,14 +1030,20 @@ class Document(abc.ABC):
         if isinstance(chunks, Mapping):
             # Key is name of chunk, value is a dictionary of updates
             for key, value in chunks.items():
-                c = self.get_chunk(name=key)
+                chunk_to_update = self.get_chunk(name=key)
                 updates = flatten_update_paths(value)
+                # At this time, only `data` can be updated
+                for item in updates:
+                    if item != 'data.string_value':
+                        raise ValueError(
+                            f"At this time, only `data` can be updated for `Chunk`. Got {item}."
+                        )
                 field_mask = field_mask_pb2.FieldMask()
                 for path in updates.keys():
                     field_mask.paths.append(path)
                 for path, value in updates.items():
-                    c._apply_update(path, value)
-                _requests.append(glm.UpdateChunkRequest(chunk=c.to_dict(), update_mask=field_mask))
+                    chunk_to_update._apply_update(path, value)
+                _requests.append(glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask))
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = client.batch_update_chunks(request)
             response = type(response).to_dict(response)
@@ -1048,14 +1054,14 @@ class Document(abc.ABC):
                     _requests.append(chunk)
                 elif isinstance(chunk, tuple):
                     # First element is name of chunk, second element contains updates
-                    c = self.get_chunk(name=chunk[0])
+                    chunk_to_update = self.get_chunk(name=chunk[0])
                     updates = flatten_update_paths(chunk[1])
                     field_mask = field_mask_pb2.FieldMask()
                     for path in updates.keys():
                         field_mask.paths.append(path)
                     for path, value in updates.items():
-                        c._apply_update(path, value)
-                    _requests.append({"chunk": c.to_dict(), "update_mask": field_mask})
+                        chunk_to_update._apply_update(path, value)
+                    _requests.append({"chunk": chunk_to_update.to_dict(), "update_mask": field_mask})
                 else:
                     raise TypeError(
                         "The `chunks` parameter must be a list of glm.UpdateChunkRequests,"
