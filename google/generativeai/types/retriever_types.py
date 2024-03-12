@@ -205,6 +205,22 @@ class CustomMetadata:
             or cm.get("numeric_value", None)
         )
         return cls(key=key, value=value)
+    
+    def _to_dict(cls, cm):
+        custom_metadata = {}
+        custom_metadata["key"] = cm.get("key")
+        if isinstance(cm["value"], str):
+            custom_metadata["string_value"] = cm["value"]
+        elif isinstance(cm["value"], Iterable):
+            custom_metadata["string_list_value"] = glm.StringList(values=cm["value"])
+        elif isinstance(cm["value"], (int, float)):
+            custom_metadata["numeric_value"] = float(cm["value"])
+        else:
+            ValueError(
+                f"The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float, but got {self.value}."
+            )
+
+        return custom_metadata
 
 
 @string_utils.prettyprint
@@ -1351,7 +1367,7 @@ class Chunk(abc.ABC):
         result = {
             "name": self.name,
             "data": dataclasses.asdict(self.data),
-            "custom_metadata": [dataclasses.asdict(cm) for cm in self.custom_metadata],
+            "custom_metadata": [cm._to_dict() for cm in self.custom_metadata],
             "state": self.state,
         }
         return result
