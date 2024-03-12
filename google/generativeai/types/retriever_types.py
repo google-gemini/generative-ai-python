@@ -199,21 +199,6 @@ class CustomMetadata:
             )
 
         return glm.CustomMetadata(key=self.key, **kwargs)
-    
-    def _to_dict(self):
-        custom_metadata = {}
-        if isinstance(self.value, str):
-            custom_metadata["string_value"] = self.value
-        elif isinstance(self.value, Iterable):
-            custom_metadata["string_list_value"] = self.value
-        elif isinstance(self.value, (int, float)):
-            custom_metadata["numeric_value"] = float(self.value)
-        else:
-            ValueError(
-                f"The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float, but got {self.value}."
-            )
-
-        return custom_metadata
 
     @classmethod
     def _from_dict(cls, cm):
@@ -1379,12 +1364,27 @@ class Chunk(abc.ABC):
         request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
         await client.update_chunk(request)
         return self
+    
+    def convert_custom_metadata_to_dict(self, cm):
+        """
+            This function is used to turn a glm.CustomMetadata back to a dictionary.
+        """
+        custom_metadata = {}
+        custom_metadata["key"] = cm.key
+        if cm.string_list_value:
+            custom_metadata["string_list_value"] = cm.string_list_value
+        elif cm.string_value:
+            custom_metadata["string_value"] = cm.string_value
+        elif cm.numeric_value:
+            custom_metadata["numeric_value"] = cm.numeric_value
+
+        return custom_metadata
 
     def to_dict(self) -> dict[str, Any]:
         result = {
             "name": self.name,
             "data": dataclasses.asdict(self.data),
-            "custom_metadata": [dataclasses.asdict(cm) for cm in self.custom_metadata],
+            "custom_metadata": [self.convert_custom_metadata_to_dict(cm) for cm in self.custom_metadata],
             "state": self.state,
         }
         return result
