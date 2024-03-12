@@ -186,7 +186,7 @@ class CustomMetadata:
         if isinstance(self.value, str):
             kwargs["string_value"] = self.value
         elif isinstance(self.value, Iterable):
-            kwargs["string_list_value"] = glm.StringList(values=self.value)._to_proto(glm.StringList.DESCRIPTOR)
+            kwargs["string_list_value"] = glm.StringList(values=self.value)
         elif isinstance(self.value, (int, float)):
             kwargs["numeric_value"] = float(self.value)
         else:
@@ -1047,6 +1047,16 @@ class Document(abc.ABC):
             # Key is name of chunk, value is a dictionary of updates
             for key, value in chunks.items():
                 chunk_to_update = self.get_chunk(name=key)
+                
+                # Handle the custom_metadata parameter
+                c_data = []
+                if chunk_to_update.custom_metadata:
+                    for cm in chunk_to_update.custom_metadata:
+                        c_data.append(cm._to_proto())
+
+                # When handling updates, use to the _to_proto result of the custom_metadata
+                chunk_to_update.custom_metadata = c_data
+                
                 updates = flatten_update_paths(value)
                 # At this time, only `data` can be updated
                 for item in updates:
