@@ -1061,6 +1061,7 @@ class Document(abc.ABC):
                     glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
                 )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
+            print(request)
             response = client.batch_update_chunks(request)
             response = type(response).to_dict(response)
             return response
@@ -1071,6 +1072,16 @@ class Document(abc.ABC):
                 elif isinstance(chunk, tuple):
                     # First element is name of chunk, second element contains updates
                     chunk_to_update = self.get_chunk(name=chunk[0])
+
+                    # Handle the custom_metadata parameter
+                    c_data = []
+                    if chunk_to_update.custom_metadata:
+                        for cm in chunk_to_update.custom_metadata:
+                            c_data.append(cm._to_proto())
+
+                    # When handling updates, use to the _to_proto result of the custom_metadata
+                    chunk_to_update.custom_metadata = c_data
+
                     updates = flatten_update_paths(chunk[1])
                     field_mask = field_mask_pb2.FieldMask()
                     for path in updates.keys():
@@ -1108,15 +1119,34 @@ class Document(abc.ABC):
         if isinstance(chunks, Mapping):
             # Key is name of chunk, value is a dictionary of updates
             for key, value in chunks.items():
-                c = self.get_chunk(name=key)
+                chunk_to_update = self.get_chunk(name=key)
+
+                # Handle the custom_metadata parameter
+                c_data = []
+                if chunk_to_update.custom_metadata:
+                    for cm in chunk_to_update.custom_metadata:
+                        c_data.append(cm._to_proto())
+
+                # When handling updates, use to the _to_proto result of the custom_metadata
+                chunk_to_update.custom_metadata = c_data
+
                 updates = flatten_update_paths(value)
+                # At this time, only `data` can be updated
+                for item in updates:
+                    if item != "data.string_value":
+                        raise ValueError(
+                            f"At this time, only `data` can be updated for `Chunk`. Got {item}."
+                        )
                 field_mask = field_mask_pb2.FieldMask()
                 for path in updates.keys():
                     field_mask.paths.append(path)
                 for path, value in updates.items():
-                    c._apply_update(path, value)
-                _requests.append(glm.UpdateChunkRequest(chunk=c.to_dict(), update_mask=field_mask))
+                    chunk_to_update._apply_update(path, value)
+                _requests.append(
+                    glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
+                )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
+            print(request)
             response = await client.batch_update_chunks(request)
             response = type(response).to_dict(response)
             return response
@@ -1126,14 +1156,26 @@ class Document(abc.ABC):
                     _requests.append(chunk)
                 elif isinstance(chunk, tuple):
                     # First element is name of chunk, second element contains updates
-                    c = self.get_chunk(name=chunk[0])
+                    chunk_to_update = self.get_chunk(name=chunk[0])
+
+                    # Handle the custom_metadata parameter
+                    c_data = []
+                    if chunk_to_update.custom_metadata:
+                        for cm in chunk_to_update.custom_metadata:
+                            c_data.append(cm._to_proto())
+
+                    # When handling updates, use to the _to_proto result of the custom_metadata
+                    chunk_to_update.custom_metadata = c_data
+
                     updates = flatten_update_paths(chunk[1])
                     field_mask = field_mask_pb2.FieldMask()
                     for path in updates.keys():
                         field_mask.paths.append(path)
                     for path, value in updates.items():
-                        c._apply_update(path, value)
-                    _requests.append({"chunk": c.to_dict(), "update_mask": field_mask})
+                        chunk_to_update._apply_update(path, value)
+                    _requests.append(
+                        {"chunk": chunk_to_update.to_dict(), "update_mask": field_mask}
+                    )
                 else:
                     raise TypeError(
                         "The `chunks` parameter must be a list of glm.UpdateChunkRequests,"
@@ -1322,6 +1364,15 @@ class Chunk(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
+        # Handle the custom_metadata parameter
+        c_data = []
+        if self.custom_metadata:
+            for cm in self.custom_metadata:
+                c_data.append(cm._to_proto())
+
+        # When handling updates, use to the _to_proto result of the custom_metadata
+        self.custom_metadata = c_data
+
         updates = flatten_update_paths(updates)
         # At this time, only `data` can be updated
         for item in updates:
@@ -1348,6 +1399,15 @@ class Chunk(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
+        # Handle the custom_metadata parameter
+        c_data = []
+        if self.custom_metadata:
+            for cm in self.custom_metadata:
+                c_data.append(cm._to_proto())
+
+        # When handling updates, use to the _to_proto result of the custom_metadata
+        self.custom_metadata = c_data
+
         updates = flatten_update_paths(updates)
         # At this time, only `data` can be updated
         for item in updates:
@@ -1364,10 +1424,10 @@ class Chunk(abc.ABC):
         request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
         await client.update_chunk(request)
         return self
-    
+
     def convert_custom_metadata_to_dict(self, cm):
         """
-            This function is used to turn a glm.CustomMetadata back to a dictionary.
+        This function is used to turn a glm.CustomMetadata back to a dictionary.
         """
         custom_metadata = {}
         custom_metadata["key"] = cm.key
@@ -1384,7 +1444,9 @@ class Chunk(abc.ABC):
         result = {
             "name": self.name,
             "data": dataclasses.asdict(self.data),
-            "custom_metadata": [self.convert_custom_metadata_to_dict(cm) for cm in self.custom_metadata],
+            "custom_metadata": [
+                self.convert_custom_metadata_to_dict(cm) for cm in self.custom_metadata
+            ],
             "state": self.state,
         }
         return result
