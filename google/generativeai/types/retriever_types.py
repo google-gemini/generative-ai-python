@@ -1384,7 +1384,7 @@ class Chunk(abc.ABC):
         result = {
             "name": self.name,
             "data": dataclasses.asdict(self.data),
-            "custom_metadata": [dataclasses.asdict(self.cm) for cm in self.custom_metadata],
+            "custom_metadata": [dataclasses.asdict(cm) for cm in self.custom_metadata],
             "state": self.state,
         }
         return result
