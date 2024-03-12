@@ -212,7 +212,7 @@ class CustomMetadata:
         if isinstance(self.value, str):
             custom_metadata["string_value"] = self.value
         elif isinstance(self.value, Iterable):
-            custom_metadata["string_list_value"] = glm.StringList(values=self.value)
+            custom_metadata["string_list_value"] = {'values': self.value}
         elif isinstance(self.value, (int, float)):
             custom_metadata["numeric_value"] = float(self.value)
         else:
@@ -1371,7 +1371,7 @@ class Chunk(abc.ABC):
         result = {
             "name": self.name,
             "data": dataclasses.asdict(self.data),
-            "custom_metadata": [cm._to_dict() for cm in self.custom_metadata],
+            "custom_metadata": [cm._to_proto() for cm in self.custom_metadata],
             "state": self.state,
         }
         return result
