@@ -199,17 +199,7 @@ class CustomMetadata:
             )
 
         return glm.CustomMetadata(key=self.key, **kwargs)
-
-    @classmethod
-    def _from_dict(cls, cm):
-        key = cm["key"]
-        value = (
-            cm.get("string_value", None)
-            or cm.get("string_list_value", None)
-            or cm.get("numeric_value", None)
-        )
-        return cls(key=key, value=value)
-
+    
     def _to_dict(self):
         custom_metadata = {}
         if isinstance(self.value, str):
@@ -224,6 +214,16 @@ class CustomMetadata:
             )
 
         return custom_metadata
+
+    @classmethod
+    def _from_dict(cls, cm):
+        key = cm["key"]
+        value = (
+            cm.get("string_value", None)
+            or cm.get("string_list_value", None)
+            or cm.get("numeric_value", None)
+        )
+        return cls(key=key, value=value)
 
 
 @string_utils.prettyprint
@@ -1384,7 +1384,7 @@ class Chunk(abc.ABC):
         result = {
             "name": self.name,
             "data": dataclasses.asdict(self.data),
-            "custom_metadata": [cm._to_dict() for cm in self.custom_metadata],
+            "custom_metadata": [dataclasses.asdict(self.cm) for cm in self.custom_metadata],
             "state": self.state,
         }
         return result
