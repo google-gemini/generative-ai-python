@@ -186,7 +186,7 @@ class CustomMetadata:
         if isinstance(self.value, str):
             kwargs["string_value"] = self.value
         elif isinstance(self.value, Iterable):
-            kwargs["string_list_value"] = glm.StringList(values=self.value)
+            kwargs["string_list_value"] = self.value
         elif isinstance(self.value, (int, float)):
             kwargs["numeric_value"] = float(self.value)
         else:
@@ -205,22 +205,6 @@ class CustomMetadata:
             or cm.get("numeric_value", None)
         )
         return cls(key=key, value=value)
-
-    def _to_dict(self):
-        custom_metadata = {}
-        custom_metadata["key"] = self.key
-        if isinstance(self.value, str):
-            custom_metadata["string_value"] = self.value
-        elif isinstance(self.value, Iterable):
-            custom_metadata["string_list_value"] = {'values': self.value}
-        elif isinstance(self.value, (int, float)):
-            custom_metadata["numeric_value"] = float(self.value)
-        else:
-            ValueError(
-                f"The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float, but got {self.value}."
-            )
-
-        return custom_metadata
 
 
 @string_utils.prettyprint
