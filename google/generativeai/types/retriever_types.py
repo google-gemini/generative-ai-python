@@ -189,6 +189,9 @@ class CustomMetadata:
             kwargs["string_list_value"] = glm.StringList(values=self.value)
         elif isinstance(self.value, (int, float)):
             kwargs["numeric_value"] = float(self.value)
+        elif isinstance(self.value, Mapping):
+            # If already converted to a glm.StringList, get the values
+            kwargs["string_list_value"] = self.value["values"]
         else:
             ValueError(
                 f"The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float, but got {self.value}."
