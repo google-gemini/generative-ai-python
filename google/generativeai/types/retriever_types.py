@@ -185,13 +185,14 @@ class CustomMetadata:
         kwargs = {}
         if isinstance(self.value, str):
             kwargs["string_value"] = self.value
-        elif isinstance(self.value, Iterable) and not isinstance(self.value, Mapping):
-            kwargs["string_list_value"] = glm.StringList(values=self.value)
+        elif isinstance(self.value, Iterable):
+            if isinstance(self.value, Mapping):
+                # If already converted to a glm.StringList, get the values
+                kwargs["string_list_value"] = self.value
+            else:
+                kwargs["string_list_value"] = glm.StringList(values=self.value)
         elif isinstance(self.value, (int, float)):
             kwargs["numeric_value"] = float(self.value)
-        elif isinstance(self.value, Mapping):
-            # If already converted to a glm.StringList, get the values
-            kwargs["string_list_value"] = self.value
         else:
             ValueError(
                 f"The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float, but got {self.value}."
@@ -208,7 +209,7 @@ class CustomMetadata:
             or cm.get("numeric_value", None)
         )
         return cls(key=key, value=value)
-    
+
     def _to_dict(self):
         custom_metadata = {}
         if isinstance(self.value, str):
@@ -1049,7 +1050,7 @@ class Document(abc.ABC):
             # Key is name of chunk, value is a dictionary of updates
             for key, value in chunks.items():
                 chunk_to_update = self.get_chunk(name=key)
-                
+
                 # Handle the custom_metadata parameter
                 c_data = []
                 if chunk_to_update.custom_metadata:
@@ -1058,7 +1059,7 @@ class Document(abc.ABC):
 
                 # When handling updates, use to the _to_proto result of the custom_metadata
                 chunk_to_update.custom_metadata = c_data
-                
+
                 updates = flatten_update_paths(value)
                 # At this time, only `data` can be updated
                 for item in updates:
