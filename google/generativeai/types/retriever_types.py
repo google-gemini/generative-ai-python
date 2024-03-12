@@ -185,7 +185,7 @@ class CustomMetadata:
         kwargs = {}
         if isinstance(self.value, str):
             kwargs["string_value"] = self.value
-        elif isinstance(self.value, Iterable):
+        elif isinstance(self.value, Iterable) and not isinstance(self.value, Mapping):
             kwargs["string_list_value"] = glm.StringList(values=self.value)
         elif isinstance(self.value, (int, float)):
             kwargs["numeric_value"] = float(self.value)
