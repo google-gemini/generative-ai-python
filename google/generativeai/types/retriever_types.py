@@ -1061,7 +1061,6 @@ class Document(abc.ABC):
                     glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
                 )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
-            print(request)
             response = client.batch_update_chunks(request)
             response = type(response).to_dict(response)
             return response
@@ -1098,8 +1097,8 @@ class Document(abc.ABC):
                     )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = client.batch_update_chunks(request)
-            response = type(response).to_dict(response)
-            return response
+            #response = type(response).to_dict(response)
+            return self.list_chunks()
 
     async def batch_update_chunks_async(
         self,
@@ -1146,7 +1145,6 @@ class Document(abc.ABC):
                     glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
                 )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
-            print(request)
             response = await client.batch_update_chunks(request)
             response = type(response).to_dict(response)
             return response
