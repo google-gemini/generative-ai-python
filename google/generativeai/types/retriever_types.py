@@ -1097,8 +1097,8 @@ class Document(abc.ABC):
                     )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = client.batch_update_chunks(request)
-            #response = type(response).to_dict(response)
-            return self.list_chunks()
+            response = type(response).to_dict(response)
+            return response
 
     async def batch_update_chunks_async(
         self,
@@ -1110,7 +1110,7 @@ class Document(abc.ABC):
             client = get_default_retriever_async_client()
 
         if isinstance(chunks, glm.BatchUpdateChunksRequest):
-            response = await client.batch_update_chunks(chunks)
+            response = client.batch_update_chunks(chunks)
             response = type(response).to_dict(response)
             return response
 
@@ -1145,7 +1145,7 @@ class Document(abc.ABC):
                     glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
                 )
             request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
-            response = await client.batch_update_chunks(request)
+            response = client.batch_update_chunks(request)
             response = type(response).to_dict(response)
             return response
         if isinstance(chunks, Iterable) and not isinstance(chunks, Mapping):
