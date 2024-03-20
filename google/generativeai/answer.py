@@ -157,7 +157,7 @@ def _make_semantic_retriever_config(
         source["source"] = _maybe_get_source_name(source["source"])
 
     if source["query"] is None:
-        source['query'] = query?
+        source['query'] = query
     elif isinstance(source["query"], str):
         source["query"] = content_types.to_content(source["query"])
 
@@ -199,13 +199,14 @@ def _make_generate_answer_request(
             safety_settings, harm_category_set="new"
         )
 
-    if inline_passages is not None:
+    if inline_passages is not None and semantic_retriever_config is not None:
+        raise ValueError("Either inline_passages xor semantic_retriever_config must be set, not both.")
+    if inline_passages is not None and semantic_retriever_config is None:
         inline_passages = _make_grounding_passages(inline_passages)
-    elif semantic_retriever_config is not None:
+    elif semantic_retriever_config is not None and inline_passages is None:
         semantic_retriever_config = _make_semantic_retriever_config(
             semantic_retriever_config, contents[-1]
         )
-
     else:
         TypeError(
             f"The source must be either an `inline_passages` xor `semantic_retriever_config`, but both are `None`"
