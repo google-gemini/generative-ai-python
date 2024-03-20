@@ -157,7 +157,7 @@ def _make_semantic_retriever_config(
         source["source"] = _maybe_get_source_name(source["source"])
 
     if source["query"] is None:
-        source.get("query", query)
+        source['query'] = query?
     elif isinstance(source["query"], str):
         source["query"] = content_types.to_content(source["query"])
 
