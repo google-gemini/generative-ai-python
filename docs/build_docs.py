@@ -36,6 +36,7 @@ import google
 from google.ai import generativelanguage as glm
 
 import grpc
+import pydantic #must be imported before turning on TYPE_CHECKING
 
 # For showing the conditional imports and types in `content_types.py`
 # grpc must be imported first.
