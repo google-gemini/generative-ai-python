@@ -64,14 +64,14 @@ class FileServiceClient(glm.FileServiceClient):
         if self._discovery_api is None:
             self._setup_discovery_api()
 
-        metadata = {}
+        file = {}
         if name is not None:
-            metadata["name"] = name
+            file["name"] = name
         if display_name is not None:
-            metadata["displayName"] = display_name
+            file["displayName"] = display_name
 
         media = googleapiclient.http.MediaFileUpload(filename=path, mimetype=mime_type)
-        request = self._discovery_api.media().upload(body=metadata, media_body=media)
+        request = self._discovery_api.media().upload(body={'file': file}, media_body=media)
         result = request.execute()
 
         print(result)
