@@ -42,9 +42,10 @@ else:
     release_status = "Development Status :: 5 - Production/Stable"
 
 dependencies = [
-    "google-ai-generativelanguage==0.4.0",
-    "google-auth>=2.15.0",  # 2.15 adds API key auth support
+    "google-ai-generativelanguage@https://storage.googleapis.com/generativeai-downloads/preview/ai-generativelanguage-v1beta-py.tar.gz",
     "google-api-core",
+    "google-api-python-client",
+    "google-auth>=2.15.0",  # 2.15 adds API key auth support
     "protobuf",
     "pydantic",
     "tqdm",
