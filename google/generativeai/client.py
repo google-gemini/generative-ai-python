@@ -44,11 +44,11 @@ class FileServiceClient(glm.FileServiceClient):
         request = googleapiclient.http.HttpRequest(
             http=httplib2.Http(),
             postproc=lambda resp, content: (resp, content),
-            uri=f"https://{end_point}/$discovery/rest?version=v1beta&labels=GOOGLE_INTERNAL&key={api_key}",  # DO_NOT_SUBMIT
+            uri=f"https://{end_point}/$discovery/rest?version=v1beta&labels=GOOGLE_INTERNAL&key={api_key}",
         )
         response, content = request.execute()
 
-        discovery_doc = content.decode("utf-8")
+        discovery_doc = content.decode("utf-8").replace("staging", "autopush")
         self._discovery_api = googleapiclient.discovery.build_from_document(
             discovery_doc, developerKey=api_key
         )
@@ -71,7 +71,7 @@ class FileServiceClient(glm.FileServiceClient):
             file["displayName"] = display_name
 
         media = googleapiclient.http.MediaFileUpload(filename=path, mimetype=mime_type)
-        request = self._discovery_api.media().upload(body={'file': file}, media_body=media)
+        request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
         result = request.execute()
 
         print(result)

@@ -179,7 +179,10 @@ def to_file_data(file_data: FileDataType):
         file_data = file_data.to_proto()
 
     if isinstance(file_data, (glm.File, file_types.File)):
-        file_data = glm.FileData(mime_type=file_data.mime_type, file_uri='https://generativelanguage.googleapis.com/'+file_data.name)
+        file_data = glm.FileData(
+            mime_type=file_data.mime_type,
+            file_uri="https://generativelanguage.googleapis.com/" + file_data.name,
+        )
 
     if isinstance(file_data, glm.FileData):
         return file_data
