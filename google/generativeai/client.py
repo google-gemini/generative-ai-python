@@ -57,9 +57,9 @@ class FileServiceClient(glm.FileServiceClient):
         self,
         path: str | pathlib.Path | os.PathLike,
         *,
-        mime_type: str = None,
+        mime_type: str | None = None,
         name: str | None = None,
-        display_name: str = None,
+        display_name: str | None = None,
     ) -> glm.File:
         if self._discovery_api is None:
             self._setup_discovery_api()
