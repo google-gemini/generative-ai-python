@@ -26,12 +26,12 @@ from google.generativeai.client import get_default_file_client
 __all__ = ["File", "create_file", "get_file", "list_files"]
 
 
-def create_file(
+def upload_file(
     path: str | pathlib.Path | os.PathLike,
     *,
     mime_type: str | None = None,
     name: str | None = None,
-    display_name: str| None = None,
+    display_name: str | None = None,
 ) -> file_types.File:
     client = get_default_file_client()
 

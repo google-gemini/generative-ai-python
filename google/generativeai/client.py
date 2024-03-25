@@ -53,7 +53,7 @@ class FileServiceClient(glm.FileServiceClient):
             discovery_doc, developerKey=api_key
         )
 
-    def upload_file(
+    def create_file(
         self,
         path: str | pathlib.Path | os.PathLike,
         *,
@@ -83,7 +83,7 @@ class FileServiceClient(glm.FileServiceClient):
 
 
 class FileServiceAsyncClient(glm.FileServiceAsyncClient):
-    async def upload_file(self, *args, **kwargs):
+    async def create_file(self, *args, **kwargs):
         raise NotImplementedError("Create_file is not yet implemented for the async client.")
 
 
