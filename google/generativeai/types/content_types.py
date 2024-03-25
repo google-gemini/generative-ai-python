@@ -181,7 +181,7 @@ def to_file_data(file_data: FileDataType):
     if isinstance(file_data, (glm.File, file_types.File)):
         file_data = glm.FileData(
             mime_type=file_data.mime_type,
-            file_uri="https://generativelanguage.googleapis.com/" + file_data.name,
+            file_uri=file_data.uri,
         )
 
     if isinstance(file_data, glm.FileData):

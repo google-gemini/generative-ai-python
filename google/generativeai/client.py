@@ -37,18 +37,18 @@ class FileServiceClient(glm.FileServiceClient):
     def _setup_discovery_api(self):
         api_key = self._client_options.api_key
         if api_key is None:
-            raise ValueError("create_file requires an api key.")
+            raise ValueError("Uploading to the Files API requires an api key.")
 
         end_point = self.api_endpoint
 
         request = googleapiclient.http.HttpRequest(
             http=httplib2.Http(),
             postproc=lambda resp, content: (resp, content),
-            uri=f"https://{end_point}/$discovery/rest?version=v1beta&labels=GOOGLE_INTERNAL&key={api_key}",
+            uri=f"https://{end_point}/$discovery/rest?version=v1beta&key={api_key}",
         )
         response, content = request.execute()
 
-        discovery_doc = content.decode("utf-8").replace("staging", "autopush")
+        discovery_doc = content.decode("utf-8")
         self._discovery_api = googleapiclient.discovery.build_from_document(
             discovery_doc, developerKey=api_key
         )
