@@ -36,6 +36,7 @@ import google
 from google.ai import generativelanguage as glm
 
 import grpc
+import jinja2  # must be imported before turning on TYPE_CHECKING
 import pydantic  # must be imported before turning on TYPE_CHECKING
 from IPython import display   # must be imported before turning on TYPE_CHECKING
 
