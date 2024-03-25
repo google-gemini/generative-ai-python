@@ -23,9 +23,9 @@ import google.ai.generativelanguage as glm
 
 
 class File:
-    def __init__(self, proto: glm.File | dict):
+    def __init__(self, proto: glm.File | File | dict):
         if isinstance(proto, File):
-            proto = File.to_proto()
+            proto = proto.to_proto()
         self._proto = glm.File(proto)
 
     def to_proto(self):
