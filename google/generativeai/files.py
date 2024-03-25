@@ -23,7 +23,7 @@ from google.generativeai.types import file_types
 
 from google.generativeai.client import get_default_file_client
 
-__all__ = ["File", "create_file", "get_file", "list_files"]
+__all__ = ["upload_file", "get_file", "list_files"]
 
 
 def upload_file(
