@@ -29,9 +29,9 @@ __all__ = ["File", "create_file", "get_file", "list_files"]
 def create_file(
     path: str | pathlib.Path | os.PathLike,
     *,
-    mime_type: str = None,
+    mime_type: str | None = None,
     name: str | None = None,
-    display_name: str = None,
+    display_name: str| None = None,
 ) -> file_types.File:
     client = get_default_file_client()
 
