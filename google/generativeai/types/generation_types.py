@@ -21,7 +21,8 @@ from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
 import textwrap
-from typing import TypedDict, Union
+from typing import Union
+from typing_extensions import TypedDict
 
 import google.protobuf.json_format
 import google.api_core.exceptions
