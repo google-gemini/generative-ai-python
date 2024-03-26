@@ -12,6 +12,7 @@ import reprlib
 # pylint: disable=bad-continuation, line-too-long
 
 
+import google.api_core.exceptions
 from google.ai import generativelanguage as glm
 from google.generativeai import client
 from google.generativeai import string_utils
@@ -221,19 +222,27 @@ class GenerativeModel:
         if request_options is None:
             request_options = {}
 
-        if stream:
-            with generation_types.rewrite_stream_error():
-                iterator = self._client.stream_generate_content(
+        try:
+            if stream:
+                with generation_types.rewrite_stream_error():
+                    iterator = self._client.stream_generate_content(
+                        request,
+                        **request_options,
+                    )
+                return generation_types.GenerateContentResponse.from_iterator(iterator)
+            else:
+                response = self._client.generate_content(
                     request,
                     **request_options,
                 )
-            return generation_types.GenerateContentResponse.from_iterator(iterator)
-        else:
-            response = self._client.generate_content(
-                request,
-                **request_options,
-            )
-            return generation_types.GenerateContentResponse.from_response(response)
+                return generation_types.GenerateContentResponse.from_response(response)
+        except google.api_core.exceptions.InvalidArgument as e:
+            if e.message.startswith("Request payload size exceeds the limit:"):
+                e.message += (
+                    " Please upload your files with the Files api instead."
+                    "`f = genai.create_file(path); m.generate_content(['tell me about this file:', f])`"
+                )
+            raise
 
     async def generate_content_async(
         self,
@@ -258,19 +267,27 @@ class GenerativeModel:
         if request_options is None:
             request_options = {}
 
-        if stream:
-            with generation_types.rewrite_stream_error():
-                iterator = await self._async_client.stream_generate_content(
+        try:
+            if stream:
+                with generation_types.rewrite_stream_error():
+                    iterator = await self._async_client.stream_generate_content(
+                        request,
+                        **request_options,
+                    )
+                return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
+            else:
+                response = await self._async_client.generate_content(
                     request,
                     **request_options,
                 )
-            return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
-        else:
-            response = await self._async_client.generate_content(
-                request,
-                **request_options,
-            )
-            return generation_types.AsyncGenerateContentResponse.from_response(response)
+                return generation_types.AsyncGenerateContentResponse.from_response(response)
+        except google.api_core.exceptions.InvalidArgument as e:
+            if e.message.startswith("Request payload size exceeds the limit:"):
+                e.message += (
+                    " Please upload your files with the Files api instead."
+                    "`f = genai.create_file(path); m.generate_content(['tell me about this file:', f])`"
+                )
+            raise
 
     # fmt: off
     def count_tokens(

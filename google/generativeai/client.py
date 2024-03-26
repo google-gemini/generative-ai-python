@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import os
 import dataclasses
+import pathlib
+import re
 import types
 from typing import Any, cast
 from collections.abc import Sequence
+import httplib2
 
 import google.ai.generativelanguage as glm
 
@@ -12,6 +15,9 @@ from google.auth import credentials as ga_credentials
 from google.api_core import client_options as client_options_lib
 from google.api_core import gapic_v1
 from google.api_core import operations_v1
+
+import googleapiclient.http
+import googleapiclient.discovery
 
 try:
     from google.generativeai import version
@@ -21,6 +27,64 @@ except ImportError:
     __version__ = "0.0.0"
 
 USER_AGENT = "genai-py"
+
+
+class FileServiceClient(glm.FileServiceClient):
+    def __init__(self, *args, **kwargs):
+        self._discovery_api = None
+        super().__init__(*args, **kwargs)
+
+    def _setup_discovery_api(self):
+        api_key = self._client_options.api_key
+        if api_key is None:
+            raise ValueError("Uploading to the Files API requires an api key.")
+
+        end_point = self.api_endpoint
+
+        request = googleapiclient.http.HttpRequest(
+            http=httplib2.Http(),
+            postproc=lambda resp, content: (resp, content),
+            uri=f"https://{end_point}/$discovery/rest?version=v1beta&key={api_key}",
+        )
+        response, content = request.execute()
+
+        discovery_doc = content.decode("utf-8")
+        self._discovery_api = googleapiclient.discovery.build_from_document(
+            discovery_doc, developerKey=api_key
+        )
+
+    def create_file(
+        self,
+        path: str | pathlib.Path | os.PathLike,
+        *,
+        mime_type: str | None = None,
+        name: str | None = None,
+        display_name: str | None = None,
+    ) -> glm.File:
+        if self._discovery_api is None:
+            self._setup_discovery_api()
+
+        file = {}
+        if name is not None:
+            file["name"] = name
+        if display_name is not None:
+            file["displayName"] = display_name
+
+        media = googleapiclient.http.MediaFileUpload(filename=path, mimetype=mime_type)
+        request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
+        result = request.execute()
+
+        return glm.File(
+            {
+                re.sub("[A-Z]", lambda ch: f"_{ch.group(0).lower()}", key): value
+                for key, value in result["file"].items()
+            }
+        )
+
+
+class FileServiceAsyncClient(glm.FileServiceAsyncClient):
+    async def create_file(self, *args, **kwargs):
+        raise NotImplementedError("Create_file is not yet implemented for the async client.")
 
 
 @dataclasses.dataclass
@@ -108,7 +172,11 @@ class _ClientManager:
         self.clients = {}
 
     def make_client(self, name):
-        if name.endswith("_async"):
+        if name == "file":
+            cls = FileServiceClient
+        elif name == "file_async":
+            cls = FileServiceAsyncClient
+        elif name.endswith("_async"):
             name = name.split("_")[0]
             cls = getattr(glm, name.title() + "ServiceAsyncClient")
         else:
@@ -125,6 +193,8 @@ class _ClientManager:
 
         def keep(name, f):
             if name.startswith("_"):
+                return False
+            elif name == "create_file":
                 return False
             elif not isinstance(f, types.FunctionType):
                 return False
@@ -223,6 +293,14 @@ def get_default_discuss_client() -> glm.DiscussServiceClient:
 
 def get_default_discuss_async_client() -> glm.DiscussServiceAsyncClient:
     return _client_manager.get_default_client("discuss_async")
+
+
+def get_default_file_client() -> glm.FilesServiceClient:
+    return _client_manager.get_default_client("file")
+
+
+def get_default_file_async_client() -> glm.FilesServiceAsyncClient:
+    return _client_manager.get_default_client("file_async")
 
 
 def get_default_generative_client() -> glm.GenerativeServiceClient:
