@@ -45,7 +45,6 @@ def upload_file(
 
     if display_name is None:
         display_name = path.name
-        print(display_name)
 
     response = client.create_file(
         path=path, mime_type=mime_type, name=name, display_name=display_name
