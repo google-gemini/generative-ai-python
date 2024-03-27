@@ -702,29 +702,27 @@ FunctionCallingConfigType = Union[FunctionCallingConfigDict, glm.FunctionCalling
 
 def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCallingConfig:
     if isinstance(obj, (FunctionCallingMode, str, int)):
-        obj = {'mode': to_function_calling_mode(obj)}
+        obj = {"mode": to_function_calling_mode(obj)}
 
     return glm.FunctionCallingConfig(obj)
+
 
 class ToolConfigDict:
     function_calling_config: FunctionCallingConfigType
 
 
-ToolConfigType = Union[
-    ToolConfigDict,
-    glm.ToolConfig
-]
+ToolConfigType = Union[ToolConfigDict, glm.ToolConfig]
+
 
 def to_tool_config(obj: ToolConfigType) -> glm.ToolConfig:
     if isinstance(obj, glm.ToolConfig):
         return obj
     elif isinstance(obj, dict):
-        fcc = obj.pop('function_calling_config')
+        fcc = obj.pop("function_calling_config")
         fcc = to_function_calling_config(fcc)
-        obj['function_calling_config'] = fcc
+        obj["function_calling_config"] = fcc
         return glm.ToolConfig(**obj)
     else:
-        raise TypeError(f"Could not convert input to `glm.ToolConfig`: \n'"
-                        f"  type: {type(obj)}\n", obj)
-
-
+        raise TypeError(
+            f"Could not convert input to `glm.ToolConfig`: \n'" f"  type: {type(obj)}\n", obj
+        )
