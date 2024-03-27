@@ -168,8 +168,8 @@ def _make_generate_answer_request(
     *,
     model: model_types.AnyModelNameOptions = DEFAULT_ANSWER_MODEL,
     contents: content_types.ContentsType,
-    inline_passages: GroundingPassagesOptions | None,
-    semantic_retriever_config: SemanticRetrieverConfigOptions | None,
+    inline_passages: GroundingPassagesOptions | None = None,
+    semantic_retriever: SemanticRetrieverConfigOptions | None = None,
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
@@ -182,7 +182,11 @@ def _make_generate_answer_request(
         contents: Content of the current conversation with the model. For single-turn query, this is a
             single question to answer. For multi-turn queries, this is a repeated field that contains
             conversation history and the last `Content` in the list containing the question.
-        grounding_source: Sources in which to grounding the answer.
+        inline_passages: Grounding passages (a list of `Content`-like objects or `(id, content)` pairs,
+            or a `glm.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
+            one must be set, but not both.
+        semantic_retriever: A Corpus, Document, or `glm.SemanticRetrieverConfig` to use for grounding. Exclusive with
+             `inline_passages`, one must be set, but not both.
         answer_style: Style for grounded answers.
         safety_settings: Safety settings for generated output.
         temperature: The temperature for randomness in the output.
@@ -199,16 +203,14 @@ def _make_generate_answer_request(
             safety_settings, harm_category_set="new"
         )
 
-    if inline_passages is not None and semantic_retriever_config is not None:
+    if inline_passages is not None and semantic_retriever is not None:
         raise ValueError(
-            "Either inline_passages xor semantic_retriever_config must be set, not both."
+            "Either `inline_passages` or `semantic_retriever_config` must be set, not both."
         )
-    if inline_passages is not None and semantic_retriever_config is None:
+    elif inline_passages is not None:
         inline_passages = _make_grounding_passages(inline_passages)
-    elif semantic_retriever_config is not None and inline_passages is None:
-        semantic_retriever_config = _make_semantic_retriever_config(
-            semantic_retriever_config, contents[-1]
-        )
+    elif semantic_retriever is not None:
+        semantic_retriever = _make_semantic_retriever_config(semantic_retriever, contents[-1])
     else:
         TypeError(
             f"The source must be either an `inline_passages` xor `semantic_retriever_config`, but both are `None`"
@@ -221,7 +223,7 @@ def _make_generate_answer_request(
         model=model,
         contents=contents,
         inline_passages=inline_passages,
-        semantic_retriever=semantic_retriever_config,
+        semantic_retriever=semantic_retriever,
         safety_settings=safety_settings,
         temperature=temperature,
         answer_style=answer_style,
@@ -232,23 +234,47 @@ def generate_answer(
     *,
     model: model_types.AnyModelNameOptions = DEFAULT_ANSWER_MODEL,
     contents: content_types.ContentsType,
-    inline_passages: GroundingPassagesOptions | None,
-    semantic_retriever: SemanticRetrieverConfigOptions | None,
+    inline_passages: GroundingPassagesOptions | None = None,
+    semantic_retriever: SemanticRetrieverConfigOptions | None = None,
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
 ):
-    """
-    Calls the API and returns a `types.Answer` containing the answer.
+    f"""
+    Calls the GenerateAnswer API and returns a `types.Answer` containing the response.
+    
+    You can pass a literal list of text chunks:
+
+    >>> from google.generativeai import answer
+    >>> answer.generate_answer(
+    ...     content=question,
+    ...     inline_passages=splitter.split(document)
+    ... )
+
+    Or pass a reference to a retreiver Document or Corpus:
+
+    >>> from google.generativeai import answer
+    >>> from google.generativeai import retriever
+    >>> my_corpus = retriever.get_corpus('my_corpus')
+    >>> genai.generate_answer(
+    ...     content=question,
+    ...     semantic_retreiver=my_corpus
+    ... )
+
 
     Args:
         model: Which model to call, as a string or a `types.Model`.
-        question: The question to be answered by the model, grounded in the
+        contents: The question to be answered by the model, grounded in the
                 provided source.
-        grounding_source: Source indicating the passages in which the answer should be grounded.
+        inline_passages: Grounding passages (a list of `Content`-like objects or (id, content) pairs,
+            or a `glm.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
+            one must be set, but not both.
+        semantic_retriever: A Corpus, Document, or `glm.SemanticRetrieverConfig` to use for grounding. Exclusive with
+             `inline_passages`, one must be set, but not both.
         answer_style: Style in which the grounded answer should be returned.
         safety_settings: Safety settings for generated output. Defaults to None.
+        temperature: Controls the randomness of the output.
         client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
 
     Returns:
@@ -261,7 +287,7 @@ def generate_answer(
         model=model,
         contents=contents,
         inline_passages=inline_passages,
-        semantic_retriever_config=semantic_retriever,
+        semantic_retriever=semantic_retriever,
         safety_settings=safety_settings,
         temperature=temperature,
         answer_style=answer_style,
@@ -276,8 +302,8 @@ async def generate_answer_async(
     *,
     model: model_types.AnyModelNameOptions = DEFAULT_ANSWER_MODEL,
     contents: content_types.ContentsType,
-    inline_passages: GroundingPassagesOptions | None,
-    semantic_retriever: SemanticRetrieverConfigOptions | None,
+    inline_passages: GroundingPassagesOptions | None = None,
+    semantic_retriever: SemanticRetrieverConfigOptions | None = None,
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
@@ -288,11 +314,16 @@ async def generate_answer_async(
 
     Args:
         model: Which model to call, as a string or a `types.Model`.
-        question: The question to be answered by the model, grounded in the
+        contents: The question to be answered by the model, grounded in the
                 provided source.
-        grounding_source: Source indicating the passages in which the answer should be grounded.
+        inline_passages: Grounding passages (a list of `Content`-like objects or (id, content) pairs,
+            or a `glm.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
+            one must be set, but not both.
+        semantic_retriever: A Corpus, Document, or `glm.SemanticRetrieverConfig` to use for grounding. Exclusive with
+             `inline_passages`, one must be set, but not both.
         answer_style: Style in which the grounded answer should be returned.
         safety_settings: Safety settings for generated output. Defaults to None.
+        temperature: Controls the randomness of the output.
         client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
 
     Returns:

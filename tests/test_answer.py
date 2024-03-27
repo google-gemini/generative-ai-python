@@ -193,7 +193,7 @@ class UnitTests(parameterized.TestCase):
         )
 
         x = answer._make_generate_answer_request(
-            model=DEFAULT_ANSWER_MODEL, contents=contents, grounding_source=inline_passages
+            model=DEFAULT_ANSWER_MODEL, contents=contents, inline_passages=inline_passages
         )
 
         self.assertEqual(
@@ -221,6 +221,7 @@ class UnitTests(parameterized.TestCase):
             inline_passages=grounding_passages,
             answer_style="ABSTRACTIVE",
         )
+
         self.assertIsInstance(a, glm.GenerateAnswerResponse)
         self.assertEqual(
             a,
