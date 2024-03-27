@@ -85,7 +85,10 @@ class GenerativeModel:
         self._generation_config = generation_types.to_generation_config_dict(generation_config)
         self._tools = content_types.to_function_library(tools)
 
-        self._tool_config = content_types.to_tool_config(tool_config)
+        if tool_config is None:
+          self._tool_config = None
+        else:
+          self._tool_config = content_types.to_tool_config(tool_config)
 
         if system_instructions is None:
             self._system_instructions = None
