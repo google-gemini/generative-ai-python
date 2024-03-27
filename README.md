@@ -1,4 +1,4 @@
-# Google AI Python SDK
+# Google Python SDK for the Gemini API
 
 [![PyPI version](https://badge.fury.io/py/google-generativeai.svg)](https://badge.fury.io/py/google-generativeai)
 ![Python support](https://img.shields.io/pypi/pyversions/google-generativeai)
@@ -26,7 +26,7 @@ cookie_picture = {
 prompt = "Give me a recipe for this:"
 
 response = model.generate_content(
-    content=[prompt, cookie_picture]
+    contents=[prompt, cookie_picture]
 )
 print(response.text)
 ```
@@ -39,14 +39,15 @@ Install from PyPI.
 `pip install google-generativeai`
 
 [Obtain an API key from AI Studio](https://makersuite.google.com/app/apikey),
-then configure it here.
+and add it as the `GOOGLE_API_KEY` environment variable.
 
-Import the SDK and load a model.
+Then import the SDK and connect a model:
 
 ```python
 import google.generativeai as genai
+import os
 
-genai.configure(api_key=os.environ["API_KEY"])
+genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 model = genai.GenerativeModel('gemini-pro')
 ```

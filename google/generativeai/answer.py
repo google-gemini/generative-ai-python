@@ -240,6 +240,7 @@ def generate_answer(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
+    request_options: dict[str, Any] | None = None,
 ):
     f"""
     Calls the GenerateAnswer API and returns a `types.Answer` containing the response.
@@ -276,10 +277,14 @@ def generate_answer(
         safety_settings: Safety settings for generated output. Defaults to None.
         temperature: Controls the randomness of the output.
         client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+        request_options: Options for the request.
 
     Returns:
         A `types.Answer` containing the model's text answer response.
     """
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_generative_client()
 
@@ -293,7 +298,7 @@ def generate_answer(
         answer_style=answer_style,
     )
 
-    response = client.generate_answer(request)
+    response = client.generate_answer(request, **request_options)
 
     return response
 

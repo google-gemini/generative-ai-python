@@ -1,3 +1,17 @@
+# -*- coding: utf-8 -*-
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from __future__ import annotations
 
 import collections
@@ -7,7 +21,7 @@ from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
 import textwrap
-from typing import List, Tuple, TypedDict, Union
+from typing import TypedDict, Union
 
 import google.protobuf.json_format
 import google.api_core.exceptions
@@ -300,7 +314,7 @@ class BaseGenerateContentResponse:
 
     @property
     def parts(self):
-        """A quick accessor equivalent to `self.candidates[0].parts`
+        """A quick accessor equivalent to `self.candidates[0].content.parts`
 
         Raises:
             ValueError: If the candidate list does not contain exactly one candidate.
@@ -322,7 +336,7 @@ class BaseGenerateContentResponse:
 
     @property
     def text(self):
-        """A quick accessor equivalent to `self.candidates[0].parts[0].text`
+        """A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
         Raises:
             ValueError: If the candidate list or parts list does not contain exactly one entry.

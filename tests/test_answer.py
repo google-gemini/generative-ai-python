@@ -14,6 +14,7 @@
 # limitations under the License.
 import copy
 import math
+from typing import Any
 import unittest
 import unittest.mock as mock
 
@@ -46,6 +47,7 @@ class UnitTests(parameterized.TestCase):
         @add_client_method
         def generate_answer(
             request: glm.GenerateAnswerRequest,
+            **kwargs,
         ) -> glm.GenerateAnswerResponse:
             self.observed_requests.append(request)
             return glm.GenerateAnswerResponse(
@@ -233,6 +235,16 @@ class UnitTests(parameterized.TestCase):
                 answerable_probability=0.500,
             ),
         )
+
+
+    def test_generate_answer_called_with_request_options(self):
+        self.client.generate_answer = mock.MagicMock()
+        request = mock.ANY
+        request_options = {"timeout": 120}
+
+        answer.generate_answer(contents=[], inline_passages=[], request_options=request_options)
+
+        self.client.generate_answer.assert_called_once_with(request, **request_options)
 
 
 if __name__ == "__main__":

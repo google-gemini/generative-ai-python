@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# pytype: skip-file
 r"""Api reference docs generation script, using tensorflow_docs
 
 This script generates API reference docs for the reference doc generator.
@@ -34,6 +36,9 @@ import google
 from google.ai import generativelanguage as glm
 
 import grpc
+import jinja2  # must be imported before turning on TYPE_CHECKING
+import pydantic  # must be imported before turning on TYPE_CHECKING
+from IPython import display  # must be imported before turning on TYPE_CHECKING
 
 # For showing the conditional imports and types in `content_types.py`
 # grpc must be imported first.
@@ -162,7 +167,6 @@ class MyDocGenerator(generate_lib.DocGenerator):
             public_api.FailIfNestedTooDeep(10),
             public_api.filter_module_all,
             public_api.add_proto_fields,
-            public_api.filter_builtin_modules,
             public_api.filter_private_symbols,
             MyFilter(self._base_dir),  # Replaces: public_api.FilterBaseDirs(self._base_dir),
             public_api.FilterPrivateMap(self._private_map),
