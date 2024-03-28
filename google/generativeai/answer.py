@@ -341,7 +341,7 @@ async def generate_answer_async(
         model=model,
         contents=contents,
         inline_passages=inline_passages,
-        semantic_retriever_config=semantic_retriever,
+        semantic_retriever=semantic_retriever,
         safety_settings=safety_settings,
         temperature=temperature,
         answer_style=answer_style,

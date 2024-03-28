@@ -218,6 +218,25 @@ class CustomMetadata:
         proto = self._to_proto()
         return type(proto).to_dict(proto)
 
+CustomMetadataOptions = Union[
+    CustomMetadata,
+    glm.CustomMetadata,
+    dict]
+def make_custom_metadata(cm:CustomMetadataOptions) -> CustomMetadata:
+    if isinstance(cm, CustomMetadata):
+        return cm
+
+    if isinstance(cm, glm.CustomMetadata):
+        cm = type(cm).to_dict(cm)
+
+    if isinstance(cm, dict):
+        return CustomMetadata._from_dict(cm)
+    else:
+        raise ValueError(  # nofmt
+            "Could not create a `CustomMetadata` from:\n"
+            f"  type: {type(cm)}\n"
+            f"  value: {cm}"
+        )
 
 @string_utils.prettyprint
 @dataclasses.dataclass
@@ -1592,7 +1611,7 @@ class Chunk(abc.ABC):
         if custom_metadata is None:
             self.custom_metadata = []
         else:
-            self.custom_metadata = [CustomMetadata._from_dict(cm) for cm in custom_metadata]
+            self.custom_metadata = [make_custom_metadata(cm) for cm in custom_metadata]
 
         self.state = to_state(state)
 
