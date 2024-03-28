@@ -218,11 +218,11 @@ class CustomMetadata:
         proto = self._to_proto()
         return type(proto).to_dict(proto)
 
-CustomMetadataOptions = Union[
-    CustomMetadata,
-    glm.CustomMetadata,
-    dict]
-def make_custom_metadata(cm:CustomMetadataOptions) -> CustomMetadata:
+
+CustomMetadataOptions = Union[CustomMetadata, glm.CustomMetadata, dict]
+
+
+def make_custom_metadata(cm: CustomMetadataOptions) -> CustomMetadata:
     if isinstance(cm, CustomMetadata):
         return cm
 
@@ -233,10 +233,9 @@ def make_custom_metadata(cm:CustomMetadataOptions) -> CustomMetadata:
         return CustomMetadata._from_dict(cm)
     else:
         raise ValueError(  # nofmt
-            "Could not create a `CustomMetadata` from:\n"
-            f"  type: {type(cm)}\n"
-            f"  value: {cm}"
+            "Could not create a `CustomMetadata` from:\n" f"  type: {type(cm)}\n" f"  value: {cm}"
         )
+
 
 @string_utils.prettyprint
 @dataclasses.dataclass
