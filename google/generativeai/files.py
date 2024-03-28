@@ -55,7 +55,7 @@ def upload_file(
     return file_types.File(response)
 
 
-def list_files(page_size=50) -> Iterable[file_types.File]:
+def list_files(page_size=100) -> Iterable[file_types.File]:
     client = get_default_file_client()
 
     response = client.list_files(glm.ListFilesRequest(page_size=page_size))
