@@ -5,7 +5,8 @@ import io
 import inspect
 import mimetypes
 import typing
-from typing import Any, Callable, TypedDict, Union
+from typing import Any, Callable, Union
+from typing_extensions import TypedDict
 
 import pydantic
 

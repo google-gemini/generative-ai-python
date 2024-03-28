@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import datetime
-from typing import TypedDict
 
 from google.generativeai.client import get_default_file_client
 
