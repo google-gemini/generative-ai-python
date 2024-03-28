@@ -82,7 +82,7 @@ class FileServiceClient(glm.FileServiceClient):
 
 class FileServiceAsyncClient(glm.FileServiceAsyncClient):
     async def create_file(self, *args, **kwargs):
-        raise NotImplementedError("create_file is not yet implemented for the async client.")
+        raise NotImplementedError("`create_file` is not yet implemented for the async client.")
 
 
 @dataclasses.dataclass

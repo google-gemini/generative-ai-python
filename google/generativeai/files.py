@@ -55,10 +55,10 @@ def upload_file(
     return file_types.File(response)
 
 
-def list_files(max_results=50) -> Iterable[file_types.File]:
+def list_files(page_size=50) -> Iterable[file_types.File]:
     client = get_default_file_client()
 
-    response = client.list_files(glm.ListFilesRequest())
+    response = client.list_files(glm.ListFilesRequest(page_size=page_size))
     for proto in response:
         yield file_types.File(proto)
 
@@ -69,6 +69,8 @@ def get_file(name) -> file_types.File:
 
 
 def delete_file(name):
+    if isinstance(name, (file_types.File, glm.File)):
+        name = name.name
     request = glm.DeleteFileRequest(name=name)
     client = get_default_file_client()
     client.delete_file(request=request)
