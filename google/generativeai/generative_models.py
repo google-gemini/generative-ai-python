@@ -122,7 +122,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
         tools: content_types.FunctionLibraryType | None,
-        tool_config: content_types.ToolsConfigType | None,
+        tool_config: content_types.ToolConfigType | None,
     ) -> glm.GenerateContentRequest:
         """Creates a `glm.GenerateContentRequest` from raw inputs."""
         if not contents:
