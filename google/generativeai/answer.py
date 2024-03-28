@@ -153,8 +153,14 @@ def _make_semantic_retriever_config(
     name = _maybe_get_source_name(source)
     if name is not None:
         source = {"source": name}
-    else:
+    elif isinstance(source, dict):
         source["source"] = _maybe_get_source_name(source["source"])
+    else:
+        raise TypeError(
+            "Could create a `glm.SemanticRetrieverConfig` from:\n"
+            f"  type: {type(source)}\n"
+            f"  value: {source}"
+        )
 
     if source["query"] is None:
         source["query"] = query
