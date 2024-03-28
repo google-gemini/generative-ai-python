@@ -18,12 +18,15 @@ import os
 import pathlib
 import mimetypes
 from typing import Iterable
+import logging
+import google.ai.generativelanguage as glm
+from itertools import islice
 
 from google.generativeai.types import file_types
 
 from google.generativeai.client import get_default_file_client
 
-__all__ = ["upload_file", "get_file", "list_files"]
+__all__ = ["upload_file", "get_file", "list_files", "delete_file"]
 
 
 def upload_file(
@@ -52,10 +55,10 @@ def upload_file(
     return file_types.File(response)
 
 
-def list_files(page_size=50) -> Iterable[file_types.File]:
+def list_files(max_results=50) -> Iterable[file_types.File]:
     client = get_default_file_client()
 
-    response = client.list_files(page_size=page_size)
+    response = client.list_files(glm.ListFilesRequest())
     for proto in response:
         yield file_types.File(proto)
 
@@ -63,3 +66,9 @@ def list_files(page_size=50) -> Iterable[file_types.File]:
 def get_file(name) -> file_types.File:
     client = get_default_file_client()
     return file_types.File(client.get_file(name=name))
+
+
+def delete_file(name):
+    request = glm.DeleteFileRequest(name=name)
+    client = get_default_file_client()
+    client.delete_file(request=request)

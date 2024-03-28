@@ -56,6 +56,7 @@ from google.generativeai.embedding import embed_content_async
 from google.generativeai.files import upload_file
 from google.generativeai.files import get_file
 from google.generativeai.files import list_files
+from google.generativeai.files import delete_file
 
 from google.generativeai.generative_models import GenerativeModel
 from google.generativeai.generative_models import ChatSession
