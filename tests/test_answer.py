@@ -195,7 +195,7 @@ class UnitTests(parameterized.TestCase):
         )
 
         x = answer._make_generate_answer_request(
-            model=DEFAULT_ANSWER_MODEL, contents=contents, grounding_source=inline_passages
+            model=DEFAULT_ANSWER_MODEL, contents=contents, inline_passages=inline_passages
         )
 
         self.assertEqual(
@@ -203,6 +203,37 @@ class UnitTests(parameterized.TestCase):
                 model=DEFAULT_ANSWER_MODEL, contents=contents, inline_passages=grounding_passages
             ),
             x,
+        )
+
+    def test_generate_answer(self):
+        # Test handling return value of generate_answer().
+        contents = [glm.Content(parts=[glm.Part(text="I have wings.")])]
+
+        grounding_passages = glm.GroundingPassages(
+            passages=[
+                {"id": "0", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
+                {"id": "1", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
+                {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+            ]
+        )
+
+        a = answer.generate_answer(
+            model="models/aqa",
+            contents=contents,
+            inline_passages=grounding_passages,
+            answer_style="ABSTRACTIVE",
+        )
+
+        self.assertIsInstance(a, glm.GenerateAnswerResponse)
+        self.assertEqual(
+            a,
+            glm.GenerateAnswerResponse(
+                answer=glm.Candidate(
+                    index=1,
+                    content=(glm.Content(parts=[glm.Part(text="Demo answer.")])),
+                ),
+                answerable_probability=0.500,
+            ),
         )
 
     def test_generate_answer_called_with_request_options(self):

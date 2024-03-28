@@ -101,7 +101,6 @@ class GenerationConfig:
             in the model's specification.
         temperature:
             Controls the randomness of the output. Note: The
-
             default value varies by model, see the `Model.temperature`
             attribute of the `Model` returned the `genai.get_model`
             function.
