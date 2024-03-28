@@ -207,7 +207,7 @@ class CustomMetadata:
     def _from_dict(cls, cm):
         key = cm["key"]
         value = (
-            cm.get('value', None)
+            cm.get("value", None)
             or cm.get("string_value", None)
             or cm.get("string_list_value", None)
             or cm.get("numeric_value", None)
@@ -218,10 +218,12 @@ class CustomMetadata:
         proto = self._to_proto()
         return type(proto).to_dict(proto)
 
+
 @string_utils.prettyprint
 @dataclasses.dataclass
 class ChunkData:
     string_value: str
+
 
 @string_utils.prettyprint
 @dataclasses.dataclass()
@@ -270,11 +272,14 @@ class Corpus:
         if custom_metadata:
             for cm in custom_metadata:
                 c_data.append(cm._to_proto())
+
         if name is None:
             document = glm.Document(display_name=display_name, custom_metadata=c_data)
         elif valid_name(name):
             document = glm.Document(
-                name=f"{self.name}/documents/{name}", display_name=display_name, custom_metadata=c_data
+                name=f"{self.name}/documents/{name}",
+                display_name=display_name,
+                custom_metadata=c_data,
             )
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
@@ -308,7 +313,9 @@ class Corpus:
             document = glm.Document(display_name=display_name, custom_metadata=c_data)
         elif valid_name(name):
             document = glm.Document(
-                name=f"{self.name}/documents/{name}", display_name=display_name, custom_metadata=c_data
+                name=f"{self.name}/documents/{name}",
+                display_name=display_name,
+                custom_metadata=c_data,
             )
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
@@ -825,22 +832,6 @@ class Document(abc.ABC):
         else:
             chunk_name = name
 
-        # Handle the custom_metadata parameter
-        c_data = []
-        if custom_metadata:
-            for cm in custom_metadata:
-                if cm.string_list_value:
-                    c_data.append(
-                        glm.CustomMetadata(
-                            key=cm.key,
-                            string_list_value=glm.StringList(values=cm.string_list_value),
-                        )
-                    )
-                elif cm.string_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, string_value=cm.string_value))
-                elif cm.numeric_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, numeric_value=cm.numeric_value))
-
         if isinstance(data, str):
             chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
         else:
@@ -882,22 +873,6 @@ class Document(abc.ABC):
                 raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
         else:
             chunk_name = name
-
-        # Handle the custom_metadata parameter
-        c_data = []
-        if custom_metadata:
-            for cm in custom_metadata:
-                if cm.string_list_value:
-                    c_data.append(
-                        glm.CustomMetadata(
-                            key=cm.key,
-                            string_list_value=glm.StringList(values=cm.string_list_value),
-                        )
-                    )
-                elif cm.string_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, string_value=cm.string_value))
-                elif cm.numeric_value:
-                    c_data.append(glm.CustomMetadata(key=cm.key, numeric_value=cm.numeric_value))
 
         if isinstance(data, str):
             chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
@@ -1686,6 +1661,7 @@ class Chunk(abc.ABC):
         for path, value in updates.items():
             self._apply_update(path, value)
         request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
+
         client.update_chunk(request, **request_options)
         return self
 
@@ -1733,9 +1709,7 @@ class Chunk(abc.ABC):
         result = {
             "name": self.name,
             "data": dataclasses.asdict(self.data),
-            "custom_metadata": [
-                cm._to_dict() for cm in self.custom_metadata
-            ],
+            "custom_metadata": [cm._to_dict() for cm in self.custom_metadata],
             "state": self.state,
         }
         return result

@@ -236,7 +236,6 @@ class UnitTests(parameterized.TestCase):
             ),
         )
 
-
     def test_generate_answer_called_with_request_options(self):
         self.client.generate_answer = mock.MagicMock()
         request = mock.ANY
