@@ -27,7 +27,8 @@ except ImportError:
     __version__ = "0.0.0"
 
 USER_AGENT = "genai-py"
-GENAI_API_DISCOVERY_URL="https://generativelanguage.googleapis.com/$discovery/rest"
+GENAI_API_DISCOVERY_URL = "https://generativelanguage.googleapis.com/$discovery/rest"
+
 
 class FileServiceClient(glm.FileServiceClient):
     def __init__(self, *args, **kwargs):
