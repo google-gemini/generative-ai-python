@@ -239,8 +239,8 @@ class GenerativeModel:
         except google.api_core.exceptions.InvalidArgument as e:
             if e.message.startswith("Request payload size exceeds the limit:"):
                 e.message += (
-                    " Please upload your files with the Files api instead."
-                    "`f = genai.create_file(path); m.generate_content(['tell me about this file:', f])`"
+                    " Please upload your files with the File API instead."
+                    "`f = genai.upload_file(path); m.generate_content(['tell me about this file:', f])`"
                 )
             raise
 
@@ -284,8 +284,8 @@ class GenerativeModel:
         except google.api_core.exceptions.InvalidArgument as e:
             if e.message.startswith("Request payload size exceeds the limit:"):
                 e.message += (
-                    " Please upload your files with the Files api instead."
-                    "`f = genai.create_file(path); m.generate_content(['tell me about this file:', f])`"
+                    " Please upload your files with the File API instead."
+                    "`f = genai.upload_file(path); m.generate_content(['tell me about this file:', f])`"
                 )
             raise
 

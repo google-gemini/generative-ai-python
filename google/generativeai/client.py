@@ -27,6 +27,7 @@ except ImportError:
     __version__ = "0.0.0"
 
 USER_AGENT = "genai-py"
+GENAI_API_DISCOVERY_URL = "https://generativelanguage.googleapis.com/$discovery/rest"
 
 
 class FileServiceClient(glm.FileServiceClient):
@@ -37,14 +38,12 @@ class FileServiceClient(glm.FileServiceClient):
     def _setup_discovery_api(self):
         api_key = self._client_options.api_key
         if api_key is None:
-            raise ValueError("Uploading to the Files API requires an api key.")
-
-        end_point = self.api_endpoint
+            raise ValueError("Uploading to the File API requires an API key.")
 
         request = googleapiclient.http.HttpRequest(
             http=httplib2.Http(),
             postproc=lambda resp, content: (resp, content),
-            uri=f"https://{end_point}/$discovery/rest?version=v1beta&key={api_key}",
+            uri=f"{GENAI_API_DISCOVERY_URL}?version=v1beta&key={api_key}",
         )
         response, content = request.execute()
 
@@ -84,7 +83,7 @@ class FileServiceClient(glm.FileServiceClient):
 
 class FileServiceAsyncClient(glm.FileServiceAsyncClient):
     async def create_file(self, *args, **kwargs):
-        raise NotImplementedError("Create_file is not yet implemented for the async client.")
+        raise NotImplementedError("`create_file` is not yet implemented for the async client.")
 
 
 @dataclasses.dataclass

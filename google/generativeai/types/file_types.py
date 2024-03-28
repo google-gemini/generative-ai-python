@@ -67,6 +67,10 @@ class File:
     def sha256_hash(self) -> bytes:
         return self._proto.sha256_hash
 
+    @property
+    def uri(self) -> str:
+        return self._proto.uri
+
     def delete(self):
         client = get_default_file_client()
         client.delete_file(name=self.name)
