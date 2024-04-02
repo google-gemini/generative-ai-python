@@ -74,7 +74,7 @@ class GenerativeModel:
         generation_config: generation_types.GenerationConfigType | None = None,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        system_instructions: content_types.ContentType | None = None,
+        system_instruction: content_types.ContentType | None = None,
     ):
         if "/" not in model_name:
             model_name = "models/" + model_name
@@ -90,10 +90,10 @@ class GenerativeModel:
         else:
             self._tool_config = content_types.to_tool_config(tool_config)
 
-        if system_instructions is None:
-            self._system_instructions = None
+        if system_instruction is None:
+            self._system_instruction = None
         else:
-            self._system_instructions = content_types.to_content(system_instructions)
+            self._system_instruction = content_types.to_content(system_instruction)
 
         self._client = None
         self._async_client = None
@@ -155,7 +155,7 @@ class GenerativeModel:
             safety_settings=merged_ss,
             tools=tools_lib,
             tool_config=tool_config,
-            system_instructions=self._system_instructions,
+            system_instruction=self._system_instruction,
         )
 
     def _get_tools_lib(
@@ -168,6 +168,7 @@ class GenerativeModel:
 
     def generate_content(
         self,
+        system_instruction: content_types.ContentType | None = None,
         contents: content_types.ContentsType,
         *,
         generation_config: generation_types.GenerationConfigType | None = None,
@@ -237,6 +238,7 @@ class GenerativeModel:
             safety_settings=safety_settings,
             tools=tools,
             tool_config=tool_config,
+            system_instruction=system_instruction,
         )
         if self._client is None:
             self._client = client.get_default_generative_client()
@@ -268,6 +270,7 @@ class GenerativeModel:
 
     async def generate_content_async(
         self,
+        system_instruction: content_types.ContentsType | None = None,
         contents: content_types.ContentsType,
         *,
         generation_config: generation_types.GenerationConfigType | None = None,
@@ -284,6 +287,7 @@ class GenerativeModel:
             safety_settings=safety_settings,
             tools=tools,
             tool_config=tool_config,
+            system_instruction = system_instruction,
         )
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
