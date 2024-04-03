@@ -705,7 +705,6 @@ def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCa
     if isinstance(obj, (FunctionCallingMode, str, int)):
         obj = {"mode": to_function_calling_mode(obj)}
 
-
     return glm.FunctionCallingConfig(obj)
 
 
