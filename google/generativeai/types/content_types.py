@@ -712,7 +712,8 @@ def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCa
         obj["mode"] = to_function_calling_mode(mode)
     else:
         raise TypeError(
-            f"Could not convert input to `glm.FunctionCallingConfig`: \n'" f"  type: {type(obj)}\n", obj
+            f"Could not convert input to `glm.FunctionCallingConfig`: \n'" f"  type: {type(obj)}\n",
+            obj,
         )
 
     return glm.FunctionCallingConfig(obj)
