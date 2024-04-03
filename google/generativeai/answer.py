@@ -17,7 +17,8 @@ from __future__ import annotations
 import dataclasses
 from collections.abc import Iterable
 import itertools
-from typing import Any, Iterable, Union, Mapping, Optional, TypedDict
+from typing import Any, Iterable, Union, Mapping, Optional
+from typing_extensions import TypedDict
 
 import google.ai.generativelanguage as glm
 
