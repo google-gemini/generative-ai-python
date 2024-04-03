@@ -155,7 +155,7 @@ class GenerativeModel:
             safety_settings=merged_ss,
             tools=tools_lib,
             tool_config=tool_config,
-            system_instructions=self._system_instructions,
+            system_instruction=self._system_instructions,
         )
 
     def _get_tools_lib(
