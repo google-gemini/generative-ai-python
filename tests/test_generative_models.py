@@ -21,8 +21,16 @@ TEST_IMAGE_URL = "https://storage.googleapis.com/generativeai-downloads/data/tes
 TEST_IMAGE_DATA = TEST_IMAGE_PATH.read_bytes()
 
 
+def simple_part(text: str) -> glm.Content:
+    return glm.Content({"parts": [{"text": text}]})
+
+
+def iter_part(texts: Iterable[str]) -> glm.Content:
+    return glm.Content({"parts": [{"text": t} for t in texts]})
+
+
 def simple_response(text: str) -> glm.GenerateContentResponse:
-    return glm.GenerateContentResponse({"candidates": [{"content": {"parts": [{"text": text}]}}]})
+    return glm.GenerateContentResponse({"candidates": [{"content": simple_part(text)}]})
 
 
 class CUJTests(parameterized.TestCase):
@@ -604,6 +612,24 @@ class CUJTests(parameterized.TestCase):
         for obr in self.observed_requests:
             self.assertLen(obr.tools, 1)
             self.assertEqual(type(obr.tools[0]).to_dict(obr.tools[0]), tools)
+
+    @parameterized.named_parameters(
+        ["bare_str", "talk like a pirate", simple_part("talk like a pirate")],
+        [
+            "part_dict",
+            {"parts": [{"text": "talk like a pirate"}]},
+            simple_part("talk like a pirate"),
+        ],
+        ["part_list", ["talk like:", "a pirate"], iter_part(["talk like:", "a pirate"])],
+    )
+    def test_system_instruction(self, instruction, expected_instr):
+        self.responses["generate_content"] = [simple_response("echo echo")]
+        model = generative_models.GenerativeModel("gemini-pro", system_instruction=instruction)
+
+        _ = model.generate_content("test")
+
+        [req] = self.observed_requests
+        self.assertEqual(req.system_instruction, expected_instr)
 
     @parameterized.named_parameters(
         ["basic", "Hello"],

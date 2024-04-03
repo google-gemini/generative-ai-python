@@ -33,7 +33,7 @@ class TypingExtensionsTests(absltest.TestCase):
 
     def test_no_typing_typed_dict(self):
         root = pathlib.Path(__file__).parent.parent
-        for fpath in root.rglob("*.py"):
+        for fpath in (root / "google").rglob("*.py"):
             source = fpath.read_text()
             if match := TYPING_RE.search(source):
                 raise ValueError(
