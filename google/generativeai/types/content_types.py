@@ -706,7 +706,7 @@ FunctionCallingConfigType = Union[
 def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCallingConfig:
     if isinstance(obj, glm.FunctionCallingConfig):
         return obj
-    elif isinstance(obj, FunctionCallingModeType):
+    elif isinstance(obj, (FunctionCallingMode, str, int)):
         obj = {"mode": to_function_calling_mode(obj)}
     elif isinstance(obj, dict):
         obj = obj.copy()
