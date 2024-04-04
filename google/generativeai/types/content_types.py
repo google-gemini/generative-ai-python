@@ -698,13 +698,13 @@ class FunctionCallingConfigDict(TypedDict):
     allowed_function_names: list[str]
 
 
-FunctionCallingConfigType = Union[FunctionCallingConfigDict, glm.FunctionCallingConfig]
+FunctionCallingConfigType = Union[FunctionCallingModeType, FunctionCallingConfigDict, glm.FunctionCallingConfig]
 
 
 def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCallingConfig:
     if isinstance(obj, glm.FunctionCallingConfig):
         return obj
-    elif isinstance(obj, (FunctionCallingMode, str, int)):
+    elif isinstance(obj, FunctionCallingModeType):
         obj = {"mode": to_function_calling_mode(obj)}
     elif isinstance(obj, dict):
         obj = obj.copy()
