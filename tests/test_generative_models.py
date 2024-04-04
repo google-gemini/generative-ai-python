@@ -33,16 +33,6 @@ def simple_response(text: str) -> glm.GenerateContentResponse:
     return glm.GenerateContentResponse({"candidates": [{"content": simple_part(text)}]})
 
 
-def simple_function_call_part(f: str, args: dict[str, Any]) -> glm.Content:
-    return glm.Content({"parts": [{"function_call": {"name": f, "arguments": args}}]})
-
-
-def function_call_response(f: str, args: dict[str, Any]) -> glm.GenerateContentResponse:
-    return glm.GenerateContentResponse(
-        {"candidates": [{"content": simple_function_call_part(f, args)}]}
-    )
-
-
 class CUJTests(parameterized.TestCase):
     """Tests are in order with the design doc."""
 
