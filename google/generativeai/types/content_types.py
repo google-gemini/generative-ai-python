@@ -698,7 +698,9 @@ class FunctionCallingConfigDict(TypedDict):
     allowed_function_names: list[str]
 
 
-FunctionCallingConfigType = Union[FunctionCallingModeType, FunctionCallingConfigDict, glm.FunctionCallingConfig]
+FunctionCallingConfigType = Union[
+    FunctionCallingModeType, FunctionCallingConfigDict, glm.FunctionCallingConfig
+]
 
 
 def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCallingConfig:
