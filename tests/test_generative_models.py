@@ -614,6 +614,99 @@ class CUJTests(parameterized.TestCase):
             self.assertEqual(type(obr.tools[0]).to_dict(obr.tools[0]), tools)
 
     @parameterized.named_parameters(
+        dict(
+            testcase_name="test_FunctionCallingMode_str",
+            tool_config={"function_calling_config": "any"},
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.ANY,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_FunctionCallingMode_int",
+            tool_config={"function_calling_config": 1},
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.AUTO,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_FunctionCallingMode",
+            tool_config={"function_calling_config": content_types.FunctionCallingMode.NONE},
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.NONE,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_glm_FunctionCallingConfig",
+            tool_config={
+                "function_calling_config": glm.FunctionCallingConfig(
+                    mode=content_types.FunctionCallingMode.AUTO
+                )
+            },
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.AUTO,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_FunctionCallingConfigDict",
+            tool_config={
+                "function_calling_config": {
+                    "mode": "mode_auto",
+                    "allowed_function_names": ["datetime", "greetings", "random"],
+                }
+            },
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.AUTO,
+                    "allowed_function_names": ["datetime", "greetings", "random"],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_glm_ToolConfig",
+            tool_config=glm.ToolConfig(
+                function_calling_config=glm.FunctionCallingConfig(
+                    mode=content_types.FunctionCallingMode.NONE
+                )
+            ),
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.NONE,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+    )
+    def test_tool_config(self, tool_config, expected_tool_config):
+        tools = dict(
+            function_declarations=[
+                dict(name="datetime", description="Returns the current UTC date and time."),
+                dict(name="greetings", description="Returns a greeting."),
+                dict(name="random", description="Returns a random number."),
+            ]
+        )
+        self.responses["generate_content"] = [simple_response("echo echo")]
+
+        model = generative_models.GenerativeModel("gemini-pro", tools=tools)
+        _ = model.generate_content("Hello", tools=[tools], tool_config=tool_config)
+
+        req = self.observed_requests[0]
+
+        self.assertLen(type(req.tools[0]).to_dict(req.tools[0]).get("function_declarations"), 3)
+        self.assertEqual(type(req.tool_config).to_dict(req.tool_config), expected_tool_config)
+
+    @parameterized.named_parameters(
         ["bare_str", "talk like a pirate", simple_part("talk like a pirate")],
         [
             "part_dict",
