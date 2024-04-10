@@ -59,6 +59,8 @@ class FileServiceClient(glm.FileServiceClient):
         mime_type: str | None = None,
         name: str | None = None,
         display_name: str | None = None,
+        resumable: bool | None = None,
+        chunksize: float | None = None,
     ) -> glm.File:
         if self._discovery_api is None:
             self._setup_discovery_api()
@@ -69,7 +71,14 @@ class FileServiceClient(glm.FileServiceClient):
         if display_name is not None:
             file["displayName"] = display_name
 
-        media = googleapiclient.http.MediaFileUpload(filename=path, mimetype=mime_type)
+        # Rely on MediaFileUpload for resumable uploads.
+        if resumable is not None:
+            if chunksize is None:
+                chunksize = googleapiclient.http.DEFAULT_CHUNK_SIZE
+            media = googleapiclient.http.MediaFileUpload(
+                filename=path, mimetype=mime_type, resumable=resumable, chunksize=chunksize)
+        else:
+            media = googleapiclient.http.MediaFileUpload(filename=path, mimetype=mime_type)
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
         result = request.execute()
 
