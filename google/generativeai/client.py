@@ -60,7 +60,7 @@ class FileServiceClient(glm.FileServiceClient):
         name: str | None = None,
         display_name: str | None = None,
         resumable: bool | None = None,
-        chunksize: float | None = None,
+        chunksize: int | None = None,
     ) -> glm.File:
         if self._discovery_api is None:
             self._setup_discovery_api()

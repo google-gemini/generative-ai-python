@@ -36,7 +36,7 @@ def upload_file(
     name: str | None = None,
     display_name: str | None = None,
     resumable: bool | None = None,
-    chunksize: float | None = None,
+    chunksize: int | None = None,
 ) -> file_types.File:
     """Uploads a file using a supported file service.
 
@@ -50,7 +50,7 @@ def upload_file(
         resumable: Whether to use the resumable upload protocol. By default, this is disabled.
             See details at
             https://googleapis.github.io/google-api-python-client/docs/epy/googleapiclient.http.MediaFileUpload-class.html#resumable
-        chunksize: The size of file chunks for resumable uploads, in bytes.
+        chunksize: The size of file chunk bytes for resumable uploads, in int.
             If not provided, a default value is used. For more information,
             see https://googleapis.github.io/google-api-python-client/docs/epy/googleapiclient.http.MediaFileUpload-class.html#chunksize
 
