@@ -76,7 +76,8 @@ class FileServiceClient(glm.FileServiceClient):
             if chunksize is None:
                 chunksize = googleapiclient.http.DEFAULT_CHUNK_SIZE
             media = googleapiclient.http.MediaFileUpload(
-                filename=path, mimetype=mime_type, resumable=resumable, chunksize=chunksize)
+                filename=path, mimetype=mime_type, resumable=resumable, chunksize=chunksize
+            )
         else:
             media = googleapiclient.http.MediaFileUpload(filename=path, mimetype=mime_type)
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)

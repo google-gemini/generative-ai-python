@@ -56,7 +56,7 @@ def upload_file(
 
     Returns:
         file_types.File: The response of the uploaded file.
-   """
+    """
     client = get_default_file_client()
 
     path = pathlib.Path(os.fspath(path))
@@ -71,8 +71,12 @@ def upload_file(
         display_name = path.name
 
     response = client.create_file(
-        path=path, mime_type=mime_type, name=name, display_name=display_name,
-        resumable=resumable, chunksize=chunksize
+        path=path,
+        mime_type=mime_type,
+        name=name,
+        display_name=display_name,
+        resumable=resumable,
+        chunksize=chunksize,
     )
     return file_types.File(response)
 
