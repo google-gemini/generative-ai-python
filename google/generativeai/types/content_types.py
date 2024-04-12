@@ -224,7 +224,7 @@ def to_part(part: PartType):
         return glm.Part(file_data=to_file_data(part))
     elif isinstance(part, glm.FunctionCall):
         return glm.Part(function_call=part)
-    elif isinstance(part, glm.FunctionCall):
+    elif isinstance(part, glm.FunctionResponse):
         return glm.Part(function_response=part)
 
     else:
