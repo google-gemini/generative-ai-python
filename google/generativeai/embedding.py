@@ -98,6 +98,7 @@ def embed_content(
     content: content_types.ContentType,
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.EmbeddingDict: ...
@@ -109,6 +110,7 @@ def embed_content(
     content: Iterable[content_types.ContentType],
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
@@ -119,6 +121,7 @@ def embed_content(
     content: content_types.ContentType | Iterable[content_types.ContentType],
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceClient = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
@@ -166,7 +169,7 @@ def embed_content(
         result = {"embedding": []}
         requests = (
             glm.EmbedContentRequest(
-                model=model, content=content_types.to_content(c), task_type=task_type, title=title
+                model=model, content=content_types.to_content(c), task_type=task_type, title=title, output_dimensionality=output_dimensionality
             )
             for c in content
         )
@@ -181,7 +184,7 @@ def embed_content(
         return result
     else:
         embedding_request = glm.EmbedContentRequest(
-            model=model, content=content_types.to_content(content), task_type=task_type, title=title
+            model=model, content=content_types.to_content(content), task_type=task_type, title=title, output_dimensionality=output_dimensionality
         )
         embedding_response = client.embed_content(
             embedding_request,
@@ -198,6 +201,7 @@ async def embed_content_async(
     content: content_types.ContentType,
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.EmbeddingDict: ...
@@ -209,6 +213,7 @@ async def embed_content_async(
     content: Iterable[content_types.ContentType],
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
@@ -219,6 +224,7 @@ async def embed_content_async(
     content: content_types.ContentType | Iterable[content_types.ContentType],
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceAsyncClient = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
@@ -243,7 +249,7 @@ async def embed_content_async(
         result = {"embedding": []}
         requests = (
             glm.EmbedContentRequest(
-                model=model, content=content_types.to_content(c), task_type=task_type, title=title
+                model=model, content=content_types.to_content(c), task_type=task_type, title=title, output_dimensionality=output_dimensionality
             )
             for c in content
         )
@@ -258,7 +264,7 @@ async def embed_content_async(
         return result
     else:
         embedding_request = glm.EmbedContentRequest(
-            model=model, content=content_types.to_content(content), task_type=task_type, title=title
+            model=model, content=content_types.to_content(content), task_type=task_type, title=title, output_dimensionality=output_dimensionality
         )
         embedding_response = await client.embed_content(
             embedding_request,
