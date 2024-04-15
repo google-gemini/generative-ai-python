@@ -37,10 +37,6 @@ EmbeddingTaskType = glm.TaskType
 EmbeddingTaskTypeOptions = Union[int, str, EmbeddingTaskType]
 
 _EMBEDDING_TASK_TYPE: dict[EmbeddingTaskTypeOptions, EmbeddingTaskType] = {
-    EmbeddingTaskType.TASK_TYPE_UNSPECIFIED: EmbeddingTaskType.TASK_TYPE_UNSPECIFIED,
-    0: EmbeddingTaskType.TASK_TYPE_UNSPECIFIED,
-    "task_type_unspecified": EmbeddingTaskType.TASK_TYPE_UNSPECIFIED,
-    "unspecified": EmbeddingTaskType.TASK_TYPE_UNSPECIFIED,
     EmbeddingTaskType.RETRIEVAL_QUERY: EmbeddingTaskType.RETRIEVAL_QUERY,
     1: EmbeddingTaskType.RETRIEVAL_QUERY,
     "retrieval_query": EmbeddingTaskType.RETRIEVAL_QUERY,
@@ -59,6 +55,14 @@ _EMBEDDING_TASK_TYPE: dict[EmbeddingTaskTypeOptions, EmbeddingTaskType] = {
     EmbeddingTaskType.CLUSTERING: EmbeddingTaskType.CLUSTERING,
     5: EmbeddingTaskType.CLUSTERING,
     "clustering": EmbeddingTaskType.CLUSTERING,
+    6: EmbeddingTaskType.QUESTION_ANSWERING,
+    "question_answering": EmbeddingTaskType.QUESTION_ANSWERING,
+    "qa": EmbeddingTaskType.QUESTION_ANSWERING,
+    EmbeddingTaskType.QUESTION_ANSWERING: EmbeddingTaskType.QUESTION_ANSWERING,
+    7: EmbeddingTaskType.FACT_VARIFICATION,
+    "fact_verification": EmbeddingTaskType.FACT_VARIFICATION,
+    "verification": EmbeddingTaskType.FACT_VARIFICATION,
+    EmbeddingTaskType.FACT_VARIFICATION: EmbeddingTaskType.FACT_VARIFICATION
 }
 
 
