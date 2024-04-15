@@ -79,6 +79,7 @@ class GenerationConfigDict(TypedDict):
     stop_sequences: Iterable[str]
     max_output_tokens: int
     temperature: float
+    response_mime_type: str
 
 
 @dataclasses.dataclass
@@ -138,6 +139,13 @@ class GenerationConfig:
             Note: The default value varies by model, see the
             `Model.top_k` attribute of the `Model` returned the
             `genai.get_model` function.
+
+        response_mime_type:
+            Optional. Output response mimetype of the generated candidate text.
+
+            Supported mimetype:
+                `text/plain`: (default) Text output.
+                `application/json`: JSON response in the candidates.
     """
 
     candidate_count: int | None = None
@@ -146,6 +154,7 @@ class GenerationConfig:
     temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
+    response_mime_type: str | None = None
 
 
 GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
