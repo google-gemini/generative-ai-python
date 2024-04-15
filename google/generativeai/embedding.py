@@ -59,10 +59,10 @@ _EMBEDDING_TASK_TYPE: dict[EmbeddingTaskTypeOptions, EmbeddingTaskType] = {
     "question_answering": EmbeddingTaskType.QUESTION_ANSWERING,
     "qa": EmbeddingTaskType.QUESTION_ANSWERING,
     EmbeddingTaskType.QUESTION_ANSWERING: EmbeddingTaskType.QUESTION_ANSWERING,
-    7: EmbeddingTaskType.FACT_VARIFICATION,
-    "fact_verification": EmbeddingTaskType.FACT_VARIFICATION,
-    "verification": EmbeddingTaskType.FACT_VARIFICATION,
-    EmbeddingTaskType.FACT_VARIFICATION: EmbeddingTaskType.FACT_VARIFICATION,
+    7: EmbeddingTaskType.FACT_VERIFICATION,
+    "fact_verification": EmbeddingTaskType.FACT_VERIFICATION,
+    "verification": EmbeddingTaskType.FACT_VERIFICATION,
+    EmbeddingTaskType.FACT_VERIFICATION: EmbeddingTaskType.FACT_VERIFICATION,
 }
 
 
