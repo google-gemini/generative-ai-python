@@ -73,7 +73,7 @@ class BrokenResponseError(Exception):
     pass
 
 
-class GenerationConfigDict(TypedDict):
+class GenerationConfigDict(TypedDict, total=False):
     # TODO(markdaoust): Python 3.11+ use `NotRequired`, ref: https://peps.python.org/pep-0655/
     candidate_count: int
     stop_sequences: Iterable[str]
