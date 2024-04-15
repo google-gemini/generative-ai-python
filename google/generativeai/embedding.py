@@ -62,7 +62,7 @@ _EMBEDDING_TASK_TYPE: dict[EmbeddingTaskTypeOptions, EmbeddingTaskType] = {
     7: EmbeddingTaskType.FACT_VARIFICATION,
     "fact_verification": EmbeddingTaskType.FACT_VARIFICATION,
     "verification": EmbeddingTaskType.FACT_VARIFICATION,
-    EmbeddingTaskType.FACT_VARIFICATION: EmbeddingTaskType.FACT_VARIFICATION
+    EmbeddingTaskType.FACT_VARIFICATION: EmbeddingTaskType.FACT_VARIFICATION,
 }
 
 
@@ -169,7 +169,11 @@ def embed_content(
         result = {"embedding": []}
         requests = (
             glm.EmbedContentRequest(
-                model=model, content=content_types.to_content(c), task_type=task_type, title=title, output_dimensionality=output_dimensionality
+                model=model,
+                content=content_types.to_content(c),
+                task_type=task_type,
+                title=title,
+                output_dimensionality=output_dimensionality,
             )
             for c in content
         )
@@ -184,7 +188,11 @@ def embed_content(
         return result
     else:
         embedding_request = glm.EmbedContentRequest(
-            model=model, content=content_types.to_content(content), task_type=task_type, title=title, output_dimensionality=output_dimensionality
+            model=model,
+            content=content_types.to_content(content),
+            task_type=task_type,
+            title=title,
+            output_dimensionality=output_dimensionality,
         )
         embedding_response = client.embed_content(
             embedding_request,
@@ -249,7 +257,11 @@ async def embed_content_async(
         result = {"embedding": []}
         requests = (
             glm.EmbedContentRequest(
-                model=model, content=content_types.to_content(c), task_type=task_type, title=title, output_dimensionality=output_dimensionality
+                model=model,
+                content=content_types.to_content(c),
+                task_type=task_type,
+                title=title,
+                output_dimensionality=output_dimensionality,
             )
             for c in content
         )
@@ -264,7 +276,11 @@ async def embed_content_async(
         return result
     else:
         embedding_request = glm.EmbedContentRequest(
-            model=model, content=content_types.to_content(content), task_type=task_type, title=title, output_dimensionality=output_dimensionality
+            model=model,
+            content=content_types.to_content(content),
+            task_type=task_type,
+            title=title,
+            output_dimensionality=output_dimensionality,
         )
         embedding_response = await client.embed_content(
             embedding_request,
