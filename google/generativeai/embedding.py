@@ -142,6 +142,12 @@ def embed_content(
         title:
             An optional title for the text. Only applicable when task_type is
             `RETRIEVAL_DOCUMENT`.
+        
+        output_dimensionality:
+            Optional reduced dimensionality for the output embeddings. If set,
+            excessive values from the output embeddings will be truncated from
+            the end.
+        
         request_options:
             Options for the request.
 
