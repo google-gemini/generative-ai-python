@@ -142,7 +142,7 @@ class GenerationConfig:
 
         response_mime_type:
             Optional. Output response mimetype of the generated candidate text.
-            
+
             Supported mimetype:
                 `text/plain`: (default) Text output.
                 `application/json`: JSON response in the candidates.
