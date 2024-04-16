@@ -1006,6 +1006,7 @@ class CUJTests(parameterized.TestCase):
                     generation_config={},
                     safety_settings={},
                     tools=None,
+                    system_instruction=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'first'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), glm.Content({'parts': [{'text': 'second'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
             )"""
@@ -1033,6 +1034,7 @@ class CUJTests(parameterized.TestCase):
                     generation_config={},
                     safety_settings={},
                     tools=None,
+                    system_instruction=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
             )"""
@@ -1076,11 +1078,17 @@ class CUJTests(parameterized.TestCase):
                     generation_config={},
                     safety_settings={},
                     tools=None,
+                    system_instruction=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
             )"""
         )
         self.assertEqual(expected, result)
+
+    def test_repr_for_system_instruction(self):
+        model = generative_models.GenerativeModel("gemini-pro", system_instruction="Be excellent.")
+        result = repr(model)
+        self.assertIn("system_instruction='Be excellent.'", result)
 
     def test_count_tokens_called_with_request_options(self):
         self.client.count_tokens = unittest.mock.MagicMock()

@@ -103,6 +103,11 @@ class GenerativeModel:
         return self._model_name
 
     def __str__(self):
+        def maybe_text(content):
+            if content and len(content.parts) and (t := content.parts[0].text):
+                return repr(t)
+            return content
+
         return textwrap.dedent(
             f"""\
             genai.GenerativeModel(
@@ -110,6 +115,7 @@ class GenerativeModel:
                 generation_config={self._generation_config},
                 safety_settings={self._safety_settings},
                 tools={self._tools},
+                system_instruction={maybe_text(self._system_instruction)},
             )"""
         )
 
