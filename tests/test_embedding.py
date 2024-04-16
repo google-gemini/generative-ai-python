@@ -124,7 +124,7 @@ class UnitTests(parameterized.TestCase):
             embedding.embed_content(
                 model=DEFAULT_EMB_MODEL, content=text, task_type="similarity", title="Exploring AI"
             )
-    
+
     def test_embed_content_with_negative_output_dimensionality(self):
         text = "What are you?"
         with self.assertRaises(ValueError):
@@ -178,7 +178,7 @@ class UnitTests(parameterized.TestCase):
             pass
 
         self.client.embed_content.assert_called_once_with(request, **request_options)
-    
+
     @parameterized.named_parameters(
         dict(
             testcase_name="embedding.embed_content",
@@ -206,6 +206,7 @@ class UnitTests(parameterized.TestCase):
 
         asource = re.sub(" *?# type: ignore", "", asource)
         self.assertEqual(source, asource)
+
 
 if __name__ == "__main__":
     absltest.main()

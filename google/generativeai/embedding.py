@@ -142,12 +142,12 @@ def embed_content(
         title:
             An optional title for the text. Only applicable when task_type is
             `RETRIEVAL_DOCUMENT`.
-        
+
         output_dimensionality:
             Optional reduced dimensionality for the output embeddings. If set,
             excessive values from the output embeddings will be truncated from
             the end.
-        
+
         request_options:
             Options for the request.
 
@@ -167,11 +167,9 @@ def embed_content(
         raise ValueError(
             "If a title is specified, the task must be a retrieval document type task."
         )
-    
+
     if output_dimensionality and output_dimensionality < 0:
-        raise ValueError(
-            "`output_dimensionality` must be a non-negative integer."
-        )
+        raise ValueError("`output_dimensionality` must be a non-negative integer.")
 
     if task_type:
         task_type = to_task_type(task_type)
@@ -260,11 +258,9 @@ async def embed_content_async(
         raise ValueError(
             "If a title is specified, the task must be a retrieval document type task."
         )
-    
+
     if output_dimensionality and output_dimensionality < 0:
-        raise ValueError(
-            "`output_dimensionality` must be a non-negative integer."
-        )
+        raise ValueError("`output_dimensionality` must be a non-negative integer.")
 
     if task_type:
         task_type = to_task_type(task_type)
