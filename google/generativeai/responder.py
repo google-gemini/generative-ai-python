@@ -87,24 +87,25 @@ class FunctionDeclaration:
         schema = _generate_schema(function, descriptions=descriptions)
 
         return CallableFunctionDeclaration(**schema, function=function)
-    
+
 
 StructType = dict[str, "ValueType"]
 ValueType = Union[float, str, bool, StructType, list["ValueType"], None]
 
+
 class CallableFunctionDeclaration(FunctionDeclaration):
-    """An extension of `FunctionDeclaration` that can be built from a Python function, and is callable. 
-    
+    """An extension of `FunctionDeclaration` that can be built from a Python function, and is callable.
+
     Note: The Python function must have type annotations.
     """
 
     def __init__(
-            self,
-            *,
-            name: str,
-            description: str,
-            parameters: dict[str, Any] | None = None,
-            function: Callable[..., Any],
+        self,
+        *,
+        name: str,
+        description: str,
+        parameters: dict[str, Any] | None = None,
+        function: Callable[..., Any],
     ):
         super().__init__(name=name, description=description, parameters=parameters)
         self.function = function
@@ -113,14 +114,16 @@ class CallableFunctionDeclaration(FunctionDeclaration):
         result = self.function(**fc.args)
         if not isinstance(result, dict):
             result = {"result": result}
-        return glm.FunctionResponse(name=fc.name, response=result)   
-    
+        return glm.FunctionResponse(name=fc.name, response=result)
+
+
 FunctionDeclarationType = Union[
     FunctionDeclaration,
     glm.FunctionDeclaration,
     dict[str, Any],
     Callable[..., Any],
 ]
+
 
 def _make_function_declaration(
     fun: FunctionDeclarationType,
@@ -139,12 +142,14 @@ def _make_function_declaration(
             "Expected an instance of `genai.FunctionDeclaraionType`. Got a:\n" f"  {type(fun)=}\n",
             fun,
         )
-    
+
+
 def _encode_fd(fd: FunctionDeclaration | glm.FunctionDeclaration) -> glm.FunctionDeclaration:
     if isinstance(fd, glm.FunctionDeclaration):
         return fd
 
     return fd.to_proto()
+
 
 class Tool:
     """A wrapper for `glm.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
@@ -184,7 +189,8 @@ class Tool:
 
     def to_proto(self):
         return self._proto
-    
+
+
 class ToolDict(TypedDict):
     function_declarations: list[FunctionDeclarationType]
 
