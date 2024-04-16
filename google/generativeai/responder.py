@@ -1,16 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
-import io
-import inspect
-import mimetypes
-import typing
 from typing import Any, Callable, Union
 from typing_extensions import TypedDict
 
-import pydantic
-
-from google.generativeai.types import file_types
 from google.ai import generativelanguage as glm
 
 
