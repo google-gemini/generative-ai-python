@@ -260,7 +260,7 @@ async def embed_content_async(
         raise ValueError(
             "If a title is specified, the task must be a retrieval document type task."
         )
-
+    
     if output_dimensionality and output_dimensionality < 0:
         raise ValueError(
             "`output_dimensionality` must be a non-negative integer."
