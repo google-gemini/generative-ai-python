@@ -37,6 +37,10 @@ EmbeddingTaskType = glm.TaskType
 EmbeddingTaskTypeOptions = Union[int, str, EmbeddingTaskType]
 
 _EMBEDDING_TASK_TYPE: dict[EmbeddingTaskTypeOptions, EmbeddingTaskType] = {
+    EmbeddingTaskType.TASK_TYPE_UNSPECIFIED: EmbeddingTaskType.TASK_TYPE_UNSPECIFIED,
+    0: EmbeddingTaskType.TASK_TYPE_UNSPECIFIED,
+    "task_type_unspecified": EmbeddingTaskType.TASK_TYPE_UNSPECIFIED,
+    "unspecified": EmbeddingTaskType.TASK_TYPE_UNSPECIFIED,
     EmbeddingTaskType.RETRIEVAL_QUERY: EmbeddingTaskType.RETRIEVAL_QUERY,
     1: EmbeddingTaskType.RETRIEVAL_QUERY,
     "retrieval_query": EmbeddingTaskType.RETRIEVAL_QUERY,
