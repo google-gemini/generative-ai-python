@@ -1,10 +1,100 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
+import inspect
 from typing import Any, Callable, Union
 from typing_extensions import TypedDict
 
 from google.ai import generativelanguage as glm
+
+def _generate_schema(
+    f: Callable[..., Any],
+    *,
+    descriptions: Mapping[str, str] | None = None,
+    required: Sequence[str] | None = None,
+) -> dict[str, Any]:
+    """Generates the OpenAPI Schema for a python function.
+
+    Args:
+        f: The function to generate an OpenAPI Schema for.
+        descriptions: Optional. A `{name: description}` mapping for annotating input
+            arguments of the function with user-provided descriptions. It
+            defaults to an empty dictionary (i.e. there will not be any
+            description for any of the inputs).
+        required: Optional. For the user to specify the set of required arguments in
+            function calls to `f`. If unspecified, it will be automatically
+            inferred from `f`.
+
+    Returns:
+        dict[str, Any]: The OpenAPI Schema for the function `f` in JSON format.
+    """
+    if descriptions is None:
+        descriptions = {}
+    if required is None:
+        required = []
+    defaults = dict(inspect.signature(f).parameters)
+    fields_dict = {
+        name: (
+            # 1. We infer the argument type here: use Any rather than None so
+            # it will not try to auto-infer the type based on the default value.
+            (param.annotation if param.annotation != inspect.Parameter.empty else Any),
+            pydantic.Field(
+                # 2. We do not support default values for now.
+                # default=(
+                #     param.default if param.default != inspect.Parameter.empty
+                #     else None
+                # ),
+                # 3. We support user-provided descriptions.
+                description=descriptions.get(name, None),
+            ),
+        )
+        for name, param in defaults.items()
+        # We do not support *args or **kwargs
+        if param.kind
+        in (
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            inspect.Parameter.KEYWORD_ONLY,
+            inspect.Parameter.POSITIONAL_ONLY,
+        )
+    }
+    parameters = pydantic.create_model(f.__name__, **fields_dict).schema()
+    # Postprocessing
+    # 4. Suppress unnecessary title generation:
+    #    * https://github.com/pydantic/pydantic/issues/1051
+    #    * http://cl/586221780
+    parameters.pop("title", None)
+    for name, function_arg in parameters.get("properties", {}).items():
+        function_arg.pop("title", None)
+        annotation = defaults[name].annotation
+        # 5. Nullable fields:
+        #     * https://github.com/pydantic/pydantic/issues/1270
+        #     * https://stackoverflow.com/a/58841311
+        #     * https://github.com/pydantic/pydantic/discussions/4872
+        if typing.get_origin(annotation) is typing.Union and type(None) in typing.get_args(
+            annotation
+        ):
+            function_arg["nullable"] = True
+    # 6. Annotate required fields.
+    if required:
+        # We use the user-provided "required" fields if specified.
+        parameters["required"] = required
+    else:
+        # Otherwise we infer it from the function signature.
+        parameters["required"] = [
+            k
+            for k in defaults
+            if (
+                defaults[k].default == inspect.Parameter.empty
+                and defaults[k].kind
+                in (
+                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    inspect.Parameter.KEYWORD_ONLY,
+                    inspect.Parameter.POSITIONAL_ONLY,
+                )
+            )
+        ]
+    schema = dict(name=f.__name__, description=f.__doc__, parameters=parameters)
+    return schema
 
 
 def _rename_schema_fields(schema):
