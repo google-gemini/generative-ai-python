@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
 import inspect
+import typing
 from typing import Any, Callable, Union
 from typing_extensions import TypedDict
 
+import pydantic
+
 from google.ai import generativelanguage as glm
+
 
 def _generate_schema(
     f: Callable[..., Any],
