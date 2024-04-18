@@ -122,8 +122,13 @@ class UnitTests(parameterized.TestCase):
         text = "What are you?"
         with self.assertRaises(ValueError):
             embedding.embed_content(
-                model=DEFAULT_EMB_MODEL, content=text, task_type="unspecified", title="Exploring AI"
+                model=DEFAULT_EMB_MODEL, content=text, task_type="similarity", title="Exploring AI"
             )
+
+    def test_embed_content_with_negative_output_dimensionality(self):
+        text = "What are you?"
+        with self.assertRaises(ValueError):
+            embedding.embed_content(model=DEFAULT_EMB_MODEL, content=text, output_dimensionality=-1)
 
     def test_generate_answer_called_with_request_options(self):
         self.client.embed_content = mock.MagicMock()
@@ -173,6 +178,34 @@ class UnitTests(parameterized.TestCase):
             pass
 
         self.client.embed_content.assert_called_once_with(request, **request_options)
+
+    @parameterized.named_parameters(
+        dict(
+            testcase_name="embedding.embed_content",
+            obj=embedding.embed_content,
+            aobj=embedding.embed_content_async,
+        ),
+    )
+    def test_async_code_match(self, obj, aobj):
+        import inspect
+        import re
+
+        source = inspect.getsource(obj)
+        asource = inspect.getsource(aobj)
+        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
+        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
+        asource = (
+            asource.replace("anext", "next")
+            .replace("aiter", "iter")
+            .replace("_async", "")
+            .replace("async ", "")
+            .replace("await ", "")
+            .replace("Async", "")
+            .replace("ASYNC_", "")
+        )
+
+        asource = re.sub(" *?# type: ignore", "", asource)
+        self.assertEqual(source, asource)
 
 
 if __name__ == "__main__":
