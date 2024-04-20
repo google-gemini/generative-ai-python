@@ -81,7 +81,7 @@ def _make_generate_text_request(
     max_output_tokens: int | None = None,
     top_p: int | None = None,
     top_k: int | None = None,
-    safety_settings: safety_types.SafetySettingOptions | None = None,
+    safety_settings: safety_types.GeminiSafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
 ) -> glm.GenerateTextRequest:
     """
@@ -138,7 +138,7 @@ def generate_text(
     max_output_tokens: int | None = None,
     top_p: float | None = None,
     top_k: float | None = None,
-    safety_settings: safety_types.SafetySettingOptions | None = None,
+    safety_settings: safety_types.GeminiSafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
     client: glm.TextServiceClient | None = None,
     request_options: dict[str, Any] | None = None,

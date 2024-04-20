@@ -14,6 +14,7 @@ from google.generativeai import string_utils
 
 __all__ = [
     "HarmCategory",
+    "GeminiHarmCategory",
     "HarmProbability",
     "HarmBlockThreshold",
     "BlockedReason",
@@ -30,6 +31,21 @@ HarmBlockThreshold = glm.SafetySetting.HarmBlockThreshold
 BlockedReason = glm.ContentFilter.BlockedReason
 
 HarmCategoryOptions = Union[str, int, HarmCategory]
+
+
+class GeminiHarmCategory:
+    """
+    The Harm Category that only supported by the gemini model
+    """
+
+    HARM_CATEGORY_UNSPECIFIED = glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED
+    HARM_CATEGORY_HARASSMENT = glm.HarmCategory.HARM_CATEGORY_HARASSMENT
+    HARM_CATEGORY_HATE_SPEECH = glm.HarmCategory.HARM_CATEGORY_HATE_SPEECH
+    HARM_CATEGORY_SEXUALLY_EXPLICIT = glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT
+    HARM_CATEGORY_DANGEROUS_CONTENT = glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+
+
+GeminiHarmCategoryOptions = Union[str, int, GeminiHarmCategory]
 
 # fmt: off
 _OLD_HARM_CATEGORIES: Dict[HarmCategoryOptions, HarmCategory] = {
@@ -220,6 +236,9 @@ EasySafetySetting = Mapping[HarmCategoryOptions, HarmBlockThresholdOptions]
 EasySafetySettingDict = dict[HarmCategoryOptions, HarmBlockThresholdOptions]
 
 SafetySettingOptions = Union[EasySafetySetting, Iterable[LooseSafetySettingDict], None]
+
+GeminiEasySafetySetting = Mapping[GeminiHarmCategoryOptions, HarmBlockThresholdOptions]
+GeminiSafetySettingOptions = Union[GeminiEasySafetySetting, Iterable[LooseSafetySettingDict], None]
 
 
 def to_easy_safety_dict(settings: SafetySettingOptions, harm_category_set) -> EasySafetySettingDict:
