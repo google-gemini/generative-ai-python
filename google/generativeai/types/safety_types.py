@@ -59,7 +59,7 @@ PalmHarmCategoryOptions = Union[str, int, PalmHarmCategory]
 GeminiHarmCategoryOptions = Union[str, int, GeminiHarmCategory]
 
 # fmt: off
-_PALM_HARM_CATEGORIES: Dict[PalmHarmCategoryOptions, glm.HarmCategory] = {
+_OLD_HARM_CATEGORIES: Dict[PalmHarmCategoryOptions, glm.HarmCategory] = {
     HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
     PalmHarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
     0: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
@@ -108,7 +108,7 @@ _PALM_HARM_CATEGORIES: Dict[PalmHarmCategoryOptions, glm.HarmCategory] = {
     "danger": HarmCategory.HARM_CATEGORY_DANGEROUS,
 }
 
-_GEMINI_HARM_CATEGORIES: Dict[GeminiHarmCategoryOptions, glm.HarmCategory] = {
+_NEW_HARM_CATEGORIES: Dict[GeminiHarmCategoryOptions, glm.HarmCategory] = {
     HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
     GeminiHarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
     0: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
@@ -148,22 +148,23 @@ _GEMINI_HARM_CATEGORIES: Dict[GeminiHarmCategoryOptions, glm.HarmCategory] = {
 # fmt: on
 
 
-def to_palm_harm_category(x: HarmCategoryOptions) -> glm.HarmCategory:
+def to_old_harm_category(x: HarmCategoryOptions) -> HarmCategory:
     if isinstance(x, str):
         x = x.lower()
-    return _PALM_HARM_CATEGORIES[x]
+    return _OLD_HARM_CATEGORIES[x]
 
 
-def to_gemini_harm_category(x: HarmCategoryOptions) -> glm.HarmCategory:
+def to_new_harm_category(x: HarmCategoryOptions) -> HarmCategory:
     if isinstance(x, str):
         x = x.lower()
-    return _GEMINI_HARM_CATEGORIES[x]
+    return _NEW_HARM_CATEGORIES[x]
+
 
 def to_harm_category(x, harm_category_set):
     if harm_category_set == "old":
-        return to_palm_harm_category(x)
+        return to_old_harm_category(x)
     elif harm_category_set == "new":
-        return to_gemini_harm_category(x)
+        return to_new_harm_category(x)
     else:
         raise ValueError("harm_category_set must be 'new' or 'old'")
 
