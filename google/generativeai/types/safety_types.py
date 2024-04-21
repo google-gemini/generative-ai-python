@@ -159,6 +159,14 @@ def to_gemini_harm_category(x: HarmCategoryOptions) -> glm.HarmCategory:
         x = x.lower()
     return _GEMINI_HARM_CATEGORIES[x]
 
+def to_harm_category(x, harm_category_set):
+    if harm_category_set == "old":
+        return to_palm_harm_category(x)
+    elif harm_category_set == "new":
+        return to_gemini_harm_category(x)
+    else:
+        raise ValueError("harm_category_set must be 'new' or 'old'")
+
 
 HarmBlockThresholdOptions = Union[str, int, HarmBlockThreshold]
 
