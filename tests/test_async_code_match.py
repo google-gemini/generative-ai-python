@@ -21,7 +21,9 @@ import re
 from absl.testing import absltest
 from absl.testing import parameterized
 
-WORKING_DIRS = [(pathlib.Path(__file__).parent.parent / "google"),]
+WORKING_DIRS = [
+    (pathlib.Path(__file__).parent.parent / "google"),
+]
 EXEMPT_DIRS = ["notebook"]
 EXEMPT_DECORATORS = ["overload", "property", "setter", "abstractmethod", "staticmethod"]
 EXEMPT_FILES = ["client.py", "version.py", "discuss.py", "files.py"]
@@ -31,28 +33,34 @@ EXEMPT_FUNCTIONS = ["to_dict", "_to_proto", "to_proto", "from_proto", "from_dict
 class CodeMatch(absltest.TestCase):
 
     def _maybe_trim_docstring(self, node):
-        if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
+        if (
+            node.body
+            and isinstance(node.body[0], ast.Expr)
+            and isinstance(node.body[0].value, ast.Constant)
+        ):
             node.body = node.body[1:]
-            
+
         return ast.unparse(node)
-    
+
     def _execute_code_match(self, source, asource):
         asource = (
-                asource.replace("anext", "next")
-                .replace("aiter", "iter")
-                .replace("_async", "")
-                .replace("async ", "")
-                .replace("await ", "")
-                .replace("Async", "")
-                .replace("ASYNC_", "")
-            )
+            asource.replace("anext", "next")
+            .replace("aiter", "iter")
+            .replace("_async", "")
+            .replace("async ", "")
+            .replace("await ", "")
+            .replace("Async", "")
+            .replace("ASYNC_", "")
+        )
         asource = re.sub(" *?# type: ignore", "", asource)
         self.assertEqual(source, asource)
 
     def test_code_match_for_async_methods(self):
         for working_dir in WORKING_DIRS:
             for fpath in working_dir.rglob("*.py"):
-                if fpath.name.split('/')[-1] in EXEMPT_FILES or any([d in fpath.parts for d in EXEMPT_DIRS]):
+                if fpath.name.split("/")[-1] in EXEMPT_FILES or any(
+                    [d in fpath.parts for d in EXEMPT_DIRS]
+                ):
                     continue
                 # print(f"Checking {fpath.absolute()}")
                 code_match_funcs: dict[str, ast.AST] = {}
@@ -60,7 +68,9 @@ class CodeMatch(absltest.TestCase):
                 source_nodes = ast.parse(source)
 
                 for node in ast.walk(source_nodes):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not node.name.startswith("_"):
+                    if isinstance(
+                        node, (ast.FunctionDef, ast.AsyncFunctionDef)
+                    ) and not node.name.startswith("_"):
                         name = node.name[:-6] if node.name.endswith("_async") else node.name
                         if name in EXEMPT_FUNCTIONS:
                             continue
@@ -80,21 +90,26 @@ class CodeMatch(absltest.TestCase):
                                     is_exempt = True
                                     break
                             else:
-                                raise TypeError(f"Unknown decorator type {decorator}, during checking {node.name} from {fpath.name}")
-                        
+                                raise TypeError(
+                                    f"Unknown decorator type {decorator}, during checking {node.name} from {fpath.name}"
+                                )
+
                         if is_exempt:
                             # print(f"Exempted {node.name}")
                             continue
-                        
+
                         if func_name := code_match_funcs.pop(name, None):
-                            snode, anode = (func_name, node) if isinstance(node, ast.AsyncFunctionDef) else (node, func_name)
+                            snode, anode = (
+                                (func_name, node)
+                                if isinstance(node, ast.AsyncFunctionDef)
+                                else (node, func_name)
+                            )
                             func_source = self._maybe_trim_docstring(snode)
                             func_asource = self._maybe_trim_docstring(anode)
                             self._execute_code_match(func_source, func_asource)
                             # print(f"Matched {node.name}")
                         else:
                             code_match_funcs[node.name] = node
-
 
 
 if __name__ == "__main__":

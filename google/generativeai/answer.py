@@ -251,7 +251,7 @@ def generate_answer(
 ):
     """
     Calls the GenerateAnswer API and returns a `types.Answer` containing the response.
-    
+
     You can pass a literal list of text chunks:
 
     >>> from google.generativeai import answer
