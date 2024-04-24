@@ -59,6 +59,14 @@ _EMBEDDING_TASK_TYPE: dict[EmbeddingTaskTypeOptions, EmbeddingTaskType] = {
     EmbeddingTaskType.CLUSTERING: EmbeddingTaskType.CLUSTERING,
     5: EmbeddingTaskType.CLUSTERING,
     "clustering": EmbeddingTaskType.CLUSTERING,
+    6: EmbeddingTaskType.QUESTION_ANSWERING,
+    "question_answering": EmbeddingTaskType.QUESTION_ANSWERING,
+    "qa": EmbeddingTaskType.QUESTION_ANSWERING,
+    EmbeddingTaskType.QUESTION_ANSWERING: EmbeddingTaskType.QUESTION_ANSWERING,
+    7: EmbeddingTaskType.FACT_VERIFICATION,
+    "fact_verification": EmbeddingTaskType.FACT_VERIFICATION,
+    "verification": EmbeddingTaskType.FACT_VERIFICATION,
+    EmbeddingTaskType.FACT_VERIFICATION: EmbeddingTaskType.FACT_VERIFICATION,
 }
 
 
@@ -94,6 +102,7 @@ def embed_content(
     content: content_types.ContentType,
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.EmbeddingDict: ...
@@ -105,6 +114,7 @@ def embed_content(
     content: Iterable[content_types.ContentType],
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
@@ -115,6 +125,7 @@ def embed_content(
     content: content_types.ContentType | Iterable[content_types.ContentType],
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceClient = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
@@ -135,6 +146,12 @@ def embed_content(
         title:
             An optional title for the text. Only applicable when task_type is
             `RETRIEVAL_DOCUMENT`.
+
+        output_dimensionality:
+            Optional reduced dimensionality for the output embeddings. If set,
+            excessive values from the output embeddings will be truncated from
+            the end.
+
         request_options:
             Options for the request.
 
@@ -155,6 +172,9 @@ def embed_content(
             "If a title is specified, the task must be a retrieval document type task."
         )
 
+    if output_dimensionality and output_dimensionality < 0:
+        raise ValueError("`output_dimensionality` must be a non-negative integer.")
+
     if task_type:
         task_type = to_task_type(task_type)
 
@@ -162,7 +182,11 @@ def embed_content(
         result = {"embedding": []}
         requests = (
             glm.EmbedContentRequest(
-                model=model, content=content_types.to_content(c), task_type=task_type, title=title
+                model=model,
+                content=content_types.to_content(c),
+                task_type=task_type,
+                title=title,
+                output_dimensionality=output_dimensionality,
             )
             for c in content
         )
@@ -177,7 +201,11 @@ def embed_content(
         return result
     else:
         embedding_request = glm.EmbedContentRequest(
-            model=model, content=content_types.to_content(content), task_type=task_type, title=title
+            model=model,
+            content=content_types.to_content(content),
+            task_type=task_type,
+            title=title,
+            output_dimensionality=output_dimensionality,
         )
         embedding_response = client.embed_content(
             embedding_request,
@@ -194,6 +222,7 @@ async def embed_content_async(
     content: content_types.ContentType,
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.EmbeddingDict: ...
@@ -205,6 +234,7 @@ async def embed_content_async(
     content: Iterable[content_types.ContentType],
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
@@ -215,6 +245,7 @@ async def embed_content_async(
     content: content_types.ContentType | Iterable[content_types.ContentType],
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
+    output_dimensionality: int | None = None,
     client: glm.GenerativeServiceAsyncClient = None,
     request_options: dict[str, Any] | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
@@ -232,6 +263,9 @@ async def embed_content_async(
             "If a title is specified, the task must be a retrieval document type task."
         )
 
+    if output_dimensionality and output_dimensionality < 0:
+        raise ValueError("`output_dimensionality` must be a non-negative integer.")
+
     if task_type:
         task_type = to_task_type(task_type)
 
@@ -239,7 +273,11 @@ async def embed_content_async(
         result = {"embedding": []}
         requests = (
             glm.EmbedContentRequest(
-                model=model, content=content_types.to_content(c), task_type=task_type, title=title
+                model=model,
+                content=content_types.to_content(c),
+                task_type=task_type,
+                title=title,
+                output_dimensionality=output_dimensionality,
             )
             for c in content
         )
@@ -254,7 +292,11 @@ async def embed_content_async(
         return result
     else:
         embedding_request = glm.EmbedContentRequest(
-            model=model, content=content_types.to_content(content), task_type=task_type, title=title
+            model=model,
+            content=content_types.to_content(content),
+            task_type=task_type,
+            title=title,
+            output_dimensionality=output_dimensionality,
         )
         embedding_response = await client.embed_content(
             embedding_request,
