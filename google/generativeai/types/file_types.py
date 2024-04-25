@@ -59,10 +59,6 @@ class File:
         return self._proto.expiration_time
 
     @property
-    def update_time(self) -> datetime.datetime:
-        return self._proto.update_time
-
-    @property
     def sha256_hash(self) -> bytes:
         return self._proto.sha256_hash
 
