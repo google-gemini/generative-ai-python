@@ -17,7 +17,7 @@ from __future__ import annotations
 import collections
 import contextlib
 import sys
-from collections.abc import Iterable, AsyncIterable
+from collections.abc import Iterable, AsyncIterable, Mapping
 import dataclasses
 import itertools
 import textwrap
@@ -80,6 +80,7 @@ class GenerationConfigDict(TypedDict, total=False):
     max_output_tokens: int
     temperature: float
     response_mime_type: str
+    response_schema: Mapping[str, str]
 
 
 @dataclasses.dataclass
@@ -155,6 +156,7 @@ class GenerationConfig:
     top_p: float | None = None
     top_k: int | None = None
     response_mime_type: str | None = None
+    response_schema: Mapping[str, str | None] | None = None
 
 
 GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
