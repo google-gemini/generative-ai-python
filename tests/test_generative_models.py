@@ -12,6 +12,7 @@ from google.generativeai import client as client_lib
 from google.generativeai import generative_models
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
+from google.generativeai.types import caching_types
 
 import PIL.Image
 
@@ -40,6 +41,7 @@ class CUJTests(parameterized.TestCase):
         self.client = unittest.mock.MagicMock()
 
         client_lib._client_manager.clients["generative"] = self.client
+        client_lib._client_manager.clients["cache"] = self.client
 
         def add_client_method(f):
             name = f.__name__
@@ -76,6 +78,20 @@ class CUJTests(parameterized.TestCase):
             self.observed_requests.append(request)
             response = self.responses["count_tokens"].pop(0)
             return response
+
+        @add_client_method
+        def get_cached_content(
+            request: glm.GetCachedContentRequest,
+            **kwargs,
+        ) -> glm.CachedContent:
+            self.observed_requests.append(request)
+            return glm.CachedContent(
+                name="cachedContent/test-cached-content",
+                model="models/gemini-1.0-pro-001",
+                create_time="2000-01-01T01:01:01.123456Z",
+                update_time="2000-01-01T01:01:01.123456Z",
+                expire_time="2000-01-01T01:01:01.123456Z",
+            )
 
     def test_hello(self):
         # Generate text from text prompt
@@ -292,6 +308,48 @@ class CUJTests(parameterized.TestCase):
 
         text = "".join(chunk.text for chunk in response)
         self.assertEqual(text, "first second")
+
+    @parameterized.named_parameters(
+        [
+            dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
+            dict(
+                testcase_name="test_cached_content_as_CachedContent_object",
+                cached_content=caching_types.CachedContent(
+                    name="cachedContent/test-cached-content",
+                    model="models/gemini-1.0-pro-001",
+                    create_time="2000-01-01T01:01:01.123456Z",
+                    update_time="2000-01-01T01:01:01.123456Z",
+                    expire_time="2000-01-01T01:01:01.123456Z",
+                ),
+            ),
+        ],
+    )
+    def test_model_with_cached_content_as_context(self, cached_content):
+        model = generative_models.GenerativeModel.from_cached_content(cached_content=cached_content)
+        cc_name = model.cached_content
+        model_name = model.model_name
+        self.assertEqual(cc_name, "cachedContent/test-cached-content")
+        self.assertEqual(model_name, "models/gemini-1.0-pro-001")
+
+    def test_content_generation_with_model_having_context(self):
+        self.responses["generate_content"] = [simple_response("world!")]
+        model = generative_models.GenerativeModel.from_cached_content(
+            cached_content="test-cached-content"
+        )
+        response = model.generate_content("Hello")
+
+        self.assertEqual(response.text, "world!")
+
+    def test_fail_content_generation_with_model_having_context(self):
+        model = generative_models.GenerativeModel.from_cached_content(
+            cached_content="test-cached-content"
+        )
+
+        def add(a: int, b: int) -> int:
+            return a + b
+
+        with self.assertRaises(ValueError):
+            model.generate_content("Hello", tools=[add])
 
     def test_chat(self):
         # Multi turn chat
