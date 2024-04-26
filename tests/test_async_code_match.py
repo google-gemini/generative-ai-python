@@ -38,6 +38,24 @@ class CodeMatch(absltest.TestCase):
             node.body = node.body[1:]
 
         return ast.unparse(node)
+    
+    def _inspect_decorator_exemption(self, node) -> bool:
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Attribute):
+                if decorator.attr in EXEMPT_DECORATORS:
+                    return True
+            elif isinstance(decorator, ast.Name):
+                if decorator.id in EXEMPT_DECORATORS:
+                    return True
+            elif isinstance(decorator, ast.Call):
+                if decorator.func.attr in EXEMPT_DECORATORS:
+                    return True
+            else:
+                raise TypeError(
+                    f"Unknown decorator type {decorator}, during checking {node.name} from {fpath.name}"
+                )
+        
+        return False
 
     def _execute_code_match(self, source, asource):
         asource = (
@@ -68,31 +86,10 @@ class CodeMatch(absltest.TestCase):
                     node, (ast.FunctionDef, ast.AsyncFunctionDef)
                 ) and not node.name.startswith("_"):
                     name = node.name[:-6] if node.name.endswith("_async") else node.name
-                    if name in EXEMPT_FUNCTIONS:
+                    if name in EXEMPT_FUNCTIONS or self._inspect_decorator_exemption(node):
                         continue
                     # print(f"Checking {node.name}")
-                    is_exempt = False
-                    for decorator in node.decorator_list:
-                        if isinstance(decorator, ast.Attribute):
-                            if decorator.attr in EXEMPT_DECORATORS:
-                                is_exempt = True
-                                break
-                        elif isinstance(decorator, ast.Name):
-                            if decorator.id in EXEMPT_DECORATORS:
-                                is_exempt = True
-                                break
-                        elif isinstance(decorator, ast.Call):
-                            if decorator.func.attr in EXEMPT_DECORATORS:
-                                is_exempt = True
-                                break
-                        else:
-                            raise TypeError(
-                                f"Unknown decorator type {decorator}, during checking {node.name} from {fpath.name}"
-                            )
-
-                    if is_exempt:
-                        # print(f"Exempted {node.name}")
-                        continue
+                    
 
                     if func_name := code_match_funcs.pop(name, None):
                         snode, anode = (
