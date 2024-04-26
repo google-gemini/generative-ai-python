@@ -32,7 +32,7 @@ def get_model(
     name: model_types.AnyModelNameOptions,
     *,
     client=None,
-    request_options: helper_types.RequestOptionsType| None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model | model_types.TunedModel:
     """Given a model name, fetch the `types.Model` or `types.TunedModel` object.
 
@@ -63,7 +63,7 @@ def get_base_model(
     name: model_types.BaseModelNameOptions,
     *,
     client=None,
-    request_options: helper_types.RequestOptionsType| None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model:
     """Get the `types.Model` for the given base model name.
 
@@ -100,7 +100,7 @@ def get_tuned_model(
     name: model_types.TunedModelNameOptions,
     *,
     client=None,
-    request_options: helper_types.RequestOptionsType| None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     """Get the `types.TunedModel` for the given tuned model name.
 
@@ -163,7 +163,7 @@ def list_models(
     *,
     page_size: int | None = 50,
     client: glm.ModelServiceClient | None = None,
-    request_options: helper_types.RequestOptionsType| None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.ModelsIterable:
     """Lists available models.
 
@@ -197,7 +197,7 @@ def list_tuned_models(
     *,
     page_size: int | None = 50,
     client: glm.ModelServiceClient | None = None,
-    request_options: helper_types.RequestOptionsType| None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModelsIterable:
     """Lists available models.
 
@@ -245,7 +245,7 @@ def create_tuned_model(
     input_key: str = "text_input",
     output_key: str = "output",
     client: glm.ModelServiceClient | None = None,
-    request_options: helper_types.RequestOptionsType| None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> operations.CreateTunedModelOperation:
     """Launches a tuning job to create a TunedModel.
 
@@ -358,7 +358,7 @@ def update_tuned_model(
     updates: None = None,
     *,
     client: glm.ModelServiceClient | None = None,
-    request_options: helper_types.RequestOptionsType| None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     pass
 
@@ -369,7 +369,7 @@ def update_tuned_model(
     updates: dict[str, Any],
     *,
     client: glm.ModelServiceClient | None = None,
-    request_options: helper_types.RequestOptionsType| None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     pass
 

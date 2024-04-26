@@ -36,17 +36,18 @@ class RequestOptions:
 
         retry = self.retry
         if retry is not None:
-            result['retry'] = retry
+            result["retry"] = retry
         timeout = self.timeout
         if timeout is not None:
-            result['timeout'] = timeout
+            result["timeout"] = timeout
 
         return result
 
 
 RequestOptionsType = Union[RequestOptions, RequestOptionsDict]
 
-def echo (request_options):
+
+def echo(request_options):
     if isinstance(request_options, RequestOptions):
         return request_options.to_dict()
     elif isinstance(request_options, dict):

@@ -31,7 +31,6 @@ from google.generativeai.types import model_types
 from google.generativeai.types import safety_types
 
 
-
 def _make_message(content: discuss_types.MessageOptions) -> glm.Message:
     """Creates a `glm.Message` object from the provided content."""
     if isinstance(content, glm.Message):
