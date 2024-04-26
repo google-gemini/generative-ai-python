@@ -38,7 +38,7 @@ class CodeMatch(absltest.TestCase):
             node.body = node.body[1:]
 
         return ast.unparse(node)
-    
+
     def _inspect_decorator_exemption(self, node) -> bool:
         for decorator in node.decorator_list:
             if isinstance(decorator, ast.Attribute):
@@ -54,7 +54,7 @@ class CodeMatch(absltest.TestCase):
                 raise TypeError(
                     f"Unknown decorator type {decorator}, during checking {node.name} from {fpath.name}"
                 )
-        
+
         return False
 
     def _execute_code_match(self, source, asource):
@@ -72,9 +72,7 @@ class CodeMatch(absltest.TestCase):
 
     def test_code_match_for_async_methods(self):
         for fpath in (pathlib.Path(__file__).parent.parent / "google").rglob("*.py"):
-            if fpath.name in EXEMPT_FILES or any(
-                [d in fpath.parts for d in EXEMPT_DIRS]
-            ):
+            if fpath.name in EXEMPT_FILES or any([d in fpath.parts for d in EXEMPT_DIRS]):
                 continue
             # print(f"Checking {fpath.absolute()}")
             code_match_funcs: dict[str, ast.AST] = {}
@@ -89,7 +87,6 @@ class CodeMatch(absltest.TestCase):
                     if name in EXEMPT_FUNCTIONS or self._inspect_decorator_exemption(node):
                         continue
                     # print(f"Checking {node.name}")
-                    
 
                     if func_name := code_match_funcs.pop(name, None):
                         snode, anode = (
