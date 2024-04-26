@@ -122,8 +122,13 @@ class UnitTests(parameterized.TestCase):
         text = "What are you?"
         with self.assertRaises(ValueError):
             embedding.embed_content(
-                model=DEFAULT_EMB_MODEL, content=text, task_type="unspecified", title="Exploring AI"
+                model=DEFAULT_EMB_MODEL, content=text, task_type="similarity", title="Exploring AI"
             )
+
+    def test_embed_content_with_negative_output_dimensionality(self):
+        text = "What are you?"
+        with self.assertRaises(ValueError):
+            embedding.embed_content(model=DEFAULT_EMB_MODEL, content=text, output_dimensionality=-1)
 
     def test_generate_answer_called_with_request_options(self):
         self.client.embed_content = mock.MagicMock()

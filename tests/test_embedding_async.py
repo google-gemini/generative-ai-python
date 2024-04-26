@@ -121,7 +121,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         text = "What are you?"
         with self.assertRaises(ValueError):
             await embedding.embed_content_async(
-                model=DEFAULT_EMB_MODEL, content=text, task_type="unspecified", title="Exploring AI"
+                model=DEFAULT_EMB_MODEL, content=text, task_type="similarity", title="Exploring AI"
+            )
+
+    async def test_embed_content_with_negative_output_dimensionality(self):
+        text = "What are you?"
+        with self.assertRaises(ValueError):
+            await embedding.embed_content_async(
+                model=DEFAULT_EMB_MODEL, content=text, output_dimensionality=-1
             )
 
     async def test_embed_content_called_with_request_options(self):
