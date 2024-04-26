@@ -345,6 +345,7 @@ def create_tuned_model(
         top_k=top_k,
         tuning_task=tuning_task,
     )
+
     operation = client.create_tuned_model(
         dict(tuned_model_id=id, tuned_model=tuned_model), **request_options
     )
@@ -396,6 +397,7 @@ def update_tuned_model(
                 "`updates` must be a `dict`.\n"
                 f"got: {type(updates)}"
             )
+
         tuned_model = client.get_tuned_model(name=name, **request_options)
 
         updates = flatten_update_paths(updates)

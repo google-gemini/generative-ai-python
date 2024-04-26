@@ -16,9 +16,12 @@
 import google.api_core.timeout
 import google.api_core.retry
 
+import collections
 import dataclasses
 
 from typing_extensions import TypedDict, Union
+
+__all__ = ["RequestOptions", "RequestOptionsType"]
 
 
 class RequestOptionsDict(TypedDict, total=False):
@@ -27,28 +30,25 @@ class RequestOptionsDict(TypedDict, total=False):
 
 
 @dataclasses.dataclass
-class RequestOptions:
+class RequestOptions(collections.abc.Mapping):
     retry: google.api_core.retry.Retry | None
     timeout: int | float | google.api_core.timeout.TimeToDeadlineTimeout | None
 
-    def to_dict(self):
-        result = {}
+    # Inherit from Mapping for **unpacking
+    def __getitem__(self, item):
+        if item == "retry":
+            return self.retry
+        elif item == "timeout":
+            return self.timeout
+        else:
+            raise KeyError(f'RequestOptions does not have a "{item}" key')
 
-        retry = self.retry
-        if retry is not None:
-            result["retry"] = retry
-        timeout = self.timeout
-        if timeout is not None:
-            result["timeout"] = timeout
+    def __iter__(self):
+        yield "retry"
+        yield "timeout"
 
-        return result
+    def __len__(self):
+        return 2
 
 
 RequestOptionsType = Union[RequestOptions, RequestOptionsDict]
-
-
-def echo(request_options):
-    if isinstance(request_options, RequestOptions):
-        return request_options.to_dict()
-    elif isinstance(request_options, dict):
-        return request_options
