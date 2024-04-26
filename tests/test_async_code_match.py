@@ -54,7 +54,7 @@ class CodeMatch(absltest.TestCase):
 
     def test_code_match_for_async_methods(self):
         for fpath in (pathlib.Path(__file__).parent.parent / "google").rglob("*.py"):
-            if fpath.name.split("/")[-1] in EXEMPT_FILES or any(
+            if fpath.name in EXEMPT_FILES or any(
                 [d in fpath.parts for d in EXEMPT_DIRS]
             ):
                 continue
