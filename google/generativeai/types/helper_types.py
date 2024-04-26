@@ -31,6 +31,24 @@ class RequestOptionsDict(TypedDict, total=False):
 
 @dataclasses.dataclass
 class RequestOptions(collections.abc.Mapping):
+    """Request options
+
+    >>> import google.generativeai as genai
+    >>> from google.generativeai.types import RequestOptions
+    >>> from google.api_core import retry
+    >>>
+    >>> model = genai.GenerativeModel()
+    >>> response = model.generate_content('Hello',
+    ...     request_options=RequestOptions(
+    ...         retry=retry.Retry(initial=10, multiplier=2, maximum=60, timeout=300)))
+    >>> response = model.generate_content('Hello',
+    ...     request_options=RequestOptions(timeout=600)))
+
+    Args:
+        retry: Refer to [retry docs](https://googleapis.dev/python/google-api-core/latest/retry.html) for details.
+        timeout: In seconds (or provide a [TimeToDeadlineTimeout](https://googleapis.dev/python/google-api-core/latest/timeout.html) object).
+    """
+
     retry: google.api_core.retry.Retry | None
     timeout: int | float | google.api_core.timeout.TimeToDeadlineTimeout | None
 
