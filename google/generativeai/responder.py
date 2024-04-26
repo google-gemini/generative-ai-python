@@ -147,26 +147,26 @@ class FunctionDeclaration:
             name=name, description=description, parameters=_rename_schema_fields(parameters)
         )
 
-        @property
-        def name(self) -> str:
-            return self._proto.name
+    @property
+    def name(self) -> str:
+        return self._proto.name
 
-        @property
-        def description(self) -> str:
-            return self._proto.description
+    @property
+    def description(self) -> str:
+        return self._proto.description
 
-        @property
-        def parameters(self) -> glm.Schema:
-            return self._proto.parameters
+    @property
+    def parameters(self) -> glm.Schema:
+        return self._proto.parameters
 
-        @classmethod
-        def from_proto(cls, proto) -> FunctionDeclaration:
-            self = cls(name="", description="", parameters={})
-            self._proto = proto
-            return self
+    @classmethod
+    def from_proto(cls, proto) -> FunctionDeclaration:
+        self = cls(name="", description="", parameters={})
+        self._proto = proto
+        return self
 
-        def to_proto(self) -> glm.FunctionDeclaration:
-            return self._proto
+    def to_proto(self) -> glm.FunctionDeclaration:
+        return self._proto
 
     @staticmethod
     def from_function(function: Callable[..., Any], descriptions: dict[str, str] | None = None):
