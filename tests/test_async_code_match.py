@@ -21,9 +21,6 @@ import re
 from absl.testing import absltest
 from absl.testing import parameterized
 
-WORKING_DIRS = [
-    (pathlib.Path(__file__).parent.parent / "google"),
-]
 EXEMPT_DIRS = ["notebook"]
 EXEMPT_DECORATORS = ["overload", "property", "setter", "abstractmethod", "staticmethod"]
 EXEMPT_FILES = ["client.py", "version.py", "discuss.py", "files.py"]
@@ -56,60 +53,59 @@ class CodeMatch(absltest.TestCase):
         self.assertEqual(source, asource)
 
     def test_code_match_for_async_methods(self):
-        for working_dir in WORKING_DIRS:
-            for fpath in working_dir.rglob("*.py"):
-                if fpath.name.split("/")[-1] in EXEMPT_FILES or any(
-                    [d in fpath.parts for d in EXEMPT_DIRS]
-                ):
-                    continue
-                # print(f"Checking {fpath.absolute()}")
-                code_match_funcs: dict[str, ast.AST] = {}
-                source = fpath.read_text()
-                source_nodes = ast.parse(source)
+        for fpath in (pathlib.Path(__file__).parent.parent / "google").rglob("*.py"):
+            if fpath.name.split("/")[-1] in EXEMPT_FILES or any(
+                [d in fpath.parts for d in EXEMPT_DIRS]
+            ):
+                continue
+            # print(f"Checking {fpath.absolute()}")
+            code_match_funcs: dict[str, ast.AST] = {}
+            source = fpath.read_text()
+            source_nodes = ast.parse(source)
 
-                for node in ast.walk(source_nodes):
-                    if isinstance(
-                        node, (ast.FunctionDef, ast.AsyncFunctionDef)
-                    ) and not node.name.startswith("_"):
-                        name = node.name[:-6] if node.name.endswith("_async") else node.name
-                        if name in EXEMPT_FUNCTIONS:
-                            continue
-                        # print(f"Checking {node.name}")
-                        is_exempt = False
-                        for decorator in node.decorator_list:
-                            if isinstance(decorator, ast.Attribute):
-                                if decorator.attr in EXEMPT_DECORATORS:
-                                    is_exempt = True
-                                    break
-                            elif isinstance(decorator, ast.Name):
-                                if decorator.id in EXEMPT_DECORATORS:
-                                    is_exempt = True
-                                    break
-                            elif isinstance(decorator, ast.Call):
-                                if decorator.func.attr in EXEMPT_DECORATORS:
-                                    is_exempt = True
-                                    break
-                            else:
-                                raise TypeError(
-                                    f"Unknown decorator type {decorator}, during checking {node.name} from {fpath.name}"
-                                )
-
-                        if is_exempt:
-                            # print(f"Exempted {node.name}")
-                            continue
-
-                        if func_name := code_match_funcs.pop(name, None):
-                            snode, anode = (
-                                (func_name, node)
-                                if isinstance(node, ast.AsyncFunctionDef)
-                                else (node, func_name)
-                            )
-                            func_source = self._maybe_trim_docstring(snode)
-                            func_asource = self._maybe_trim_docstring(anode)
-                            self._execute_code_match(func_source, func_asource)
-                            # print(f"Matched {node.name}")
+            for node in ast.walk(source_nodes):
+                if isinstance(
+                    node, (ast.FunctionDef, ast.AsyncFunctionDef)
+                ) and not node.name.startswith("_"):
+                    name = node.name[:-6] if node.name.endswith("_async") else node.name
+                    if name in EXEMPT_FUNCTIONS:
+                        continue
+                    # print(f"Checking {node.name}")
+                    is_exempt = False
+                    for decorator in node.decorator_list:
+                        if isinstance(decorator, ast.Attribute):
+                            if decorator.attr in EXEMPT_DECORATORS:
+                                is_exempt = True
+                                break
+                        elif isinstance(decorator, ast.Name):
+                            if decorator.id in EXEMPT_DECORATORS:
+                                is_exempt = True
+                                break
+                        elif isinstance(decorator, ast.Call):
+                            if decorator.func.attr in EXEMPT_DECORATORS:
+                                is_exempt = True
+                                break
                         else:
-                            code_match_funcs[node.name] = node
+                            raise TypeError(
+                                f"Unknown decorator type {decorator}, during checking {node.name} from {fpath.name}"
+                            )
+
+                    if is_exempt:
+                        # print(f"Exempted {node.name}")
+                        continue
+
+                    if func_name := code_match_funcs.pop(name, None):
+                        snode, anode = (
+                            (func_name, node)
+                            if isinstance(node, ast.AsyncFunctionDef)
+                            else (node, func_name)
+                        )
+                        func_source = self._maybe_trim_docstring(snode)
+                        func_asource = self._maybe_trim_docstring(anode)
+                        self._execute_code_match(func_source, func_asource)
+                        # print(f"Matched {node.name}")
+                    else:
+                        code_match_funcs[node.name] = node
 
 
 if __name__ == "__main__":
