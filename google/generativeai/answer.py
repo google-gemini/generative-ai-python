@@ -318,6 +318,7 @@ async def generate_answer_async(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ):
     """
     Calls the API and returns a `types.Answer` containing the answer.
@@ -352,6 +353,6 @@ async def generate_answer_async(
         answer_style=answer_style,
     )
 
-    response = await client.generate_answer(request)
+    response = await client.generate_answer(request, **request_options)
 
     return response
