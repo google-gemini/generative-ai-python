@@ -247,9 +247,9 @@ def generate_answer(
     client: glm.GenerativeServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ):
-    f"""
+    """
     Calls the GenerateAnswer API and returns a `types.Answer` containing the response.
-    
+
     You can pass a literal list of text chunks:
 
     >>> from google.generativeai import answer
@@ -340,6 +340,9 @@ async def generate_answer_async(
     Returns:
         A `types.Answer` containing the model's text answer response.
     """
+    if request_options is None:
+        request_options = {}
+
     if client is None:
         client = get_default_generative_async_client()
 

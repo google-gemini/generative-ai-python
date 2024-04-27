@@ -173,59 +173,6 @@ class UnitTests(parameterized.TestCase):
                 {"grantee_type": permission_services.to_grantee_type("user")}
             )
 
-    @parameterized.named_parameters(
-        [
-            "create_permission",
-            retriever_services.Corpus.create_permission,
-            retriever_services.Corpus.create_permission_async,
-        ],
-        [
-            "list_permissions",
-            retriever_services.Corpus.list_permissions,
-            retriever_services.Corpus.list_permissions_async,
-        ],
-        [
-            "Permission.delete",
-            permission_services.Permission.delete,
-            permission_services.Permission.delete_async,
-        ],
-        [
-            "Permission.update",
-            permission_services.Permission.update,
-            permission_services.Permission.update_async,
-        ],
-        [
-            "Permission.get_permission",
-            permission_services.Permission.get,
-            permission_services.Permission.get_async,
-        ],
-        [
-            "permission.get_permission",
-            permission.get_permission,
-            permission.get_permission_async,
-        ],
-    )
-    def test_async_code_match(self, obj, aobj):
-        import inspect
-        import re
-
-        source = inspect.getsource(obj)
-        asource = inspect.getsource(aobj)
-        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
-        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
-        asource = (
-            asource.replace("anext", "next")
-            .replace("aiter", "iter")
-            .replace("_async", "")
-            .replace("async ", "")
-            .replace("await ", "")
-            .replace("Async", "")
-            .replace("ASYNC_", "")
-        )
-
-        asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource)
-
     def test_create_corpus_called_with_request_options(self):
         self.client.create_corpus = unittest.mock.MagicMock()
         request = unittest.mock.ANY
