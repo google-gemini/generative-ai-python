@@ -31,6 +31,7 @@ from google.api_core import operation
 from google.generativeai import models
 from google.generativeai import client
 from google.generativeai.types import model_types
+from google.generativeai import types as genai_types
 
 import pandas as pd
 
@@ -470,7 +471,7 @@ class UnitTests(parameterized.TestCase):
     def test_get_tuned_model_called_with_request_options(self):
         self.client.get_tuned_model = unittest.mock.MagicMock()
         name = unittest.mock.ANY
-        request_options = {"timeout": 120}
+        request_options = genai_types.RequestOptions(timeout=120)
 
         try:
             models.get_model(name="tunedModels/", request_options=request_options)

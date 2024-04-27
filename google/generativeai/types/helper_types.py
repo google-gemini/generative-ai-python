@@ -30,7 +30,7 @@ class RequestOptionsDict(TypedDict, total=False):
     timeout: Union[int, float, google.api_core.timeout.TimeToDeadlineTimeout]
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(init=False)
 class RequestOptions(collections.abc.Mapping):
     """Request options
 
@@ -52,6 +52,15 @@ class RequestOptions(collections.abc.Mapping):
 
     retry: google.api_core.retry.Retry | None
     timeout: int | float | google.api_core.timeout.TimeToDeadlineTimeout | None
+
+    def __init__(
+        self,
+        *,
+        retry: google.api_core.retry.Retry | None = None,
+        timeout: int | float | google.api_core.timeout.TimeToDeadlineTimeout | None = None,
+    ):
+        self.retry = retry
+        self.timeout = timeout
 
     # Inherit from Mapping for **unpacking
     def __getitem__(self, item):
