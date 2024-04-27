@@ -19,14 +19,15 @@ import google.api_core.retry
 import collections
 import dataclasses
 
-from typing_extensions import TypedDict, Union
+from typing import Union
+from typing_extensions import TypedDict
 
 __all__ = ["RequestOptions", "RequestOptionsType"]
 
 
 class RequestOptionsDict(TypedDict, total=False):
     retry: google.api_core.retry.Retry
-    timeout: int | float | google.api_core.timeout.TimeToDeadlineTimeout
+    timeout: Union[int, float, google.api_core.timeout.TimeToDeadlineTimeout]
 
 
 @dataclasses.dataclass
