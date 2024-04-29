@@ -156,7 +156,7 @@ class GenerationConfig:
     top_p: float | None = None
     top_k: int | None = None
     response_mime_type: str | None = None
-    response_schema: Mapping[str, str | None] | None = None
+    response_schema: glm.Schema | Mapping[str, str | None] | None
 
 
 GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
