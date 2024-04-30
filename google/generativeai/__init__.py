@@ -53,6 +53,11 @@ from google.generativeai.discuss import count_message_tokens
 from google.generativeai.embedding import embed_content
 from google.generativeai.embedding import embed_content_async
 
+from google.generativeai.files import upload_file
+from google.generativeai.files import get_file
+from google.generativeai.files import list_files
+from google.generativeai.files import delete_file
+
 from google.generativeai.generative_models import GenerativeModel
 from google.generativeai.generative_models import ChatSession
 
@@ -80,7 +85,11 @@ from google.generativeai.client import configure
 __version__ = version.__version__
 
 del discuss
+del embedding
+del files
+del generative_models
 del text
 del models
 del client
+del operations
 del version

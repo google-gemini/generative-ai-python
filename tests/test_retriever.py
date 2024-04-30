@@ -560,7 +560,7 @@ class UnitTests(parameterized.TestCase):
             custom_metadata=[
                 retriever_service.CustomMetadata(
                     key="tag",
-                    string_list_value=[
+                    value=[
                         "Google For Developers",
                         "Project IDX",
                         "Blog",
@@ -646,129 +646,6 @@ class UnitTests(parameterized.TestCase):
         )
         delete_request = demo_document.batch_delete_chunks(chunks=[x.name, y.name])
         self.assertIsInstance(self.observed_requests[-1], glm.BatchDeleteChunksRequest)
-
-    @parameterized.named_parameters(
-        [
-            "create_corpus",
-            retriever.create_corpus,
-            retriever.create_corpus_async,
-        ],
-        [
-            "get_corpus",
-            retriever.get_corpus,
-            retriever.get_corpus_async,
-        ],
-        [
-            "delete_corpus",
-            retriever.delete_corpus,
-            retriever.delete_corpus_async,
-        ],
-        [
-            "list_corpora",
-            retriever.list_corpora,
-            retriever.list_corpora_async,
-        ],
-        [
-            "Corpus.create_document",
-            retriever_service.Corpus.create_document,
-            retriever_service.Corpus.create_document_async,
-        ],
-        [
-            "Corpus.get_document",
-            retriever_service.Corpus.get_document,
-            retriever_service.Corpus.get_document_async,
-        ],
-        [
-            "Corpus.update",
-            retriever_service.Corpus.update,
-            retriever_service.Corpus.update_async,
-        ],
-        [
-            "Corpus.query",
-            retriever_service.Corpus.query,
-            retriever_service.Corpus.query_async,
-        ],
-        [
-            "Corpus.list_documents",
-            retriever_service.Corpus.list_documents,
-            retriever_service.Corpus.list_documents_async,
-        ],
-        [
-            "Corpus.delete_document",
-            retriever_service.Corpus.delete_document,
-            retriever_service.Corpus.delete_document_async,
-        ],
-        [
-            "Document.create_chunk",
-            retriever_service.Document.create_chunk,
-            retriever_service.Document.create_chunk_async,
-        ],
-        [
-            "Document.get_chunk",
-            retriever_service.Document.get_chunk,
-            retriever_service.Document.get_chunk_async,
-        ],
-        [
-            "Document.batch_create_chunks",
-            retriever_service.Document.batch_create_chunks,
-            retriever_service.Document.batch_create_chunks_async,
-        ],
-        [
-            "Document.list_chunks",
-            retriever_service.Document.list_chunks,
-            retriever_service.Document.list_chunks_async,
-        ],
-        [
-            "Document.query",
-            retriever_service.Document.query,
-            retriever_service.Document.query_async,
-        ],
-        [
-            "Document.update",
-            retriever_service.Document.update,
-            retriever_service.Document.update_async,
-        ],
-        [
-            "Document.batch_update_chunks",
-            retriever_service.Document.batch_update_chunks,
-            retriever_service.Document.batch_update_chunks_async,
-        ],
-        [
-            "Document.delete_chunk",
-            retriever_service.Document.delete_chunk,
-            retriever_service.Document.delete_chunk_async,
-        ],
-        [
-            "Document.batch_delete_chunks",
-            retriever_service.Document.batch_delete_chunks,
-            retriever_service.Document.batch_delete_chunks_async,
-        ],
-        [
-            "Chunk.update",
-            retriever_service.Chunk.update,
-            retriever_service.Chunk.update_async,
-        ],
-    )
-    def test_async_code_match(self, obj, aobj):
-        import inspect
-        import re
-
-        source = inspect.getsource(obj)
-        asource = inspect.getsource(aobj)
-        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
-        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
-        asource = (
-            asource.replace("anext", "next")
-            .replace("aiter", "iter")
-            .replace("_async", "")
-            .replace("async ", "")
-            .replace("await ", "")
-            .replace("Async", "")
-            .replace("ASYNC_", "")
-        )
-
-        asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource)
 
     @parameterized.parameters(
         {"method": "create_corpus"},

@@ -1,3 +1,17 @@
+# -*- coding: utf-8 -*-
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from __future__ import annotations
 
 import collections
@@ -7,7 +21,8 @@ from collections.abc import Iterable, AsyncIterable
 import dataclasses
 import itertools
 import textwrap
-from typing import TypedDict, Union
+from typing import Union
+from typing_extensions import TypedDict
 
 import google.protobuf.json_format
 import google.api_core.exceptions
@@ -58,12 +73,13 @@ class BrokenResponseError(Exception):
     pass
 
 
-class GenerationConfigDict(TypedDict):
+class GenerationConfigDict(TypedDict, total=False):
     # TODO(markdaoust): Python 3.11+ use `NotRequired`, ref: https://peps.python.org/pep-0655/
     candidate_count: int
     stop_sequences: Iterable[str]
     max_output_tokens: int
     temperature: float
+    response_mime_type: str
 
 
 @dataclasses.dataclass
@@ -87,7 +103,6 @@ class GenerationConfig:
             in the model's specification.
         temperature:
             Controls the randomness of the output. Note: The
-
             default value varies by model, see the `Model.temperature`
             attribute of the `Model` returned the `genai.get_model`
             function.
@@ -124,6 +139,13 @@ class GenerationConfig:
             Note: The default value varies by model, see the
             `Model.top_k` attribute of the `Model` returned the
             `genai.get_model` function.
+
+        response_mime_type:
+            Optional. Output response mimetype of the generated candidate text.
+
+            Supported mimetype:
+                `text/plain`: (default) Text output.
+                `application/json`: JSON response in the candidates.
     """
 
     candidate_count: int | None = None
@@ -132,6 +154,7 @@ class GenerationConfig:
     temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
+    response_mime_type: str | None = None
 
 
 GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
@@ -301,7 +324,7 @@ class BaseGenerateContentResponse:
 
     @property
     def parts(self):
-        """A quick accessor equivalent to `self.candidates[0].parts`
+        """A quick accessor equivalent to `self.candidates[0].content.parts`
 
         Raises:
             ValueError: If the candidate list does not contain exactly one candidate.
@@ -323,7 +346,7 @@ class BaseGenerateContentResponse:
 
     @property
     def text(self):
-        """A quick accessor equivalent to `self.candidates[0].parts[0].text`
+        """A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
         Raises:
             ValueError: If the candidate list or parts list does not contain exactly one entry.

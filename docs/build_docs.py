@@ -36,6 +36,10 @@ import google
 from google.ai import generativelanguage as glm
 
 import grpc
+import jinja2  # must be imported before turning on TYPE_CHECKING
+import pydantic  # must be imported before turning on TYPE_CHECKING
+from IPython import display  # must be imported before turning on TYPE_CHECKING
+import PIL.Image  # must be imported before turning on TYPE_CHECKING
 
 # For showing the conditional imports and types in `content_types.py`
 # grpc must be imported first.
@@ -164,7 +168,6 @@ class MyDocGenerator(generate_lib.DocGenerator):
             public_api.FailIfNestedTooDeep(10),
             public_api.filter_module_all,
             public_api.add_proto_fields,
-            public_api.filter_builtin_modules,
             public_api.filter_private_symbols,
             MyFilter(self._base_dir),  # Replaces: public_api.FilterBaseDirs(self._base_dir),
             public_api.FilterPrivateMap(self._private_map),

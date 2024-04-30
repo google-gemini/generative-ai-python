@@ -41,7 +41,8 @@ class TextModel(model_lib.AbstractModel):
 
         model_name = model or _DEFAULT_MODEL
         gen_model = genai.GenerativeModel(model_name=model_name)
-        return gen_model.generate_content(prompt, generation_config=gen_config)
+        gc = genai.types.generation_types.GenerationConfig(**gen_config)
+        return gen_model.generate_content(prompt, generation_config=gc)
 
     def call_model(
         self,

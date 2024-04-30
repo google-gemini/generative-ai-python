@@ -21,8 +21,16 @@ TEST_IMAGE_URL = "https://storage.googleapis.com/generativeai-downloads/data/tes
 TEST_IMAGE_DATA = TEST_IMAGE_PATH.read_bytes()
 
 
+def simple_part(text: str) -> glm.Content:
+    return glm.Content({"parts": [{"text": text}]})
+
+
+def iter_part(texts: Iterable[str]) -> glm.Content:
+    return glm.Content({"parts": [{"text": t} for t in texts]})
+
+
 def simple_response(text: str) -> glm.GenerateContentResponse:
-    return glm.GenerateContentResponse({"candidates": [{"content": {"parts": [{"text": text}]}}]})
+    return glm.GenerateContentResponse({"candidates": [{"content": simple_part(text)}]})
 
 
 class CUJTests(parameterized.TestCase):
@@ -606,6 +614,117 @@ class CUJTests(parameterized.TestCase):
             self.assertEqual(type(obr.tools[0]).to_dict(obr.tools[0]), tools)
 
     @parameterized.named_parameters(
+        dict(
+            testcase_name="test_FunctionCallingMode_str",
+            tool_config={"function_calling_config": "any"},
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.ANY,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_FunctionCallingMode_int",
+            tool_config={"function_calling_config": 1},
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.AUTO,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_FunctionCallingMode",
+            tool_config={"function_calling_config": content_types.FunctionCallingMode.NONE},
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.NONE,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_glm_FunctionCallingConfig",
+            tool_config={
+                "function_calling_config": glm.FunctionCallingConfig(
+                    mode=content_types.FunctionCallingMode.AUTO
+                )
+            },
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.AUTO,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_FunctionCallingConfigDict",
+            tool_config={
+                "function_calling_config": {
+                    "mode": "mode_auto",
+                    "allowed_function_names": ["datetime", "greetings", "random"],
+                }
+            },
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.AUTO,
+                    "allowed_function_names": ["datetime", "greetings", "random"],
+                }
+            },
+        ),
+        dict(
+            testcase_name="test_glm_ToolConfig",
+            tool_config=glm.ToolConfig(
+                function_calling_config=glm.FunctionCallingConfig(
+                    mode=content_types.FunctionCallingMode.NONE
+                )
+            ),
+            expected_tool_config={
+                "function_calling_config": {
+                    "mode": content_types.FunctionCallingMode.NONE,
+                    "allowed_function_names": [],
+                }
+            },
+        ),
+    )
+    def test_tool_config(self, tool_config, expected_tool_config):
+        tools = dict(
+            function_declarations=[
+                dict(name="datetime", description="Returns the current UTC date and time."),
+                dict(name="greetings", description="Returns a greeting."),
+                dict(name="random", description="Returns a random number."),
+            ]
+        )
+        self.responses["generate_content"] = [simple_response("echo echo")]
+
+        model = generative_models.GenerativeModel("gemini-pro", tools=tools)
+        _ = model.generate_content("Hello", tools=[tools], tool_config=tool_config)
+
+        req = self.observed_requests[0]
+
+        self.assertLen(type(req.tools[0]).to_dict(req.tools[0]).get("function_declarations"), 3)
+        self.assertEqual(type(req.tool_config).to_dict(req.tool_config), expected_tool_config)
+
+    @parameterized.named_parameters(
+        ["bare_str", "talk like a pirate", simple_part("talk like a pirate")],
+        [
+            "part_dict",
+            {"parts": [{"text": "talk like a pirate"}]},
+            simple_part("talk like a pirate"),
+        ],
+        ["part_list", ["talk like:", "a pirate"], iter_part(["talk like:", "a pirate"])],
+    )
+    def test_system_instruction(self, instruction, expected_instr):
+        self.responses["generate_content"] = [simple_response("echo echo")]
+        model = generative_models.GenerativeModel("gemini-pro", system_instruction=instruction)
+
+        _ = model.generate_content("test")
+
+        [req] = self.observed_requests
+        self.assertEqual(req.system_instruction, expected_instr)
+
+    @parameterized.named_parameters(
         ["basic", "Hello"],
         ["list", ["Hello"]],
         [
@@ -887,6 +1006,7 @@ class CUJTests(parameterized.TestCase):
                     generation_config={},
                     safety_settings={},
                     tools=None,
+                    system_instruction=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'first'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), glm.Content({'parts': [{'text': 'second'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
             )"""
@@ -914,6 +1034,7 @@ class CUJTests(parameterized.TestCase):
                     generation_config={},
                     safety_settings={},
                     tools=None,
+                    system_instruction=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
             )"""
@@ -957,11 +1078,17 @@ class CUJTests(parameterized.TestCase):
                     generation_config={},
                     safety_settings={},
                     tools=None,
+                    system_instruction=None,
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
             )"""
         )
         self.assertEqual(expected, result)
+
+    def test_repr_for_system_instruction(self):
+        model = generative_models.GenerativeModel("gemini-pro", system_instruction="Be excellent.")
+        result = repr(model)
+        self.assertIn("system_instruction='Be excellent.'", result)
 
     def test_count_tokens_called_with_request_options(self):
         self.client.count_tokens = unittest.mock.MagicMock()
