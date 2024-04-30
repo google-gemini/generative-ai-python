@@ -373,6 +373,10 @@ class BaseGenerateContentResponse:
     def prompt_feedback(self):
         return self._result.prompt_feedback
 
+    @property
+    def usage_metadata(self):
+        return self._result.usage_metadata
+
     def __str__(self) -> str:
         if self._done:
             _iterator = "None"
