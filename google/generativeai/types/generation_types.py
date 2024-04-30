@@ -153,7 +153,7 @@ class GenerationConfig:
                 `application/json`: JSON response in the candidates.
 
         response_schema:
-            Optional. Specifies the format of the JSON requested if response_mime_type is 
+            Optional. Specifies the format of the JSON requested if response_mime_type is
             `application/json`.
     """
 
