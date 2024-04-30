@@ -143,29 +143,29 @@ class UnitTests(parameterized.TestCase):
 
     def test_create_permission_success(self):
         x = retriever.create_corpus("demo-corpus")
-        perm = x.create_permission(role="writer", grantee_type="everyone", email_address=None)
+        perm = x.permissions.create(role="writer", grantee_type="everyone", email_address=None)
         self.assertIsInstance(perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.CreatePermissionRequest)
 
     def test_create_permission_failure_email_set_when_grantee_type_is_everyone(self):
         x = retriever.create_corpus("demo-corpus")
         with self.assertRaises(ValueError):
-            perm = x.create_permission(role="writer", grantee_type="everyone", email_address="_")
+            perm = x.permissions.create(role="writer", grantee_type="everyone", email_address="_")
 
     def test_create_permission_failure_email_not_set_when_grantee_type_is_not_everyone(self):
         x = retriever.create_corpus("demo-corpus")
         with self.assertRaises(ValueError):
-            perm = x.create_permission(role="writer", grantee_type="user", email_address=None)
+            perm = x.permissions.create(role="writer", grantee_type="user", email_address=None)
 
     def test_delete_permission(self):
         x = retriever.create_corpus("demo-corpus")
-        perm = x.create_permission("writer", "everyone")
+        perm = x.permissions.create("writer", "everyone")
         perm.delete()
         self.assertIsInstance(self.observed_requests[-1], glm.DeletePermissionRequest)
 
     def test_get_permission_with_full_name(self):
         x = retriever.create_corpus("demo-corpus")
-        perm = x.create_permission("writer", "everyone")
+        perm = x.permissions.create("writer", "everyone")
         fetch_perm = permission.get_permission(name=perm.name)
         self.assertIsInstance(fetch_perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
@@ -173,7 +173,7 @@ class UnitTests(parameterized.TestCase):
 
     def test_get_permission_with_resource_name_and_id_1(self):
         x = retriever.create_corpus("demo-corpus")
-        perm = x.create_permission("writer", "everyone")
+        perm = x.permissions.create("writer", "everyone")
         fetch_perm = permission.get_permission(
             resource_name="corpora/demo-corpus", permission_id=123456789
         )
@@ -249,9 +249,9 @@ class UnitTests(parameterized.TestCase):
 
     def test_list_permission(self):
         x = retriever.create_corpus("demo-corpus")
-        perm1 = x.create_permission("writer", "everyone")
-        perm2 = x.create_permission("reader", "group", "_")
-        perms = list(x.list_permissions())
+        perm1 = x.permissions.create("writer", "everyone")
+        perm2 = x.permissions.create("reader", "group", "_")
+        perms = list(x.permissions.list())
         self.assertEqual(len(perms), 2)
         self.assertEqual(perm1, perms[0])
         self.assertEqual(perms[1].email_address, "_")
@@ -261,14 +261,14 @@ class UnitTests(parameterized.TestCase):
 
     def test_update_permission_success(self):
         x = retriever.create_corpus("demo-corpus")
-        perm = x.create_permission("writer", "everyone")
+        perm = x.permissions.create("writer", "everyone")
         updated_perm = perm.update({"role": permission_services.to_role("reader")})
         self.assertIsInstance(updated_perm, permission_services.Permission)
         self.assertIsInstance(self.observed_requests[-1], glm.UpdatePermissionRequest)
 
     def test_update_permission_failure_restricted_update_path(self):
         x = retriever.create_corpus("demo-corpus")
-        perm = x.create_permission("writer", "everyone")
+        perm = x.permissions.create("writer", "everyone")
         with self.assertRaises(ValueError):
             updated_perm = perm.update(
                 {"grantee_type": permission_services.to_grantee_type("user")}
@@ -279,7 +279,7 @@ class UnitTests(parameterized.TestCase):
             name="tunedModels/fake-pig-001", base_model="models/dance-monkey-007"
         )
         x = models.get_tuned_model("tunedModels/fake-pig-001")
-        response = x.transfer_ownership(email_address="_")
+        response = x.permissions.transfer_ownership(email_address="_")
         self.assertIsInstance(self.observed_requests[-1], glm.TransferOwnershipRequest)
 
     def test_transfer_ownership_on_corpora(self):
