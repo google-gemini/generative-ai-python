@@ -189,7 +189,7 @@ def create_metadata_filters(MetadataFilter):
 
 @string_utils.prettyprint
 @dataclasses.dataclass()
-class Corpus(permission_types.PermissionAdapter):
+class Corpus:
     """
     A `Corpus` is a collection of `Documents`.
     """
@@ -198,6 +198,10 @@ class Corpus(permission_types.PermissionAdapter):
     display_name: str
     create_time: datetime.datetime
     update_time: datetime.datetime
+
+    @property
+    def permissions(self):
+        return permission_types.Permissions(self)
 
     def create_document(
         self,

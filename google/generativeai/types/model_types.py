@@ -179,7 +179,7 @@ def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedM
 
 @string_utils.prettyprint
 @dataclasses.dataclass
-class TunedModel(permission_types.PermissionAdapter):
+class TunedModel:
     """A dataclass representation of a `glm.TunedModel`."""
 
     name: str | None = None
@@ -194,6 +194,10 @@ class TunedModel(permission_types.PermissionAdapter):
     create_time: datetime.datetime | None = None
     update_time: datetime.datetime | None = None
     tuning_task: TuningTask | None = None
+
+    @property
+    def permissions(self):
+        return permission_types.Permissions(self)
 
 
 @string_utils.prettyprint

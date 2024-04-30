@@ -247,7 +247,16 @@ class Permission:
         return cls(**get_perm_response)
 
 
-class PermissionAdapter:
+class Permissions:
+    def __init__(self, parent):
+        if isinstance(parent, str):
+            self._parent = parent
+        else:
+            self._parent = parent.name
+
+    @property
+    def parent(self):
+        return self._parent
 
     def _make_create_permission_request(
         self,
@@ -276,11 +285,11 @@ class PermissionAdapter:
             email_address=email_address,
         )
         return glm.CreatePermissionRequest(
-            parent=self.name,  # pytype: disable=attribute-error
+            parent=self.parent,
             permission=permission,
         )
 
-    def create_permission(
+    def create(
         self,
         role: RoleOptions,
         grantee_type: Optional[GranteeTypeOptions] = None,
@@ -313,7 +322,7 @@ class PermissionAdapter:
         permission_response = type(permission_response).to_dict(permission_response)
         return Permission(**permission_response)
 
-    async def create_permission_async(
+    async def create_async(
         self,
         role: RoleOptions,
         grantee_type: Optional[GranteeTypeOptions] = None,
@@ -333,7 +342,7 @@ class PermissionAdapter:
         permission_response = type(permission_response).to_dict(permission_response)
         return Permission(**permission_response)
 
-    def list_permissions(
+    def list(
         self,
         page_size: Optional[int] = None,
         client: glm.PermissionServiceClient | None = None,
@@ -352,13 +361,13 @@ class PermissionAdapter:
             client = get_dafault_permission_client()
 
         request = glm.ListPermissionsRequest(
-            parent=self.name, page_size=page_size  # pytype: disable=attribute-error
+            parent=self.parent, page_size=page_size  # pytype: disable=attribute-error
         )
         for permission in client.list_permissions(request):
             permission = type(permission).to_dict(permission)
             yield Permission(**permission)
 
-    async def list_permissions_async(
+    async def list_async(
         self,
         page_size: Optional[int] = None,
         client: glm.PermissionServiceAsyncClient | None = None,
@@ -370,7 +379,7 @@ class PermissionAdapter:
             client = get_dafault_permission_async_client()
 
         request = glm.ListPermissionsRequest(
-            parent=self.name, page_size=page_size  # pytype: disable=attribute-error
+            parent=self.parent, page_size=page_size  # pytype: disable=attribute-error
         )
         async for permission in await client.list_permissions(request):
             permission = type(permission).to_dict(permission)
@@ -391,9 +400,9 @@ class PermissionAdapter:
         if client is None:
             client = get_dafault_permission_client()
         transfer_request = glm.TransferOwnershipRequest(
-            name=self.name, email_address=email_address  # pytype: disable=attribute-error
+            name=self.parent, email_address=email_address  # pytype: disable=attribute-error
         )
-        transfer_respone = client.transfer_ownership(request=transfer_request)
+        return client.transfer_ownership(request=transfer_request)
 
     async def transfer_ownership_async(
         self,
@@ -404,6 +413,6 @@ class PermissionAdapter:
         if client is None:
             client = get_dafault_permission_async_client()
         transfer_request = glm.TransferOwnershipRequest(
-            name=self.name, email_address=email_address  # pytype: disable=attribute-error
+            name=self.parent, email_address=email_address  # pytype: disable=attribute-error
         )
-        transfer_respone = await client.transfer_ownership(request=transfer_request)
+        return await client.transfer_ownership(request=transfer_request)
