@@ -17,7 +17,7 @@ from __future__ import annotations
 import collections
 import contextlib
 import sys
-from collections.abc import Iterable, AsyncIterable, Mapping
+from collections.abc import Iterable, AsyncIterable, Mapping, Any
 import dataclasses
 import itertools
 import textwrap
@@ -141,12 +141,20 @@ class GenerationConfig:
             `Model.top_k` attribute of the `Model` returned the
             `genai.get_model` function.
 
+        seed (int):
+            Optional. Used in decoding. If set, the request will use the seed provided.
+            If not set, the request will use a randomly generated seed.
+
         response_mime_type:
             Optional. Output response mimetype of the generated candidate text.
 
             Supported mimetype:
                 `text/plain`: (default) Text output.
                 `application/json`: JSON response in the candidates.
+
+        response_schema:
+            Optional. Specifies the format of the JSON requested if response_mime_type is 
+            `application/json`.
     """
 
     candidate_count: int | None = None
@@ -155,8 +163,9 @@ class GenerationConfig:
     temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
+    seed: int | None = None
     response_mime_type: str | None = None
-    response_schema: glm.Schema | Mapping[str, str | None] | None
+    response_schema: glm.Schema | Mapping[str, Any] | None
 
 
 GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
