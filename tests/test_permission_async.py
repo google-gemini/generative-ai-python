@@ -292,7 +292,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
     async def test_transfer_ownership_on_corpora(self):
         x = await retriever.create_corpus_async("demo-corpus")
         with self.assertRaises(NotImplementedError):
-            await x.transfer_ownership_async(email_address="_")
+            await x.permissions.transfer_ownership_async(email_address="_")
 
 
 if __name__ == "__main__":

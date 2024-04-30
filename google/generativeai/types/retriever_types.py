@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import datetime
 import re
-import string
 import abc
 import dataclasses
 from typing import Any, AsyncIterable, Optional, Union, Iterable, Mapping
@@ -26,11 +25,7 @@ import google.ai.generativelanguage as glm
 from google.protobuf import field_mask_pb2
 from google.generativeai.client import get_default_retriever_client
 from google.generativeai.client import get_default_retriever_async_client
-from google.generativeai.client import get_dafault_permission_client
-from google.generativeai.client import get_dafault_permission_async_client
 from google.generativeai import string_utils
-from google.generativeai.types import safety_types
-from google.generativeai.types import citation_types
 from google.generativeai.types import permission_types
 from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
@@ -661,20 +656,6 @@ class Corpus:
         )
         async for doc in await client.list_documents(request, **request_options):
             yield decode_document(doc)
-
-    def transfer_ownership(
-        self,
-        email_address: str,
-        client: glm.PermissionServiceClient | None = None,
-    ) -> None:
-        raise NotImplementedError("This method is not implemented for class Corpus")
-
-    async def transfer_ownership_async(
-        self,
-        email_address: str,
-        client: glm.PermissionServiceAsyncClient | None = None,
-    ) -> None:
-        raise NotImplementedError("This method is not implemented for class Corpus")
 
     def to_dict(self) -> dict[str, Any]:
         result = {"name": self.name, "display_name": self.display_name}

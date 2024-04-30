@@ -285,7 +285,7 @@ class UnitTests(parameterized.TestCase):
     def test_transfer_ownership_on_corpora(self):
         x = retriever.create_corpus("demo-corpus")
         with self.assertRaises(NotImplementedError):
-            x.transfer_ownership(email_address="_")
+            x.permissions.transfer_ownership(email_address="_")
 
     def test_create_corpus_called_with_request_options(self):
         self.client.create_corpus = unittest.mock.MagicMock()
