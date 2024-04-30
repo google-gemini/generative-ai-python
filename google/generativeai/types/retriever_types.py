@@ -256,7 +256,7 @@ class Corpus:
     update_time: datetime.datetime
 
     @property
-    def permissions(self):
+    def permissions(self) -> permission_types.Permissions:
         return permission_types.Permissions(self)
 
     def create_document(

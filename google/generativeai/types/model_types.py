@@ -196,7 +196,7 @@ class TunedModel:
     tuning_task: TuningTask | None = None
 
     @property
-    def permissions(self):
+    def permissions(self) -> permission_types.Permissions:
         return permission_types.Permissions(self)
 
 
