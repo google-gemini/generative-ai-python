@@ -17,11 +17,11 @@ from __future__ import annotations
 import collections
 import contextlib
 import sys
-from collections.abc import Iterable, AsyncIterable, Mapping, Any
+from collections.abc import Iterable, AsyncIterable, Mapping
 import dataclasses
 import itertools
 import textwrap
-from typing import Union
+from typing import Union, Any
 from typing_extensions import TypedDict
 
 import google.protobuf.json_format
