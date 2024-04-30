@@ -80,7 +80,7 @@ class GenerationConfigDict(TypedDict, total=False):
     max_output_tokens: int
     temperature: float
     response_mime_type: str
-    response_schema: glm.Schema | Mapping[str, str]
+    response_schema: glm.Schema | Mapping[str, str]  # fmt: off
 
 
 @dataclasses.dataclass
