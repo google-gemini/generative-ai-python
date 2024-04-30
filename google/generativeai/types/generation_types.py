@@ -80,7 +80,7 @@ class GenerationConfigDict(TypedDict, total=False):
     max_output_tokens: int
     temperature: float
     response_mime_type: str
-    response_schema: Mapping[str, str]
+    response_schema: glm.Schema | Mapping[str, str]
 
 
 @dataclasses.dataclass
@@ -165,7 +165,7 @@ class GenerationConfig:
     top_k: int | None = None
     seed: int | None = None
     response_mime_type: str | None = None
-    response_schema: glm.Schema | Mapping[str, Any] | None
+    response_schema: glm.Schema | Mapping[str, Any] | None = None
 
 
 GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
