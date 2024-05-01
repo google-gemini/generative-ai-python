@@ -59,6 +59,11 @@ class ADataClassWithNullable:
     a: Union[int, None]
 
 
+@dataclasses.dataclass
+class ADataClassWithList:
+    a: list[int]
+
+
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_PNG_PATH)],
@@ -444,6 +449,22 @@ class UnitTests(parameterized.TestCase):
             glm.Schema(
                 type=glm.Type.OBJECT,
                 properties={"a": {"type_": glm.Type.INTEGER, "nullable": True}},
+            ),
+        ],
+        [
+            "dataclass_with_list",
+            list[ADataClassWithList],
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={"a": {"type_": glm.Type.INTEGER}},
+            ),
+        ],
+        [
+            "list_of_nullable",
+            list[Union[int, None]],
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={"a": {"type_": glm.Type.INTEGER}},
             ),
         ],
         [
