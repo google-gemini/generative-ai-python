@@ -12,7 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 import pathlib
+import typing_extensions
 from typing import Any
 
 from absl.testing import absltest
@@ -37,6 +39,21 @@ TEST_JPG_DATA = TEST_JPG_PATH.read_bytes()
 def datetime():
     "Returns the current UTC date and time."
 
+
+class A2(typing_extensions.TypedDict):
+    a: int
+    b: float
+    c: str
+
+@dataclasses.dataclass
+class A1:
+    a: int
+    b: float
+    c: str
+
+@dataclasses.dataclass
+class Nested:
+    x: A1
 
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
@@ -364,6 +381,7 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(tools, 1)
         self.assertLen(tools[0].function_declarations, 2)
 
+
     @parameterized.named_parameters(
         ["int", int, glm.Schema(type=glm.Type.INTEGER)],
         ["float", float, glm.Schema(type=glm.Type.NUMBER)],
@@ -391,6 +409,47 @@ class UnitTests(parameterized.TestCase):
         ],
         ["dict", dict, glm.Schema(type=glm.Type.OBJECT)],
         ["dict-str-any", dict[str, Any], glm.Schema(type=glm.Type.OBJECT)],
+        [
+            "dataclass",
+            A1,
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={
+                    "a": {"type_": glm.Type.INTEGER},
+                    "b": {"type_": glm.Type.NUMBER},
+                    "c": {"type_": glm.Type.STRING},
+                },
+            ),
+        ],
+        [
+            "TypedDict",
+            A2,
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={
+                    "a": {"type_": glm.Type.INTEGER},
+                    "b": {"type_": glm.Type.NUMBER},
+                    "c": {"type_": glm.Type.STRING},
+                },
+            ),
+        ],
+        [
+            "nested",
+            Nested,
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={
+                    "x": glm.Schema(
+                        type=glm.Type.OBJECT,
+                        properties={
+                            "a": {"type_": glm.Type.INTEGER},
+                            "b": {"type_": glm.Type.NUMBER},
+                            "c": {"type_": glm.Type.STRING},
+                        },
+                    ),
+                },
+            ),
+        ],
     )
     def test_auto_schema(self, annotation, expected):
         def fun(a: annotation):

@@ -339,19 +339,20 @@ def _generate_schema(
             #     param.default if param.default != inspect.Parameter.empty
             #     else None
             # ),
-            field =pydantic.Field(
+            field = pydantic.Field(
                 # We support user-provided descriptions.
-                description=descriptions.get(name, None))
+                description=descriptions.get(name, None)
+            )
 
             # 1. We infer the argument type here: use Any rather than None so
             # it will not try to auto-infer the type based on the default value.
             if param.annotation != inspect.Parameter.empty:
-                fields_dict[name]=param.annotation, field
+                fields_dict[name] = param.annotation, field
             else:
-                fields_dict[name]=Any, field
+                fields_dict[name] = Any, field
 
     parameters = pydantic.create_model(f.__name__, **fields_dict).schema()
-    defs = parameters.pop('$defs', {})
+    defs = parameters.pop("$defs", {})
     # flatten the defs
     defs = {name: unpack_defs(value, defs) for name, value in defs.items()}
     parameters = unpack_defs(parameters, defs)
@@ -360,9 +361,10 @@ def _generate_schema(
     # 4. Suppress unnecessary title generation:
     #    * https://github.com/pydantic/pydantic/issues/1051
     #    * http://cl/586221780
-    parameters.pop("title", None)
+    strip_titles(parameters)
+    add_object_type(parameters["properties"])
+
     for name, function_arg in parameters.get("properties", {}).items():
-        function_arg.pop("title", None)
         annotation = defaults[name].annotation
         # 5. Nullable fields:
         #     * https://github.com/pydantic/pydantic/issues/1270
@@ -395,21 +397,36 @@ def _generate_schema(
 
     return schema
 
+
 def unpack_defs(schema, defs):
     result = {}
-    for name, value in schema['properties'].items():
-        ref_key = value.get('$ref', None)
+    for name, value in schema["properties"].items():
+        ref_key = value.get("$ref", None)
         if ref_key is None:
             result[name] = value
         else:
-            ref_key = ref_key.split('defs/')[-1]
+            ref_key = ref_key.split("defs/")[-1]
             result[name] = unpack_defs(defs[ref_key], defs)
-    return {'properties': result}
+    return {"properties": result}
+
 
 def strip_titles(schema):
-    properties = schema['properties']
+    properties = schema["properties"]
     for name, value in properties.items():
+        title = value.pop("title", None)
+        if title is not None:
+            continue
 
+        if "properties" in value:
+            strip_titles(value)
+
+
+def add_object_type(properties):
+    for name, value in properties.items():
+        sub = value.get("properties", None)
+        if sub is not None:
+            value["type"] = "object"
+            add_object_type(sub)
 
 
 def _rename_schema_fields(schema):
@@ -459,7 +476,6 @@ from typing import Any, Callable, Dict
 import warnings
 
 
-
 Struct = Dict[str, Any]
 
 
@@ -506,24 +522,23 @@ def _generate_json_schema_from_function_using_pydantic(
         name: (
             # 1. We infer the argument type here: use Any rather than None so
             # it will not try to auto-infer the type based on the default value.
-            (
-                param.annotation if param.annotation != inspect.Parameter.empty
-                else Any
-            ),
+            (param.annotation if param.annotation != inspect.Parameter.empty else Any),
             pydantic.Field(
                 # 2. We do not support default values for now.
                 default=(
-                    param.default if param.default != inspect.Parameter.empty
+                    param.default
+                    if param.default != inspect.Parameter.empty
                     # ! Need to use Undefined instead of None
                     else pydantic_fields.Undefined
                 ),
                 # 3. We support user-provided descriptions.
                 description=parameter_descriptions.get(name, None),
-            )
+            ),
         )
         for name, param in defaults.items()
         # We do not support *args or **kwargs
-        if param.kind in (
+        if param.kind
+        in (
             inspect.Parameter.POSITIONAL_OR_KEYWORD,
             inspect.Parameter.KEYWORD_ONLY,
             inspect.Parameter.POSITIONAL_ONLY,
@@ -540,10 +555,9 @@ def _generate_json_schema_from_function_using_pydantic(
         #     * https://github.com/pydantic/pydantic/issues/1270
         #     * https://stackoverflow.com/a/58841311
         #     * https://github.com/pydantic/pydantic/discussions/4872
-        if (
-                typing.get_origin(annotation) is typing.Union
-                and type(None) in typing.get_args(annotation)
-            ):
+        if typing.get_origin(annotation) is typing.Union and type(None) in typing.get_args(
+            annotation
+        ):
             # for "typing.Optional" arguments, function_arg might be a
             # dictionary like
             #
@@ -556,9 +570,12 @@ def _generate_json_schema_from_function_using_pydantic(
             property_schema["nullable"] = True
     # 6. Annotate required fields.
     function_schema["required"] = [
-        k for k in defaults if (
+        k
+        for k in defaults
+        if (
             defaults[k].default == inspect.Parameter.empty
-            and defaults[k].kind in (
+            and defaults[k].kind
+            in (
                 inspect.Parameter.POSITIONAL_OR_KEYWORD,
                 inspect.Parameter.KEYWORD_ONLY,
                 inspect.Parameter.POSITIONAL_ONLY,
@@ -578,10 +595,7 @@ def adapt_json_schema_to_google_tool_schema(schema: Struct) -> Struct:
     for key in list(fixed_schema):
         # Warning: The proto-plus library removes attributes from the class,
         # so `hasattr` does not work.
-        if (
-            key not in glm.Schema.meta.fields
-            and key + "_" not in glm.Schema.meta.fields
-        ):
+        if key not in glm.Schema.meta.fields and key + "_" not in glm.Schema.meta.fields:
             fixed_schema.pop(key, None)
     property_schemas = fixed_schema.get("properties")
     if property_schemas:
@@ -591,6 +605,7 @@ def adapt_json_schema_to_google_tool_schema(schema: Struct) -> Struct:
 
 
 generate_json_schema_from_function = _generate_json_schema_from_function_using_pydantic
+
 
 class FunctionDeclaration:
     def __init__(self, *, name: str, description: str, parameters: dict[str, Any] | None = None):
