@@ -53,9 +53,11 @@ class ADataClass:
 class Nested:
     x: ADataClass
 
+
 @dataclasses.dataclass
 class ADataClassWithNullable:
-    a: Union[int,None]
+    a: Union[int, None]
+
 
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
@@ -383,7 +385,6 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(tools, 1)
         self.assertLen(tools[0].function_declarations, 2)
 
-
     @parameterized.named_parameters(
         ["int", int, glm.Schema(type=glm.Type.INTEGER)],
         ["float", float, glm.Schema(type=glm.Type.NUMBER)],
@@ -417,9 +418,7 @@ class UnitTests(parameterized.TestCase):
             ADataClass,
             glm.Schema(
                 type=glm.Type.OBJECT,
-                properties={
-                    "a": {"type_": glm.Type.INTEGER}
-                },
+                properties={"a": {"type_": glm.Type.INTEGER}},
             ),
         ],
         [
@@ -427,10 +426,8 @@ class UnitTests(parameterized.TestCase):
             Union[ADataClass, None],
             glm.Schema(
                 type=glm.Type.OBJECT,
-                nullable= True,
-                properties={
-                    "a": {"type_": glm.Type.INTEGER}
-                },
+                nullable=True,
+                properties={"a": {"type_": glm.Type.INTEGER}},
             ),
         ],
         [
@@ -438,9 +435,7 @@ class UnitTests(parameterized.TestCase):
             list[ADataClass],
             glm.Schema(
                 type=glm.Type.OBJECT,
-                properties={
-                    "a": {"type_": glm.Type.INTEGER}
-                },
+                properties={"a": {"type_": glm.Type.INTEGER}},
             ),
         ],
         [
@@ -448,9 +443,7 @@ class UnitTests(parameterized.TestCase):
             ADataClassWithNullable,
             glm.Schema(
                 type=glm.Type.OBJECT,
-                properties={
-                    "a": {"type_": glm.Type.INTEGER, 'nullable': True}
-                },
+                properties={"a": {"type_": glm.Type.INTEGER, "nullable": True}},
             ),
         ],
         [

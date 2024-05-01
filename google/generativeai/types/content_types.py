@@ -417,7 +417,7 @@ def unpack_defs(schema, defs):
             result[name] = unpack_defs(defs[ref_key], defs)
             continue
 
-        anyof = value.pop('anyOf', None)
+        anyof = value.pop("anyOf", None)
         if anyof is not None:
             new_anyof = []
             for atype in anyof:
@@ -428,7 +428,7 @@ def unpack_defs(schema, defs):
                 else:
                     new_anyof.append(atype)
 
-            result[name] = {'anyOf':new_anyof}
+            result[name] = {"anyOf": new_anyof}
             continue
 
         result[name] = value
@@ -454,20 +454,21 @@ def add_object_type(properties):
             value["type"] = "object"
             add_object_type(sub)
 
+
 def convert_to_nullable(properties):
     for name, value in properties.items():
-        anyof = value.pop('anyOf', None)
+        anyof = value.pop("anyOf", None)
         if anyof is not None:
             if len(anyof) != 2:
-                raise ValueError('Type Unions are not supported (except for Optional)')
+                raise ValueError("Type Unions are not supported (except for Optional)")
             a, b = anyof
-            if a == {'type': 'null'}:
+            if a == {"type": "null"}:
                 value.update(b)
-            elif b == {'type': 'null'}:
+            elif b == {"type": "null"}:
                 value.update(a)
             else:
-                raise ValueError('Type Unions are not supported (except for Optional)')
-            value['nullable'] = True
+                raise ValueError("Type Unions are not supported (except for Optional)")
+            value["nullable"] = True
 
         sub = value.get("properties", None)
         if sub is not None:
