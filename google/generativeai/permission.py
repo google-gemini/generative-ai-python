@@ -30,28 +30,28 @@ _RESOURCE_TYPE: dict[str, str] = {
     "tunedmodels": "tunedModels",
 }
 
-_SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN: dict[str, tuple[Callable[[str], bool], str]] = {
-    "corpora": (retriever_types.valid_name, retriever_types.NAME_ERROR_MSG),
-    "tunedModels": (model_types.valid_tuned_model_name, model_types.TUNED_MODEL_NAME_ERROR_MSG),
-}
 
 def _to_resource_type(x: str) -> str:
     if isinstance(x, str):
         x = x.lower()
     resource_type = _RESOURCE_TYPE.get(x, None)
     if not resource_type:
-        supported_resource_types = list(_SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN.keys())
-        raise ValueError(
-            f"Unsupported resource type. Expected one of: {supported_resource_types}. Got: `{x}` instead."
-        )
+        raise ValueError(f"Unsupported resource type. Got: `{x}` instead.")
 
     return resource_type
 
 
 def _validate_resource_name(x: str, resource_type: str) -> None:
-    fn, error_msg = _SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN[resource_type]
-    if not fn(x):
-        raise ValueError(error_msg.format(length=len(x), name=x))
+    if resource_type == "corpora":
+        if not retriever_types.valid_name(x):
+            raise ValueError(retriever_types.NAME_ERROR_MSG.format(length=len(x), name=x))
+
+    elif resource_type == "tunedModels":
+        if not model_types.valid_tuned_model_name(x):
+            raise ValueError(model_types.TUNED_MODEL_NAME_ERROR_MSG.format(length=len(x), name=x))
+
+    else:
+        raise ValueError(f"Unsupported resource type: {resource_type}")
 
 
 def _validate_permission_id(x: str) -> None:
@@ -63,11 +63,9 @@ def _get_valid_name_components(name: str) -> str:
     # name is of the format: resource_type/resource_name/permissions/permission_id
     name_path_components = name.split("/")
     if len(name_path_components) != 4:
-        supported_resource_types = "|".join(
-            list(_SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN.keys())
-        )
         raise ValueError(
-            f"Invalid name format. Expected format: `({supported_resource_types})/<resource_name>/permissions/<permission_id>`. Got: `{name}` instead."
+            f"Invalid name format. Expected format: \
+                `resource_type/<resource_name>/permissions/<permission_id>`. Got: `{name}` instead."
         )
 
     resource_type, resource_name, permission_placeholder, permission_id = name_path_components
@@ -102,7 +100,8 @@ def _construct_name(
             resource_path_components = resource_name.split("/")
             if len(resource_path_components) != 2:
                 raise ValueError(
-                    f"Invalid `resource_name` format. Expected format: `resource_type/resource_name`. Got: `{resource_name}` instead."
+                    f"Invalid `resource_name` format. Expected format: \
+                        `resource_type/resource_name`. Got: `{resource_name}` instead."
                 )
             resource_type = _to_resource_type(resource_path_components[0])
 
