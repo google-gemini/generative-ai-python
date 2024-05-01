@@ -337,7 +337,7 @@ class GenerativeModel:
             self._client = client.get_default_generative_client()
 
         request = glm.CountTokensRequest(
-            model=self.model,
+            model=self.model_name,
             generate_content_request=self._prepare_request(
                 contents=contents,
                 generation_config=generation_config,
@@ -362,10 +362,9 @@ class GenerativeModel:
 
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
-        contents = content_types.to_contents(contents)
 
         request = glm.CountTokensRequest(
-            model=self.model,
+            model=self.model_name,
             generate_content_request=self._prepare_request(
                 contents=contents,
                 generation_config=generation_config,
