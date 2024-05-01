@@ -15,7 +15,7 @@
 import dataclasses
 import pathlib
 import typing_extensions
-from typing import Any
+from typing import Any, Union
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -40,23 +40,22 @@ def datetime():
     "Returns the current UTC date and time."
 
 
-class A2(typing_extensions.TypedDict):
-    a: int | None
-    b: float
-    c: str
+class ATypedDict(typing_extensions.TypedDict):
+    a: int
 
 
 @dataclasses.dataclass
-class A1:
-    a: int | None
-    b: float
-    c: str
+class ADataClass:
+    a: int
 
 
 @dataclasses.dataclass
 class Nested:
-    x: A1
+    x: ADataClass
 
+@dataclasses.dataclass
+class ADataClassWithNullable:
+    a: Union[int,None]
 
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
@@ -384,10 +383,12 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(tools, 1)
         self.assertLen(tools[0].function_declarations, 2)
 
+
     @parameterized.named_parameters(
         ["int", int, glm.Schema(type=glm.Type.INTEGER)],
         ["float", float, glm.Schema(type=glm.Type.NUMBER)],
         ["str", str, glm.Schema(type=glm.Type.STRING)],
+        ["nullable_str", Union[str, None], glm.Schema(type=glm.Type.STRING, nullable=True)],
         [
             "list",
             list[str],
@@ -413,25 +414,52 @@ class UnitTests(parameterized.TestCase):
         ["dict-str-any", dict[str, Any], glm.Schema(type=glm.Type.OBJECT)],
         [
             "dataclass",
-            A1,
+            ADataClass,
             glm.Schema(
                 type=glm.Type.OBJECT,
                 properties={
-                    "a": {"type_": glm.Type.INTEGER},
-                    "b": {"type_": glm.Type.NUMBER},
-                    "c": {"type_": glm.Type.STRING},
+                    "a": {"type_": glm.Type.INTEGER}
+                },
+            ),
+        ],
+        [
+            "nullable_dataclass",
+            Union[ADataClass, None],
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                nullable= True,
+                properties={
+                    "a": {"type_": glm.Type.INTEGER}
+                },
+            ),
+        ],
+        [
+            "list_of_dataclass",
+            list[ADataClass],
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={
+                    "a": {"type_": glm.Type.INTEGER}
+                },
+            ),
+        ],
+        [
+            "dataclass_with_nullable",
+            ADataClassWithNullable,
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={
+                    "a": {"type_": glm.Type.INTEGER, 'nullable': True}
                 },
             ),
         ],
         [
             "TypedDict",
-            A2,
+            ATypedDict,
             glm.Schema(
                 type=glm.Type.OBJECT,
                 properties={
                     "a": {"type_": glm.Type.INTEGER},
-                    "b": {"type_": glm.Type.NUMBER},
-                    "c": {"type_": glm.Type.STRING},
                 },
             ),
         ],
@@ -445,8 +473,6 @@ class UnitTests(parameterized.TestCase):
                         type=glm.Type.OBJECT,
                         properties={
                             "a": {"type_": glm.Type.INTEGER},
-                            "b": {"type_": glm.Type.NUMBER},
-                            "c": {"type_": glm.Type.STRING},
                         },
                     ),
                 },

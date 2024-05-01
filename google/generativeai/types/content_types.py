@@ -357,23 +357,18 @@ def _generate_schema(
     defs = {name: unpack_defs(value, defs) for name, value in defs.items()}
     parameters = unpack_defs(parameters, defs)
 
+    # 5. Nullable fields:
+    #     * https://github.com/pydantic/pydantic/issues/1270
+    #     * https://stackoverflow.com/a/58841311
+    #     * https://github.com/pydantic/pydantic/discussions/4872
+    convert_to_nullable(parameters["properties"])
+    add_object_type(parameters["properties"])
     # Postprocessing
     # 4. Suppress unnecessary title generation:
     #    * https://github.com/pydantic/pydantic/issues/1051
     #    * http://cl/586221780
     strip_titles(parameters)
-    add_object_type(parameters["properties"])
 
-    for name, function_arg in parameters.get("properties", {}).items():
-        annotation = defaults[name].annotation
-        # 5. Nullable fields:
-        #     * https://github.com/pydantic/pydantic/issues/1270
-        #     * https://stackoverflow.com/a/58841311
-        #     * https://github.com/pydantic/pydantic/discussions/4872
-        if typing.get_origin(annotation) is typing.Union and type(None) in typing.get_args(
-            annotation
-        ):
-            function_arg["nullable"] = True
     # 6. Annotate required fields.
     if required:
         # We use the user-provided "required" fields if specified.
@@ -402,11 +397,27 @@ def unpack_defs(schema, defs):
     result = {}
     for name, value in schema["properties"].items():
         ref_key = value.get("$ref", None)
-        if ref_key is None:
-            result[name] = value
-        else:
+        if ref_key is not None:
             ref_key = ref_key.split("defs/")[-1]
             result[name] = unpack_defs(defs[ref_key], defs)
+            continue
+
+        anyof = value.pop('anyOf', None)
+        if anyof is not None:
+            new_anyof = []
+            for atype in anyof:
+                ref_key = atype.get("$ref", None)
+                if ref_key is not None:
+                    ref_key = ref_key.split("defs/")[-1]
+                    new_anyof.append(unpack_defs(defs[ref_key], defs))
+                else:
+                    new_anyof.append(atype)
+
+            result[name] = {'anyOf':new_anyof}
+            continue
+
+        result[name] = value
+
     return {"properties": result}
 
 
@@ -427,6 +438,25 @@ def add_object_type(properties):
         if sub is not None:
             value["type"] = "object"
             add_object_type(sub)
+
+def convert_to_nullable(properties):
+    for name, value in properties.items():
+        anyof = value.pop('anyOf', None)
+        if anyof is not None:
+            if len(anyof) != 2:
+                raise ValueError('Type Unions are not supported (except for Optional)')
+            a, b = anyof
+            if a == {'type': 'null'}:
+                value.update(b)
+            elif b == {'type': 'null'}:
+                value.update(a)
+            else:
+                raise ValueError('Type Unions are not supported (except for Optional)')
+            value['nullable'] = True
+
+        sub = value.get("properties", None)
+        if sub is not None:
+            convert_to_nullable(sub)
 
 
 def _rename_schema_fields(schema):
