@@ -35,16 +35,6 @@ _SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN: dict[str, tuple[Callable[[str], bo
     "tunedModels": (model_types.valid_tuned_model_name, model_types.TUNED_MODEL_NAME_ERROR_MSG),
 }
 
-_NAME_ERROR_MSG = """Invalid name format. Expected format: \
-`({supported_resource_types})/<resource_name>/permissions/<permission_id>`. Got: `{name}` instead."""
-
-_UNSUPPORTED_RESOURCE_TYPE_MSG = """Unsupported resource type. Expected one of: \
-{supported_resource_types}. Got: `{resource_type}` instead."""
-
-_INVALID_RESOURCE_TYPE_FORMAT_MSG = """Invalid `resource_name` format. Expected format: \
-`resource_type/resource_name`. Got: `{resource_name}` instead."""
-
-
 def _to_resource_type(x: str) -> str:
     if isinstance(x, str):
         x = x.lower()
@@ -52,9 +42,7 @@ def _to_resource_type(x: str) -> str:
     if not resource_type:
         supported_resource_types = list(_SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN.keys())
         raise ValueError(
-            _UNSUPPORTED_RESOURCE_TYPE_MSG.format(
-                supported_resource_types=supported_resource_types, resource_type=x
-            )
+            f"Unsupported resource type. Expected one of: {supported_resource_types}. Got: `{x}` instead."
         )
 
     return resource_type
@@ -79,7 +67,7 @@ def _get_valid_name_components(name: str) -> str:
             list(_SUPPORTED_RESOURCE_TYPES_WITH_VALIDATING_FN.keys())
         )
         raise ValueError(
-            _NAME_ERROR_MSG.format(supported_resource_types=supported_resource_types, name=name)
+            f"Invalid name format. Expected format: `({supported_resource_types})/<resource_name>/permissions/<permission_id>`. Got: `{name}` instead."
         )
 
     resource_type, resource_name, permission_placeholder, permission_id = name_path_components
@@ -114,7 +102,7 @@ def _construct_name(
             resource_path_components = resource_name.split("/")
             if len(resource_path_components) != 2:
                 raise ValueError(
-                    _INVALID_RESOURCE_TYPE_FORMAT_MSG.format(resource_name=resource_name)
+                    f"Invalid `resource_name` format. Expected format: `resource_type/resource_name`. Got: `{resource_name}` instead."
                 )
             resource_type = _to_resource_type(resource_path_components[0])
 
