@@ -397,7 +397,7 @@ class Permissions:
             name: Name of the resource to transfer ownership.
             email_address: Email address of the new owner.
         """
-        if self.parent.startswith('corpora'):
+        if self.parent.startswith("corpora"):
             raise NotImplementedError("Can'/t transfer_ownership for a Corpus")
         if client is None:
             client = get_dafault_permission_client()
@@ -412,7 +412,7 @@ class Permissions:
         client: glm.PermissionServiceAsyncClient | None = None,
     ) -> None:
         """This is the async version of `PermissionAdapter.transfer_ownership`."""
-        if self.parent.startswith('corpora'):
+        if self.parent.startswith("corpora"):
             raise NotImplementedError("Can'/t transfer_ownership for a Corpus")
         if client is None:
             client = get_dafault_permission_async_client()
