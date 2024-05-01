@@ -41,19 +41,22 @@ def datetime():
 
 
 class A2(typing_extensions.TypedDict):
-    a: int
+    a: int | None
     b: float
     c: str
 
+
 @dataclasses.dataclass
 class A1:
-    a: int
+    a: int | None
     b: float
     c: str
+
 
 @dataclasses.dataclass
 class Nested:
     x: A1
+
 
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
@@ -380,7 +383,6 @@ class UnitTests(parameterized.TestCase):
 
         self.assertLen(tools, 1)
         self.assertLen(tools[0].function_declarations, 2)
-
 
     @parameterized.named_parameters(
         ["int", int, glm.Schema(type=glm.Type.INTEGER)],
