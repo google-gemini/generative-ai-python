@@ -372,7 +372,7 @@ class GenerativeModel:
                 tools=tools,
                 tool_config=tool_config,
         ))
-        return self._client.count_tokens(request, **request_options)
+        return await self._async_client.count_tokens(request, **request_options)
 
     # fmt: on
 
