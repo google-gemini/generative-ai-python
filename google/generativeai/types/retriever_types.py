@@ -19,6 +19,7 @@ import re
 import abc
 import dataclasses
 from typing import Any, AsyncIterable, Optional, Union, Iterable, Mapping
+from typing_extensions import deprecated
 
 import google.ai.generativelanguage as glm
 
@@ -656,6 +657,61 @@ class Corpus:
         )
         async for doc in await client.list_documents(request, **request_options):
             yield decode_document(doc)
+
+    # PERMISSIONS STUBS: ..deprecated:: >0.5.2
+    @deprecated(
+        "`Corpus.create_permission` is deprecated and will be removed in a future release. \
+            Corpus permissions are now managed using the `permissions` property. Use `Corpus.permissions.create` instead."
+    )
+    def create_permission(
+        self,
+        role: permission_types.RoleOptions,
+        grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
+        email_address: Optional[str] = None,
+        client: glm.PermissionServiceClient | None = None,
+    ) -> permission_types.Permission:
+        return self.permissions.create(
+            role=role, grantee_type=grantee_type, email_address=email_address, client=client
+        )
+
+    @deprecated(
+        "`Corpus.create_permission_async` is deprecated and will be removed in a future release. \
+            Corpus permissions are now managed using the `permissions` property. Use `Corpus.permissions.create_async` instead."
+    )
+    async def create_permission_async(
+        self,
+        role: permission_types.RoleOptions,
+        grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
+        email_address: Optional[str] = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
+    ) -> permission_types.Permission:
+        return self.permissions.create_async(
+            role=role, grantee_type=grantee_type, email_address=email_address, client=client
+        )
+
+    @deprecated(
+        "`Corpus.list_permission` is deprecated and will be removed in a future release. \
+            Corpus permissions are now managed using the `permissions` property. Use `Corpus.permissions.list` instead."
+    )
+    def list_permissions(
+        self,
+        page_size: Optional[int] = None,
+        client: glm.PermissionServiceClient | None = None,
+    ) -> Iterable[permission_types.Permission]:
+        return self.permissions.list(page_size=page_size, client=client)
+
+    @deprecated(
+        "`Corpus.list_permission_async` is deprecated and will be removed in a future release. \
+            Corpus permissions are now managed using the `permissions` property. Use `Corpus.permissions.list_async` instead."
+    )
+    async def list_permissions_async(
+        self,
+        page_size: Optional[int] = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
+    ) -> AsyncIterable[permission_types.Permission]:
+        return self.permissions.list_async(page_size=page_size, client=client)
+
+    # PERMISSIONS STUBS END
 
     def to_dict(self) -> dict[str, Any]:
         result = {"name": self.name, "display_name": self.display_name}
