@@ -278,6 +278,7 @@ def _join_prompt_feedbacks(
 
 
 def _join_chunks(chunks: Iterable[glm.GenerateContentResponse]):
+    chunks = tuple(chunks)
     return glm.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
