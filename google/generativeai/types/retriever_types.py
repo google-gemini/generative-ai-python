@@ -18,8 +18,8 @@ import datetime
 import re
 import abc
 import dataclasses
-from typing import Any, AsyncIterable, Optional, Union, Iterable, Mapping
-from typing_extensions import deprecated
+from typing import Any, AsyncIterable, Optional, Union, Iterable, Mapping, Coroutine
+from typing_extensions import deprecated  # type: ignore
 
 import google.ai.generativelanguage as glm
 
@@ -684,7 +684,7 @@ class Corpus:
         grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
         email_address: Optional[str] = None,
         client: glm.PermissionServiceAsyncClient | None = None,
-    ) -> permission_types.Permission:
+    ) -> Coroutine[Any, Any, permission_types.Permission]:
         return self.permissions.create_async(
             role=role, grantee_type=grantee_type, email_address=email_address, client=client
         )
