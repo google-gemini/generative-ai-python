@@ -824,7 +824,6 @@ class CUJTests(parameterized.TestCase):
 
         self.assertEqual(expected, result)
 
-
     def test_repr_for_streaming_start_to_finish(self):
         chunks = ["first", " second", " third"]
         self.responses["stream_generate_content"] = [(simple_response(text) for text in chunks)]

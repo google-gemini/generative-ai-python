@@ -251,7 +251,7 @@ def _join_candidates(candidates: Iterable[glm.Candidate]):
         finish_reason=candidates[-1].finish_reason,
         safety_ratings=_join_safety_ratings_lists([c.safety_ratings for c in candidates]),
         citation_metadata=_join_citation_metadatas([c.citation_metadata for c in candidates]),
-        token_count=candidates[-1].token_count
+        token_count=candidates[-1].token_count,
     )
 
 
@@ -281,7 +281,7 @@ def _join_chunks(chunks: Iterable[glm.GenerateContentResponse]):
     return glm.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
-        usage_metadata=chunks[-1].usage_metadata
+        usage_metadata=chunks[-1].usage_metadata,
     )
 
 
@@ -390,7 +390,7 @@ class BaseGenerateContentResponse:
         json_str = json.dumps(as_dict, indent=2)
 
         _result = f"glm.GenerateContentResponse({json_str})"
-        _result = _result.replace('\n', '\n                    ')
+        _result = _result.replace("\n", "\n                    ")
 
         if self._error:
             _error = f",\nerror=<{self._error.__class__.__name__}> {self._error}"
