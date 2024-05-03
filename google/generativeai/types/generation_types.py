@@ -16,12 +16,8 @@ from __future__ import annotations
 
 import collections
 import contextlib
-<<<<<<< HEAD
 import sys
 from collections.abc import Iterable, AsyncIterable, Mapping
-=======
-from collections.abc import Iterable, AsyncIterable
->>>>>>> c165b20bb03a2b9ee4a88f05f31895fc13ee4630
 import dataclasses
 import itertools
 import json
