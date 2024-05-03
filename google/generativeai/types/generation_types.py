@@ -29,6 +29,7 @@ import google.api_core.exceptions
 
 from google.ai import generativelanguage as glm
 from google.generativeai import string_utils
+from google.generativeai.responder import _rename_schema_fields
 
 __all__ = [
     "AsyncGenerateContentResponse",
@@ -166,16 +167,35 @@ class GenerationConfig:
 GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
 
 
+def _normalize_schema(generation_config):
+    # Convert response_schema to glm.Schema for request
+    response_schema = generation_config.get("response_schema", None)
+    if response_schema is None:
+        return
+    if isinstance(response_schema, glm.Schema):
+        return
+    response_schema = _rename_schema_fields(response_schema)
+    generation_config["response_schema"] = glm.Schema(response_schema)
+
+
 def to_generation_config_dict(generation_config: GenerationConfigType):
     if generation_config is None:
         return {}
     elif isinstance(generation_config, glm.GenerationConfig):
-        return type(generation_config).to_dict(generation_config)  # pytype: disable=attribute-error
+        schema = generation_config.response_schema
+        generation_config = type(generation_config).to_dict(
+            generation_config
+        )  # pytype: disable=attribute-error
+        generation_config["response_schema"] = schema
+        return generation_config
     elif isinstance(generation_config, GenerationConfig):
         generation_config = dataclasses.asdict(generation_config)
+        _normalize_schema(generation_config)
         return {key: value for key, value in generation_config.items() if value is not None}
     elif hasattr(generation_config, "keys"):
-        return dict(generation_config)
+        generation_config = dict(generation_config)
+        _normalize_schema(generation_config)
+        return generation_config
     else:
         raise TypeError(
             "Did not understand `generation_config`, expected a `dict` or"
