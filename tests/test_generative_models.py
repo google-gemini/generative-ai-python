@@ -801,9 +801,27 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=True,
                 iterator=None,
-                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+                result=glm.GenerateContentResponse({
+                  "candidates": [
+                    {
+                      "content": {
+                        "parts": [
+                          {
+                            "text": "world!"
+                          }
+                        ],
+                        "role": ""
+                      },
+                      "finish_reason": 0,
+                      "safety_ratings": [],
+                      "token_count": 0,
+                      "grounding_attributions": []
+                    }
+                  ]
+                }),
             )"""
         )
+
         self.assertEqual(expected, result)
 
     def test_repr_for_streaming_start_to_finish(self):
@@ -821,7 +839,24 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=False,
                 iterator=<generator>,
-                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+                result=glm.GenerateContentResponse({
+                  "candidates": [
+                    {
+                      "content": {
+                        "parts": [
+                          {
+                            "text": "first"
+                          }
+                        ],
+                        "role": ""
+                      },
+                      "finish_reason": 0,
+                      "safety_ratings": [],
+                      "token_count": 0,
+                      "grounding_attributions": []
+                    }
+                  ]
+                }),
             )"""
         )
         self.assertEqual(expected1, result1)
@@ -834,7 +869,37 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=False,
                 iterator=<generator>,
-                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first second'}], 'role': ''}, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+                result=glm.GenerateContentResponse({
+                  "candidates": [
+                    {
+                      "content": {
+                        "parts": [
+                          {
+                            "text": "first second"
+                          }
+                        ],
+                        "role": ""
+                      },
+                      "index": 0,
+                      "citation_metadata": {
+                        "citation_sources": []
+                      },
+                      "finish_reason": 0,
+                      "safety_ratings": [],
+                      "token_count": 0,
+                      "grounding_attributions": []
+                    }
+                  ],
+                  "prompt_feedback": {
+                    "block_reason": 0,
+                    "safety_ratings": []
+                  },
+                  "usage_metadata": {
+                    "prompt_token_count": 0,
+                    "candidates_token_count": 0,
+                    "total_token_count": 0
+                  }
+                }),
             )"""
         )
         self.assertEqual(expected2, result2)
@@ -847,7 +912,37 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=False,
                 iterator=<generator>,
-                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'first second third'}], 'role': ''}, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+                result=glm.GenerateContentResponse({
+                  "candidates": [
+                    {
+                      "content": {
+                        "parts": [
+                          {
+                            "text": "first second third"
+                          }
+                        ],
+                        "role": ""
+                      },
+                      "index": 0,
+                      "citation_metadata": {
+                        "citation_sources": []
+                      },
+                      "finish_reason": 0,
+                      "safety_ratings": [],
+                      "token_count": 0,
+                      "grounding_attributions": []
+                    }
+                  ],
+                  "prompt_feedback": {
+                    "block_reason": 0,
+                    "safety_ratings": []
+                  },
+                  "usage_metadata": {
+                    "prompt_token_count": 0,
+                    "candidates_token_count": 0,
+                    "total_token_count": 0
+                  }
+                }),
             )"""
         )
         self.assertEqual(expected3, result3)
@@ -873,7 +968,13 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=False,
                 iterator=<generator>,
-                result=glm.GenerateContentResponse({'prompt_feedback': {'block_reason': 1, 'safety_ratings': []}, 'candidates': []}),
+                result=glm.GenerateContentResponse({
+                  "prompt_feedback": {
+                    "block_reason": 1,
+                    "safety_ratings": []
+                  },
+                  "candidates": []
+                }),
             ),
             error=<BlockedPromptException> prompt_feedback {
               block_reason: SAFETY
@@ -919,7 +1020,37 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=True,
                 iterator=None,
-                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': '123'}], 'role': ''}, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+                result=glm.GenerateContentResponse({
+                  "candidates": [
+                    {
+                      "content": {
+                        "parts": [
+                          {
+                            "text": "123"
+                          }
+                        ],
+                        "role": ""
+                      },
+                      "index": 0,
+                      "citation_metadata": {
+                        "citation_sources": []
+                      },
+                      "finish_reason": 0,
+                      "safety_ratings": [],
+                      "token_count": 0,
+                      "grounding_attributions": []
+                    }
+                  ],
+                  "prompt_feedback": {
+                    "block_reason": 0,
+                    "safety_ratings": []
+                  },
+                  "usage_metadata": {
+                    "prompt_token_count": 0,
+                    "candidates_token_count": 0,
+                    "total_token_count": 0
+                  }
+                }),
             ),
             error=<ValueError> """
         )
@@ -962,7 +1093,37 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=True,
                 iterator=None,
-                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'abc'}], 'role': ''}, 'finish_reason': 3, 'index': 0, 'citation_metadata': {'citation_sources': []}, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}], 'prompt_feedback': {'block_reason': 0, 'safety_ratings': []}}),
+                result=glm.GenerateContentResponse({
+                  "candidates": [
+                    {
+                      "content": {
+                        "parts": [
+                          {
+                            "text": "abc"
+                          }
+                        ],
+                        "role": ""
+                      },
+                      "finish_reason": 3,
+                      "index": 0,
+                      "citation_metadata": {
+                        "citation_sources": []
+                      },
+                      "safety_ratings": [],
+                      "token_count": 0,
+                      "grounding_attributions": []
+                    }
+                  ],
+                  "prompt_feedback": {
+                    "block_reason": 0,
+                    "safety_ratings": []
+                  },
+                  "usage_metadata": {
+                    "prompt_token_count": 0,
+                    "candidates_token_count": 0,
+                    "total_token_count": 0
+                  }
+                }),
             ),
             error=<StopCandidateException> index: 0
             content {

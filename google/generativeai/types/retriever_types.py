@@ -16,21 +16,17 @@ from __future__ import annotations
 
 import datetime
 import re
-import string
 import abc
 import dataclasses
 from typing import Any, AsyncIterable, Optional, Union, Iterable, Mapping
+from typing_extensions import deprecated  # type: ignore
 
 import google.ai.generativelanguage as glm
 
 from google.protobuf import field_mask_pb2
 from google.generativeai.client import get_default_retriever_client
 from google.generativeai.client import get_default_retriever_async_client
-from google.generativeai.client import get_dafault_permission_client
-from google.generativeai.client import get_dafault_permission_async_client
 from google.generativeai import string_utils
-from google.generativeai.types import safety_types
-from google.generativeai.types import citation_types
 from google.generativeai.types import permission_types
 from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
@@ -254,6 +250,10 @@ class Corpus:
     display_name: str
     create_time: datetime.datetime
     update_time: datetime.datetime
+
+    @property
+    def permissions(self) -> permission_types.Permissions:
+        return permission_types.Permissions(self)
 
     def create_document(
         self,
@@ -658,37 +658,11 @@ class Corpus:
         async for doc in await client.list_documents(request, **request_options):
             yield decode_document(doc)
 
-    def _make_create_permission_request(
-        self,
-        role: permission_types.RoleOptions,
-        grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
-        email_address: Optional[str] = None,
-    ) -> glm.CreatePermissionRequest:
-        role = permission_types.to_role(role)
-
-        if grantee_type:
-            grantee_type = permission_types.to_grantee_type(grantee_type)
-
-        if email_address and grantee_type == permission_types.GranteeType.EVERYONE:
-            raise ValueError(
-                f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`."
-            )
-
-        if not email_address and grantee_type != permission_types.GranteeType.EVERYONE:
-            raise ValueError(
-                f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`."
-            )
-
-        permission = glm.Permission(
-            role=role,
-            grantee_type=grantee_type,
-            email_address=email_address,
-        )
-        return glm.CreatePermissionRequest(
-            parent=self.name,
-            permission=permission,
-        )
-
+    # PERMISSIONS STUBS: ..deprecated:: >0.5.2
+    @deprecated(
+        "`Corpus.create_permission` is deprecated and will be removed in a future release. \
+            Corpus permissions are now managed using the `permissions` property. Use `Corpus.permissions.create` instead."
+    )
     def create_permission(
         self,
         role: permission_types.RoleOptions,
@@ -696,32 +670,14 @@ class Corpus:
         email_address: Optional[str] = None,
         client: glm.PermissionServiceClient | None = None,
     ) -> permission_types.Permission:
-        """
-        Create a new permission on a resource (self).
-
-        Args:
-            parent: The resource name of the parent resource in which the permission will be listed.
-            role: role that will be granted by the permission.
-            grantee_type: The type of the grantee for the permission.
-            email_address: The email address of the grantee.
-
-        Returns:
-            `permission_types.Permission` object with specified parent, role, grantee type, and email address.
-
-        Raises:
-            ValueError: When email_address is specified and grantee_type is set to EVERYONE.
-            ValueError: When email_address is not specified and grantee_type is not set to EVERYONE.
-        """
-        if client is None:
-            client = get_dafault_permission_client()
-
-        request = self._make_create_permission_request(
-            role=role, grantee_type=grantee_type, email_address=email_address
+        return self.permissions.create(
+            role=role, grantee_type=grantee_type, email_address=email_address, client=client
         )
-        permission_response = client.create_permission(request=request)
-        permission_response = type(permission_response).to_dict(permission_response)
-        return permission_types.Permission(**permission_response)
 
+    @deprecated(
+        "`Corpus.create_permission_async` is deprecated and will be removed in a future release. \
+            Corpus permissions are now managed using the `permissions` property. Use `Corpus.permissions.create_async` instead."
+    )
     async def create_permission_async(
         self,
         role: permission_types.RoleOptions,
@@ -729,57 +685,33 @@ class Corpus:
         email_address: Optional[str] = None,
         client: glm.PermissionServiceAsyncClient | None = None,
     ) -> permission_types.Permission:
-        """
-        This is the async version of `Corpus.create_permission`.
-        """
-        if client is None:
-            client = get_dafault_permission_async_client()
-
-        request = self._make_create_permission_request(
-            role=role, grantee_type=grantee_type, email_address=email_address
+        return await self.permissions.create_async(
+            role=role, grantee_type=grantee_type, email_address=email_address, client=client
         )
-        permission_response = await client.create_permission(request=request)
-        permission_response = type(permission_response).to_dict(permission_response)
-        return permission_types.Permission(**permission_response)
 
+    @deprecated(
+        "`Corpus.list_permission` is deprecated and will be removed in a future release. \
+            Corpus permissions are now managed using the `permissions` property. Use `Corpus.permissions.list` instead."
+    )
     def list_permissions(
         self,
         page_size: Optional[int] = None,
         client: glm.PermissionServiceClient | None = None,
     ) -> Iterable[permission_types.Permission]:
-        """
-        List `permission_types.Permission`s enforced on a resource (self).
+        return self.permissions.list(page_size=page_size, client=client)
 
-        Args:
-            parent: The resource name of the parent resource in which the permission will be listed.
-            page_size: The maximum number of permissions to return (per page). The service may return fewer permissions.
-
-        Returns:
-            Paginated list of `permission_types.Permission` objects.
-        """
-        if client is None:
-            client = get_dafault_permission_client()
-
-        request = glm.ListPermissionsRequest(parent=self.name, page_size=page_size)
-        for permission in client.list_permissions(request):
-            permission = type(permission).to_dict(permission)
-            yield permission_types.Permission(**permission)
-
+    @deprecated(
+        "`Corpus.list_permission_async` is deprecated and will be removed in a future release. \
+            Corpus permissions are now managed using the `permissions` property. Use `Corpus.permissions.list_async` instead."
+    )
     async def list_permissions_async(
         self,
         page_size: Optional[int] = None,
         client: glm.PermissionServiceAsyncClient | None = None,
     ) -> AsyncIterable[permission_types.Permission]:
-        """
-        This is the async version of `Corpus.list_permissions`.
-        """
-        if client is None:
-            client = get_dafault_permission_async_client()
+        return self.permissions.list_async(page_size=page_size, client=client)
 
-        request = glm.ListPermissionsRequest(parent=self.name, page_size=page_size)
-        async for permission in await client.list_permissions(request):
-            permission = type(permission).to_dict(permission)
-            yield permission_types.Permission(**permission)
+    # PERMISSIONS STUBS END
 
     def to_dict(self) -> dict[str, Any]:
         result = {"name": self.name, "display_name": self.display_name}
