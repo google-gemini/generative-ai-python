@@ -561,6 +561,53 @@ class UnitTests(parameterized.TestCase):
         )
         self.assertEqual(expected, result)
 
+    @parameterized.named_parameters(
+        [
+            "glm.GenerationConfig",
+            glm.GenerationConfig(
+                temperature=0.1,
+                stop_sequences=["end"],
+                response_mime_type="application/json",
+                response_schema=glm.Schema(
+                    type="STRING", format="float", description="This is an example schema."
+                ),
+            ),
+        ],
+        [
+            "GenerationConfigDict",
+            {
+                "temperature": 0.1,
+                "stop_sequences": ["end"],
+                "response_mime_type": "application/json",
+                "response_schema": glm.Schema(
+                    type="STRING", format="float", description="This is an example schema."
+                ),
+            },
+        ],
+        [
+            "GenerationConfig",
+            generation_types.GenerationConfig(
+                temperature=0.1,
+                stop_sequences=["end"],
+                response_mime_type="application/json",
+                response_schema=glm.Schema(
+                    type="STRING", format="float", description="This is an example schema."
+                ),
+            ),
+        ],
+    )
+    def test_response_schema(self, config):
+        gd = generation_types.to_generation_config_dict(config)
+        self.assertIsInstance(gd, dict)
+        self.assertEqual(gd["temperature"], 0.1)
+        self.assertEqual(gd["stop_sequences"], ["end"])
+        self.assertEqual(gd["response_mime_type"], "application/json")
+        actual = gd["response_schema"]
+        expected = glm.Schema(
+            type="STRING", format="float", description="This is an example schema."
+        )
+        self.assertEqual(actual, expected)
+
 
 if __name__ == "__main__":
     absltest.main()
