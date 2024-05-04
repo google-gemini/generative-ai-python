@@ -369,15 +369,16 @@ def _generate_schema(
     parameters = pydantic.create_model(f.__name__, **fields_dict).schema()
     defs = parameters.pop("$defs", {})
     # flatten the defs
-    defs = {name: unpack_defs(value, defs) for name, value in defs.items()}
-    parameters = unpack_defs(parameters, defs)
+    for name, value in defs.items():
+        unpack_defs(value, defs)
+    unpack_defs(parameters, defs)
 
     # 5. Nullable fields:
     #     * https://github.com/pydantic/pydantic/issues/1270
     #     * https://stackoverflow.com/a/58841311
     #     * https://github.com/pydantic/pydantic/discussions/4872
-    convert_to_nullable(parameters["properties"])
-    add_object_type(parameters["properties"])
+    convert_to_nullable(parameters)
+    add_object_type(parameters)
     # Postprocessing
     # 4. Suppress unnecessary title generation:
     #    * https://github.com/pydantic/pydantic/issues/1051
@@ -409,70 +410,82 @@ def _generate_schema(
 
 
 def unpack_defs(schema, defs):
-    result = {}
-    for name, value in schema["properties"].items():
+    properties = schema["properties"]
+    for name, value in properties.items():
         ref_key = value.get("$ref", None)
         if ref_key is not None:
-            ref_key = ref_key.split("defs/")[-1]
-            result[name] = unpack_defs(defs[ref_key], defs)
+            ref = defs[ref_key.split("defs/")[-1]]
+            unpack_defs(ref, defs)
+            properties[name] = ref
             continue
 
-        anyof = value.pop("anyOf", None)
+        anyof = value.get("anyOf", None)
         if anyof is not None:
-            new_anyof = []
-            for atype in anyof:
+            for i, atype in enumerate(anyof):
                 ref_key = atype.get("$ref", None)
                 if ref_key is not None:
-                    ref_key = ref_key.split("defs/")[-1]
-                    new_anyof.append(unpack_defs(defs[ref_key], defs))
-                else:
-                    new_anyof.append(atype)
-
-            result[name] = {"anyOf": new_anyof}
+                    ref = defs[ref_key.split("defs/")[-1]]
+                    unpack_defs(ref, defs)
+                    anyof[i] = ref
             continue
 
-        result[name] = value
-
-    return {"properties": result}
+        items = value.get("items", None)
+        if items is not None:
+            ref_key = items.get("$ref", None)
+            if ref_key is not None:
+                ref = defs[ref_key.split("defs/")[-1]]
+                unpack_defs(ref, defs)
+                value["items"] = ref
+                continue
 
 
 def strip_titles(schema):
-    properties = schema["properties"]
-    for name, value in properties.items():
-        title = value.pop("title", None)
-        if title is not None:
-            continue
+    title = schema.pop("title", None)
 
-        if "properties" in value:
+    properties = schema.get("properties", None)
+    if properties is not None:
+        for name, value in properties.items():
             strip_titles(value)
 
-
-def add_object_type(properties):
-    for name, value in properties.items():
-        sub = value.get("properties", None)
-        if sub is not None:
-            value["type"] = "object"
-            add_object_type(sub)
+    items = schema.get("items", None)
+    if items is not None:
+        strip_titles(items)
 
 
-def convert_to_nullable(properties):
-    for name, value in properties.items():
-        anyof = value.pop("anyOf", None)
-        if anyof is not None:
-            if len(anyof) != 2:
-                raise ValueError("Type Unions are not supported (except for Optional)")
-            a, b = anyof
-            if a == {"type": "null"}:
-                value.update(b)
-            elif b == {"type": "null"}:
-                value.update(a)
-            else:
-                raise ValueError("Type Unions are not supported (except for Optional)")
-            value["nullable"] = True
+def add_object_type(schema):
+    properties = schema.get("properties", None)
+    if properties is not None:
+        schema["type"] = "object"
+        for name, value in properties.items():
+            strip_titles(value)
 
-        sub = value.get("properties", None)
-        if sub is not None:
-            convert_to_nullable(sub)
+    items = schema.get("items", None)
+    if items is not None:
+        strip_titles(items)
+
+
+def convert_to_nullable(schema):
+    anyof = schema.pop("anyOf", None)
+    if anyof is not None:
+        if len(anyof) != 2:
+            raise ValueError("Type Unions are not supported (except for Optional)")
+        a, b = anyof
+        if a == {"type": "null"}:
+            schema.update(b)
+        elif b == {"type": "null"}:
+            schema.update(a)
+        else:
+            raise ValueError("Type Unions are not supported (except for Optional)")
+        schema["nullable"] = True
+
+    properties = schema.get("properties", None)
+    if properties is not None:
+        for name, value in properties.items():
+            convert_to_nullable(value)
+
+    items = schema.get("items", None)
+    if items is not None:
+        convert_to_nullable(items)
 
 
 def _rename_schema_fields(schema):

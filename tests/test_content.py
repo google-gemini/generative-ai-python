@@ -422,8 +422,7 @@ class UnitTests(parameterized.TestCase):
             "dataclass",
             ADataClass,
             glm.Schema(
-                type=glm.Type.OBJECT,
-                properties={"a": {"type_": glm.Type.INTEGER}},
+                type=glm.Type.OBJECT, properties={"a": {"type_": glm.Type.INTEGER}}, required="a"
             ),
         ],
         [
@@ -433,14 +432,19 @@ class UnitTests(parameterized.TestCase):
                 type=glm.Type.OBJECT,
                 nullable=True,
                 properties={"a": {"type_": glm.Type.INTEGER}},
+                required=['a']
             ),
         ],
         [
             "list_of_dataclass",
             list[ADataClass],
             glm.Schema(
-                type=glm.Type.OBJECT,
-                properties={"a": {"type_": glm.Type.INTEGER}},
+                type="ARRAY",
+                items=glm.Schema(
+                    type=glm.Type.OBJECT,
+                    properties={"a": {"type_": glm.Type.INTEGER}},
+                    required=['a']
+                ),
             ),
         ],
         [
@@ -449,22 +453,36 @@ class UnitTests(parameterized.TestCase):
             glm.Schema(
                 type=glm.Type.OBJECT,
                 properties={"a": {"type_": glm.Type.INTEGER, "nullable": True}},
+                required=["a"],
             ),
         ],
         [
             "dataclass_with_list",
-            list[ADataClassWithList],
+            ADataClassWithList,
             glm.Schema(
                 type=glm.Type.OBJECT,
-                properties={"a": {"type_": glm.Type.INTEGER}},
+                properties={"a": {"type_": "ARRAY", "items": {"type_": "INTEGER"}}},
+                required=["a"],
+            ),
+        ],
+        [
+            "list_of_dataclass_with_list",
+            list[ADataClassWithList],
+            glm.Schema(
+                items=glm.Schema(
+                    type=glm.Type.OBJECT,
+                    properties={"a": {"type_": "ARRAY", "items": {"type_": "INTEGER"}}},
+                    required=["a"],
+                ),
+                type="ARRAY",
             ),
         ],
         [
             "list_of_nullable",
             list[Union[int, None]],
             glm.Schema(
-                type=glm.Type.OBJECT,
-                properties={"a": {"type_": glm.Type.INTEGER}},
+                type="ARRAY",
+                items={"type_": glm.Type.INTEGER, 'nullable': True},
             ),
         ],
         [
@@ -475,6 +493,7 @@ class UnitTests(parameterized.TestCase):
                 properties={
                     "a": {"type_": glm.Type.INTEGER},
                 },
+                required=["a"],
             ),
         ],
         [
@@ -482,12 +501,14 @@ class UnitTests(parameterized.TestCase):
             Nested,
             glm.Schema(
                 type=glm.Type.OBJECT,
+                required=['x'],
                 properties={
                     "x": glm.Schema(
                         type=glm.Type.OBJECT,
                         properties={
                             "a": {"type_": glm.Type.INTEGER},
                         },
+                        required=['a']
                     ),
                 },
             ),
