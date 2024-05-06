@@ -73,15 +73,7 @@ class FileServiceClient(glm.FileServiceClient):
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
         result = request.execute()
 
-        allowed_keys = set(glm.File.__annotations__)
-
-        return glm.File(
-            {
-                re.sub("[A-Z]", lambda ch: f"_{ch.group(0).lower()}", key): value
-                for key, value in result["file"].items()
-                if key in allowed_keys
-            }
-        )
+        return self.get_file({"name": result["name"]})
 
 
 class FileServiceAsyncClient(glm.FileServiceAsyncClient):
