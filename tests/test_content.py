@@ -422,7 +422,7 @@ class UnitTests(parameterized.TestCase):
             "dataclass",
             ADataClass,
             glm.Schema(
-                type=glm.Type.OBJECT, properties={"a": {"type_": glm.Type.INTEGER}}, required="a"
+                type=glm.Type.OBJECT, properties={"a": {"type_": glm.Type.INTEGER}},
             ),
         ],
         [
@@ -432,7 +432,6 @@ class UnitTests(parameterized.TestCase):
                 type=glm.Type.OBJECT,
                 nullable=True,
                 properties={"a": {"type_": glm.Type.INTEGER}},
-                required=["a"],
             ),
         ],
         [
@@ -443,7 +442,6 @@ class UnitTests(parameterized.TestCase):
                 items=glm.Schema(
                     type=glm.Type.OBJECT,
                     properties={"a": {"type_": glm.Type.INTEGER}},
-                    required=["a"],
                 ),
             ),
         ],
@@ -453,7 +451,6 @@ class UnitTests(parameterized.TestCase):
             glm.Schema(
                 type=glm.Type.OBJECT,
                 properties={"a": {"type_": glm.Type.INTEGER, "nullable": True}},
-                required=["a"],
             ),
         ],
         [
@@ -462,7 +459,6 @@ class UnitTests(parameterized.TestCase):
             glm.Schema(
                 type=glm.Type.OBJECT,
                 properties={"a": {"type_": "ARRAY", "items": {"type_": "INTEGER"}}},
-                required=["a"],
             ),
         ],
         [
@@ -472,7 +468,6 @@ class UnitTests(parameterized.TestCase):
                 items=glm.Schema(
                     type=glm.Type.OBJECT,
                     properties={"a": {"type_": "ARRAY", "items": {"type_": "INTEGER"}}},
-                    required=["a"],
                 ),
                 type="ARRAY",
             ),
@@ -493,7 +488,6 @@ class UnitTests(parameterized.TestCase):
                 properties={
                     "a": {"type_": glm.Type.INTEGER},
                 },
-                required=["a"],
             ),
         ],
         [
@@ -501,14 +495,12 @@ class UnitTests(parameterized.TestCase):
             Nested,
             glm.Schema(
                 type=glm.Type.OBJECT,
-                required=["x"],
                 properties={
                     "x": glm.Schema(
                         type=glm.Type.OBJECT,
                         properties={
                             "a": {"type_": glm.Type.INTEGER},
                         },
-                        required=["a"],
                     ),
                 },
             ),

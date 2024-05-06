@@ -338,8 +338,6 @@ def _generate_schema(
     """
     if descriptions is None:
         descriptions = {}
-    if required is None:
-        required = []
     defaults = dict(inspect.signature(f).parameters)
 
     fields_dict = {}
@@ -386,7 +384,7 @@ def _generate_schema(
     strip_titles(parameters)
 
     # 6. Annotate required fields.
-    if required:
+    if required is not None:
         # We use the user-provided "required" fields if specified.
         parameters["required"] = required
     else:
@@ -455,13 +453,14 @@ def strip_titles(schema):
 def add_object_type(schema):
     properties = schema.get("properties", None)
     if properties is not None:
+        schema.pop('required', None)
         schema["type"] = "object"
         for name, value in properties.items():
-            strip_titles(value)
+            add_object_type(value)
 
     items = schema.get("items", None)
     if items is not None:
-        strip_titles(items)
+        add_object_type(items)
 
 
 def convert_to_nullable(schema):
@@ -486,6 +485,7 @@ def convert_to_nullable(schema):
     items = schema.get("items", None)
     if items is not None:
         convert_to_nullable(items)
+
 
 
 def _rename_schema_fields(schema):
