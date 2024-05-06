@@ -67,7 +67,7 @@ class File:
         return self._proto.uri
 
     @property
-    def uri(self) -> str:
+    def state(self) -> glm.File.State:
         return self._proto.state
 
     def delete(self):
