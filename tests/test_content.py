@@ -432,7 +432,7 @@ class UnitTests(parameterized.TestCase):
                 type=glm.Type.OBJECT,
                 nullable=True,
                 properties={"a": {"type_": glm.Type.INTEGER}},
-                required=['a']
+                required=["a"],
             ),
         ],
         [
@@ -443,7 +443,7 @@ class UnitTests(parameterized.TestCase):
                 items=glm.Schema(
                     type=glm.Type.OBJECT,
                     properties={"a": {"type_": glm.Type.INTEGER}},
-                    required=['a']
+                    required=["a"],
                 ),
             ),
         ],
@@ -482,7 +482,7 @@ class UnitTests(parameterized.TestCase):
             list[Union[int, None]],
             glm.Schema(
                 type="ARRAY",
-                items={"type_": glm.Type.INTEGER, 'nullable': True},
+                items={"type_": glm.Type.INTEGER, "nullable": True},
             ),
         ],
         [
@@ -501,14 +501,14 @@ class UnitTests(parameterized.TestCase):
             Nested,
             glm.Schema(
                 type=glm.Type.OBJECT,
-                required=['x'],
+                required=["x"],
                 properties={
                     "x": glm.Schema(
                         type=glm.Type.OBJECT,
                         properties={
                             "a": {"type_": glm.Type.INTEGER},
                         },
-                        required=['a']
+                        required=["a"],
                     ),
                 },
             ),
