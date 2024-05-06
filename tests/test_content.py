@@ -422,7 +422,8 @@ class UnitTests(parameterized.TestCase):
             "dataclass",
             ADataClass,
             glm.Schema(
-                type=glm.Type.OBJECT, properties={"a": {"type_": glm.Type.INTEGER}},
+                type=glm.Type.OBJECT,
+                properties={"a": {"type_": glm.Type.INTEGER}},
             ),
         ],
         [

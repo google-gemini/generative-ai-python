@@ -453,7 +453,7 @@ def strip_titles(schema):
 def add_object_type(schema):
     properties = schema.get("properties", None)
     if properties is not None:
-        schema.pop('required', None)
+        schema.pop("required", None)
         schema["type"] = "object"
         for name, value in properties.items():
             add_object_type(value)
@@ -485,7 +485,6 @@ def convert_to_nullable(schema):
     items = schema.get("items", None)
     if items is not None:
         convert_to_nullable(items)
-
 
 
 def _rename_schema_fields(schema):
