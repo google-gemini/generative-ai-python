@@ -315,7 +315,12 @@ def to_contents(contents: ContentsType) -> list[glm.Content]:
     return contents
 
 
-def _generate_schema(
+def _schema_for_class(cls: TypedDict) -> dict[str, Any]:
+    schema = _build_schema("dummy", {"dummy": (cls, pydantic.Field())})
+    return schema["properties"]["dummy"]
+
+
+def _schema_for_function(
     f: Callable[..., Any],
     *,
     descriptions: Mapping[str, str] | None = None,
@@ -364,24 +369,7 @@ def _generate_schema(
             else:
                 fields_dict[name] = Any, field
 
-    parameters = pydantic.create_model(f.__name__, **fields_dict).schema()
-    defs = parameters.pop("$defs", {})
-    # flatten the defs
-    for name, value in defs.items():
-        unpack_defs(value, defs)
-    unpack_defs(parameters, defs)
-
-    # 5. Nullable fields:
-    #     * https://github.com/pydantic/pydantic/issues/1270
-    #     * https://stackoverflow.com/a/58841311
-    #     * https://github.com/pydantic/pydantic/discussions/4872
-    convert_to_nullable(parameters)
-    add_object_type(parameters)
-    # Postprocessing
-    # 4. Suppress unnecessary title generation:
-    #    * https://github.com/pydantic/pydantic/issues/1051
-    #    * http://cl/586221780
-    strip_titles(parameters)
+    parameters = _build_schema(f.__name__, fields_dict)
 
     # 6. Annotate required fields.
     if required is not None:
@@ -405,6 +393,28 @@ def _generate_schema(
     schema = dict(name=f.__name__, description=f.__doc__, parameters=parameters)
 
     return schema
+
+
+def _build_schema(fname, fields_dict):
+    parameters = pydantic.create_model(fname, **fields_dict).schema()
+    defs = parameters.pop("$defs", {})
+    # flatten the defs
+    for name, value in defs.items():
+        unpack_defs(value, defs)
+    unpack_defs(parameters, defs)
+
+    # 5. Nullable fields:
+    #     * https://github.com/pydantic/pydantic/issues/1270
+    #     * https://stackoverflow.com/a/58841311
+    #     * https://github.com/pydantic/pydantic/discussions/4872
+    convert_to_nullable(parameters)
+    add_object_type(parameters)
+    # Postprocessing
+    # 4. Suppress unnecessary title generation:
+    #    * https://github.com/pydantic/pydantic/issues/1051
+    #    * http://cl/586221780
+    strip_titles(parameters)
+    return parameters
 
 
 def unpack_defs(schema, defs):
@@ -557,7 +567,7 @@ class FunctionDeclaration:
         if descriptions is None:
             descriptions = {}
 
-        schema = _generate_schema(function, descriptions=descriptions)
+        schema = _schema_for_function(function, descriptions=descriptions)
 
         return CallableFunctionDeclaration(**schema, function=function)
 
