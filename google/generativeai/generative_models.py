@@ -706,7 +706,7 @@ class ChatSession:
 
         if last._error is not None:
             raise generation_types.BrokenResponseError(
-                "Can not build a coherent char history after a broken "
+                "Can not build a coherent chat history after a broken "
                 "streaming response "
                 "(See the previous Exception fro details). "
                 "To inspect the last response object, use `chat.last`."
