@@ -32,6 +32,7 @@ import google.api_core.exceptions
 
 from google.ai import generativelanguage as glm
 from google.generativeai import string_utils
+from google.generativeai.types import content_types
 from google.generativeai.responder import _rename_schema_fields
 
 __all__ = [
