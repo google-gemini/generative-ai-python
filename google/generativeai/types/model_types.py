@@ -350,7 +350,7 @@ def make_model_name(name: AnyModelNameOptions):
         raise TypeError("Expected: str, Model, or TunedModel")
 
     if not (name.startswith("models/") or name.startswith("tunedModels/")):
-        raise ValueError("Model names should start with `models/` or `tunedModels/`, got: {name}")
+        raise ValueError(f"Model names should start with `models/` or `tunedModels/`, got: {name}")
 
     return name
 
