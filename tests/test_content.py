@@ -12,8 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 import pathlib
-from typing import Any
+import typing_extensions
+from typing import Any, Union
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -36,6 +38,30 @@ TEST_JPG_DATA = TEST_JPG_PATH.read_bytes()
 # simple test function
 def datetime():
     "Returns the current UTC date and time."
+
+
+class ATypedDict(typing_extensions.TypedDict):
+    a: int
+
+
+@dataclasses.dataclass
+class ADataClass:
+    a: int
+
+
+@dataclasses.dataclass
+class Nested:
+    x: ADataClass
+
+
+@dataclasses.dataclass
+class ADataClassWithNullable:
+    a: Union[int, None]
+
+
+@dataclasses.dataclass
+class ADataClassWithList:
+    a: list[int]
 
 
 class UnitTests(parameterized.TestCase):
@@ -368,6 +394,7 @@ class UnitTests(parameterized.TestCase):
         ["int", int, glm.Schema(type=glm.Type.INTEGER)],
         ["float", float, glm.Schema(type=glm.Type.NUMBER)],
         ["str", str, glm.Schema(type=glm.Type.STRING)],
+        ["nullable_str", Union[str, None], glm.Schema(type=glm.Type.STRING, nullable=True)],
         [
             "list",
             list[str],
@@ -391,6 +418,94 @@ class UnitTests(parameterized.TestCase):
         ],
         ["dict", dict, glm.Schema(type=glm.Type.OBJECT)],
         ["dict-str-any", dict[str, Any], glm.Schema(type=glm.Type.OBJECT)],
+        [
+            "dataclass",
+            ADataClass,
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={"a": {"type_": glm.Type.INTEGER}},
+            ),
+        ],
+        [
+            "nullable_dataclass",
+            Union[ADataClass, None],
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                nullable=True,
+                properties={"a": {"type_": glm.Type.INTEGER}},
+            ),
+        ],
+        [
+            "list_of_dataclass",
+            list[ADataClass],
+            glm.Schema(
+                type="ARRAY",
+                items=glm.Schema(
+                    type=glm.Type.OBJECT,
+                    properties={"a": {"type_": glm.Type.INTEGER}},
+                ),
+            ),
+        ],
+        [
+            "dataclass_with_nullable",
+            ADataClassWithNullable,
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={"a": {"type_": glm.Type.INTEGER, "nullable": True}},
+            ),
+        ],
+        [
+            "dataclass_with_list",
+            ADataClassWithList,
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={"a": {"type_": "ARRAY", "items": {"type_": "INTEGER"}}},
+            ),
+        ],
+        [
+            "list_of_dataclass_with_list",
+            list[ADataClassWithList],
+            glm.Schema(
+                items=glm.Schema(
+                    type=glm.Type.OBJECT,
+                    properties={"a": {"type_": "ARRAY", "items": {"type_": "INTEGER"}}},
+                ),
+                type="ARRAY",
+            ),
+        ],
+        [
+            "list_of_nullable",
+            list[Union[int, None]],
+            glm.Schema(
+                type="ARRAY",
+                items={"type_": glm.Type.INTEGER, "nullable": True},
+            ),
+        ],
+        [
+            "TypedDict",
+            ATypedDict,
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={
+                    "a": {"type_": glm.Type.INTEGER},
+                },
+            ),
+        ],
+        [
+            "nested",
+            Nested,
+            glm.Schema(
+                type=glm.Type.OBJECT,
+                properties={
+                    "x": glm.Schema(
+                        type=glm.Type.OBJECT,
+                        properties={
+                            "a": {"type_": glm.Type.INTEGER},
+                        },
+                    ),
+                },
+            ),
+        ],
     )
     def test_auto_schema(self, annotation, expected):
         def fun(a: annotation):

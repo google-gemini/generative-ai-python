@@ -42,7 +42,7 @@ else:
     release_status = "Development Status :: 5 - Production/Stable"
 
 dependencies = [
-    "google-ai-generativelanguage==0.6.2",
+    "google-ai-generativelanguage==0.6.3",
     "google-api-core",
     "google-api-python-client",
     "google-auth>=2.15.0",  # 2.15 adds API key auth support

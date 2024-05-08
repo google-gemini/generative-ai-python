@@ -66,6 +66,10 @@ class File:
     def uri(self) -> str:
         return self._proto.uri
 
+    @property
+    def state(self) -> glm.File.State:
+        return self._proto.state
+
     def delete(self):
         client = get_default_file_client()
         client.delete_file(name=self.name)
