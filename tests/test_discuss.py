@@ -21,7 +21,6 @@ import google.ai.generativelanguage as glm
 
 from google.generativeai import discuss
 from google.generativeai import client
-from google.generativeai import types
 import google.generativeai as genai
 from google.generativeai.types import safety_types
 
