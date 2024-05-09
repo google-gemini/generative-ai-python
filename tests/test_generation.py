@@ -1,6 +1,7 @@
 import inspect
 import string
 import textwrap
+from typing_extensions import TypedDict
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -8,16 +9,35 @@ import google.ai.generativelanguage as glm
 from google.generativeai.types import generation_types
 
 
+class Date(TypedDict):
+    day: int
+    month: int
+    year: int
+
+
+class Person(TypedDict):
+    name: str
+    favorite_color: str
+    birthday: Date
+
+
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         [
             "glm.GenerationConfig",
-            glm.GenerationConfig(temperature=0.1, stop_sequences=["end"]),
+            glm.GenerationConfig(
+                temperature=0.1, stop_sequences=["end"], response_schema=glm.Schema(type="STRING")
+            ),
         ],
-        ["GenerationConfigDict", {"temperature": 0.1, "stop_sequences": ["end"]}],
+        [
+            "GenerationConfigDict",
+            {"temperature": 0.1, "stop_sequences": ["end"], "response_schema": {"type": "STRING"}},
+        ],
         [
             "GenerationConfig",
-            generation_types.GenerationConfig(temperature=0.1, stop_sequences=["end"]),
+            generation_types.GenerationConfig(
+                temperature=0.1, stop_sequences=["end"], response_schema={"type": "STRING"}
+            ),
         ],
     )
     def test_to_generation_config(self, config):
@@ -563,49 +583,44 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         [
-            "glm.GenerationConfig",
-            glm.GenerationConfig(
-                temperature=0.1,
-                stop_sequences=["end"],
-                response_mime_type="application/json",
-                response_schema=glm.Schema(
-                    type="STRING", format="float", description="This is an example schema."
-                ),
-            ),
+            "glm.Schema",
+            glm.Schema(type="STRING"),
+            glm.Schema(type="STRING"),
         ],
         [
-            "GenerationConfigDict",
-            {
-                "temperature": 0.1,
-                "stop_sequences": ["end"],
-                "response_mime_type": "application/json",
-                "response_schema": glm.Schema(
-                    type="STRING", format="float", description="This is an example schema."
-                ),
-            },
+            "SchemaDict",
+            {"type": "STRING"},
+            glm.Schema(type="STRING"),
         ],
         [
-            "GenerationConfig",
-            generation_types.GenerationConfig(
-                temperature=0.1,
-                stop_sequences=["end"],
-                response_mime_type="application/json",
-                response_schema=glm.Schema(
-                    type="STRING", format="float", description="This is an example schema."
+            "str",
+            str,
+            glm.Schema(type="STRING"),
+        ],
+        ["list_of_str", list[str], glm.Schema(type="ARRAY", items=glm.Schema(type="STRING"))],
+        [
+            "fancy",
+            Person,
+            glm.Schema(
+                type="OBJECT",
+                properties=dict(
+                    name=glm.Schema(type="STRING"),
+                    favorite_color=glm.Schema(type="STRING"),
+                    birthday=glm.Schema(
+                        type="OBJECT",
+                        properties=dict(
+                            day=glm.Schema(type="INTEGER"),
+                            month=glm.Schema(type="INTEGER"),
+                            year=glm.Schema(type="INTEGER"),
+                        ),
+                    ),
                 ),
             ),
         ],
     )
-    def test_response_schema(self, config):
-        gd = generation_types.to_generation_config_dict(config)
-        self.assertIsInstance(gd, dict)
-        self.assertEqual(gd["temperature"], 0.1)
-        self.assertEqual(gd["stop_sequences"], ["end"])
-        self.assertEqual(gd["response_mime_type"], "application/json")
+    def test_response_schema(self, schema, expected):
+        gd = generation_types.to_generation_config_dict(dict(response_schema=schema))
         actual = gd["response_schema"]
-        expected = glm.Schema(
-            type="STRING", format="float", description="This is an example schema."
-        )
         self.assertEqual(actual, expected)
 
 

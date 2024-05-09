@@ -73,7 +73,7 @@ class FileServiceClient(glm.FileServiceClient):
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
         result = request.execute()
 
-        return self.get_file({"name": result["name"]})
+        return self.get_file({"name": result["file"]["name"]})
 
 
 class FileServiceAsyncClient(glm.FileServiceAsyncClient):

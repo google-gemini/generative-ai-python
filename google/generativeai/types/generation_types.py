@@ -25,12 +25,14 @@ import sys
 import textwrap
 from typing import Union, Any
 from typing_extensions import TypedDict
+import types
 
 import google.protobuf.json_format
 import google.api_core.exceptions
 
 from google.ai import generativelanguage as glm
 from google.generativeai import string_utils
+from google.generativeai.types import content_types
 from google.generativeai.responder import _rename_schema_fields
 
 __all__ = [
@@ -174,8 +176,20 @@ def _normalize_schema(generation_config):
     response_schema = generation_config.get("response_schema", None)
     if response_schema is None:
         return
+
     if isinstance(response_schema, glm.Schema):
         return
+
+    if isinstance(response_schema, type):
+        response_schema = content_types._schema_for_class(response_schema)
+    elif isinstance(response_schema, types.GenericAlias):
+        if not str(response_schema).startswith("list["):
+            raise ValueError(
+                f"Could not understand {response_schema}, expected: `int`, `float`, `str`, `bool`, "
+                "`typing_extensions.TypedDict`, `dataclass`, or `list[...]`"
+            )
+        response_schema = content_types._schema_for_class(response_schema)
+
     response_schema = _rename_schema_fields(response_schema)
     generation_config["response_schema"] = glm.Schema(response_schema)
 
