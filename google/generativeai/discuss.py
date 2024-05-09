@@ -27,7 +27,7 @@ from google.generativeai.client import get_default_discuss_async_client
 from google.generativeai import string_utils
 from google.generativeai.types import discuss_types
 from google.generativeai.types import model_types
-from google.generativeai.types import safety_types
+from google.generativeai.types import palm_safety_types
 
 
 def _make_message(content: discuss_types.MessageOptions) -> glm.Message:
@@ -521,7 +521,7 @@ def _build_chat_response(
     response = type(response).to_dict(response)
     response.pop("messages")
 
-    response["filters"] = safety_types.convert_filters_to_enums(response["filters"])
+    response["filters"] = palm_safety_types.convert_filters_to_enums(response["filters"])
 
     if response["candidates"]:
         last = response["candidates"][0]

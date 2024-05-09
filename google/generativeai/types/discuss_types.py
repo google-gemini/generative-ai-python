@@ -22,7 +22,7 @@ from typing_extensions import TypedDict
 import google.ai.generativelanguage as glm
 from google.generativeai import string_utils
 
-from google.generativeai.types import safety_types
+from google.generativeai.types import palm_safety_types
 from google.generativeai.types import citation_types
 
 
@@ -169,7 +169,7 @@ class ChatResponse(abc.ABC):
     temperature: Optional[float]
     candidate_count: Optional[int]
     candidates: List[MessageDict]
-    filters: List[safety_types.ContentFilterDict]
+    filters: List[palm_safety_types.ContentFilterDict]
     top_p: Optional[float] = None
     top_k: Optional[float] = None
 
