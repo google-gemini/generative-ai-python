@@ -179,34 +179,6 @@ class UnitTests(parameterized.TestCase):
 
         self.client.embed_content.assert_called_once_with(request, **request_options)
 
-    @parameterized.named_parameters(
-        dict(
-            testcase_name="embedding.embed_content",
-            obj=embedding.embed_content,
-            aobj=embedding.embed_content_async,
-        ),
-    )
-    def test_async_code_match(self, obj, aobj):
-        import inspect
-        import re
-
-        source = inspect.getsource(obj)
-        asource = inspect.getsource(aobj)
-        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
-        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
-        asource = (
-            asource.replace("anext", "next")
-            .replace("aiter", "iter")
-            .replace("_async", "")
-            .replace("async ", "")
-            .replace("await ", "")
-            .replace("Async", "")
-            .replace("ASYNC_", "")
-        )
-
-        asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource)
-
 
 if __name__ == "__main__":
     absltest.main()

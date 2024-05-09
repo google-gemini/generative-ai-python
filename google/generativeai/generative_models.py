@@ -322,7 +322,12 @@ class GenerativeModel:
     # fmt: off
     def count_tokens(
         self,
-        contents: content_types.ContentsType,
+        contents: content_types.ContentsType = None,
+        *,
+        generation_config: generation_types.GenerationConfigType | None = None,
+        safety_settings: safety_types.SafetySettingOptions | None = None,
+        tools: content_types.FunctionLibraryType | None = None,
+        tool_config: content_types.ToolConfigType | None = None,
         request_options: dict[str, Any] | None = None,
     ) -> glm.CountTokensResponse:
         if request_options is None:
@@ -330,15 +335,26 @@ class GenerativeModel:
 
         if self._client is None:
             self._client = client.get_default_generative_client()
-        contents = content_types.to_contents(contents)
-        return self._client.count_tokens(
-            glm.CountTokensRequest(model=self.model_name, contents=contents),
-                **request_options,
-        )
+
+        request = glm.CountTokensRequest(
+            model=self.model_name,
+            generate_content_request=self._prepare_request(
+                contents=contents,
+                generation_config=generation_config,
+                safety_settings=safety_settings,
+                tools=tools,
+                tool_config=tool_config,
+        ))
+        return self._client.count_tokens(request, **request_options)
 
     async def count_tokens_async(
         self,
-        contents: content_types.ContentsType,
+        contents: content_types.ContentsType = None,
+        *,
+        generation_config: generation_types.GenerationConfigType | None = None,
+        safety_settings: safety_types.SafetySettingOptions | None = None,
+        tools: content_types.FunctionLibraryType | None = None,
+        tool_config: content_types.ToolConfigType | None = None,
         request_options: dict[str, Any] | None = None,
     ) -> glm.CountTokensResponse:
         if request_options is None:
@@ -346,11 +362,17 @@ class GenerativeModel:
 
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
-        contents = content_types.to_contents(contents)
-        return await self._async_client.count_tokens(
-            glm.CountTokensRequest(model=self.model_name, contents=contents),
-                **request_options,
-        )
+
+        request = glm.CountTokensRequest(
+            model=self.model_name,
+            generate_content_request=self._prepare_request(
+                contents=contents,
+                generation_config=generation_config,
+                safety_settings=safety_settings,
+                tools=tools,
+                tool_config=tool_config,
+        ))
+        return await self._async_client.count_tokens(request, **request_options)
 
     # fmt: on
 
@@ -684,7 +706,7 @@ class ChatSession:
 
         if last._error is not None:
             raise generation_types.BrokenResponseError(
-                "Can not build a coherent char history after a broken "
+                "Can not build a coherent chat history after a broken "
                 "streaming response "
                 "(See the previous Exception fro details). "
                 "To inspect the last response object, use `chat.last`."

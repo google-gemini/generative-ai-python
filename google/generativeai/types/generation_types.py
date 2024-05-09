@@ -17,18 +17,23 @@ from __future__ import annotations
 import collections
 import contextlib
 import sys
-from collections.abc import Iterable, AsyncIterable
+from collections.abc import Iterable, AsyncIterable, Mapping
 import dataclasses
 import itertools
+import json
+import sys
 import textwrap
-from typing import Union
+from typing import Union, Any
 from typing_extensions import TypedDict
+import types
 
 import google.protobuf.json_format
 import google.api_core.exceptions
 
 from google.ai import generativelanguage as glm
 from google.generativeai import string_utils
+from google.generativeai.types import content_types
+from google.generativeai.responder import _rename_schema_fields
 
 __all__ = [
     "AsyncGenerateContentResponse",
@@ -80,6 +85,7 @@ class GenerationConfigDict(TypedDict, total=False):
     max_output_tokens: int
     temperature: float
     response_mime_type: str
+    response_schema: glm.Schema | Mapping[str, Any]  # fmt: off
 
 
 @dataclasses.dataclass
@@ -146,6 +152,10 @@ class GenerationConfig:
             Supported mimetype:
                 `text/plain`: (default) Text output.
                 `application/json`: JSON response in the candidates.
+
+        response_schema:
+            Optional. Specifies the format of the JSON requested if response_mime_type is
+            `application/json`.
     """
 
     candidate_count: int | None = None
@@ -155,21 +165,53 @@ class GenerationConfig:
     top_p: float | None = None
     top_k: int | None = None
     response_mime_type: str | None = None
+    response_schema: glm.Schema | Mapping[str, Any] | None = None
 
 
 GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
+
+
+def _normalize_schema(generation_config):
+    # Convert response_schema to glm.Schema for request
+    response_schema = generation_config.get("response_schema", None)
+    if response_schema is None:
+        return
+
+    if isinstance(response_schema, glm.Schema):
+        return
+
+    if isinstance(response_schema, type):
+        response_schema = content_types._schema_for_class(response_schema)
+    elif isinstance(response_schema, types.GenericAlias):
+        if not str(response_schema).startswith("list["):
+            raise ValueError(
+                f"Could not understand {response_schema}, expected: `int`, `float`, `str`, `bool`, "
+                "`typing_extensions.TypedDict`, `dataclass`, or `list[...]`"
+            )
+        response_schema = content_types._schema_for_class(response_schema)
+
+    response_schema = _rename_schema_fields(response_schema)
+    generation_config["response_schema"] = glm.Schema(response_schema)
 
 
 def to_generation_config_dict(generation_config: GenerationConfigType):
     if generation_config is None:
         return {}
     elif isinstance(generation_config, glm.GenerationConfig):
-        return type(generation_config).to_dict(generation_config)  # pytype: disable=attribute-error
+        schema = generation_config.response_schema
+        generation_config = type(generation_config).to_dict(
+            generation_config
+        )  # pytype: disable=attribute-error
+        generation_config["response_schema"] = schema
+        return generation_config
     elif isinstance(generation_config, GenerationConfig):
         generation_config = dataclasses.asdict(generation_config)
+        _normalize_schema(generation_config)
         return {key: value for key, value in generation_config.items() if value is not None}
     elif hasattr(generation_config, "keys"):
-        return dict(generation_config)
+        generation_config = dict(generation_config)
+        _normalize_schema(generation_config)
+        return generation_config
     else:
         raise TypeError(
             "Did not understand `generation_config`, expected a `dict` or"
@@ -250,6 +292,7 @@ def _join_candidates(candidates: Iterable[glm.Candidate]):
         finish_reason=candidates[-1].finish_reason,
         safety_ratings=_join_safety_ratings_lists([c.safety_ratings for c in candidates]),
         citation_metadata=_join_citation_metadatas([c.citation_metadata for c in candidates]),
+        token_count=candidates[-1].token_count,
     )
 
 
@@ -276,9 +319,11 @@ def _join_prompt_feedbacks(
 
 
 def _join_chunks(chunks: Iterable[glm.GenerateContentResponse]):
+    chunks = tuple(chunks)
     return glm.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
+        usage_metadata=chunks[-1].usage_metadata,
     )
 
 
@@ -373,13 +418,21 @@ class BaseGenerateContentResponse:
     def prompt_feedback(self):
         return self._result.prompt_feedback
 
+    @property
+    def usage_metadata(self):
+        return self._result.usage_metadata
+
     def __str__(self) -> str:
         if self._done:
             _iterator = "None"
         else:
             _iterator = f"<{self._iterator.__class__.__name__}>"
 
-        _result = f"glm.GenerateContentResponse({type(self._result).to_dict(self._result)})"
+        as_dict = type(self._result).to_dict(self._result)
+        json_str = json.dumps(as_dict, indent=2)
+
+        _result = f"glm.GenerateContentResponse({json_str})"
+        _result = _result.replace("\n", "\n                    ")
 
         if self._error:
             _error = f",\nerror=<{self._error.__class__.__name__}> {self._error}"
