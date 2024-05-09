@@ -80,6 +80,7 @@ class FileDataDict(TypedDict):
 
 FileDataType = Union[FileDataDict, glm.FileData, glm.File, File]
 
+
 def to_file_data(file_data: FileDataType):
     if isinstance(file_data, dict):
         if "file_uri" in file_data:

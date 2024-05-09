@@ -161,14 +161,21 @@ def to_blob(blob: BlobType) -> glm.Blob:
         )
 
 
-
 class PartDict(TypedDict):
     text: str
     inline_data: BlobType
 
 
 # When you need a `Part` accept a part object, part-dict, blob or string
-PartType = Union[glm.Part, PartDict, BlobType, str, glm.FunctionCall, glm.FunctionResponse, file_types.FileDataType]
+PartType = Union[
+    glm.Part,
+    PartDict,
+    BlobType,
+    str,
+    glm.FunctionCall,
+    glm.FunctionResponse,
+    file_types.FileDataType,
+]
 
 
 def is_part_dict(d):
