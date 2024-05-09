@@ -79,9 +79,7 @@ class GenerativeModel:
         if "/" not in model_name:
             model_name = "models/" + model_name
         self._model_name = model_name
-        self._safety_settings = safety_types.to_easy_safety_dict(
-            safety_settings, harm_category_set="new"
-        )
+        self._safety_settings = safety_types.to_easy_safety_dict(safety_settings)
         self._generation_config = generation_types.to_generation_config_dict(generation_config)
         self._tools = content_types.to_function_library(tools)
 
@@ -149,10 +147,10 @@ class GenerativeModel:
         merged_gc = self._generation_config.copy()
         merged_gc.update(generation_config)
 
-        safety_settings = safety_types.to_easy_safety_dict(safety_settings, harm_category_set="new")
+        safety_settings = safety_types.to_easy_safety_dict(safety_settings)
         merged_ss = self._safety_settings.copy()
         merged_ss.update(safety_settings)
-        merged_ss = safety_types.normalize_safety_settings(merged_ss, harm_category_set="new")
+        merged_ss = safety_types.normalize_safety_settings(merged_ss)
 
         return glm.GenerateContentRequest(
             model=self._model_name,

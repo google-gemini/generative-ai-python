@@ -1,3 +1,17 @@
+# -*- coding: utf-8 -*-
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -15,7 +29,6 @@ from google.generativeai import string_utils
 
 __all__ = [
     "HarmCategory",
-    "GeminiHarmCategory",
     "HarmProbability",
     "HarmBlockThreshold",
     "BlockedReason",
@@ -30,24 +43,14 @@ HarmProbability = glm.SafetyRating.HarmProbability
 HarmBlockThreshold = glm.SafetySetting.HarmBlockThreshold
 BlockedReason = glm.ContentFilter.BlockedReason
 
-HarmCategoryOptions = Union[str, int, HarmCategory]
+import proto
 
-class PalmHarmCategory(enum.Enum):
-    """
-    Harm Categories supported by the palm-family models
-    """
-    HARM_CATEGORY_UNSPECIFIED = HarmCategory.HARM_CATEGORY_UNSPECIFIED.value
-    HARM_CATEGORY_DEROGATORY = HarmCategory.HARM_CATEGORY_DEROGATORY.value
-    HARM_CATEGORY_TOXICITY = HarmCategory.HARM_CATEGORY_TOXICITY.value
-    HARM_CATEGORY_VIOLENCE = HarmCategory.HARM_CATEGORY_VIOLENCE.value
-    HARM_CATEGORY_SEXUAL = HarmCategory.HARM_CATEGORY_SEXUAL.value
-    HARM_CATEGORY_MEDICAL = HarmCategory.HARM_CATEGORY_MEDICAL.value
-    HARM_CATEGORY_DANGEROUS = HarmCategory.HARM_CATEGORY_DANGEROUS.value
-    
-class GeminiHarmCategory(enum.Enum):
+
+class HarmCategory(proto.Enum):
     """
     Harm Categories supported by the gemini-family model
     """
+
     HARM_CATEGORY_UNSPECIFIED = glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED.value
     HARM_CATEGORY_HARASSMENT = glm.HarmCategory.HARM_CATEGORY_HARASSMENT.value
     HARM_CATEGORY_HATE_SPEECH = glm.HarmCategory.HARM_CATEGORY_HATE_SPEECH.value
@@ -55,118 +58,53 @@ class GeminiHarmCategory(enum.Enum):
     HARM_CATEGORY_DANGEROUS_CONTENT = glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT.value
 
 
-PalmHarmCategoryOptions = Union[str, int, PalmHarmCategory]
-GeminiHarmCategoryOptions = Union[str, int, GeminiHarmCategory]
+HarmCategoryOptions = Union[str, int, HarmCategory]
 
 # fmt: off
-_OLD_HARM_CATEGORIES: Dict[PalmHarmCategoryOptions, glm.HarmCategory] = {
-    HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    PalmHarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    0: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    "harm_category_unspecified": HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    "unspecified": HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-
-    HarmCategory.HARM_CATEGORY_DEROGATORY: HarmCategory.HARM_CATEGORY_DEROGATORY,
-    PalmHarmCategory.HARM_CATEGORY_DEROGATORY: HarmCategory.HARM_CATEGORY_DEROGATORY,
-    1: HarmCategory.HARM_CATEGORY_DEROGATORY,
-    "harm_category_derogatory": HarmCategory.HARM_CATEGORY_DEROGATORY,
-    "derogatory": HarmCategory.HARM_CATEGORY_DEROGATORY,
-
-    HarmCategory.HARM_CATEGORY_TOXICITY: HarmCategory.HARM_CATEGORY_TOXICITY,
-    PalmHarmCategory.HARM_CATEGORY_TOXICITY: HarmCategory.HARM_CATEGORY_TOXICITY,
-    2: HarmCategory.HARM_CATEGORY_TOXICITY,
-    "harm_category_toxicity": HarmCategory.HARM_CATEGORY_TOXICITY,
-    "toxicity": HarmCategory.HARM_CATEGORY_TOXICITY,
-    "toxic": HarmCategory.HARM_CATEGORY_TOXICITY,
-
-    HarmCategory.HARM_CATEGORY_VIOLENCE: HarmCategory.HARM_CATEGORY_VIOLENCE,
-    PalmHarmCategory.HARM_CATEGORY_VIOLENCE: HarmCategory.HARM_CATEGORY_VIOLENCE,
-    3: HarmCategory.HARM_CATEGORY_VIOLENCE,
-    "harm_category_violence": HarmCategory.HARM_CATEGORY_VIOLENCE,
-    "violence": HarmCategory.HARM_CATEGORY_VIOLENCE,
-    "violent": HarmCategory.HARM_CATEGORY_VIOLENCE,
-
-    HarmCategory.HARM_CATEGORY_SEXUAL: HarmCategory.HARM_CATEGORY_SEXUAL,
-    PalmHarmCategory.HARM_CATEGORY_SEXUAL: HarmCategory.HARM_CATEGORY_SEXUAL,
-    4: HarmCategory.HARM_CATEGORY_SEXUAL,
-    "harm_category_sexual": HarmCategory.HARM_CATEGORY_SEXUAL,
-    "sexual": HarmCategory.HARM_CATEGORY_SEXUAL,
-    "sex": HarmCategory.HARM_CATEGORY_SEXUAL,
-
-    HarmCategory.HARM_CATEGORY_MEDICAL: HarmCategory.HARM_CATEGORY_MEDICAL,
-    PalmHarmCategory.HARM_CATEGORY_MEDICAL: HarmCategory.HARM_CATEGORY_MEDICAL,
-    5: HarmCategory.HARM_CATEGORY_MEDICAL,
-    "harm_category_medical": HarmCategory.HARM_CATEGORY_MEDICAL,
-    "medical": HarmCategory.HARM_CATEGORY_MEDICAL,
-    "med": HarmCategory.HARM_CATEGORY_MEDICAL,
-
-    HarmCategory.HARM_CATEGORY_DANGEROUS: HarmCategory.HARM_CATEGORY_DANGEROUS,
-    PalmHarmCategory.HARM_CATEGORY_DANGEROUS: HarmCategory.HARM_CATEGORY_DANGEROUS,
-    6: HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "harm_category_dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "danger": HarmCategory.HARM_CATEGORY_DANGEROUS,
-}
-
-_NEW_HARM_CATEGORIES: Dict[GeminiHarmCategoryOptions, glm.HarmCategory] = {
-    HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    GeminiHarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    0: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    "harm_category_unspecified": HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    "unspecified": HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+_HARM_CATEGORIES: Dict[HarmCategoryOptions, glm.HarmCategory] = {
+    glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED: glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    HarmCategory.HARM_CATEGORY_UNSPECIFIED: glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    0: glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    "harm_category_unspecified": glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    "unspecified": glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
     
-    7: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    GeminiHarmCategory.HARM_CATEGORY_HARASSMENT: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    "harm_category_harassment": HarmCategory.HARM_CATEGORY_HARASSMENT,
-    "harassment": HarmCategory.HARM_CATEGORY_HARASSMENT,
+    7: glm.HarmCategory.HARM_CATEGORY_HARASSMENT,
+    glm.HarmCategory.HARM_CATEGORY_HARASSMENT: glm.HarmCategory.HARM_CATEGORY_HARASSMENT,
+    HarmCategory.HARM_CATEGORY_HARASSMENT: glm.HarmCategory.HARM_CATEGORY_HARASSMENT,
+    "harm_category_harassment": glm.HarmCategory.HARM_CATEGORY_HARASSMENT,
+    "harassment": glm.HarmCategory.HARM_CATEGORY_HARASSMENT,
 
-    8: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    GeminiHarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    'harm_category_hate_speech': HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    'hate_speech': HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    'hate': HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    8: glm.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    glm.HarmCategory.HARM_CATEGORY_HATE_SPEECH: glm.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    HarmCategory.HARM_CATEGORY_HATE_SPEECH: glm.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    'harm_category_hate_speech': glm.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    'hate_speech': glm.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    'hate': glm.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
 
-    9: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    GeminiHarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "harm_category_sexually_explicit": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "harm_category_sexual": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "sexually_explicit": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "sexual": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "sex": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    9: glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "harm_category_sexually_explicit": glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "harm_category_sexual": glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "sexually_explicit": glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "sexual": glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "sex": glm.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
 
-    10: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    GeminiHarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    "harm_category_dangerous_content": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    "harm_category_dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    "dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    "danger": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    10: glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "harm_category_dangerous_content": glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "harm_category_dangerous": glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "dangerous": glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "danger": glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
 }
 # fmt: on
 
 
-def to_old_harm_category(x: HarmCategoryOptions) -> HarmCategory:
+def to_harm_category(x: HarmCategoryOptions) -> glm.HarmCategory:
     if isinstance(x, str):
         x = x.lower()
-    return _OLD_HARM_CATEGORIES[x]
-
-
-def to_new_harm_category(x: HarmCategoryOptions) -> HarmCategory:
-    if isinstance(x, str):
-        x = x.lower()
-    return _NEW_HARM_CATEGORIES[x]
-
-
-def to_harm_category(x, harm_category_set):
-    if harm_category_set == "old":
-        return to_old_harm_category(x)
-    elif harm_category_set == "new":
-        return to_new_harm_category(x)
-    else:
-        raise ValueError("harm_category_set must be 'new' or 'old'")
+    return _HARM_CATEGORIES[x]
 
 
 HarmBlockThresholdOptions = Union[str, int, HarmBlockThreshold]
@@ -228,7 +166,7 @@ def convert_filters_to_enums(
 
 
 class SafetyRatingDict(TypedDict):
-    category: HarmCategory
+    category: glm.HarmCategory
     probability: HarmProbability
 
     __doc__ = string_utils.strip_oneof(glm.SafetyRating.__doc__)
@@ -236,7 +174,7 @@ class SafetyRatingDict(TypedDict):
 
 def convert_rating_to_enum(rating: dict) -> SafetyRatingDict:
     return {
-        "category": HarmCategory(rating["category"]),
+        "category": glm.HarmCategory(rating["category"]),
         "probability": HarmProbability(rating["probability"]),
     }
 
@@ -249,7 +187,7 @@ def convert_ratings_to_enum(ratings: Iterable[dict]) -> List[SafetyRatingDict]:
 
 
 class SafetySettingDict(TypedDict):
-    category: HarmCategory
+    category: glm.HarmCategory
     threshold: HarmBlockThreshold
 
     __doc__ = string_utils.strip_oneof(glm.SafetySetting.__doc__)
@@ -265,35 +203,27 @@ EasySafetySettingDict = dict[HarmCategoryOptions, HarmBlockThresholdOptions]
 
 SafetySettingOptions = Union[EasySafetySetting, Iterable[LooseSafetySettingDict], None]
 
-GeminiEasySafetySetting = Mapping[GeminiHarmCategoryOptions, HarmBlockThresholdOptions]
-GeminiSafetySettingOptions = Union[GeminiEasySafetySetting, Iterable[LooseSafetySettingDict], None]
 
-
-def to_easy_safety_dict(settings: SafetySettingOptions, harm_category_set) -> EasySafetySettingDict:
+def to_easy_safety_dict(settings: SafetySettingOptions) -> EasySafetySettingDict:
     if settings is None:
         return {}
     elif isinstance(settings, Mapping):
-        return {
-            to_harm_category(key, harm_category_set): to_block_threshold(value)
-            for key, value in settings.items()
-        }
+        return {to_harm_category(key): to_block_threshold(value) for key, value in settings.items()}
     else:  # Iterable
         return {
-            to_harm_category(d["category"], harm_category_set): to_block_threshold(d["threshold"])
-            for d in settings
+            to_harm_category(d["category"]): to_block_threshold(d["threshold"]) for d in settings
         }
 
 
 def normalize_safety_settings(
     settings: SafetySettingOptions,
-    harm_category_set,
 ) -> list[SafetySettingDict] | None:
     if settings is None:
         return None
     if isinstance(settings, Mapping):
         return [
             {
-                "category": to_harm_category(key, harm_category_set),
+                "category": to_harm_category(key),
                 "threshold": to_block_threshold(value),
             }
             for key, value in settings.items()
@@ -301,7 +231,7 @@ def normalize_safety_settings(
     else:
         return [
             {
-                "category": to_harm_category(d["category"], harm_category_set),
+                "category": to_harm_category(d["category"]),
                 "threshold": to_block_threshold(d["threshold"]),
             }
             for d in settings
@@ -310,7 +240,7 @@ def normalize_safety_settings(
 
 def convert_setting_to_enum(setting: dict) -> SafetySettingDict:
     return {
-        "category": HarmCategory(setting["category"]),
+        "category": glm.HarmCategory(setting["category"]),
         "threshold": HarmBlockThreshold(setting["threshold"]),
     }
 

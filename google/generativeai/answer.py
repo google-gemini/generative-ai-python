@@ -206,9 +206,7 @@ def _make_generate_answer_request(
     contents = content_types.to_contents(contents)
 
     if safety_settings:
-        safety_settings = safety_types.normalize_safety_settings(
-            safety_settings, harm_category_set="new"
-        )
+        safety_settings = safety_types.normalize_safety_settings(safety_settings)
 
     if inline_passages is not None and semantic_retriever is not None:
         raise ValueError(
