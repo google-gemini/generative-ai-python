@@ -219,13 +219,24 @@ class LooseSafetySettingDict(TypedDict):
 EasySafetySetting = Mapping[HarmCategoryOptions, HarmBlockThresholdOptions]
 EasySafetySettingDict = dict[HarmCategoryOptions, HarmBlockThresholdOptions]
 
-SafetySettingOptions = Union[EasySafetySetting, Iterable[LooseSafetySettingDict], None]
+SafetySettingOptions = Union[HarmBlockThresholdOptions, EasySafetySetting, Iterable[LooseSafetySettingDict], None]
 
+def _expand_block_threshold(block_threshold:HarmBlockThresholdOptions):
+    block_threshold = to_block_threshold(block_threshold)
+    set(_NEW_HARM_CATEGORIES.values())
+    return {
+        category: block_threshold
+        for category in set(_NEW_HARM_CATEGORIES.values())
+    }
 
 def to_easy_safety_dict(settings: SafetySettingOptions, harm_category_set) -> EasySafetySettingDict:
     if settings is None:
         return {}
-    elif isinstance(settings, Mapping):
+
+    if harm_category_set == "new" and isinstance(settings, (int, str, HarmBlockThreshold)):
+        settings = _expand_block_threshold(settings)
+
+    if isinstance(settings, Mapping):
         return {
             to_harm_category(key, harm_category_set): to_block_threshold(value)
             for key, value in settings.items()
@@ -243,6 +254,10 @@ def normalize_safety_settings(
 ) -> list[SafetySettingDict] | None:
     if settings is None:
         return None
+
+    if harm_category_set == "new" and isinstance(settings, (int, str, HarmBlockThreshold)):
+        settings = _expand_block_threshold(settings)
+
     if isinstance(settings, Mapping):
         return [
             {

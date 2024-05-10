@@ -181,7 +181,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_safety_overwrite(self, safe1, safe2):
         # Safety
-        model = generative_models.GenerativeModel("gemini-pro", safety_settings={"danger": "low"})
+        model = generative_models.GenerativeModel("gemini-pro", safety_settings=safe1)
 
         self.responses["generate_content"] = [
             simple_response(" world!"),
@@ -198,7 +198,7 @@ class CUJTests(parameterized.TestCase):
             glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
         )
 
-        _ = model.generate_content("hello", safety_settings={"danger": "high"})
+        _ = model.generate_content("hello", safety_settings=safe2)
         self.assertEqual(
             self.observed_requests[-1].safety_settings[0].category,
             glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
