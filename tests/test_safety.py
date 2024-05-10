@@ -10,7 +10,7 @@ from absl.testing import parameterized
 import google.ai.generativelanguage as glm
 from google.generativeai import client as client_lib
 from google.generativeai import generative_models
-from google.generativeai.types import content_types
+from google.generativeai.types import safety_types
 from google.generativeai.types import generation_types
 
 import PIL.Image
@@ -20,61 +20,33 @@ class SafetyTests(parameterized.TestCase):
     """Tests are in order with the design doc."""
 
     @parameterized.named_parameters(
-        ["block_threshold", glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE],
-        ["block_threshold", "low"],
-        ["block_threshold", 1],
-        ["dict", {"danger": "low"}, {"danger": "high"}],
+        ["block_threshold", glm.SafetySetting.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE],
+        ["block_threshold2", "medium"],
+        ["block_threshold3", 2],
+        ["dict", {"danger": "medium"}],
+        ["dict2", {"danger": 2}],
+        ["dict3", {"danger": glm.SafetySetting.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE}],
         [
             "list-dict",
             [
                 dict(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
                 ),
-            ],
-            ],[
-            "list-dict2"
-            [
-                dict(category="danger", threshold="high"),
             ],
         ],
         [
-            "object",
+            "list-dict2",
             [
-                glm.SafetySetting(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-                ),
+                dict(category="danger", threshold="med"),
             ],
         ],
     )
-    def test_safety_overwrite(self, safe1, safe2):
-        # Safety
-        model = generative_models.GenerativeModel("gemini-pro", safety_settings=safe1)
-
-        self.responses["generate_content"] = [
-            simple_response(" world!"),
-            simple_response(" world!"),
-        ]
-
-        _ = model.generate_content("hello")
+    def test_safety_overwrite(self, setting):
+        setting = safety_types.to_easy_safety_dict(setting, "new")
         self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
-            glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-        )
-
-        _ = model.generate_content("hello", safety_settings=safe2)
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
-            glm.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
+            setting[glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT],
+            glm.SafetySetting.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
         )
 
 

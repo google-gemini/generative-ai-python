@@ -219,15 +219,16 @@ class LooseSafetySettingDict(TypedDict):
 EasySafetySetting = Mapping[HarmCategoryOptions, HarmBlockThresholdOptions]
 EasySafetySettingDict = dict[HarmCategoryOptions, HarmBlockThresholdOptions]
 
-SafetySettingOptions = Union[HarmBlockThresholdOptions, EasySafetySetting, Iterable[LooseSafetySettingDict], None]
+SafetySettingOptions = Union[
+    HarmBlockThresholdOptions, EasySafetySetting, Iterable[LooseSafetySettingDict], None
+]
 
-def _expand_block_threshold(block_threshold:HarmBlockThresholdOptions):
+
+def _expand_block_threshold(block_threshold: HarmBlockThresholdOptions):
     block_threshold = to_block_threshold(block_threshold)
     set(_NEW_HARM_CATEGORIES.values())
-    return {
-        category: block_threshold
-        for category in set(_NEW_HARM_CATEGORIES.values())
-    }
+    return {category: block_threshold for category in set(_NEW_HARM_CATEGORIES.values())}
+
 
 def to_easy_safety_dict(settings: SafetySettingOptions, harm_category_set) -> EasySafetySettingDict:
     if settings is None:
