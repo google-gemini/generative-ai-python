@@ -357,7 +357,15 @@ class BaseGenerateContentResponse:
             self._error = None
 
     def to_dict(self):
-        """"Returns the result as a JSON-compatible dict."""
+        """Returns the result as a JSON-compatible dict.
+
+        Note: This doesn't capture the iterator state when streaming, it only captures the accumulated
+        `GenerateContentResponse` fields.
+
+        >>> import json
+        >>> response = model.generate_content('Hello?')
+        >>> json.dumps(response.to_dict())
+        """
         return type(self._result).to_dict(self._result)
 
     @property
