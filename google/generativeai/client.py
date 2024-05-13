@@ -59,6 +59,7 @@ class FileServiceClient(glm.FileServiceClient):
         mime_type: str | None = None,
         name: str | None = None,
         display_name: str | None = None,
+        resumable: bool = True,
     ) -> glm.File:
         if self._discovery_api is None:
             self._setup_discovery_api()
@@ -69,7 +70,9 @@ class FileServiceClient(glm.FileServiceClient):
         if display_name is not None:
             file["displayName"] = display_name
 
-        media = googleapiclient.http.MediaFileUpload(filename=path, mimetype=mime_type)
+        media = googleapiclient.http.MediaFileUpload(
+            filename=path, mimetype=mime_type, resumable=resumable
+        )
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
         result = request.execute()
 
