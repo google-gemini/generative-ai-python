@@ -33,29 +33,27 @@ def get_model(
     client=None,
     request_options: dict[str, Any] | None = None,
 ) -> model_types.Model | model_types.TunedModel:
-    """Given a model name, fetch the `types.Model` or `types.TunedModel` object.
+    """Given a model name, fetch the `types.Model`
 
     ```
     import pprint
-    model = genai.get_tuned_model(model_name):
+    model = genai.get_model('models/gemini-pro')
     pprint.pprint(model)
     ```
 
     Args:
-        name: The name of the model to fetch.
+        name: The name of the model to fetch. Should start with `models/`
         client: The client to use.
         request_options: Options for the request.
 
     Returns:
-        A `types.Model` or `types.TunedModel` object.
+        A `types.Model`
     """
     name = model_types.make_model_name(name)
     if name.startswith("models/"):
         return get_base_model(name, client=client, request_options=request_options)
-    elif name.startswith("tunedModels/"):
-        return get_tuned_model(name, client=client, request_options=request_options)
     else:
-        raise ValueError("Model names must start with `models/` or `tunedModels/`")
+        raise ValueError("Model names must start with `models/` received: {name}")
 
 
 def get_base_model(
@@ -68,12 +66,12 @@ def get_base_model(
 
     ```
     import pprint
-    model = genai.get_model('models/chat-bison-001'):
+    model = genai.get_base_model('models/chat-bison-001')
     pprint.pprint(model)
     ```
 
     Args:
-        name: The name of the model to fetch.
+        name: The name of the model to fetch. Should start with `models/`
         client: The client to use.
         request_options: Options for the request.
 
@@ -88,7 +86,7 @@ def get_base_model(
 
     name = model_types.make_model_name(name)
     if not name.startswith("models/"):
-        raise ValueError(f"Base model names must start with `models/`, got: {name}")
+        raise ValueError(f"Base model names must start with `models/`, received: {name}")
 
     result = client.get_model(name=name, **request_options)
     result = type(result).to_dict(result)
@@ -105,12 +103,12 @@ def get_tuned_model(
 
     ```
     import pprint
-    model = genai.get_tuned_model('tunedModels/my-model-1234'):
+    model = genai.get_tuned_model('tunedModels/gemini-1.0-pro-001')
     pprint.pprint(model)
     ```
 
     Args:
-        name: The name of the model to fetch.
+        name: The name of the model to fetch. Should start with `tunedModels/`
         client: The client to use.
         request_options: Options for the request.
 
@@ -126,7 +124,7 @@ def get_tuned_model(
     name = model_types.make_model_name(name)
 
     if not name.startswith("tunedModels/"):
-        raise ValueError("Tuned model names must start with `tunedModels/`")
+        raise ValueError("Tuned model names must start with `tunedModels/` received: {name}")
 
     result = client.get_tuned_model(name=name, **request_options)
 
