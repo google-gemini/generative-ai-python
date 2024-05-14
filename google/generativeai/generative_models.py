@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-import dataclasses
 import textwrap
 from typing import Any
-from typing import Union
 import reprlib
 
 # pylint: disable=bad-continuation, line-too-long
@@ -15,7 +13,6 @@ import reprlib
 import google.api_core.exceptions
 from google.ai import generativelanguage as glm
 from google.generativeai import client
-from google.generativeai import string_utils
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
 from google.generativeai.types import safety_types

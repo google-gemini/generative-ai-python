@@ -809,13 +809,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "world!"
                           }
-                        ],
-                        "role": ""
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                        ]
+                      }
                     }
                   ]
                 }),
@@ -847,13 +842,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first"
                           }
-                        ],
-                        "role": ""
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                        ]
+                      }
                     }
                   ]
                 }),
@@ -877,28 +867,14 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             )"""
         )
@@ -920,28 +896,14 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second third"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             )"""
         )
@@ -970,10 +932,8 @@ class CUJTests(parameterized.TestCase):
                 iterator=<generator>,
                 result=glm.GenerateContentResponse({
                   "prompt_feedback": {
-                    "block_reason": 1,
-                    "safety_ratings": []
-                  },
-                  "candidates": []
+                    "block_reason": 1
+                  }
                 }),
             ),
             error=<BlockedPromptException> prompt_feedback {
@@ -1028,28 +988,14 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "123"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             ),
             error=<ValueError> """
@@ -1101,28 +1047,15 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "abc"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "finish_reason": 3,
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             ),
             error=<StopCandidateException> index: 0

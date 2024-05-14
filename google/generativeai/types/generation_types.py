@@ -428,7 +428,7 @@ class BaseGenerateContentResponse:
         else:
             _iterator = f"<{self._iterator.__class__.__name__}>"
 
-        as_dict = type(self._result).to_dict(self._result)
+        as_dict = type(self._result).to_dict(self._result, use_integers_for_enums=True, including_default_value_fields=False)
         json_str = json.dumps(as_dict, indent=2)
 
         _result = f"glm.GenerateContentResponse({json_str})"
