@@ -68,6 +68,12 @@ Use the builtin unittest package:
  python -m unittest
 ```
 
+To ensure the integrity of the codebase, we have a suite of tests located in the `generative-ai-python/tests` directory. 
+You can run all these tests using Python's built-in `unittest` module. Open a terminal and navigate to the root directory of the project. Then, execute the following command:
+
+```
+python -m unittest discover -s /workspaces/generative-ai-python/tests
+```
 Or to debug, use:
 
 ```commandline
