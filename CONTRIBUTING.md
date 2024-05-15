@@ -88,8 +88,9 @@ pytest /workspaces/generative-ai-python/tests
 Or to debug, use:
 
 ```commandline
+pip install nose2
+
 nose2 --debugger
-```
 
 ### Type checking 
 
