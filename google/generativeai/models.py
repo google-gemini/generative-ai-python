@@ -21,6 +21,7 @@ import google.ai.generativelanguage as glm
 from google.generativeai import operations
 from google.generativeai.client import get_default_model_client
 from google.generativeai.types import model_types
+from google.generativeai.types import helper_types
 from google.api_core import operation
 from google.api_core import protobuf_helpers
 from google.protobuf import field_mask_pb2
@@ -31,7 +32,7 @@ def get_model(
     name: model_types.AnyModelNameOptions,
     *,
     client=None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model | model_types.TunedModel:
     """Given a model name, fetch the `types.Model`
 
@@ -64,7 +65,7 @@ def get_base_model(
     name: model_types.BaseModelNameOptions,
     *,
     client=None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model:
     """Get the `types.Model` for the given base model name.
 
@@ -101,7 +102,7 @@ def get_tuned_model(
     name: model_types.TunedModelNameOptions,
     *,
     client=None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     """Get the `types.TunedModel` for the given tuned model name.
 
@@ -164,7 +165,7 @@ def list_models(
     *,
     page_size: int | None = 50,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.ModelsIterable:
     """Lists available models.
 
@@ -198,7 +199,7 @@ def list_tuned_models(
     *,
     page_size: int | None = 50,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModelsIterable:
     """Lists available models.
 
@@ -246,7 +247,7 @@ def create_tuned_model(
     input_key: str = "text_input",
     output_key: str = "output",
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> operations.CreateTunedModelOperation:
     """Launches a tuning job to create a TunedModel.
 
@@ -346,6 +347,7 @@ def create_tuned_model(
         top_k=top_k,
         tuning_task=tuning_task,
     )
+
     operation = client.create_tuned_model(
         dict(tuned_model_id=id, tuned_model=tuned_model), **request_options
     )
@@ -359,7 +361,7 @@ def update_tuned_model(
     updates: None = None,
     *,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     pass
 
@@ -370,7 +372,7 @@ def update_tuned_model(
     updates: dict[str, Any],
     *,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     pass
 
@@ -380,7 +382,7 @@ def update_tuned_model(
     updates: dict[str, Any] | None = None,
     *,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     """Push updates to the tuned model. Only certain attributes are updatable."""
     if request_options is None:
@@ -397,6 +399,7 @@ def update_tuned_model(
                 "`updates` must be a `dict`.\n"
                 f"got: {type(updates)}"
             )
+
         tuned_model = client.get_tuned_model(name=name, **request_options)
 
         updates = flatten_update_paths(updates)
@@ -438,7 +441,7 @@ def _apply_update(thing, path, value):
 def delete_tuned_model(
     tuned_model: model_types.TunedModelNameOptions,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> None:
     if request_options is None:
         request_options = {}

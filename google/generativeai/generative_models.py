@@ -15,9 +15,9 @@ import reprlib
 import google.api_core.exceptions
 from google.ai import generativelanguage as glm
 from google.generativeai import client
-from google.generativeai import string_utils
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
+from google.generativeai.types import helper_types
 from google.generativeai.types import safety_types
 
 
@@ -179,7 +179,7 @@ class GenerativeModel:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> generation_types.GenerateContentResponse:
         """A multipurpose function to generate responses from the model.
 
@@ -279,7 +279,7 @@ class GenerativeModel:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `GenerativeModel.generate_content`."""
         request = self._prepare_request(
@@ -326,7 +326,7 @@ class GenerativeModel:
         safety_settings: safety_types.SafetySettingOptions | None = None,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> glm.CountTokensResponse:
         if request_options is None:
             request_options = {}
@@ -353,7 +353,7 @@ class GenerativeModel:
         safety_settings: safety_types.SafetySettingOptions | None = None,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> glm.CountTokensResponse:
         if request_options is None:
             request_options = {}

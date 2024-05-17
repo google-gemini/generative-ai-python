@@ -26,12 +26,10 @@ from google.generativeai.client import (
     get_default_generative_client,
     get_default_generative_async_client,
 )
-from google.generativeai import string_utils
 from google.generativeai.types import model_types
-from google.generativeai import models
+from google.generativeai.types import helper_types
 from google.generativeai.types import safety_types
 from google.generativeai.types import content_types
-from google.generativeai.types import answer_types
 from google.generativeai.types import retriever_types
 from google.generativeai.types.retriever_types import MetadataFilter
 
@@ -245,7 +243,7 @@ def generate_answer(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ):
     """
     Calls the GenerateAnswer API and returns a `types.Answer` containing the response.
@@ -318,7 +316,7 @@ async def generate_answer_async(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ):
     """
     Calls the API and returns a `types.Answer` containing the answer.
