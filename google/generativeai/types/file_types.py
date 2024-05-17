@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import datetime
 
+from google.rpc.status_pb2 import Status
 from google.generativeai.client import get_default_file_client
 
 import google.ai.generativelanguage as glm
@@ -69,6 +70,13 @@ class File:
     @property
     def state(self) -> glm.File.State:
         return self._proto.state
+
+    @property
+    def video_metadata(self) -> glm.VideoMetadata:
+        return self._proto.video_metadata
+
+    def error(self) -> Status:
+        return self._proto.error
 
     def delete(self):
         client = get_default_file_client()
