@@ -84,7 +84,10 @@ pip install pytest
 Then, run the tests with the following command:
 
 ```
-pytest /workspaces/generative-ai-python/tests
+pytest tests
+
+# or more simply
+pytest
 ```
 
 
