@@ -26,7 +26,7 @@ from google.generativeai import string_utils
 from google.generativeai.types import text_types
 from google.generativeai.types import model_types
 from google.generativeai import models
-from google.generativeai.types import safety_types
+from google.generativeai.types import palm_safety_types
 
 DEFAULT_TEXT_MODEL = "models/text-bison-001"
 EMBEDDING_MAX_BATCH_SIZE = 100
@@ -81,7 +81,7 @@ def _make_generate_text_request(
     max_output_tokens: int | None = None,
     top_p: int | None = None,
     top_k: int | None = None,
-    safety_settings: safety_types.SafetySettingOptions | None = None,
+    safety_settings: palm_safety_types.SafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
 ) -> glm.GenerateTextRequest:
     """
@@ -108,9 +108,7 @@ def _make_generate_text_request(
     """
     model = model_types.make_model_name(model)
     prompt = _make_text_prompt(prompt=prompt)
-    safety_settings = safety_types.normalize_safety_settings(
-        safety_settings, harm_category_set="old"
-    )
+    safety_settings = palm_safety_types.normalize_safety_settings(safety_settings)
     if isinstance(stop_sequences, str):
         stop_sequences = [stop_sequences]
     if stop_sequences:
@@ -138,7 +136,7 @@ def generate_text(
     max_output_tokens: int | None = None,
     top_p: float | None = None,
     top_k: float | None = None,
-    safety_settings: safety_types.SafetySettingOptions | None = None,
+    safety_settings: palm_safety_types.SafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
     client: glm.TextServiceClient | None = None,
     request_options: dict[str, Any] | None = None,
@@ -240,11 +238,11 @@ def _generate_response(
     response = client.generate_text(request, **request_options)
     response = type(response).to_dict(response)
 
-    response["filters"] = safety_types.convert_filters_to_enums(response["filters"])
-    response["safety_feedback"] = safety_types.convert_safety_feedback_to_enums(
+    response["filters"] = palm_safety_types.convert_filters_to_enums(response["filters"])
+    response["safety_feedback"] = palm_safety_types.convert_safety_feedback_to_enums(
         response["safety_feedback"]
     )
-    response["candidates"] = safety_types.convert_candidate_enums(response["candidates"])
+    response["candidates"] = palm_safety_types.convert_candidate_enums(response["candidates"])
 
     return Completion(_client=client, **response)
 
