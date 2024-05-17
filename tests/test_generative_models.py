@@ -932,7 +932,7 @@ class CUJTests(parameterized.TestCase):
                 iterator=<generator>,
                 result=glm.GenerateContentResponse({
                   "prompt_feedback": {
-                    "block_reason": 1
+                    "block_reason": "SAFETY"
                   }
                 }),
             ),
@@ -1049,7 +1049,7 @@ class CUJTests(parameterized.TestCase):
                           }
                         ]
                       },
-                      "finish_reason": 3,
+                      "finish_reason": "SAFETY",
                       "index": 0,
                       "citation_metadata": {}
                     }
