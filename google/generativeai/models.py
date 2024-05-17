@@ -55,7 +55,10 @@ def get_model(
     elif name.startswith("tunedModels/"):
         return get_tuned_model(name, client=client, request_options=request_options)
     else:
-        raise ValueError(f"Model names must start with `models/` or `tunedModels/`. Received: {name}")
+        raise ValueError(
+            f"Model names must start with `models/` or `tunedModels/`. Received: {name}"
+        )
+
 
 def get_base_model(
     name: model_types.BaseModelNameOptions,
