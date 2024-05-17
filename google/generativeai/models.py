@@ -276,7 +276,7 @@ def create_tuned_model(
           * A `glm.Dataset`, or
           * An `Iterable` of:
             *`glm.TuningExample`,
-            * {'text_input': text_input, 'output': output} dicts, or
+            * `{'text_input': text_input, 'output': output}` dicts
             * `(text_input, output)` tuples.
           * A `Mapping` of `Iterable[str]` - use `input_key` and `output_key` to choose which
             columns to use as the input/output
