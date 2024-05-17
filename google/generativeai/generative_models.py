@@ -387,7 +387,7 @@ class GenerativeModel:
         >>> response = chat.send_message("Hello?")
 
         Arguments:
-            history: An iterable of `glm.Content` objects, or equvalents to initialize the session.
+            history: An iterable of `glm.Content` objects, or equivalents to initialize the session.
         """
         if self._generation_config.get("candidate_count", 1) > 1:
             raise ValueError("Can't chat with `candidate_count > 1`")
@@ -401,11 +401,13 @@ class GenerativeModel:
 class ChatSession:
     """Contains an ongoing conversation with the model.
 
-    >>> model = genai.GenerativeModel(model="gemini-pro")
+    >>> model = genai.GenerativeModel('models/gemini-pro')
     >>> chat = model.start_chat()
     >>> response = chat.send_message("Hello")
     >>> print(response.text)
-    >>> response = chat.send_message(...)
+    >>> response = chat.send_message("Hello again")
+    >>> print(response.text)
+    >>> response = chat.send_message(...
 
     This `ChatSession` object collects the messages sent and received, in its
     `ChatSession.history` attribute.
@@ -444,7 +446,7 @@ class ChatSession:
 
         Appends the request and response to the conversation history.
 
-        >>> model = genai.GenerativeModel(model="gemini-pro")
+        >>> model = genai.GenerativeModel('models/gemini-pro')
         >>> chat = model.start_chat()
         >>> response = chat.send_message("Hello")
         >>> print(response.text)

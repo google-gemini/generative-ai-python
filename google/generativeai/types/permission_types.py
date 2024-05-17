@@ -22,8 +22,8 @@ import google.ai.generativelanguage as glm
 
 from google.protobuf import field_mask_pb2
 
-from google.generativeai.client import get_dafault_permission_client
-from google.generativeai.client import get_dafault_permission_async_client
+from google.generativeai.client import get_default_permission_client
+from google.generativeai.client import get_default_permission_async_client
 from google.generativeai.utils import flatten_update_paths
 from google.generativeai import string_utils
 
@@ -107,7 +107,7 @@ class Permission:
         Delete permission (self).
         """
         if client is None:
-            client = get_dafault_permission_client()
+            client = get_default_permission_client()
         delete_request = glm.DeletePermissionRequest(name=self.name)
         client.delete_permission(request=delete_request)
 
@@ -119,7 +119,7 @@ class Permission:
         This is the async version of `Permission.delete`.
         """
         if client is None:
-            client = get_dafault_permission_async_client()
+            client = get_default_permission_async_client()
         delete_request = glm.DeletePermissionRequest(name=self.name)
         await client.delete_permission(request=delete_request)
 
@@ -146,7 +146,7 @@ class Permission:
             `Permission` object with specified updates.
         """
         if client is None:
-            client = get_dafault_permission_client()
+            client = get_default_permission_client()
 
         updates = flatten_update_paths(updates)
         for update_path in updates:
@@ -176,7 +176,7 @@ class Permission:
         This is the async version of `Permission.update`.
         """
         if client is None:
-            client = get_dafault_permission_async_client()
+            client = get_default_permission_async_client()
 
         updates = flatten_update_paths(updates)
         for update_path in updates:
@@ -224,7 +224,7 @@ class Permission:
             Requested permission as an instance of `Permission`.
         """
         if client is None:
-            client = get_dafault_permission_client()
+            client = get_default_permission_client()
         get_perm_request = glm.GetPermissionRequest(name=name)
         get_perm_response = client.get_permission(request=get_perm_request)
         get_perm_response = type(get_perm_response).to_dict(get_perm_response)
@@ -240,7 +240,7 @@ class Permission:
         This is the async version of `Permission.get`.
         """
         if client is None:
-            client = get_dafault_permission_async_client()
+            client = get_default_permission_async_client()
         get_perm_request = glm.GetPermissionRequest(name=name)
         get_perm_response = await client.get_permission(request=get_perm_request)
         get_perm_response = type(get_perm_response).to_dict(get_perm_response)
@@ -313,7 +313,7 @@ class Permissions:
             ValueError: When email_address is not specified and grantee_type is not set to EVERYONE.
         """
         if client is None:
-            client = get_dafault_permission_client()
+            client = get_default_permission_client()
 
         request = self._make_create_permission_request(
             role=role, grantee_type=grantee_type, email_address=email_address
@@ -333,7 +333,7 @@ class Permissions:
         This is the async version of `PermissionAdapter.create_permission`.
         """
         if client is None:
-            client = get_dafault_permission_async_client()
+            client = get_default_permission_async_client()
 
         request = self._make_create_permission_request(
             role=role, grantee_type=grantee_type, email_address=email_address
@@ -358,7 +358,7 @@ class Permissions:
             Paginated list of `Permission` objects.
         """
         if client is None:
-            client = get_dafault_permission_client()
+            client = get_default_permission_client()
 
         request = glm.ListPermissionsRequest(
             parent=self.parent, page_size=page_size  # pytype: disable=attribute-error
@@ -376,7 +376,7 @@ class Permissions:
         This is the async version of `PermissionAdapter.list_permissions`.
         """
         if client is None:
-            client = get_dafault_permission_async_client()
+            client = get_default_permission_async_client()
 
         request = glm.ListPermissionsRequest(
             parent=self.parent, page_size=page_size  # pytype: disable=attribute-error
@@ -400,7 +400,7 @@ class Permissions:
         if self.parent.startswith("corpora"):
             raise NotImplementedError("Can'/t transfer_ownership for a Corpus")
         if client is None:
-            client = get_dafault_permission_client()
+            client = get_default_permission_client()
         transfer_request = glm.TransferOwnershipRequest(
             name=self.parent, email_address=email_address  # pytype: disable=attribute-error
         )
@@ -415,7 +415,7 @@ class Permissions:
         if self.parent.startswith("corpora"):
             raise NotImplementedError("Can'/t transfer_ownership for a Corpus")
         if client is None:
-            client = get_dafault_permission_async_client()
+            client = get_default_permission_async_client()
         transfer_request = glm.TransferOwnershipRequest(
             name=self.parent, email_address=email_address  # pytype: disable=attribute-error
         )

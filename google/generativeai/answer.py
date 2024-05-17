@@ -94,7 +94,7 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
 
     if not isinstance(source, Iterable):
         raise TypeError(
-            f"`source` must be a valid `GroundingPassagesOptions` type object got a: `{type(source)}`."
+            f"The 'source' argument must be an instance of 'GroundingPassagesOptions', but got a '{type(source).__name__}' object instead."
         )
 
     passages = []
@@ -182,7 +182,7 @@ def _make_generate_answer_request(
     temperature: float | None = None,
 ) -> glm.GenerateAnswerRequest:
     """
-    Calls the API to generate a grounded answer from the model.
+    constructs a glm.GenerateAnswerRequest object by organizing the input parameters for the API call to generate a grounded answer from the model.
 
     Args:
         model: Name of the model used to generate the grounded response.
@@ -217,7 +217,7 @@ def _make_generate_answer_request(
     elif semantic_retriever is not None:
         semantic_retriever = _make_semantic_retriever_config(semantic_retriever, contents[-1])
     else:
-        TypeError(
+        raise TypeError(
             f"The source must be either an `inline_passages` xor `semantic_retriever_config`, but both are `None`"
         )
 
