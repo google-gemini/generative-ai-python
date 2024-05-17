@@ -15,6 +15,8 @@
 from __future__ import annotations
 
 import datetime
+from typing import Union
+from typing_extensions import TypedDict
 
 from google.generativeai.client import get_default_file_client
 
@@ -73,3 +75,33 @@ class File:
     def delete(self):
         client = get_default_file_client()
         client.delete_file(name=self.name)
+
+
+class FileDataDict(TypedDict):
+    mime_type: str
+    file_uri: str
+
+
+FileDataType = Union[FileDataDict, glm.FileData, glm.File, File]
+
+
+def to_file_data(file_data: FileDataType):
+    if isinstance(file_data, dict):
+        if "file_uri" in file_data:
+            file_data = glm.FileData(file_data)
+        else:
+            file_data = glm.File(file_data)
+
+    if isinstance(file_data, File):
+        file_data = file_data.to_proto()
+
+    if isinstance(file_data, glm.File):
+        file_data = glm.FileData(
+            mime_type=file_data.mime_type,
+            file_uri=file_data.uri,
+        )
+
+    if isinstance(file_data, glm.FileData):
+        return file_data
+    else:
+        raise TypeError(f"Could not convert a {type(file_data)} to `FileData`")
