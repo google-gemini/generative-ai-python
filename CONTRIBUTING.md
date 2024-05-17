@@ -69,7 +69,10 @@ You can run all these tests using Python's built-in `unittest` module or the `py
 For `unittest`, open a terminal and navigate to the root directory of the project. Then, execute the following command:
 
 ```
-python -m unittest discover -s /workspaces/generative-ai-python/tests
+python -m unittest discover -s tests
+
+# or more simply
+python -m unittest
 ```
 
 Alternatively, if you prefer using `pytest`, you can install it using pip:
