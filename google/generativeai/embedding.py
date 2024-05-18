@@ -247,7 +247,8 @@ async def embed_content_async(
     client: glm.GenerativeServiceAsyncClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
-    """The async version of `genai.embed_content`."""
+    """Calls the API to create async embeddings for content passed in."""
+
     model = model_types.make_model_name(model)
 
     if request_options is None:

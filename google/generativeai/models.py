@@ -34,7 +34,7 @@ def get_model(
     client=None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model | model_types.TunedModel:
-    """Given a model name, fetch the `types.Model`
+    """Calls the API to fetch a model by name.
 
     ```
     import pprint
@@ -67,7 +67,7 @@ def get_base_model(
     client=None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model:
-    """Get the `types.Model` for the given base model name.
+    """Calls the API to fetch a base model by name.
 
     ```
     import pprint
@@ -104,7 +104,7 @@ def get_tuned_model(
     client=None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
-    """Get the `types.TunedModel` for the given tuned model name.
+    """Calls the API to fetch a tuned model by name.
 
     ```
     import pprint
@@ -139,6 +139,8 @@ def get_tuned_model(
 def get_base_model_name(
     model: model_types.AnyModelNameOptions, client: glm.ModelServiceClient | None = None
 ):
+    """Calls the API to fetch the base model name of a model."""
+
     if isinstance(model, str):
         if model.startswith("tunedModels/"):
             model = get_model(model, client=client)
@@ -167,7 +169,7 @@ def list_models(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.ModelsIterable:
-    """Lists available models.
+    """Calls the API to list all available models.
 
     ```
     import pprint
@@ -201,7 +203,7 @@ def list_tuned_models(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModelsIterable:
-    """Lists available models.
+    """Calls the API to list all tuned models.
 
     ```
     import pprint
@@ -249,7 +251,7 @@ def create_tuned_model(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> operations.CreateTunedModelOperation:
-    """Launches a tuning job to create a TunedModel.
+    """Calls the API to initiate a tuning process that optimizes a model for specific data, returning an operation object to track and manage the tuning progress.
 
     Since tuning a model can take significant time, this API doesn't wait for the tuning to complete.
     Instead, it returns a `google.api_core.operation.Operation` object that lets you check on the
@@ -384,7 +386,8 @@ def update_tuned_model(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
-    """Push updates to the tuned model. Only certain attributes are updatable."""
+    """Calls the API to puch updates to a specified tuned model where only certain attributes are updatable."""
+
     if request_options is None:
         request_options = {}
 
@@ -443,6 +446,8 @@ def delete_tuned_model(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> None:
+    """Calls the API to delete a specified tuned model"""
+
     if request_options is None:
         request_options = {}
 

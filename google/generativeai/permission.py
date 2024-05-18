@@ -128,7 +128,7 @@ def get_permission(
     permission_id: str | int | None = None,
     resource_type: str | None = None,
 ) -> permission_types.Permission:
-    """Get information about a permission by name.
+    """Calls the API to retrieve detailed information about a specific permission based on resource type and permission identifiers
 
     Args:
         name: The name of the permission.

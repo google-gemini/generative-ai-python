@@ -254,6 +254,8 @@ def count_text_tokens(
     client: glm.TextServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.TokenCount:
+    """Calls the API to count the number of tokens in the text prompt."""
+
     base_model = models.get_base_model_name(model)
 
     if request_options is None:

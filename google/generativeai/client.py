@@ -109,7 +109,7 @@ class _ClientManager:
         client_info: gapic_v1.client_info.ClientInfo | None = None,
         default_metadata: Sequence[tuple[str, str]] = (),
     ) -> None:
-        """Captures default client configuration.
+        """ "Initializes default client configurations using specified parameters or environment variables.
 
         If no API key has been provided (either directly, or on `client_options`) and the
         `GOOGLE_API_KEY` environment variable is set, it will be used as the API key.

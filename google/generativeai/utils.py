@@ -16,6 +16,8 @@ from __future__ import annotations
 
 
 def flatten_update_paths(updates):
+    """Flattens a nested dictionary into a single level dictionary, with keys representing the original path."""
+
     new_updates = {}
     for key, value in updates.items():
         if isinstance(value, dict):

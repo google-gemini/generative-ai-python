@@ -319,7 +319,7 @@ def chat(
     client: glm.DiscussServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> discuss_types.ChatResponse:
-    """Calls the API and returns a `types.ChatResponse` containing the response.
+    """Calls the API to initiate a chat with a model using provided parameters
 
     Args:
         model: Which model to call, as a string or a `types.Model`.
@@ -419,6 +419,7 @@ async def chat_async(
     client: glm.DiscussServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> discuss_types.ChatResponse:
+    """Calls the API asynchronously to initiate a chat with a model using provided parameters"""
     request = _make_generate_message_request(
         model=model,
         context=context,
@@ -577,6 +578,8 @@ def count_message_tokens(
     client: glm.DiscussServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> discuss_types.TokenCount:
+    """Calls the API to calculate the number of tokens used in the prompt."""
+
     model = model_types.make_model_name(model)
     prompt = _make_message_prompt(prompt, context=context, examples=examples, messages=messages)
 
