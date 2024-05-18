@@ -35,6 +35,7 @@ def create_corpus(
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> retriever_types.Corpus:
     """Calls the API to create a new `Corpus` by specifying either a corpus resource name as an ID or a display name, and returns the created `Corpus`.
+
     Args:
         name: The corpus resource name (ID). The name must be alphanumeric and fewer
             than 40 characters.
@@ -138,6 +139,7 @@ async def get_corpus_async(
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> retriever_types.Corpus:  # fmt: skip
     """This is the async version of `retriever.get_corpus`."""
+
     if request_options is None:
         request_options = {}
 

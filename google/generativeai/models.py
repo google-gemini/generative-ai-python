@@ -57,7 +57,7 @@ def get_model(
         return get_tuned_model(name, client=client, request_options=request_options)
     else:
         raise ValueError(
-            f"Model names must start with `models/` or `tunedModels/`. Received: {name}"
+            f"Invalid model name: Model names must start with `models/` or `tunedModels/`. Received: {name}"
         )
 
 
@@ -91,7 +91,9 @@ def get_base_model(
 
     name = model_types.make_model_name(name)
     if not name.startswith("models/"):
-        raise ValueError(f"Base model names must start with `models/`, received: {name}")
+        raise ValueError(
+            f"Invalid model name: Base model names must start with `models/`. Received: {name}"
+        )
 
     result = client.get_model(name=name, **request_options)
     result = type(result).to_dict(result)
@@ -129,7 +131,9 @@ def get_tuned_model(
     name = model_types.make_model_name(name)
 
     if not name.startswith("tunedModels/"):
-        raise ValueError("Tuned model names must start with `tunedModels/` received: {name}")
+        raise ValueError(
+            f"Invalid model name: Tuned model names must start with `tunedModels/`. Received: {name}"
+        )
 
     result = client.get_tuned_model(name=name, **request_options)
 
@@ -158,7 +162,10 @@ def get_base_model_name(
         if not base_model:
             base_model = model.tuned_model_source.base_model
     else:
-        raise TypeError(f"Cannot understand model: {model}")
+        raise TypeError(
+            f"Invalid model: The provided model '{model}' is not recognized or supported. "
+            "Supported types are: str, model_types.TunedModel, model_types.Model, glm.Model, and glm.TunedModel."
+        )
 
     return base_model
 
@@ -324,7 +331,9 @@ def create_tuned_model(
             }
         }
     else:
-        ValueError(f"Not understood: `{source_model=}`")
+        raise ValueError(
+            f"Invalid model name: The provided model '{source_model}' does not match any known model patterns such as 'models/' or 'tunedModels/'"
+        )
 
     training_data = model_types.encode_tuning_data(
         training_data, input_key=input_key, output_key=output_key
@@ -398,9 +407,7 @@ def update_tuned_model(
         name = tuned_model
         if not isinstance(updates, dict):
             raise TypeError(
-                "When calling `update_tuned_model(name:str, updates: dict)`,\n"
-                "`updates` must be a `dict`.\n"
-                f"got: {type(updates)}"
+                f"Invalid argument type: In the function `update_tuned_model(name:str, updates: dict)`, the `updates` argument must be of type `dict`. Received type: {type(updates).__name__}."
             )
 
         tuned_model = client.get_tuned_model(name=name, **request_options)
@@ -414,8 +421,7 @@ def update_tuned_model(
     elif isinstance(tuned_model, glm.TunedModel):
         if updates is not None:
             raise ValueError(
-                "When calling `update_tuned_model(tuned_model:glm.TunedModel, updates=None)`,"
-                "`updates` must not be set."
+                "Invalid argument: When calling `update_tuned_model(tuned_model:glm.TunedModel, updates=None)`, the `updates` argument must not be set."
             )
 
         name = tuned_model.name
@@ -423,8 +429,7 @@ def update_tuned_model(
         field_mask = protobuf_helpers.field_mask(was._pb, tuned_model._pb)
     else:
         raise TypeError(
-            "For `update_tuned_model(tuned_model:dict|glm.TunedModel)`,"
-            f"`tuned_model` must be a `dict` or a `glm.TunedModel`. Got a: `{type(tuned_model)}`"
+            f"Invalid argument type: In the function `update_tuned_model(tuned_model:dict|glm.TunedModel)`, the `tuned_model` argument must be of type `dict` or `glm.TunedModel`. Received type: {type(tuned_model).__name__}."
         )
 
     result = client.update_tuned_model(

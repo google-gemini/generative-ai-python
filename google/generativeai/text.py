@@ -70,7 +70,9 @@ def _make_text_prompt(prompt: str | dict[str, str]) -> glm.TextPrompt:
     elif isinstance(prompt, dict):
         return glm.TextPrompt(prompt)
     else:
-        TypeError("Expected string or dictionary for text prompt.")
+        raise TypeError(
+            "Invalid argument type: Expected a string or dictionary for the text prompt."
+        )
 
 
 def _make_generate_text_request(
@@ -142,7 +144,7 @@ def generate_text(
     client: glm.TextServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.Completion:
-    """Calls the API and returns a `types.Completion` containing the response.
+    """Calls the API to generate text based on the provided prompt.
 
     Args:
         model: Which model to call, as a string or a `types.Model`.

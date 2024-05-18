@@ -167,11 +167,11 @@ def embed_content(
 
     if title and to_task_type(task_type) is not EmbeddingTaskType.RETRIEVAL_DOCUMENT:
         raise ValueError(
-            "If a title is specified, the task must be a retrieval document type task."
+            "Invalid task type: When a title is specified, the task must be of a 'retrieval document' type."
         )
 
     if output_dimensionality and output_dimensionality < 0:
-        raise ValueError("`output_dimensionality` must be a non-negative integer.")
+        raise ValueError("Invalid value: `output_dimensionality` must be a non-negative integer.")
 
     if task_type:
         task_type = to_task_type(task_type)
@@ -259,11 +259,11 @@ async def embed_content_async(
 
     if title and to_task_type(task_type) is not EmbeddingTaskType.RETRIEVAL_DOCUMENT:
         raise ValueError(
-            "If a title is specified, the task must be a retrieval document type task."
+            "Invalid task type: When a title is specified, the task must be of a 'retrieval document' type."
         )
 
     if output_dimensionality and output_dimensionality < 0:
-        raise ValueError("`output_dimensionality` must be a non-negative integer.")
+        raise ValueError("Invalid value: `output_dimensionality` must be a non-negative integer.")
 
     if task_type:
         task_type = to_task_type(task_type)

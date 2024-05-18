@@ -156,9 +156,9 @@ def _make_semantic_retriever_config(
         source["source"] = _maybe_get_source_name(source["source"])
     else:
         raise TypeError(
-            "Could create a `glm.SemanticRetrieverConfig` from:\n"
-            f"  type: {type(source)}\n"
-            f"  value: {source}"
+            "Failed to create a `glm.SemanticRetrieverConfig` from the provided source. "
+            f"Received type: {type(source)}, "
+            f"Received value: {source}"
         )
 
     if source["query"] is None:
@@ -208,7 +208,7 @@ def _make_generate_answer_request(
 
     if inline_passages is not None and semantic_retriever is not None:
         raise ValueError(
-            "Either `inline_passages` or `semantic_retriever_config` must be set, not both."
+            "Invalid configuration: Please set either `inline_passages` or `semantic_retriever_config`, but not both."
         )
     elif inline_passages is not None:
         inline_passages = _make_grounding_passages(inline_passages)
@@ -216,7 +216,7 @@ def _make_generate_answer_request(
         semantic_retriever = _make_semantic_retriever_config(semantic_retriever, contents[-1])
     else:
         raise TypeError(
-            f"The source must be either an `inline_passages` xor `semantic_retriever_config`, but both are `None`"
+            "Invalid configuration: Either `inline_passages` or `semantic_retriever_config` must be provided, but currently both are `None`."
         )
 
     if answer_style:
@@ -245,8 +245,7 @@ def generate_answer(
     client: glm.GenerativeServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ):
-    """
-    Calls the GenerateAnswer API and returns a `types.Answer` containing the response.
+    """Calls the GenerateAnswer API and returns a `types.Answer` containing the response.
 
     You can pass a literal list of text chunks:
 

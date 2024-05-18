@@ -81,7 +81,9 @@ class FileServiceClient(glm.FileServiceClient):
 
 class FileServiceAsyncClient(glm.FileServiceAsyncClient):
     async def create_file(self, *args, **kwargs):
-        raise NotImplementedError("`create_file` is not yet implemented for the async client.")
+        raise NotImplementedError(
+            "The `create_file` method is currently not supported for the asynchronous client."
+        )
 
 
 @dataclasses.dataclass
@@ -109,7 +111,7 @@ class _ClientManager:
         client_info: gapic_v1.client_info.ClientInfo | None = None,
         default_metadata: Sequence[tuple[str, str]] = (),
     ) -> None:
-        """ "Initializes default client configurations using specified parameters or environment variables.
+        """Initializes default client configurations using specified parameters or environment variables.
 
         If no API key has been provided (either directly, or on `client_options`) and the
         `GOOGLE_API_KEY` environment variable is set, it will be used as the API key.
@@ -135,7 +137,9 @@ class _ClientManager:
 
         if had_api_key_value:
             if api_key is not None:
-                raise ValueError("You can't set both `api_key` and `client_options['api_key']`.")
+                raise ValueError(
+                    "Invalid configuration: Please set either `api_key` or `client_options['api_key']`, but not both."
+                )
         else:
             if api_key is None:
                 # If no key is provided explicitly, attempt to load one from the

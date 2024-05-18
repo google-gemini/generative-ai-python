@@ -69,7 +69,9 @@ def _make_messages(
     elif len(even_authors) == 1:
         even_author = even_authors.pop()
     else:
-        raise discuss_types.AuthorError("Authors are not strictly alternating")
+        raise discuss_types.AuthorError(
+            "Invalid sequence: Authors in the discussion must alternate strictly."
+        )
 
     odd_authors = set(msg.author for msg in messages[1::2] if msg.author)
     if not odd_authors:
@@ -77,7 +79,9 @@ def _make_messages(
     elif len(odd_authors) == 1:
         odd_author = odd_authors.pop()
     else:
-        raise discuss_types.AuthorError("Authors are not strictly alternating")
+        raise discuss_types.AuthorError(
+            "Invalid sequence: Authors in the discussion must alternate strictly."
+        )
 
     if all(msg.author for msg in messages):
         return messages
@@ -130,8 +134,8 @@ def _make_examples_from_flat(
         raise ValueError(
             textwrap.dedent(
                 f"""\
-            You must pass `Primer` objects, pairs of messages, or an *even* number of messages, got: 
-              {len(examples)} messages"""
+                Invalid input: You must pass either `Primer` objects, pairs of messages, or an even number of messages. 
+                Currently, {len(examples)} messages were provided, which is an odd number."""
             )
         )
     result = []
@@ -186,7 +190,7 @@ def _make_examples(
         else:
             if not ("input" in first and "output" in first):
                 raise TypeError(
-                    "To create an `Example` from a dict you must supply both `input` and an `output` keys"
+                    "Invalid dictionary format: To create an `Example` instance, the dictionary must contain both `input` and `output` keys."
                 )
     else:
         if isinstance(first, discuss_types.MESSAGE_OPTIONS):
@@ -232,8 +236,7 @@ def _make_message_prompt_dict(
         flat_prompt = (context is not None) or (examples is not None) or (messages is not None)
         if flat_prompt:
             raise ValueError(
-                "You can't set `prompt`, and its fields `(context, examples, messages)`"
-                " at the same time"
+                "Invalid configuration: Either `prompt` or its fields `(context, examples, messages)` should be set, but not both simultaneously."
             )
         if isinstance(prompt, glm.MessagePrompt):
             return prompt
@@ -245,7 +248,7 @@ def _make_message_prompt_dict(
     keys = set(prompt.keys())
     if not keys.issubset(discuss_types.MESSAGE_PROMPT_KEYS):
         raise KeyError(
-            f"Found extra entries in the prompt dictionary: {keys - discuss_types.MESSAGE_PROMPT_KEYS}"
+            f"Invalid prompt dictionary: Extra entries found that are not recognized: {keys - discuss_types.MESSAGE_PROMPT_KEYS}. Please check the keys."
         )
 
     examples = prompt.get("examples", None)
@@ -477,8 +480,8 @@ class ChatResponse(discuss_types.ChatResponse):
             raise TypeError(f"reply can't be called on an async client, use reply_async instead.")
         if self.last is None:
             raise ValueError(
-                "The last response from the model did not return any candidates.\n"
-                "Check the `.filters` attribute to see why the responses were filtered:\n"
+                "No candidates returned from the model's last response. "
+                "Please inspect the `.filters` attribute to understand why responses were filtered out: "
                 f"{self.filters}"
             )
 
@@ -498,7 +501,7 @@ class ChatResponse(discuss_types.ChatResponse):
     ) -> discuss_types.ChatResponse:
         if isinstance(self._client, glm.DiscussServiceClient):
             raise TypeError(
-                f"reply_async can't be called on a non-async client, use reply instead."
+                "Invalid method call: `reply_async` is not supported on a non-async client. Please use the `reply` method instead."
             )
         request = self.to_dict()
         request.pop("candidates")
