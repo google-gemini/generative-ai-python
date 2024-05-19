@@ -477,7 +477,9 @@ class ChatResponse(discuss_types.ChatResponse):
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> discuss_types.ChatResponse:
         if isinstance(self._client, glm.DiscussServiceAsyncClient):
-            raise TypeError(f"reply can't be called on an async client, use reply_async instead.")
+            raise TypeError(
+                "The 'reply' method cannot be called on an asynchronous client. Please use the 'reply_async' method instead."
+            )
         if self.last is None:
             raise ValueError(
                 "No candidates returned from the model's last response. "
