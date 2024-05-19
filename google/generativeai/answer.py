@@ -92,7 +92,7 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
 
     if not isinstance(source, Iterable):
         raise TypeError(
-            f"The 'source' argument must be an instance of 'GroundingPassagesOptions', but got a '{type(source).__name__}' object instead."
+            f"Invalid input: The 'source' argument must be an instance of 'GroundingPassagesOptions'. Received a '{type(source).__name__}' object instead."
         )
 
     passages = []
@@ -156,8 +156,8 @@ def _make_semantic_retriever_config(
         source["source"] = _maybe_get_source_name(source["source"])
     else:
         raise TypeError(
-            "Failed to create a `glm.SemanticRetrieverConfig` from the provided source. "
-            f"Received type: {type(source)}, "
+            f"Invalid input: Failed to create a 'glm.SemanticRetrieverConfig' from the provided source. "
+            f"Received type: {type(source).__name__}, "
             f"Received value: {source}"
         )
 
@@ -208,7 +208,8 @@ def _make_generate_answer_request(
 
     if inline_passages is not None and semantic_retriever is not None:
         raise ValueError(
-            "Invalid configuration: Please set either `inline_passages` or `semantic_retriever_config`, but not both."
+            f"Invalid configuration: Please set either 'inline_passages' or 'semantic_retriever_config', but not both. "
+            f"Received for inline_passages: {inline_passages}, and for semantic_retriever: {semantic_retriever}."
         )
     elif inline_passages is not None:
         inline_passages = _make_grounding_passages(inline_passages)
@@ -216,7 +217,8 @@ def _make_generate_answer_request(
         semantic_retriever = _make_semantic_retriever_config(semantic_retriever, contents[-1])
     else:
         raise TypeError(
-            "Invalid configuration: Either `inline_passages` or `semantic_retriever_config` must be provided, but currently both are `None`."
+            f"Invalid configuration: Either 'inline_passages' or 'semantic_retriever_config' must be provided, but currently both are 'None'. "
+            f"Received for inline_passages: {inline_passages}, and for semantic_retriever: {semantic_retriever}."
         )
 
     if answer_style:

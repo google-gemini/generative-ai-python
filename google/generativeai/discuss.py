@@ -478,13 +478,12 @@ class ChatResponse(discuss_types.ChatResponse):
     ) -> discuss_types.ChatResponse:
         if isinstance(self._client, glm.DiscussServiceAsyncClient):
             raise TypeError(
-                "The 'reply' method cannot be called on an asynchronous client. Please use the 'reply_async' method instead."
+                "Invalid operation: The 'reply' method cannot be called on an asynchronous client. Please use the 'reply_async' method instead."
             )
         if self.last is None:
             raise ValueError(
-                "No candidates returned from the model's last response. "
-                "Please inspect the `.filters` attribute to understand why responses were filtered out: "
-                f"{self.filters}"
+                f"Invalid operation: No candidates returned from the model's last response. "
+                f"Please inspect the '.filters' attribute to understand why responses were filtered out. Current filters: {self.filters}"
             )
 
         request = self.to_dict()

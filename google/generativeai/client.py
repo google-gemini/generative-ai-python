@@ -38,7 +38,9 @@ class FileServiceClient(glm.FileServiceClient):
     def _setup_discovery_api(self):
         api_key = self._client_options.api_key
         if api_key is None:
-            raise ValueError("Uploading to the File API requires an API key.")
+            raise ValueError(
+                "Invalid operation: Uploading to the File API requires an API key. Please provide a valid API key."
+            )
 
         request = googleapiclient.http.HttpRequest(
             http=httplib2.Http(),

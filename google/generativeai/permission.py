@@ -90,7 +90,7 @@ def _construct_name(
         # if name is not provided, then try to construct name via provided resource_name and permission_id.
         if not (resource_name and permission_id):
             raise ValueError(
-                "Invalid arguments: Either `name` or both `resource_name` and `permission_id` must be provided."
+                f"Invalid arguments: Either `name` or both `resource_name` and `permission_id` must be provided. Received name: {name}, resource_name: {resource_name}, permission_id: {permission_id}."
             )
         if resource_type:
             resource_type = _to_resource_type(resource_type)
@@ -99,7 +99,7 @@ def _construct_name(
             resource_path_components = resource_name.split("/")
             if len(resource_path_components) != 2:
                 raise ValueError(
-                    f"Invalid `resource_name` format: Expected format is `resource_type/resource_name`. Received: `{resource_name}`."
+                    f"Invalid `resource_name` format: Expected format is `resource_type/resource_name` (2 components). Received: `{resource_name}` with {len(resource_path_components)} components."
                 )
             resource_type = _to_resource_type(resource_path_components[0])
 
