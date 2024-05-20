@@ -548,7 +548,15 @@ class ChatSession:
         return function_calls
 
     def _handle_afc(
-        self, *, response, history, generation_config, safety_settings, stream, tools_lib, request_options
+        self,
+        *,
+        response,
+        history,
+        generation_config,
+        safety_settings,
+        stream,
+        tools_lib,
+        request_options,
     ) -> tuple[list[glm.Content], glm.Content, generation_types.BaseGenerateContentResponse]:
 
         while function_calls := self._get_function_calls(response):
@@ -591,8 +599,12 @@ class ChatSession:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
+        request_options: dict[str:Any] | None = None,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `ChatSession.send_message`."""
+        if request_options is None:
+            request_options = {}
+
         if self.enable_automatic_function_calling and stream:
             raise NotImplementedError(
                 "The `google.generativeai` SDK does not yet support `stream=True` with "
@@ -620,6 +632,7 @@ class ChatSession:
             stream=stream,
             tools=tools_lib,
             tool_config=tool_config,
+            request_options=request_options,
         )
 
         self._check_response(response=response, stream=stream)
@@ -632,6 +645,7 @@ class ChatSession:
                 safety_settings=safety_settings,
                 stream=stream,
                 tools_lib=tools_lib,
+                request_options=request_options,
             )
 
         self._last_sent = content
@@ -640,7 +654,15 @@ class ChatSession:
         return response
 
     async def _handle_afc_async(
-        self, *, response, history, generation_config, safety_settings, stream, tools_lib
+        self,
+        *,
+        response,
+        history,
+        generation_config,
+        safety_settings,
+        stream,
+        tools_lib,
+        request_options,
     ) -> tuple[list[glm.Content], glm.Content, generation_types.BaseGenerateContentResponse]:
 
         while function_calls := self._get_function_calls(response):
@@ -666,6 +688,7 @@ class ChatSession:
                 safety_settings=safety_settings,
                 stream=stream,
                 tools=tools_lib,
+                request_options=request_options,
             )
 
             self._check_response(response=response, stream=stream)

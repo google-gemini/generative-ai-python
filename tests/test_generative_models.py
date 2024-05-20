@@ -787,7 +787,7 @@ class CUJTests(parameterized.TestCase):
         )
 
         asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource)
+        self.assertEqual(source, asource, f"error in {obj=}")
 
     def test_repr_for_unary_non_streamed_response(self):
         model = generative_models.GenerativeModel(model_name="gemini-pro")
