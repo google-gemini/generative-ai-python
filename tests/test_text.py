@@ -22,7 +22,7 @@ import google.ai.generativelanguage as glm
 
 from google.generativeai import text as text_service
 from google.generativeai import client
-from google.generativeai.types import safety_types
+from google.generativeai.types import palm_safety_types
 from google.generativeai.types import model_types
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -246,12 +246,12 @@ class UnitTests(parameterized.TestCase):
                 testcase_name="basic",
                 safety_settings=[
                     {
-                        "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
-                        "threshold": safety_types.HarmBlockThreshold.BLOCK_NONE,
+                        "category": palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                        "threshold": palm_safety_types.HarmBlockThreshold.BLOCK_NONE,
                     },
                     {
-                        "category": safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
-                        "threshold": safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                        "category": palm_safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
+                        "threshold": palm_safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
                     },
                 ],
             ),
@@ -275,8 +275,8 @@ class UnitTests(parameterized.TestCase):
             dict(
                 testcase_name="mixed",
                 safety_settings={
-                    "medical": safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-                    safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE: 1,
+                    "medical": palm_safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                    palm_safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE: 1,
                 },
             ),
         ]
@@ -294,7 +294,7 @@ class UnitTests(parameterized.TestCase):
 
         self.assertEqual(
             self.observed_requests[-1].safety_settings[0].category,
-            safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+            palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
         )
 
     def test_filters(self):
@@ -302,15 +302,15 @@ class UnitTests(parameterized.TestCase):
             candidates=[{"output": "hello"}],
             filters=[
                 {
-                    "reason": safety_types.BlockedReason.SAFETY,
+                    "reason": palm_safety_types.BlockedReason.SAFETY,
                     "message": "not safe",
                 }
             ],
         )
 
         response = text_service.generate_text(prompt="do filters work?")
-        self.assertIsInstance(response.filters[0]["reason"], safety_types.BlockedReason)
-        self.assertEqual(response.filters[0]["reason"], safety_types.BlockedReason.SAFETY)
+        self.assertIsInstance(response.filters[0]["reason"], palm_safety_types.BlockedReason)
+        self.assertEqual(response.filters[0]["reason"], palm_safety_types.BlockedReason.SAFETY)
 
     def test_safety_feedback(self):
         self.responses["generate_text"] = glm.GenerateTextResponse(
@@ -318,12 +318,12 @@ class UnitTests(parameterized.TestCase):
             safety_feedback=[
                 {
                     "rating": {
-                        "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
-                        "probability": safety_types.HarmProbability.HIGH,
+                        "category": palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                        "probability": palm_safety_types.HarmProbability.HIGH,
                     },
                     "setting": {
-                        "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
-                        "threshold": safety_types.HarmBlockThreshold.BLOCK_NONE,
+                        "category": palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                        "threshold": palm_safety_types.HarmBlockThreshold.BLOCK_NONE,
                     },
                 }
             ],
@@ -332,20 +332,20 @@ class UnitTests(parameterized.TestCase):
         response = text_service.generate_text(prompt="does safety feedback work?")
         self.assertIsInstance(
             response.safety_feedback[0]["rating"]["probability"],
-            safety_types.HarmProbability,
+            palm_safety_types.HarmProbability,
         )
         self.assertEqual(
             response.safety_feedback[0]["rating"]["probability"],
-            safety_types.HarmProbability.HIGH,
+            palm_safety_types.HarmProbability.HIGH,
         )
 
         self.assertIsInstance(
             response.safety_feedback[0]["setting"]["category"],
-            safety_types.HarmCategory,
+            glm.HarmCategory,
         )
         self.assertEqual(
             response.safety_feedback[0]["setting"]["category"],
-            safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+            palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
         )
 
     def test_candidate_safety_feedback(self):
@@ -355,12 +355,12 @@ class UnitTests(parameterized.TestCase):
                     "output": "hello",
                     "safety_ratings": [
                         {
-                            "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
-                            "probability": safety_types.HarmProbability.HIGH,
+                            "category": palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                            "probability": palm_safety_types.HarmProbability.HIGH,
                         },
                         {
-                            "category": safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
-                            "probability": safety_types.HarmProbability.LOW,
+                            "category": palm_safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
+                            "probability": palm_safety_types.HarmProbability.LOW,
                         },
                     ],
                 }
@@ -370,20 +370,20 @@ class UnitTests(parameterized.TestCase):
         result = text_service.generate_text(prompt="Write a story from the ER.")
         self.assertIsInstance(
             result.candidates[0]["safety_ratings"][0]["category"],
-            safety_types.HarmCategory,
+            glm.HarmCategory,
         )
         self.assertEqual(
             result.candidates[0]["safety_ratings"][0]["category"],
-            safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+            palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
         )
 
         self.assertIsInstance(
             result.candidates[0]["safety_ratings"][0]["probability"],
-            safety_types.HarmProbability,
+            palm_safety_types.HarmProbability,
         )
         self.assertEqual(
             result.candidates[0]["safety_ratings"][0]["probability"],
-            safety_types.HarmProbability.HIGH,
+            palm_safety_types.HarmProbability.HIGH,
         )
 
     def test_candidate_citations(self):

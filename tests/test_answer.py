@@ -21,6 +21,7 @@ import unittest.mock as mock
 import google.ai.generativelanguage as glm
 
 from google.generativeai import answer
+from google.generativeai import types as genai_types
 from google.generativeai import client
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -239,7 +240,7 @@ class UnitTests(parameterized.TestCase):
     def test_generate_answer_called_with_request_options(self):
         self.client.generate_answer = mock.MagicMock()
         request = mock.ANY
-        request_options = {"timeout": 120}
+        request_options = genai_types.RequestOptions(timeout=120)
 
         answer.generate_answer(contents=[], inline_passages=[], request_options=request_options)
 
