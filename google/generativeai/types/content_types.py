@@ -128,7 +128,7 @@ def _convert_dict(d: Mapping) -> glm.Content | glm.Part | glm.Blob:
         if "inline_data" in part:
             part["inline_data"] = to_blob(part["inline_data"])
         if "file_data" in part:
-            part["file_data"] = to_file_data(part["file_data"])
+            part["file_data"] = file_types.to_file_data(part["file_data"])
         return glm.Part(part)
     elif is_blob_dict(d):
         blob = d
@@ -176,43 +176,21 @@ def to_blob(blob: BlobType) -> glm.Blob:
         )
 
 
-class FileDataDict(TypedDict):
-    mime_type: str
-    file_uri: str
-
-
-FileDataType = Union[FileDataDict, glm.FileData, file_types.File]
-
-
-def to_file_data(file_data: FileDataType):
-    if isinstance(file_data, dict):
-        if "file_uri" in file_data:
-            file_data = glm.FileData(file_data)
-        else:
-            file_data = glm.File(file_data)
-
-    if isinstance(file_data, file_types.File):
-        file_data = file_data.to_proto()
-
-    if isinstance(file_data, (glm.File, file_types.File)):
-        file_data = glm.FileData(
-            mime_type=file_data.mime_type,
-            file_uri=file_data.uri,
-        )
-
-    if isinstance(file_data, glm.FileData):
-        return file_data
-    else:
-        raise TypeError(f"Could not convert a {type(file_data)} to `FileData`")
-
-
 class PartDict(TypedDict):
     text: str
     inline_data: BlobType
 
 
 # When you need a `Part` accept a part object, part-dict, blob or string
-PartType = Union[glm.Part, PartDict, BlobType, str, glm.FunctionCall, glm.FunctionResponse]
+PartType = Union[
+    glm.Part,
+    PartDict,
+    BlobType,
+    str,
+    glm.FunctionCall,
+    glm.FunctionResponse,
+    file_types.FileDataType,
+]
 
 
 def is_part_dict(d):
@@ -236,7 +214,7 @@ def to_part(part: PartType):
     elif isinstance(part, glm.FileData):
         return glm.Part(file_data=part)
     elif isinstance(part, (glm.File, file_types.File)):
-        return glm.Part(file_data=to_file_data(part))
+        return glm.Part(file_data=file_types.to_file_data(part))
     elif isinstance(part, glm.FunctionCall):
         return glm.Part(function_call=part)
     elif isinstance(part, glm.FunctionResponse):

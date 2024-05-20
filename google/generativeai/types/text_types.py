@@ -21,7 +21,7 @@ from typing import Any, Dict, List
 from typing_extensions import TypedDict
 
 from google.generativeai import string_utils
-from google.generativeai.types import safety_types
+from google.generativeai.types import palm_safety_types
 from google.generativeai.types import citation_types
 
 
@@ -42,7 +42,7 @@ class BatchEmbeddingDict(TypedDict):
 
 class TextCompletion(TypedDict, total=False):
     output: str
-    safety_ratings: List[safety_types.SafetyRatingDict | None]
+    safety_ratings: List[palm_safety_types.SafetyRatingDict | None]
     citation_metadata: citation_types.CitationMetadataDict | None
 
 
@@ -63,8 +63,8 @@ class Completion(abc.ABC):
 
     candidates: List[TextCompletion]
     result: str | None
-    filters: List[safety_types.ContentFilterDict | None]
-    safety_feedback: List[safety_types.SafetyFeedbackDict | None]
+    filters: List[palm_safety_types.ContentFilterDict | None]
+    safety_feedback: List[palm_safety_types.SafetyFeedbackDict | None]
 
     def to_dict(self) -> Dict[str, Any]:
         result = {

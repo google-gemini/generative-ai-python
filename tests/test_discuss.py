@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import copy
-from typing import Any
 
 import unittest.mock
 
@@ -22,7 +21,7 @@ import google.ai.generativelanguage as glm
 from google.generativeai import discuss
 from google.generativeai import client
 import google.generativeai as genai
-from google.generativeai.types import safety_types
+from google.generativeai.types import palm_safety_types
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -289,32 +288,32 @@ class UnitTests(parameterized.TestCase):
         self.mock_response = mock_response = glm.GenerateMessageResponse(
             candidates=[glm.Message(content="a", author="1")],
             filters=[
-                glm.ContentFilter(reason=safety_types.BlockedReason.SAFETY, message="unsafe"),
-                glm.ContentFilter(reason=safety_types.BlockedReason.OTHER),
+                glm.ContentFilter(reason=palm_safety_types.BlockedReason.SAFETY, message="unsafe"),
+                glm.ContentFilter(reason=palm_safety_types.BlockedReason.OTHER),
             ],
         )
         response = discuss.chat(messages="do filters work?")
 
         filters = response.filters
         self.assertLen(filters, 2)
-        self.assertIsInstance(filters[0]["reason"], safety_types.BlockedReason)
-        self.assertEqual(filters[0]["reason"], safety_types.BlockedReason.SAFETY)
+        self.assertIsInstance(filters[0]["reason"], palm_safety_types.BlockedReason)
+        self.assertEqual(filters[0]["reason"], palm_safety_types.BlockedReason.SAFETY)
         self.assertEqual(filters[0]["message"], "unsafe")
 
         self.mock_response = glm.GenerateMessageResponse(
             candidates=[glm.Message(content="a", author="1")],
             filters=[
-                glm.ContentFilter(reason=safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED)
+                glm.ContentFilter(reason=palm_safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED)
             ],
         )
 
         response = response.reply("Does reply work?")
         filters = response.filters
         self.assertLen(filters, 1)
-        self.assertIsInstance(filters[0]["reason"], safety_types.BlockedReason)
+        self.assertIsInstance(filters[0]["reason"], palm_safety_types.BlockedReason)
         self.assertEqual(
             filters[0]["reason"],
-            safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED,
+            palm_safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED,
         )
 
     def test_chat_citations(self):

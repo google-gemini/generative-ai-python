@@ -26,12 +26,10 @@ from google.generativeai.client import (
     get_default_generative_client,
     get_default_generative_async_client,
 )
-from google.generativeai import string_utils
 from google.generativeai.types import model_types
-from google.generativeai import models
+from google.generativeai.types import helper_types
 from google.generativeai.types import safety_types
 from google.generativeai.types import content_types
-from google.generativeai.types import answer_types
 from google.generativeai.types import retriever_types
 from google.generativeai.types.retriever_types import MetadataFilter
 
@@ -94,7 +92,7 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
 
     if not isinstance(source, Iterable):
         raise TypeError(
-            f"`source` must be a valid `GroundingPassagesOptions` type object got a: `{type(source)}`."
+            f"The 'source' argument must be an instance of 'GroundingPassagesOptions', but got a '{type(source).__name__}' object instead."
         )
 
     passages = []
@@ -182,7 +180,7 @@ def _make_generate_answer_request(
     temperature: float | None = None,
 ) -> glm.GenerateAnswerRequest:
     """
-    Calls the API to generate a grounded answer from the model.
+    constructs a glm.GenerateAnswerRequest object by organizing the input parameters for the API call to generate a grounded answer from the model.
 
     Args:
         model: Name of the model used to generate the grounded response.
@@ -206,9 +204,7 @@ def _make_generate_answer_request(
     contents = content_types.to_contents(contents)
 
     if safety_settings:
-        safety_settings = safety_types.normalize_safety_settings(
-            safety_settings, harm_category_set="new"
-        )
+        safety_settings = safety_types.normalize_safety_settings(safety_settings)
 
     if inline_passages is not None and semantic_retriever is not None:
         raise ValueError(
@@ -219,7 +215,7 @@ def _make_generate_answer_request(
     elif semantic_retriever is not None:
         semantic_retriever = _make_semantic_retriever_config(semantic_retriever, contents[-1])
     else:
-        TypeError(
+        raise TypeError(
             f"The source must be either an `inline_passages` xor `semantic_retriever_config`, but both are `None`"
         )
 
@@ -247,7 +243,7 @@ def generate_answer(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ):
     """
     Calls the GenerateAnswer API and returns a `types.Answer` containing the response.
@@ -320,7 +316,7 @@ async def generate_answer_async(
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ):
     """
     Calls the API and returns a `types.Answer` containing the answer.

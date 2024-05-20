@@ -15,9 +15,9 @@ import reprlib
 import google.api_core.exceptions
 from google.ai import generativelanguage as glm
 from google.generativeai import client
-from google.generativeai import string_utils
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
+from google.generativeai.types import helper_types
 from google.generativeai.types import safety_types
 
 
@@ -79,9 +79,7 @@ class GenerativeModel:
         if "/" not in model_name:
             model_name = "models/" + model_name
         self._model_name = model_name
-        self._safety_settings = safety_types.to_easy_safety_dict(
-            safety_settings, harm_category_set="new"
-        )
+        self._safety_settings = safety_types.to_easy_safety_dict(safety_settings)
         self._generation_config = generation_types.to_generation_config_dict(generation_config)
         self._tools = content_types.to_function_library(tools)
 
@@ -149,10 +147,10 @@ class GenerativeModel:
         merged_gc = self._generation_config.copy()
         merged_gc.update(generation_config)
 
-        safety_settings = safety_types.to_easy_safety_dict(safety_settings, harm_category_set="new")
+        safety_settings = safety_types.to_easy_safety_dict(safety_settings)
         merged_ss = self._safety_settings.copy()
         merged_ss.update(safety_settings)
-        merged_ss = safety_types.normalize_safety_settings(merged_ss, harm_category_set="new")
+        merged_ss = safety_types.normalize_safety_settings(merged_ss)
 
         return glm.GenerateContentRequest(
             model=self._model_name,
@@ -181,7 +179,7 @@ class GenerativeModel:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> generation_types.GenerateContentResponse:
         """A multipurpose function to generate responses from the model.
 
@@ -281,7 +279,7 @@ class GenerativeModel:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `GenerativeModel.generate_content`."""
         request = self._prepare_request(
@@ -328,7 +326,7 @@ class GenerativeModel:
         safety_settings: safety_types.SafetySettingOptions | None = None,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> glm.CountTokensResponse:
         if request_options is None:
             request_options = {}
@@ -355,7 +353,7 @@ class GenerativeModel:
         safety_settings: safety_types.SafetySettingOptions | None = None,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> glm.CountTokensResponse:
         if request_options is None:
             request_options = {}
@@ -389,7 +387,7 @@ class GenerativeModel:
         >>> response = chat.send_message("Hello?")
 
         Arguments:
-            history: An iterable of `glm.Content` objects, or equvalents to initialize the session.
+            history: An iterable of `glm.Content` objects, or equivalents to initialize the session.
         """
         if self._generation_config.get("candidate_count", 1) > 1:
             raise ValueError("Can't chat with `candidate_count > 1`")
@@ -403,11 +401,13 @@ class GenerativeModel:
 class ChatSession:
     """Contains an ongoing conversation with the model.
 
-    >>> model = genai.GenerativeModel(model="gemini-pro")
+    >>> model = genai.GenerativeModel('models/gemini-pro')
     >>> chat = model.start_chat()
     >>> response = chat.send_message("Hello")
     >>> print(response.text)
-    >>> response = chat.send_message(...)
+    >>> response = chat.send_message("Hello again")
+    >>> print(response.text)
+    >>> response = chat.send_message(...
 
     This `ChatSession` object collects the messages sent and received, in its
     `ChatSession.history` attribute.
@@ -447,7 +447,7 @@ class ChatSession:
 
         Appends the request and response to the conversation history.
 
-        >>> model = genai.GenerativeModel(model="gemini-pro")
+        >>> model = genai.GenerativeModel('models/gemini-pro')
         >>> chat = model.start_chat()
         >>> response = chat.send_message("Hello")
         >>> print(response.text)
