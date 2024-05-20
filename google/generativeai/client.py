@@ -36,7 +36,7 @@ GENAI_API_DISCOVERY_URL = "https://generativelanguage.googleapis.com/$discovery/
 def patch_colab_gce_credentials():
     get_gce = auth._default._get_gce_credentials
     if "COLAB_RELEASE_TAG" in os.environ:
-        auth._default._get_gce_credentials = (lambda *args, **kwargs: (None, None))
+        auth._default._get_gce_credentials = lambda *args, **kwargs: (None, None)
 
     try:
         yield
