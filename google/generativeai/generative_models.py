@@ -441,7 +441,7 @@ class ChatSession:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str:Any] | None = None,
+        request_options: dict[str, Any] | None = None,
     ) -> generation_types.GenerateContentResponse:
         """Sends the conversation history with the added message and returns the model's response.
 
@@ -599,7 +599,7 @@ class ChatSession:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str:Any] | None = None,
+        request_options: dict[str, Any] | None = None,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `ChatSession.send_message`."""
         if request_options is None:
