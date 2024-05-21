@@ -228,9 +228,13 @@ def to_easy_safety_dict(settings: SafetySettingOptions) -> EasySafetySettingDict
             if isinstance(setting, glm.SafetySetting):
                 result[to_harm_category(setting.category)] = to_block_threshold(setting.threshold)
             elif isinstance(setting, dict):
-                result[to_harm_category(setting["category"])] = to_block_threshold(setting["threshold"])
+                result[to_harm_category(setting["category"])] = to_block_threshold(
+                    setting["threshold"]
+                )
             else:
-                raise ValueError(f"Could not understand safety setting:\n  {type(setting)=}\n  {setting=}")
+                raise ValueError(
+                    f"Could not understand safety setting:\n  {type(setting)=}\n  {setting=}"
+                )
         return result
 
 
