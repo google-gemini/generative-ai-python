@@ -13,7 +13,7 @@ import reprlib
 
 
 import google.api_core.exceptions
-from google.ai import generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai import client
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
@@ -127,8 +127,8 @@ class GenerativeModel:
         safety_settings: safety_types.SafetySettingOptions | None = None,
         tools: content_types.FunctionLibraryType | None,
         tool_config: content_types.ToolConfigType | None,
-    ) -> glm.GenerateContentRequest:
-        """Creates a `glm.GenerateContentRequest` from raw inputs."""
+    ) -> protos.GenerateContentRequest:
+        """Creates a `protos.GenerateContentRequest` from raw inputs."""
         if not contents:
             raise TypeError("contents must not be empty")
 
@@ -152,7 +152,7 @@ class GenerativeModel:
         merged_ss.update(safety_settings)
         merged_ss = safety_types.normalize_safety_settings(merged_ss)
 
-        return glm.GenerateContentRequest(
+        return protos.GenerateContentRequest(
             model=self._model_name,
             contents=contents,
             generation_config=merged_gc,
@@ -214,25 +214,25 @@ class GenerativeModel:
 
         ### Input type flexibility
 
-        While the underlying API strictly expects a `list[glm.Content]` objects, this method
+        While the underlying API strictly expects a `list[protos.Content]` objects, this method
         will convert the user input into the correct type. The hierarchy of types that can be
         converted is below. Any of these objects can be passed as an equivalent `dict`.
 
-        * `Iterable[glm.Content]`
-        * `glm.Content`
-        * `Iterable[glm.Part]`
-        * `glm.Part`
-        * `str`, `Image`, or `glm.Blob`
+        * `Iterable[protos.Content]`
+        * `protos.Content`
+        * `Iterable[protos.Part]`
+        * `protos.Part`
+        * `str`, `Image`, or `protos.Blob`
 
-        In an `Iterable[glm.Content]` each `content` is a separate message.
-        But note that an `Iterable[glm.Part]` is taken as the parts of a single message.
+        In an `Iterable[protos.Content]` each `content` is a separate message.
+        But note that an `Iterable[protos.Part]` is taken as the parts of a single message.
 
         Arguments:
             contents: The contents serving as the model's prompt.
             generation_config: Overrides for the model's generation config.
             safety_settings: Overrides for the model's safety settings.
             stream: If True, yield response chunks as they are generated.
-            tools: `glm.Tools` more info coming soon.
+            tools: `protos.Tools` more info coming soon.
             request_options: Options for the request.
         """
         request = self._prepare_request(
@@ -327,14 +327,14 @@ class GenerativeModel:
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
-    ) -> glm.CountTokensResponse:
+    ) -> protos.CountTokensResponse:
         if request_options is None:
             request_options = {}
 
         if self._client is None:
             self._client = client.get_default_generative_client()
 
-        request = glm.CountTokensRequest(
+        request = protos.CountTokensRequest(
             model=self.model_name,
             generate_content_request=self._prepare_request(
                 contents=contents,
@@ -354,14 +354,14 @@ class GenerativeModel:
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
-    ) -> glm.CountTokensResponse:
+    ) -> protos.CountTokensResponse:
         if request_options is None:
             request_options = {}
 
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
 
-        request = glm.CountTokensRequest(
+        request = protos.CountTokensRequest(
             model=self.model_name,
             generate_content_request=self._prepare_request(
                 contents=contents,
@@ -387,7 +387,7 @@ class GenerativeModel:
         >>> response = chat.send_message("Hello?")
 
         Arguments:
-            history: An iterable of `glm.Content` objects, or equivalents to initialize the session.
+            history: An iterable of `protos.Content` objects, or equivalents to initialize the session.
         """
         if self._generation_config.get("candidate_count", 1) > 1:
             raise ValueError("Can't chat with `candidate_count > 1`")
@@ -427,8 +427,8 @@ class ChatSession:
         enable_automatic_function_calling: bool = False,
     ):
         self.model: GenerativeModel = model
-        self._history: list[glm.Content] = content_types.to_contents(history)
-        self._last_sent: glm.Content | None = None
+        self._history: list[protos.Content] = content_types.to_contents(history)
+        self._last_sent: protos.Content | None = None
         self._last_received: generation_types.BaseGenerateContentResponse | None = None
         self.enable_automatic_function_calling = enable_automatic_function_calling
 
@@ -525,13 +525,13 @@ class ChatSession:
 
         if not stream:
             if response.candidates[0].finish_reason not in (
-                glm.Candidate.FinishReason.FINISH_REASON_UNSPECIFIED,
-                glm.Candidate.FinishReason.STOP,
-                glm.Candidate.FinishReason.MAX_TOKENS,
+                protos.Candidate.FinishReason.FINISH_REASON_UNSPECIFIED,
+                protos.Candidate.FinishReason.STOP,
+                protos.Candidate.FinishReason.MAX_TOKENS,
             ):
                 raise generation_types.StopCandidateException(response.candidates[0])
 
-    def _get_function_calls(self, response) -> list[glm.FunctionCall]:
+    def _get_function_calls(self, response) -> list[protos.FunctionCall]:
         candidates = response.candidates
         if len(candidates) != 1:
             raise ValueError(
@@ -543,14 +543,14 @@ class ChatSession:
 
     def _handle_afc(
         self, *, response, history, generation_config, safety_settings, stream, tools_lib
-    ) -> tuple[list[glm.Content], glm.Content, generation_types.BaseGenerateContentResponse]:
+    ) -> tuple[list[protos.Content], protos.Content, generation_types.BaseGenerateContentResponse]:
 
         while function_calls := self._get_function_calls(response):
             if not all(callable(tools_lib[fc]) for fc in function_calls):
                 break
             history.append(response.candidates[0].content)
 
-            function_response_parts: list[glm.Part] = []
+            function_response_parts: list[protos.Part] = []
             for fc in function_calls:
                 fr = tools_lib(fc)
                 assert fr is not None, (
@@ -559,7 +559,7 @@ class ChatSession:
                 )
                 function_response_parts.append(fr)
 
-            send = glm.Content(role=self._USER_ROLE, parts=function_response_parts)
+            send = protos.Content(role=self._USER_ROLE, parts=function_response_parts)
             history.append(send)
 
             response = self.model.generate_content(
@@ -634,14 +634,14 @@ class ChatSession:
 
     async def _handle_afc_async(
         self, *, response, history, generation_config, safety_settings, stream, tools_lib
-    ) -> tuple[list[glm.Content], glm.Content, generation_types.BaseGenerateContentResponse]:
+    ) -> tuple[list[protos.Content], protos.Content, generation_types.BaseGenerateContentResponse]:
 
         while function_calls := self._get_function_calls(response):
             if not all(callable(tools_lib[fc]) for fc in function_calls):
                 break
             history.append(response.candidates[0].content)
 
-            function_response_parts: list[glm.Part] = []
+            function_response_parts: list[protos.Part] = []
             for fc in function_calls:
                 fr = tools_lib(fc)
                 assert fr is not None, (
@@ -650,7 +650,7 @@ class ChatSession:
                 )
                 function_response_parts.append(fr)
 
-            send = glm.Content(role=self._USER_ROLE, parts=function_response_parts)
+            send = protos.Content(role=self._USER_ROLE, parts=function_response_parts)
             history.append(send)
 
             response = await self.model.generate_content_async(
@@ -673,7 +673,7 @@ class ChatSession:
             history=list(self.history),
         )
 
-    def rewind(self) -> tuple[glm.Content, glm.Content]:
+    def rewind(self) -> tuple[protos.Content, protos.Content]:
         """Removes the last request/response pair from the chat history."""
         if self._last_received is None:
             result = self._history.pop(-2), self._history.pop()
@@ -690,16 +690,16 @@ class ChatSession:
         return self._last_received
 
     @property
-    def history(self) -> list[glm.Content]:
+    def history(self) -> list[protos.Content]:
         """The chat history."""
         last = self._last_received
         if last is None:
             return self._history
 
         if last.candidates[0].finish_reason not in (
-            glm.Candidate.FinishReason.FINISH_REASON_UNSPECIFIED,
-            glm.Candidate.FinishReason.STOP,
-            glm.Candidate.FinishReason.MAX_TOKENS,
+            protos.Candidate.FinishReason.FINISH_REASON_UNSPECIFIED,
+            protos.Candidate.FinishReason.STOP,
+            protos.Candidate.FinishReason.MAX_TOKENS,
         ):
             error = generation_types.StopCandidateException(last.candidates[0])
             last._error = error
@@ -737,7 +737,7 @@ class ChatSession:
         _model = str(self.model).replace("\n", "\n" + " " * 4)
 
         def content_repr(x):
-            return f"glm.Content({_dict_repr.repr(type(x).to_dict(x))})"
+            return f"protos.Content({_dict_repr.repr(type(x).to_dict(x))})"
 
         try:
             history = list(self.history)

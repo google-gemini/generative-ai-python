@@ -20,7 +20,7 @@ import itertools
 from typing import Any, Iterable, Union, Mapping, Optional
 from typing_extensions import TypedDict
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai.client import (
     get_default_generative_client,
@@ -35,7 +35,7 @@ from google.generativeai.types.retriever_types import MetadataFilter
 
 DEFAULT_ANSWER_MODEL = "models/aqa"
 
-AnswerStyle = glm.GenerateAnswerRequest.AnswerStyle
+AnswerStyle = protos.GenerateAnswerRequest.AnswerStyle
 
 AnswerStyleOptions = Union[int, str, AnswerStyle]
 
@@ -66,28 +66,28 @@ def to_answer_style(x: AnswerStyleOptions) -> AnswerStyle:
 
 
 GroundingPassageOptions = (
-    Union[glm.GroundingPassage, tuple[str, content_types.ContentType], content_types.ContentType],
+    Union[protos.GroundingPassage, tuple[str, content_types.ContentType], content_types.ContentType],
 )
 
 GroundingPassagesOptions = Union[
-    glm.GroundingPassages,
+    protos.GroundingPassages,
     Iterable[GroundingPassageOptions],
     Mapping[str, content_types.ContentType],
 ]
 
 
-def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingPassages:
+def _make_grounding_passages(source: GroundingPassagesOptions) -> protos.GroundingPassages:
     """
-    Converts the `source` into a `glm.GroundingPassage`. A `GroundingPassages` contains a list of
-    `glm.GroundingPassage` objects, which each contain a `glm.Contant` and a string `id`.
+    Converts the `source` into a `protos.GroundingPassage`. A `GroundingPassages` contains a list of
+    `protos.GroundingPassage` objects, which each contain a `protos.Contant` and a string `id`.
 
     Args:
-        source: `Content` or a `GroundingPassagesOptions` that will be converted to glm.GroundingPassages.
+        source: `Content` or a `GroundingPassagesOptions` that will be converted to protos.GroundingPassages.
 
     Return:
-        `glm.GroundingPassages` to be passed into `glm.GenerateAnswer`.
+        `protos.GroundingPassages` to be passed into `protos.GenerateAnswer`.
     """
-    if isinstance(source, glm.GroundingPassages):
+    if isinstance(source, protos.GroundingPassages):
         return source
 
     if not isinstance(source, Iterable):
@@ -100,7 +100,7 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
         source = source.items()
 
     for n, data in enumerate(source):
-        if isinstance(data, glm.GroundingPassage):
+        if isinstance(data, protos.GroundingPassage):
             passages.append(data)
         elif isinstance(data, tuple):
             id, content = data  # tuple must have exactly 2 items.
@@ -108,11 +108,11 @@ def _make_grounding_passages(source: GroundingPassagesOptions) -> glm.GroundingP
         else:
             passages.append({"id": str(n), "content": content_types.to_content(data)})
 
-    return glm.GroundingPassages(passages=passages)
+    return protos.GroundingPassages(passages=passages)
 
 
 SourceNameType = Union[
-    str, retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document
+    str, retriever_types.Corpus, protos.Corpus, retriever_types.Document, protos.Document
 ]
 
 
@@ -127,7 +127,7 @@ class SemanticRetrieverConfigDict(TypedDict):
 SemanticRetrieverConfigOptions = Union[
     SourceNameType,
     SemanticRetrieverConfigDict,
-    glm.SemanticRetrieverConfig,
+    protos.SemanticRetrieverConfig,
 ]
 
 
@@ -135,7 +135,7 @@ def _maybe_get_source_name(source) -> str | None:
     if isinstance(source, str):
         return source
     elif isinstance(
-        source, (retriever_types.Corpus, glm.Corpus, retriever_types.Document, glm.Document)
+        source, (retriever_types.Corpus, protos.Corpus, retriever_types.Document, protos.Document)
     ):
         return source.name
     else:
@@ -145,8 +145,8 @@ def _maybe_get_source_name(source) -> str | None:
 def _make_semantic_retriever_config(
     source: SemanticRetrieverConfigOptions,
     query: content_types.ContentsType,
-) -> glm.SemanticRetrieverConfig:
-    if isinstance(source, glm.SemanticRetrieverConfig):
+) -> protos.SemanticRetrieverConfig:
+    if isinstance(source, protos.SemanticRetrieverConfig):
         return source
 
     name = _maybe_get_source_name(source)
@@ -156,7 +156,7 @@ def _make_semantic_retriever_config(
         source["source"] = _maybe_get_source_name(source["source"])
     else:
         raise TypeError(
-            "Could create a `glm.SemanticRetrieverConfig` from:\n"
+            "Could create a `protos.SemanticRetrieverConfig` from:\n"
             f"  type: {type(source)}\n"
             f"  value: {source}"
         )
@@ -166,7 +166,7 @@ def _make_semantic_retriever_config(
     elif isinstance(source["query"], str):
         source["query"] = content_types.to_content(source["query"])
 
-    return glm.SemanticRetrieverConfig(source)
+    return protos.SemanticRetrieverConfig(source)
 
 
 def _make_generate_answer_request(
@@ -178,9 +178,9 @@ def _make_generate_answer_request(
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
-) -> glm.GenerateAnswerRequest:
+) -> protos.GenerateAnswerRequest:
     """
-    constructs a glm.GenerateAnswerRequest object by organizing the input parameters for the API call to generate a grounded answer from the model.
+    constructs a protos.GenerateAnswerRequest object by organizing the input parameters for the API call to generate a grounded answer from the model.
 
     Args:
         model: Name of the model used to generate the grounded response.
@@ -188,16 +188,16 @@ def _make_generate_answer_request(
             single question to answer. For multi-turn queries, this is a repeated field that contains
             conversation history and the last `Content` in the list containing the question.
         inline_passages: Grounding passages (a list of `Content`-like objects or `(id, content)` pairs,
-            or a `glm.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
+            or a `protos.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
             one must be set, but not both.
-        semantic_retriever: A Corpus, Document, or `glm.SemanticRetrieverConfig` to use for grounding. Exclusive with
+        semantic_retriever: A Corpus, Document, or `protos.SemanticRetrieverConfig` to use for grounding. Exclusive with
              `inline_passages`, one must be set, but not both.
         answer_style: Style for grounded answers.
         safety_settings: Safety settings for generated output.
         temperature: The temperature for randomness in the output.
 
     Returns:
-        Call for glm.GenerateAnswerRequest().
+        Call for protos.GenerateAnswerRequest().
     """
     model = model_types.make_model_name(model)
 
@@ -222,7 +222,7 @@ def _make_generate_answer_request(
     if answer_style:
         answer_style = to_answer_style(answer_style)
 
-    return glm.GenerateAnswerRequest(
+    return protos.GenerateAnswerRequest(
         model=model,
         contents=contents,
         inline_passages=inline_passages,
@@ -242,7 +242,7 @@ def generate_answer(
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
-    client: glm.GenerativeServiceClient | None = None,
+    client: protos.GenerativeServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ):
     """
@@ -272,14 +272,14 @@ def generate_answer(
         contents: The question to be answered by the model, grounded in the
                 provided source.
         inline_passages: Grounding passages (a list of `Content`-like objects or (id, content) pairs,
-            or a `glm.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
+            or a `protos.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
             one must be set, but not both.
-        semantic_retriever: A Corpus, Document, or `glm.SemanticRetrieverConfig` to use for grounding. Exclusive with
+        semantic_retriever: A Corpus, Document, or `protos.SemanticRetrieverConfig` to use for grounding. Exclusive with
              `inline_passages`, one must be set, but not both.
         answer_style: Style in which the grounded answer should be returned.
         safety_settings: Safety settings for generated output. Defaults to None.
         temperature: Controls the randomness of the output.
-        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `protos.TextServiceClient` instead.
         request_options: Options for the request.
 
     Returns:
@@ -315,7 +315,7 @@ async def generate_answer_async(
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
-    client: glm.GenerativeServiceClient | None = None,
+    client: protos.GenerativeServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ):
     """
@@ -326,14 +326,14 @@ async def generate_answer_async(
         contents: The question to be answered by the model, grounded in the
                 provided source.
         inline_passages: Grounding passages (a list of `Content`-like objects or (id, content) pairs,
-            or a `glm.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
+            or a `protos.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
             one must be set, but not both.
-        semantic_retriever: A Corpus, Document, or `glm.SemanticRetrieverConfig` to use for grounding. Exclusive with
+        semantic_retriever: A Corpus, Document, or `protos.SemanticRetrieverConfig` to use for grounding. Exclusive with
              `inline_passages`, one must be set, but not both.
         answer_style: Style in which the grounded answer should be returned.
         safety_settings: Safety settings for generated output. Defaults to None.
         temperature: Controls the randomness of the output.
-        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `protos.TextServiceClient` instead.
 
     Returns:
         A `types.Answer` containing the model's text answer response.

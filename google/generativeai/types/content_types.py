@@ -26,7 +26,7 @@ from typing_extensions import TypedDict
 import pydantic
 
 from google.generativeai.types import file_types
-from google.ai import generativelanguage as glm
+from google.generativeai import protos
 
 if typing.TYPE_CHECKING:
     import PIL.Image
@@ -80,10 +80,10 @@ def pil_to_blob(img):
         mime_type = "image/jpeg"
     bytesio.seek(0)
     data = bytesio.read()
-    return glm.Blob(mime_type=mime_type, data=data)
+    return protos.Blob(mime_type=mime_type, data=data)
 
 
-def image_to_blob(image) -> glm.Blob:
+def image_to_blob(image) -> protos.Blob:
     if PIL is not None:
         if isinstance(image, PIL.Image.Image):
             return pil_to_blob(image)
@@ -101,7 +101,7 @@ def image_to_blob(image) -> glm.Blob:
             if mime_type is None:
                 mime_type = "image/unknown"
 
-            return glm.Blob(mime_type=mime_type, data=image.data)
+            return protos.Blob(mime_type=mime_type, data=image.data)
 
     raise TypeError(
         "Could not convert image. expected an `Image` type"
@@ -116,23 +116,23 @@ class BlobDict(TypedDict):
     data: bytes
 
 
-def _convert_dict(d: Mapping) -> glm.Content | glm.Part | glm.Blob:
+def _convert_dict(d: Mapping) -> protos.Content | protos.Part | protos.Blob:
     if is_content_dict(d):
         content = dict(d)
         if isinstance(parts := content["parts"], str):
             content["parts"] = [parts]
         content["parts"] = [to_part(part) for part in content["parts"]]
-        return glm.Content(content)
+        return protos.Content(content)
     elif is_part_dict(d):
         part = dict(d)
         if "inline_data" in part:
             part["inline_data"] = to_blob(part["inline_data"])
         if "file_data" in part:
             part["file_data"] = file_types.to_file_data(part["file_data"])
-        return glm.Part(part)
+        return protos.Part(part)
     elif is_blob_dict(d):
         blob = d
-        return glm.Blob(blob)
+        return protos.Blob(blob)
     else:
         raise KeyError(
             "Could not recognize the intended type of the `dict`. "
@@ -149,17 +149,17 @@ def is_blob_dict(d):
 
 if typing.TYPE_CHECKING:
     BlobType = Union[
-        glm.Blob, BlobDict, PIL.Image.Image, IPython.display.Image
+        protos.Blob, BlobDict, PIL.Image.Image, IPython.display.Image
     ]  # Any for the images
 else:
-    BlobType = Union[glm.Blob, BlobDict, Any]
+    BlobType = Union[protos.Blob, BlobDict, Any]
 
 
-def to_blob(blob: BlobType) -> glm.Blob:
+def to_blob(blob: BlobType) -> protos.Blob:
     if isinstance(blob, Mapping):
         blob = _convert_dict(blob)
 
-    if isinstance(blob, glm.Blob):
+    if isinstance(blob, protos.Blob):
         return blob
     elif isinstance(blob, IMAGE_TYPES):
         return image_to_blob(blob)
@@ -183,12 +183,12 @@ class PartDict(TypedDict):
 
 # When you need a `Part` accept a part object, part-dict, blob or string
 PartType = Union[
-    glm.Part,
+    protos.Part,
     PartDict,
     BlobType,
     str,
-    glm.FunctionCall,
-    glm.FunctionResponse,
+    protos.FunctionCall,
+    protos.FunctionResponse,
     file_types.FileDataType,
 ]
 
@@ -207,22 +207,22 @@ def to_part(part: PartType):
     if isinstance(part, Mapping):
         part = _convert_dict(part)
 
-    if isinstance(part, glm.Part):
+    if isinstance(part, protos.Part):
         return part
     elif isinstance(part, str):
-        return glm.Part(text=part)
-    elif isinstance(part, glm.FileData):
-        return glm.Part(file_data=part)
-    elif isinstance(part, (glm.File, file_types.File)):
-        return glm.Part(file_data=file_types.to_file_data(part))
-    elif isinstance(part, glm.FunctionCall):
-        return glm.Part(function_call=part)
-    elif isinstance(part, glm.FunctionResponse):
-        return glm.Part(function_response=part)
+        return protos.Part(text=part)
+    elif isinstance(part, protos.FileData):
+        return protos.Part(file_data=part)
+    elif isinstance(part, (protos.File, file_types.File)):
+        return protos.Part(file_data=file_types.to_file_data(part))
+    elif isinstance(part, protos.FunctionCall):
+        return protos.Part(function_call=part)
+    elif isinstance(part, protos.FunctionResponse):
+        return protos.Part(function_response=part)
 
     else:
         # Maybe it can be turned into a blob?
-        return glm.Part(inline_data=to_blob(part))
+        return protos.Part(inline_data=to_blob(part))
 
 
 class ContentDict(TypedDict):
@@ -236,10 +236,10 @@ def is_content_dict(d):
 
 # When you need a message accept a `Content` object or dict, a list of parts,
 # or a single part
-ContentType = Union[glm.Content, ContentDict, Iterable[PartType], PartType]
+ContentType = Union[protos.Content, ContentDict, Iterable[PartType], PartType]
 
 # For generate_content, we're not guessing roles for [[parts],[parts],[parts]] yet.
-StrictContentType = Union[glm.Content, ContentDict]
+StrictContentType = Union[protos.Content, ContentDict]
 
 
 def to_content(content: ContentType):
@@ -249,24 +249,24 @@ def to_content(content: ContentType):
     if isinstance(content, Mapping):
         content = _convert_dict(content)
 
-    if isinstance(content, glm.Content):
+    if isinstance(content, protos.Content):
         return content
     elif isinstance(content, Iterable) and not isinstance(content, str):
-        return glm.Content(parts=[to_part(part) for part in content])
+        return protos.Content(parts=[to_part(part) for part in content])
     else:
         # Maybe this is a Part?
-        return glm.Content(parts=[to_part(content)])
+        return protos.Content(parts=[to_part(content)])
 
 
 def strict_to_content(content: StrictContentType):
     if isinstance(content, Mapping):
         content = _convert_dict(content)
 
-    if isinstance(content, glm.Content):
+    if isinstance(content, protos.Content):
         return content
     else:
         raise TypeError(
-            "Expected a `glm.Content` or a `dict(parts=...)`.\n"
+            "Expected a `protos.Content` or a `dict(parts=...)`.\n"
             f"Got type: {type(content)}\n"
             f"Value: {content}\n"
         )
@@ -275,7 +275,7 @@ def strict_to_content(content: StrictContentType):
 ContentsType = Union[ContentType, Iterable[StrictContentType], None]
 
 
-def to_contents(contents: ContentsType) -> list[glm.Content]:
+def to_contents(contents: ContentsType) -> list[protos.Content]:
     if contents is None:
         return []
 
@@ -502,8 +502,8 @@ def _rename_schema_fields(schema):
 
 class FunctionDeclaration:
     def __init__(self, *, name: str, description: str, parameters: dict[str, Any] | None = None):
-        """A  class wrapping a `glm.FunctionDeclaration`, describes a function for `genai.GenerativeModel`'s `tools`."""
-        self._proto = glm.FunctionDeclaration(
+        """A  class wrapping a `protos.FunctionDeclaration`, describes a function for `genai.GenerativeModel`'s `tools`."""
+        self._proto = protos.FunctionDeclaration(
             name=name, description=description, parameters=_rename_schema_fields(parameters)
         )
 
@@ -516,7 +516,7 @@ class FunctionDeclaration:
         return self._proto.description
 
     @property
-    def parameters(self) -> glm.Schema:
+    def parameters(self) -> protos.Schema:
         return self._proto.parameters
 
     @classmethod
@@ -525,7 +525,7 @@ class FunctionDeclaration:
         self._proto = proto
         return self
 
-    def to_proto(self) -> glm.FunctionDeclaration:
+    def to_proto(self) -> protos.FunctionDeclaration:
         return self._proto
 
     @staticmethod
@@ -571,16 +571,16 @@ class CallableFunctionDeclaration(FunctionDeclaration):
         super().__init__(name=name, description=description, parameters=parameters)
         self.function = function
 
-    def __call__(self, fc: glm.FunctionCall) -> glm.FunctionResponse:
+    def __call__(self, fc: protos.FunctionCall) -> protos.FunctionResponse:
         result = self.function(**fc.args)
         if not isinstance(result, dict):
             result = {"result": result}
-        return glm.FunctionResponse(name=fc.name, response=result)
+        return protos.FunctionResponse(name=fc.name, response=result)
 
 
 FunctionDeclarationType = Union[
     FunctionDeclaration,
-    glm.FunctionDeclaration,
+    protos.FunctionDeclaration,
     dict[str, Any],
     Callable[..., Any],
 ]
@@ -588,8 +588,8 @@ FunctionDeclarationType = Union[
 
 def _make_function_declaration(
     fun: FunctionDeclarationType,
-) -> FunctionDeclaration | glm.FunctionDeclaration:
-    if isinstance(fun, (FunctionDeclaration, glm.FunctionDeclaration)):
+) -> FunctionDeclaration | protos.FunctionDeclaration:
+    if isinstance(fun, (FunctionDeclaration, protos.FunctionDeclaration)):
         return fun
     elif isinstance(fun, dict):
         if "function" in fun:
@@ -605,15 +605,15 @@ def _make_function_declaration(
         )
 
 
-def _encode_fd(fd: FunctionDeclaration | glm.FunctionDeclaration) -> glm.FunctionDeclaration:
-    if isinstance(fd, glm.FunctionDeclaration):
+def _encode_fd(fd: FunctionDeclaration | protos.FunctionDeclaration) -> protos.FunctionDeclaration:
+    if isinstance(fd, protos.FunctionDeclaration):
         return fd
 
     return fd.to_proto()
 
 
 class Tool:
-    """A wrapper for `glm.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
+    """A wrapper for `protos.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
 
     def __init__(self, function_declarations: Iterable[FunctionDeclarationType]):
         # The main path doesn't use this but is seems useful.
@@ -625,23 +625,23 @@ class Tool:
                 raise ValueError("")
             self._index[fd.name] = fd
 
-        self._proto = glm.Tool(
+        self._proto = protos.Tool(
             function_declarations=[_encode_fd(fd) for fd in self._function_declarations]
         )
 
     @property
-    def function_declarations(self) -> list[FunctionDeclaration | glm.FunctionDeclaration]:
+    def function_declarations(self) -> list[FunctionDeclaration | protos.FunctionDeclaration]:
         return self._function_declarations
 
     def __getitem__(
-        self, name: str | glm.FunctionCall
-    ) -> FunctionDeclaration | glm.FunctionDeclaration:
+        self, name: str | protos.FunctionCall
+    ) -> FunctionDeclaration | protos.FunctionDeclaration:
         if not isinstance(name, str):
             name = name.name
 
         return self._index[name]
 
-    def __call__(self, fc: glm.FunctionCall) -> glm.FunctionResponse | None:
+    def __call__(self, fc: protos.FunctionCall) -> protos.FunctionResponse | None:
         declaration = self[fc]
         if not callable(declaration):
             return None
@@ -657,21 +657,21 @@ class ToolDict(TypedDict):
 
 
 ToolType = Union[
-    Tool, glm.Tool, ToolDict, Iterable[FunctionDeclarationType], FunctionDeclarationType
+    Tool, protos.Tool, ToolDict, Iterable[FunctionDeclarationType], FunctionDeclarationType
 ]
 
 
 def _make_tool(tool: ToolType) -> Tool:
     if isinstance(tool, Tool):
         return tool
-    elif isinstance(tool, glm.Tool):
+    elif isinstance(tool, protos.Tool):
         return Tool(function_declarations=tool.function_declarations)
     elif isinstance(tool, dict):
         if "function_declarations" in tool:
             return Tool(**tool)
         else:
             fd = tool
-            return Tool(function_declarations=[glm.FunctionDeclaration(**fd)])
+            return Tool(function_declarations=[protos.FunctionDeclaration(**fd)])
     elif isinstance(tool, Iterable):
         return Tool(function_declarations=tool)
     else:
@@ -702,20 +702,20 @@ class FunctionLibrary:
                 self._index[declaration.name] = declaration
 
     def __getitem__(
-        self, name: str | glm.FunctionCall
-    ) -> FunctionDeclaration | glm.FunctionDeclaration:
+        self, name: str | protos.FunctionCall
+    ) -> FunctionDeclaration | protos.FunctionDeclaration:
         if not isinstance(name, str):
             name = name.name
 
         return self._index[name]
 
-    def __call__(self, fc: glm.FunctionCall) -> glm.Part | None:
+    def __call__(self, fc: protos.FunctionCall) -> protos.Part | None:
         declaration = self[fc]
         if not callable(declaration):
             return None
 
         response = declaration(fc)
-        return glm.Part(function_response=response)
+        return protos.Part(function_response=response)
 
     def to_proto(self):
         return [tool.to_proto() for tool in self._tools]
@@ -748,7 +748,7 @@ def to_function_library(lib: FunctionLibraryType | None) -> FunctionLibrary | No
         return FunctionLibrary(tools=lib)
 
 
-FunctionCallingMode = glm.FunctionCallingConfig.Mode
+FunctionCallingMode = protos.FunctionCallingConfig.Mode
 
 # fmt: off
 _FUNCTION_CALLING_MODE = {
@@ -784,12 +784,12 @@ class FunctionCallingConfigDict(TypedDict):
 
 
 FunctionCallingConfigType = Union[
-    FunctionCallingModeType, FunctionCallingConfigDict, glm.FunctionCallingConfig
+    FunctionCallingModeType, FunctionCallingConfigDict, protos.FunctionCallingConfig
 ]
 
 
-def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCallingConfig:
-    if isinstance(obj, glm.FunctionCallingConfig):
+def to_function_calling_config(obj: FunctionCallingConfigType) -> protos.FunctionCallingConfig:
+    if isinstance(obj, protos.FunctionCallingConfig):
         return obj
     elif isinstance(obj, (FunctionCallingMode, str, int)):
         obj = {"mode": to_function_calling_mode(obj)}
@@ -799,29 +799,29 @@ def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCa
         obj["mode"] = to_function_calling_mode(mode)
     else:
         raise TypeError(
-            f"Could not convert input to `glm.FunctionCallingConfig`: \n'" f"  type: {type(obj)}\n",
+            f"Could not convert input to `protos.FunctionCallingConfig`: \n'" f"  type: {type(obj)}\n",
             obj,
         )
 
-    return glm.FunctionCallingConfig(obj)
+    return protos.FunctionCallingConfig(obj)
 
 
 class ToolConfigDict:
     function_calling_config: FunctionCallingConfigType
 
 
-ToolConfigType = Union[ToolConfigDict, glm.ToolConfig]
+ToolConfigType = Union[ToolConfigDict, protos.ToolConfig]
 
 
-def to_tool_config(obj: ToolConfigType) -> glm.ToolConfig:
-    if isinstance(obj, glm.ToolConfig):
+def to_tool_config(obj: ToolConfigType) -> protos.ToolConfig:
+    if isinstance(obj, protos.ToolConfig):
         return obj
     elif isinstance(obj, dict):
         fcc = obj.pop("function_calling_config")
         fcc = to_function_calling_config(fcc)
         obj["function_calling_config"] = fcc
-        return glm.ToolConfig(**obj)
+        return protos.ToolConfig(**obj)
     else:
         raise TypeError(
-            f"Could not convert input to `glm.ToolConfig`: \n'" f"  type: {type(obj)}\n", obj
+            f"Could not convert input to `protos.ToolConfig`: \n'" f"  type: {type(obj)}\n", obj
         )

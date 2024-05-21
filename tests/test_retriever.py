@@ -16,7 +16,7 @@ from typing import Any
 import unittest
 import unittest.mock as mock
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import retriever
 from google.generativeai import client
@@ -42,11 +42,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def create_corpus(
-            request: glm.CreateCorpusRequest,
+            request: protos.CreateCorpusRequest,
             **kwargs,
-        ) -> glm.Corpus:
+        ) -> protos.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(
+            return protos.Corpus(
                 name="corpora/demo_corpus",
                 display_name="demo-corpus",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -55,11 +55,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def get_corpus(
-            request: glm.GetCorpusRequest,
+            request: protos.GetCorpusRequest,
             **kwargs,
-        ) -> glm.Corpus:
+        ) -> protos.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(
+            return protos.Corpus(
                 name="corpora/demo_corpus",
                 display_name="demo-corpus",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -68,11 +68,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def update_corpus(
-            request: glm.UpdateCorpusRequest,
+            request: protos.UpdateCorpusRequest,
             **kwargs,
-        ) -> glm.Corpus:
+        ) -> protos.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(
+            return protos.Corpus(
                 name="corpora/demo-corpus",
                 display_name="demo-corpus-1",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -81,18 +81,18 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def list_corpora(
-            request: glm.ListCorporaRequest,
+            request: protos.ListCorporaRequest,
             **kwargs,
-        ) -> glm.ListCorporaResponse:
+        ) -> protos.ListCorporaResponse:
             self.observed_requests.append(request)
             return [
-                glm.Corpus(
+                protos.Corpus(
                     name="corpora/demo_corpus-1",
                     display_name="demo-corpus-1",
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                 ),
-                glm.Corpus(
+                protos.Corpus(
                     name="corpora/demo-corpus-2",
                     display_name="demo-corpus-2",
                     create_time="2000-01-01T01:01:01.123456Z",
@@ -102,15 +102,15 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def query_corpus(
-            request: glm.QueryCorpusRequest,
+            request: protos.QueryCorpusRequest,
             **kwargs,
-        ) -> glm.QueryCorpusResponse:
+        ) -> protos.QueryCorpusResponse:
             self.observed_requests.append(request)
-            return glm.QueryCorpusResponse(
+            return protos.QueryCorpusResponse(
                 relevant_chunks=[
-                    glm.RelevantChunk(
+                    protos.RelevantChunk(
                         chunk_relevance_score=0.08,
-                        chunk=glm.Chunk(
+                        chunk=protos.Chunk(
                             name="corpora/demo-corpus/documents/demo-doc/chunks/demo-chunk",
                             data={"string_value": "This is a demo chunk."},
                             custom_metadata=[],
@@ -124,18 +124,18 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def delete_corpus(
-            request: glm.DeleteCorpusRequest,
+            request: protos.DeleteCorpusRequest,
             **kwargs,
         ) -> None:
             self.observed_requests.append(request)
 
         @add_client_method
         def create_document(
-            request: glm.CreateDocumentRequest,
+            request: protos.CreateDocumentRequest,
             **kwargs,
         ) -> retriever_service.Document:
             self.observed_requests.append(request)
-            return glm.Document(
+            return protos.Document(
                 name="corpora/demo-corpus/documents/demo-doc",
                 display_name="demo-doc",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -144,11 +144,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def get_document(
-            request: glm.GetDocumentRequest,
+            request: protos.GetDocumentRequest,
             **kwargs,
         ) -> retriever_service.Document:
             self.observed_requests.append(request)
-            return glm.Document(
+            return protos.Document(
                 name="corpora/demo-corpus/documents/demo_doc",
                 display_name="demo-doc",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -157,11 +157,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def update_document(
-            request: glm.UpdateDocumentRequest,
+            request: protos.UpdateDocumentRequest,
             **kwargs,
-        ) -> glm.Document:
+        ) -> protos.Document:
             self.observed_requests.append(request)
-            return glm.Document(
+            return protos.Document(
                 name="corpora/demo-corpus/documents/demo_doc",
                 display_name="demo-doc-1",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -170,18 +170,18 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def list_documents(
-            request: glm.ListDocumentsRequest,
+            request: protos.ListDocumentsRequest,
             **kwargs,
-        ) -> glm.ListDocumentsResponse:
+        ) -> protos.ListDocumentsResponse:
             self.observed_requests.append(request)
             return [
-                glm.Document(
+                protos.Document(
                     name="corpora/demo-corpus/documents/demo_doc_1",
                     display_name="demo-doc-1",
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                 ),
-                glm.Document(
+                protos.Document(
                     name="corpora/demo-corpus/documents/demo_doc_2",
                     display_name="demo-doc-2",
                     create_time="2000-01-01T01:01:01.123456Z",
@@ -191,22 +191,22 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def delete_document(
-            request: glm.DeleteDocumentRequest,
+            request: protos.DeleteDocumentRequest,
             **kwargs,
         ) -> None:
             self.observed_requests.append(request)
 
         @add_client_method
         def query_document(
-            request: glm.QueryDocumentRequest,
+            request: protos.QueryDocumentRequest,
             **kwargs,
-        ) -> glm.QueryDocumentResponse:
+        ) -> protos.QueryDocumentResponse:
             self.observed_requests.append(request)
-            return glm.QueryDocumentResponse(
+            return protos.QueryDocumentResponse(
                 relevant_chunks=[
-                    glm.RelevantChunk(
+                    protos.RelevantChunk(
                         chunk_relevance_score=0.08,
-                        chunk=glm.Chunk(
+                        chunk=protos.Chunk(
                             name="demo-chunk",
                             data={"string_value": "This is a demo chunk."},
                             custom_metadata=[],
@@ -220,11 +220,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def create_chunk(
-            request: glm.CreateChunkRequest,
+            request: protos.CreateChunkRequest,
             **kwargs,
         ) -> retriever_service.Chunk:
             self.observed_requests.append(request)
-            return glm.Chunk(
+            return protos.Chunk(
                 name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
                 data={"string_value": "This is a demo chunk."},
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -233,19 +233,19 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def batch_create_chunks(
-            request: glm.BatchCreateChunksRequest,
+            request: protos.BatchCreateChunksRequest,
             **kwargs,
-        ) -> glm.BatchCreateChunksResponse:
+        ) -> protos.BatchCreateChunksResponse:
             self.observed_requests.append(request)
-            return glm.BatchCreateChunksResponse(
+            return protos.BatchCreateChunksResponse(
                 chunks=[
-                    glm.Chunk(
+                    protos.Chunk(
                         name="corpora/demo-corpus/documents/demo-doc/chunks/dc",
                         data={"string_value": "This is a demo chunk."},
                         create_time="2000-01-01T01:01:01.123456Z",
                         update_time="2000-01-01T01:01:01.123456Z",
                     ),
-                    glm.Chunk(
+                    protos.Chunk(
                         name="corpora/demo-corpus/documents/demo-doc/chunks/dc1",
                         data={"string_value": "This is another demo chunk."},
                         create_time="2000-01-01T01:01:01.123456Z",
@@ -256,11 +256,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def get_chunk(
-            request: glm.GetChunkRequest,
+            request: protos.GetChunkRequest,
             **kwargs,
         ) -> retriever_service.Chunk:
             self.observed_requests.append(request)
-            return glm.Chunk(
+            return protos.Chunk(
                 name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
                 data={"string_value": "This is a demo chunk."},
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -269,18 +269,18 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def list_chunks(
-            request: glm.ListChunksRequest,
+            request: protos.ListChunksRequest,
             **kwargs,
-        ) -> glm.ListChunksResponse:
+        ) -> protos.ListChunksResponse:
             self.observed_requests.append(request)
             return [
-                glm.Chunk(
+                protos.Chunk(
                     name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
                     data={"string_value": "This is a demo chunk."},
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                 ),
-                glm.Chunk(
+                protos.Chunk(
                     name="corpora/demo-corpus/documents/demo-doc/chunks/demo-chunk-1",
                     data={"string_value": "This is another demo chunk."},
                     create_time="2000-01-01T01:01:01.123456Z",
@@ -290,17 +290,17 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def update_chunk(
-            request: glm.UpdateChunkRequest,
+            request: protos.UpdateChunkRequest,
             **kwargs,
-        ) -> glm.Chunk:
+        ) -> protos.Chunk:
             self.observed_requests.append(request)
-            return glm.Chunk(
+            return protos.Chunk(
                 name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
                 data={"string_value": "This is an updated demo chunk."},
                 custom_metadata=[
-                    glm.CustomMetadata(
+                    protos.CustomMetadata(
                         key="tags",
-                        string_list_value=glm.StringList(
+                        string_list_value=protos.StringList(
                             values=["Google For Developers", "Project IDX", "Blog", "Announcement"]
                         ),
                     )
@@ -311,19 +311,19 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def batch_update_chunks(
-            request: glm.BatchUpdateChunksRequest,
+            request: protos.BatchUpdateChunksRequest,
             **kwargs,
-        ) -> glm.BatchUpdateChunksResponse:
+        ) -> protos.BatchUpdateChunksResponse:
             self.observed_requests.append(request)
-            return glm.BatchUpdateChunksResponse(
+            return protos.BatchUpdateChunksResponse(
                 chunks=[
-                    glm.Chunk(
+                    protos.Chunk(
                         name="corpora/demo-corpus/documents/dem-doc/chunks/demo-chunk",
                         data={"string_value": "This is an updated chunk."},
                         create_time="2000-01-01T01:01:01.123456Z",
                         update_time="2000-01-01T01:01:01.123456Z",
                     ),
-                    glm.Chunk(
+                    protos.Chunk(
                         name="corpora/demo-corpus/documents/demo-doc/chunks/demo-chunk-1",
                         data={"string_value": "This is another updated chunk."},
                         create_time="2000-01-01T01:01:01.123456Z",
@@ -334,14 +334,14 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def delete_chunk(
-            request: glm.DeleteChunkRequest,
+            request: protos.DeleteChunkRequest,
             **kwargs,
         ) -> None:
             self.observed_requests.append(request)
 
         @add_client_method
         def batch_delete_chunks(
-            request: glm.BatchDeleteChunksRequest,
+            request: protos.BatchDeleteChunksRequest,
             **kwargs,
         ) -> None:
             self.observed_requests.append(request)
@@ -366,7 +366,7 @@ class UnitTests(parameterized.TestCase):
     def test_update_corpus(self):
         demo_corpus = retriever.create_corpus(name="demo-corpus")
         update_request = demo_corpus.update(updates={"display_name": "demo-corpus_1"})
-        self.assertIsInstance(self.observed_requests[-1], glm.UpdateCorpusRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.UpdateCorpusRequest)
         self.assertEqual("demo-corpus_1", demo_corpus.display_name)
 
     def test_list_corpora(self):
@@ -402,7 +402,7 @@ class UnitTests(parameterized.TestCase):
         demo_corpus = retriever.create_corpus(name="demo-corpus")
         demo_document = demo_corpus.create_document(name="demo-doc")
         delete_request = retriever.delete_corpus(name="corpora/demo_corpus", force=True)
-        self.assertIsInstance(self.observed_requests[-1], glm.DeleteCorpusRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.DeleteCorpusRequest)
 
     def test_create_document(self, display_name="demo-doc"):
         demo_corpus = retriever.create_corpus(name="demo-corpus")
@@ -433,7 +433,7 @@ class UnitTests(parameterized.TestCase):
         demo_document = demo_corpus.create_document(name="demo-doc")
         demo_doc2 = demo_corpus.create_document(name="demo-doc-2")
         delete_request = demo_corpus.delete_document(name="corpora/demo-corpus/documents/demo_doc")
-        self.assertIsInstance(self.observed_requests[-1], glm.DeleteDocumentRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.DeleteDocumentRequest)
 
     def test_list_documents(self):
         demo_corpus = retriever.create_corpus(name="demo-corpus")
@@ -521,7 +521,7 @@ class UnitTests(parameterized.TestCase):
         demo_corpus = retriever.create_corpus(name="demo-corpus")
         demo_document = demo_corpus.create_document(name="demo-doc")
         chunks = demo_document.batch_create_chunks(chunks=chunks)
-        self.assertIsInstance(self.observed_requests[-1], glm.BatchCreateChunksRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.BatchCreateChunksRequest)
         self.assertEqual("This is a demo chunk.", chunks[0].data.string_value)
         self.assertEqual("This is another demo chunk.", chunks[1].data.string_value)
 
@@ -548,7 +548,7 @@ class UnitTests(parameterized.TestCase):
         )
 
         list_req = list(demo_document.list_chunks())
-        self.assertIsInstance(self.observed_requests[-1], glm.ListChunksRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.ListChunksRequest)
         self.assertLen(list_req, 2)
 
     def test_update_chunk(self):
@@ -615,7 +615,7 @@ class UnitTests(parameterized.TestCase):
             data="This is another demo chunk.",
         )
         update_request = demo_document.batch_update_chunks(chunks=updates)
-        self.assertIsInstance(self.observed_requests[-1], glm.BatchUpdateChunksRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.BatchUpdateChunksRequest)
         self.assertEqual(
             "This is an updated chunk.", update_request["chunks"][0]["data"]["string_value"]
         )
@@ -631,7 +631,7 @@ class UnitTests(parameterized.TestCase):
             data="This is a demo chunk.",
         )
         delete_request = demo_document.delete_chunk(name="demo-chunk")
-        self.assertIsInstance(self.observed_requests[-1], glm.DeleteChunkRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.DeleteChunkRequest)
 
     def test_batch_delete_chunks(self):
         demo_corpus = retriever.create_corpus(name="demo-corpus")
@@ -645,7 +645,7 @@ class UnitTests(parameterized.TestCase):
             data="This is another demo chunk.",
         )
         delete_request = demo_document.batch_delete_chunks(chunks=[x.name, y.name])
-        self.assertIsInstance(self.observed_requests[-1], glm.BatchDeleteChunksRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.BatchDeleteChunksRequest)
 
     @parameterized.parameters(
         {"method": "create_corpus"},

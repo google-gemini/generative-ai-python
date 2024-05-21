@@ -44,76 +44,12 @@ import PIL.Image  # must be imported before turning on TYPE_CHECKING
 # For showing the conditional imports and types in `content_types.py`
 # grpc must be imported first.
 typing.TYPE_CHECKING = True
-from google import generativeai as palm
+from google import generativeai as genai
 
 
 from tensorflow_docs.api_generator import generate_lib
-from tensorflow_docs.api_generator import public_api
 
 import yaml
-
-glm.__doc__ = """\
-This package, `google.ai.generativelanguage`, is a low-level auto-generated client library for the PaLM API.
-
-```posix-terminal
-pip install google.ai.generativelanguage
-```
-
-It is built using the same tooling as Google Cloud client libraries, and will be quite familiar if you've used
-those before.
-
-While we encourage Python users to access the PaLM API using the `google.generativeai` package (aka `palm`),
-this lower level package is also available.
-
-Each method in the PaLM API is connected to one of the client classes. Pass your API-key to the class' `client_options`
-when initializing a client:
-
-```
-from google.ai import generativelanguage as glm
-
-client = glm.DiscussServiceClient(
-    client_options={'api_key':'YOUR_API_KEY'})
-```
-
-To call the api, pass an appropriate request-proto-object. For the `DiscussServiceClient.generate_message` pass
-a `generativelanguage.GenerateMessageRequest` instance:
-
-```
-request = glm.GenerateMessageRequest(
-    model='models/chat-bison-001',
-    prompt=glm.MessagePrompt(
-        messages=[glm.Message(content='Hello!')]))
-
-client.generate_message(request)
-```
-```
-candidates {
-  author: "1"
-  content: "Hello! How can I help you today?"
-}
-...
-```
-
-For simplicity:
-
-* The API methods also accept key-word arguments.
-* Anywhere you might pass a proto-object, the library will also accept simple python structures.
-
-So the following is equivalent to the previous example:
-
-```
-client.generate_message(
-    model='models/chat-bison-001',
-    prompt={'messages':[{'content':'Hello!'}]})
-```
-```
-candidates {
-  author: "1"
-  content: "Hello! How can I help you today?"
-}
-...
-```
-"""
 
 HERE = pathlib.Path(__file__).parent
 
@@ -143,20 +79,10 @@ class MyFilter:
     def __init__(self, base_dirs):
         self.filter_base_dirs = public_api.FilterBaseDirs(base_dirs)
 
-    def drop_staticmethods(self, parent, children):
-        parent = dict(parent.__dict__)
-        for name, value in children:
-            if not isinstance(parent.get(name, None), staticmethod):
-                yield name, value
-
     def __call__(self, path, parent, children):
         if any("generativelanguage" in part for part in path) or "generativeai" in path:
             children = self.filter_base_dirs(path, parent, children)
             children = public_api.explicit_package_contents_filter(path, parent, children)
-
-        if any("generativelanguage" in part for part in path):
-            if "ServiceClient" in path[-1] or "ServiceAsyncClient" in path[-1]:
-                children = list(self.drop_staticmethods(parent, children))
 
         return children
 
@@ -188,11 +114,11 @@ def gen_api_docs():
         """
     )
 
-    doc_generator = MyDocGenerator(
+    doc_generator = generate_lib.DocGenerator(
         root_title=PROJECT_FULL_NAME,
-        py_modules=[("google", google)],
+        py_modules=[("google.generativeai", genai)],
         base_dir=(
-            pathlib.Path(palm.__file__).parent,
+            pathlib.Path(genai.__file__).parent,
             pathlib.Path(glm.__file__).parent.parent,
         ),
         code_url_prefix=(

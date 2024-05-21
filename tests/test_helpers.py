@@ -19,7 +19,7 @@ from typing import Union
 
 from absl.testing import parameterized
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import client
 from google.generativeai import models
@@ -35,15 +35,15 @@ class MockModelClient:
 
     def get_model(
         self,
-        request: Union[glm.GetModelRequest, None] = None,
+        request: Union[protos.GetModelRequest, None] = None,
         *,
         name=None,
         timeout=None,
         retry=None
-    ) -> glm.Model:
+    ) -> protos.Model:
         if request is None:
-            request = glm.GetModelRequest(name=name)
-        self.test.assertIsInstance(request, glm.GetModelRequest)
+            request = protos.GetModelRequest(name=name)
+        self.test.assertIsInstance(request, protos.GetModelRequest)
         self.test.observed_requests.append(request)
         self.test.observed_timeout.append(timeout)
         self.test.observed_retry.append(retry)
@@ -75,7 +75,7 @@ class HelperTests(parameterized.TestCase):
         ],
     )
     def test_get_model(self, request_options, expected_timeout, expected_retry):
-        self.responses = {"get_model": glm.Model(name="models/fake-bison-001")}
+        self.responses = {"get_model": protos.Model(name="models/fake-bison-001")}
 
         _ = models.get_model("models/fake-bison-001", request_options=request_options)
 

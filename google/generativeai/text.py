@@ -19,7 +19,7 @@ from collections.abc import Iterable, Sequence
 import itertools
 from typing import Any, Iterable, overload, TypeVar
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai.client import get_default_text_client
 from google.generativeai import string_utils
@@ -52,23 +52,23 @@ except AttributeError:
             yield batch
 
 
-def _make_text_prompt(prompt: str | dict[str, str]) -> glm.TextPrompt:
+def _make_text_prompt(prompt: str | dict[str, str]) -> protos.TextPrompt:
     """
-    Creates a `glm.TextPrompt` object based on the provided prompt input.
+    Creates a `protos.TextPrompt` object based on the provided prompt input.
 
     Args:
         prompt: The prompt input, either a string or a dictionary.
 
     Returns:
-        glm.TextPrompt: A TextPrompt object containing the prompt text.
+        protos.TextPrompt: A TextPrompt object containing the prompt text.
 
     Raises:
         TypeError: If the provided prompt is neither a string nor a dictionary.
     """
     if isinstance(prompt, str):
-        return glm.TextPrompt(text=prompt)
+        return protos.TextPrompt(text=prompt)
     elif isinstance(prompt, dict):
-        return glm.TextPrompt(prompt)
+        return protos.TextPrompt(prompt)
     else:
         TypeError("Expected string or dictionary for text prompt.")
 
@@ -84,11 +84,11 @@ def _make_generate_text_request(
     top_k: int | None = None,
     safety_settings: palm_safety_types.SafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
-) -> glm.GenerateTextRequest:
+) -> protos.GenerateTextRequest:
     """
-    Creates a `glm.GenerateTextRequest` object based on the provided parameters.
+    Creates a `protos.GenerateTextRequest` object based on the provided parameters.
 
-    This function generates a `glm.GenerateTextRequest` object with the specified
+    This function generates a `protos.GenerateTextRequest` object with the specified
     parameters. It prepares the input parameters and creates a request that can be
     used for generating text using the chosen model.
 
@@ -105,7 +105,7 @@ def _make_generate_text_request(
              or iterable of strings. Defaults to None.
 
     Returns:
-        `glm.GenerateTextRequest`: A `GenerateTextRequest` object configured with the specified parameters.
+        `protos.GenerateTextRequest`: A `GenerateTextRequest` object configured with the specified parameters.
     """
     model = model_types.make_model_name(model)
     prompt = _make_text_prompt(prompt=prompt)
@@ -115,7 +115,7 @@ def _make_generate_text_request(
     if stop_sequences:
         stop_sequences = list(stop_sequences)
 
-    return glm.GenerateTextRequest(
+    return protos.GenerateTextRequest(
         model=model,
         prompt=prompt,
         temperature=temperature,
@@ -139,7 +139,7 @@ def generate_text(
     top_k: float | None = None,
     safety_settings: palm_safety_types.SafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
-    client: glm.TextServiceClient | None = None,
+    client: protos.TextServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.Completion:
     """Calls the API and returns a `types.Completion` containing the response.
@@ -180,7 +180,7 @@ def generate_text(
         stop_sequences: A set of up to 5 character sequences that will stop output generation.
           If specified, the API will stop at the first appearance of a stop
           sequence. The stop sequence will not be included as part of the response.
-        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `protos.TextServiceClient` instead.
         request_options: Options for the request.
 
     Returns:
@@ -214,12 +214,12 @@ class Completion(text_types.Completion):
 
 
 def _generate_response(
-    request: glm.GenerateTextRequest,
-    client: glm.TextServiceClient = None,
+    request: protos.GenerateTextRequest,
+    client: protos.TextServiceClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> Completion:
     """
-    Generates a response using the provided `glm.GenerateTextRequest` and client.
+    Generates a response using the provided `protos.GenerateTextRequest` and client.
 
     Args:
         request: The text generation request.
@@ -251,7 +251,7 @@ def _generate_response(
 def count_text_tokens(
     model: model_types.AnyModelNameOptions,
     prompt: str,
-    client: glm.TextServiceClient | None = None,
+    client: protos.TextServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.TokenCount:
     base_model = models.get_base_model_name(model)
@@ -263,7 +263,7 @@ def count_text_tokens(
         client = get_default_text_client()
 
     result = client.count_text_tokens(
-        glm.CountTextTokensRequest(model=base_model, prompt={"text": prompt}),
+        protos.CountTextTokensRequest(model=base_model, prompt={"text": prompt}),
         **request_options,
     )
 
@@ -274,7 +274,7 @@ def count_text_tokens(
 def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: str,
-    client: glm.TextServiceClient = None,
+    client: protos.TextServiceClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict: ...
 
@@ -283,7 +283,7 @@ def generate_embeddings(
 def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: Sequence[str],
-    client: glm.TextServiceClient = None,
+    client: protos.TextServiceClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
 
@@ -291,7 +291,7 @@ def generate_embeddings(
 def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: str | Sequence[str],
-    client: glm.TextServiceClient = None,
+    client: protos.TextServiceClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
     """Calls the API to create an embedding for the text passed in.
@@ -302,7 +302,7 @@ def generate_embeddings(
         text: Free-form input text given to the model. Given a string, the model will
               generate an embedding based on the input text.
 
-        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `protos.TextServiceClient` instead.
 
         request_options: Options for the request.
 
@@ -318,7 +318,7 @@ def generate_embeddings(
         client = get_default_text_client()
 
     if isinstance(text, str):
-        embedding_request = glm.EmbedTextRequest(model=model, text=text)
+        embedding_request = protos.EmbedTextRequest(model=model, text=text)
         embedding_response = client.embed_text(
             embedding_request,
             **request_options,
@@ -329,7 +329,7 @@ def generate_embeddings(
         result = {"embedding": []}
         for batch in _batched(text, EMBEDDING_MAX_BATCH_SIZE):
             # TODO(markdaoust): This could use an option for returning an iterator or wait-bar.
-            embedding_request = glm.BatchEmbedTextRequest(model=model, texts=batch)
+            embedding_request = protos.BatchEmbedTextRequest(model=model, texts=batch)
             embedding_response = client.batch_embed_text(
                 embedding_request,
                 **request_options,

@@ -23,7 +23,7 @@ from typing import Dict, Iterable, List, Union
 from typing_extensions import TypedDict
 
 
-from google.ai import generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai import string_utils
 
 
@@ -39,9 +39,9 @@ __all__ = [
 ]
 
 # These are basic python enums, it's okay to expose them
-HarmProbability = glm.SafetyRating.HarmProbability
-HarmBlockThreshold = glm.SafetySetting.HarmBlockThreshold
-BlockedReason = glm.ContentFilter.BlockedReason
+HarmProbability = protos.SafetyRating.HarmProbability
+HarmBlockThreshold = protos.SafetySetting.HarmBlockThreshold
+BlockedReason = protos.ContentFilter.BlockedReason
 
 
 class HarmCategory:
@@ -49,70 +49,70 @@ class HarmCategory:
     Harm Categories supported by the palm-family models
     """
 
-    HARM_CATEGORY_UNSPECIFIED = glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED.value
-    HARM_CATEGORY_DEROGATORY = glm.HarmCategory.HARM_CATEGORY_DEROGATORY.value
-    HARM_CATEGORY_TOXICITY = glm.HarmCategory.HARM_CATEGORY_TOXICITY.value
-    HARM_CATEGORY_VIOLENCE = glm.HarmCategory.HARM_CATEGORY_VIOLENCE.value
-    HARM_CATEGORY_SEXUAL = glm.HarmCategory.HARM_CATEGORY_SEXUAL.value
-    HARM_CATEGORY_MEDICAL = glm.HarmCategory.HARM_CATEGORY_MEDICAL.value
-    HARM_CATEGORY_DANGEROUS = glm.HarmCategory.HARM_CATEGORY_DANGEROUS.value
+    HARM_CATEGORY_UNSPECIFIED = protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED.value
+    HARM_CATEGORY_DEROGATORY = protos.HarmCategory.HARM_CATEGORY_DEROGATORY.value
+    HARM_CATEGORY_TOXICITY = protos.HarmCategory.HARM_CATEGORY_TOXICITY.value
+    HARM_CATEGORY_VIOLENCE = protos.HarmCategory.HARM_CATEGORY_VIOLENCE.value
+    HARM_CATEGORY_SEXUAL = protos.HarmCategory.HARM_CATEGORY_SEXUAL.value
+    HARM_CATEGORY_MEDICAL = protos.HarmCategory.HARM_CATEGORY_MEDICAL.value
+    HARM_CATEGORY_DANGEROUS = protos.HarmCategory.HARM_CATEGORY_DANGEROUS.value
 
 
 HarmCategoryOptions = Union[str, int, HarmCategory]
 
 # fmt: off
-_HARM_CATEGORIES: Dict[HarmCategoryOptions, glm.HarmCategory] = {
-    glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED: glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    HarmCategory.HARM_CATEGORY_UNSPECIFIED: glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    0: glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    "harm_category_unspecified": glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    "unspecified": glm.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+_HARM_CATEGORIES: Dict[HarmCategoryOptions, protos.HarmCategory] = {
+    protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED: protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    HarmCategory.HARM_CATEGORY_UNSPECIFIED: protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    0: protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    "harm_category_unspecified": protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    "unspecified": protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
 
-    glm.HarmCategory.HARM_CATEGORY_DEROGATORY: glm.HarmCategory.HARM_CATEGORY_DEROGATORY,
-    HarmCategory.HARM_CATEGORY_DEROGATORY: glm.HarmCategory.HARM_CATEGORY_DEROGATORY,
-    1: glm.HarmCategory.HARM_CATEGORY_DEROGATORY,
-    "harm_category_derogatory": glm.HarmCategory.HARM_CATEGORY_DEROGATORY,
-    "derogatory": glm.HarmCategory.HARM_CATEGORY_DEROGATORY,
+    protos.HarmCategory.HARM_CATEGORY_DEROGATORY: protos.HarmCategory.HARM_CATEGORY_DEROGATORY,
+    HarmCategory.HARM_CATEGORY_DEROGATORY: protos.HarmCategory.HARM_CATEGORY_DEROGATORY,
+    1: protos.HarmCategory.HARM_CATEGORY_DEROGATORY,
+    "harm_category_derogatory": protos.HarmCategory.HARM_CATEGORY_DEROGATORY,
+    "derogatory": protos.HarmCategory.HARM_CATEGORY_DEROGATORY,
 
-    glm.HarmCategory.HARM_CATEGORY_TOXICITY: glm.HarmCategory.HARM_CATEGORY_TOXICITY,
-    HarmCategory.HARM_CATEGORY_TOXICITY: glm.HarmCategory.HARM_CATEGORY_TOXICITY,
-    2: glm.HarmCategory.HARM_CATEGORY_TOXICITY,
-    "harm_category_toxicity": glm.HarmCategory.HARM_CATEGORY_TOXICITY,
-    "toxicity": glm.HarmCategory.HARM_CATEGORY_TOXICITY,
-    "toxic": glm.HarmCategory.HARM_CATEGORY_TOXICITY,
+    protos.HarmCategory.HARM_CATEGORY_TOXICITY: protos.HarmCategory.HARM_CATEGORY_TOXICITY,
+    HarmCategory.HARM_CATEGORY_TOXICITY: protos.HarmCategory.HARM_CATEGORY_TOXICITY,
+    2: protos.HarmCategory.HARM_CATEGORY_TOXICITY,
+    "harm_category_toxicity": protos.HarmCategory.HARM_CATEGORY_TOXICITY,
+    "toxicity": protos.HarmCategory.HARM_CATEGORY_TOXICITY,
+    "toxic": protos.HarmCategory.HARM_CATEGORY_TOXICITY,
 
-    glm.HarmCategory.HARM_CATEGORY_VIOLENCE: glm.HarmCategory.HARM_CATEGORY_VIOLENCE,
-    HarmCategory.HARM_CATEGORY_VIOLENCE: glm.HarmCategory.HARM_CATEGORY_VIOLENCE,
-    3: glm.HarmCategory.HARM_CATEGORY_VIOLENCE,
-    "harm_category_violence": glm.HarmCategory.HARM_CATEGORY_VIOLENCE,
-    "violence": glm.HarmCategory.HARM_CATEGORY_VIOLENCE,
-    "violent": glm.HarmCategory.HARM_CATEGORY_VIOLENCE,
+    protos.HarmCategory.HARM_CATEGORY_VIOLENCE: protos.HarmCategory.HARM_CATEGORY_VIOLENCE,
+    HarmCategory.HARM_CATEGORY_VIOLENCE: protos.HarmCategory.HARM_CATEGORY_VIOLENCE,
+    3: protos.HarmCategory.HARM_CATEGORY_VIOLENCE,
+    "harm_category_violence": protos.HarmCategory.HARM_CATEGORY_VIOLENCE,
+    "violence": protos.HarmCategory.HARM_CATEGORY_VIOLENCE,
+    "violent": protos.HarmCategory.HARM_CATEGORY_VIOLENCE,
 
-    glm.HarmCategory.HARM_CATEGORY_SEXUAL: glm.HarmCategory.HARM_CATEGORY_SEXUAL,
-    HarmCategory.HARM_CATEGORY_SEXUAL: glm.HarmCategory.HARM_CATEGORY_SEXUAL,
-    4: glm.HarmCategory.HARM_CATEGORY_SEXUAL,
-    "harm_category_sexual": glm.HarmCategory.HARM_CATEGORY_SEXUAL,
-    "sexual": glm.HarmCategory.HARM_CATEGORY_SEXUAL,
-    "sex": glm.HarmCategory.HARM_CATEGORY_SEXUAL,
+    protos.HarmCategory.HARM_CATEGORY_SEXUAL: protos.HarmCategory.HARM_CATEGORY_SEXUAL,
+    HarmCategory.HARM_CATEGORY_SEXUAL: protos.HarmCategory.HARM_CATEGORY_SEXUAL,
+    4: protos.HarmCategory.HARM_CATEGORY_SEXUAL,
+    "harm_category_sexual": protos.HarmCategory.HARM_CATEGORY_SEXUAL,
+    "sexual": protos.HarmCategory.HARM_CATEGORY_SEXUAL,
+    "sex": protos.HarmCategory.HARM_CATEGORY_SEXUAL,
 
-    glm.HarmCategory.HARM_CATEGORY_MEDICAL: glm.HarmCategory.HARM_CATEGORY_MEDICAL,
-    HarmCategory.HARM_CATEGORY_MEDICAL: glm.HarmCategory.HARM_CATEGORY_MEDICAL,
-    5: glm.HarmCategory.HARM_CATEGORY_MEDICAL,
-    "harm_category_medical": glm.HarmCategory.HARM_CATEGORY_MEDICAL,
-    "medical": glm.HarmCategory.HARM_CATEGORY_MEDICAL,
-    "med": glm.HarmCategory.HARM_CATEGORY_MEDICAL,
+    protos.HarmCategory.HARM_CATEGORY_MEDICAL: protos.HarmCategory.HARM_CATEGORY_MEDICAL,
+    HarmCategory.HARM_CATEGORY_MEDICAL: protos.HarmCategory.HARM_CATEGORY_MEDICAL,
+    5: protos.HarmCategory.HARM_CATEGORY_MEDICAL,
+    "harm_category_medical": protos.HarmCategory.HARM_CATEGORY_MEDICAL,
+    "medical": protos.HarmCategory.HARM_CATEGORY_MEDICAL,
+    "med": protos.HarmCategory.HARM_CATEGORY_MEDICAL,
 
-    glm.HarmCategory.HARM_CATEGORY_DANGEROUS: glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-    HarmCategory.HARM_CATEGORY_DANGEROUS: glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-    6: glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "harm_category_dangerous": glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "dangerous": glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "danger": glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
+    protos.HarmCategory.HARM_CATEGORY_DANGEROUS: protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
+    HarmCategory.HARM_CATEGORY_DANGEROUS: protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
+    6: protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
+    "harm_category_dangerous": protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
+    "dangerous": protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
+    "danger": protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
 }
 # fmt: on
 
 
-def to_harm_category(x: HarmCategoryOptions) -> glm.HarmCategory:
+def to_harm_category(x: HarmCategoryOptions) -> protos.HarmCategory:
     if isinstance(x, str):
         x = x.lower()
     return _HARM_CATEGORIES[x]
@@ -161,7 +161,7 @@ class ContentFilterDict(TypedDict):
     reason: BlockedReason
     message: str
 
-    __doc__ = string_utils.strip_oneof(glm.ContentFilter.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.ContentFilter.__doc__)
 
 
 def convert_filters_to_enums(
@@ -177,15 +177,15 @@ def convert_filters_to_enums(
 
 
 class SafetyRatingDict(TypedDict):
-    category: glm.HarmCategory
+    category: protos.HarmCategory
     probability: HarmProbability
 
-    __doc__ = string_utils.strip_oneof(glm.SafetyRating.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.SafetyRating.__doc__)
 
 
 def convert_rating_to_enum(rating: dict) -> SafetyRatingDict:
     return {
-        "category": glm.HarmCategory(rating["category"]),
+        "category": protos.HarmCategory(rating["category"]),
         "probability": HarmProbability(rating["probability"]),
     }
 
@@ -198,10 +198,10 @@ def convert_ratings_to_enum(ratings: Iterable[dict]) -> List[SafetyRatingDict]:
 
 
 class SafetySettingDict(TypedDict):
-    category: glm.HarmCategory
+    category: protos.HarmCategory
     threshold: HarmBlockThreshold
 
-    __doc__ = string_utils.strip_oneof(glm.SafetySetting.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.SafetySetting.__doc__)
 
 
 class LooseSafetySettingDict(TypedDict):
@@ -251,7 +251,7 @@ def normalize_safety_settings(
 
 def convert_setting_to_enum(setting: dict) -> SafetySettingDict:
     return {
-        "category": glm.HarmCategory(setting["category"]),
+        "category": protos.HarmCategory(setting["category"]),
         "threshold": HarmBlockThreshold(setting["threshold"]),
     }
 
@@ -260,7 +260,7 @@ class SafetyFeedbackDict(TypedDict):
     rating: SafetyRatingDict
     setting: SafetySettingDict
 
-    __doc__ = string_utils.strip_oneof(glm.SafetyFeedback.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.SafetyFeedback.__doc__)
 
 
 def convert_safety_feedback_to_enums(

@@ -17,7 +17,7 @@ import sys
 from typing import Any
 import unittest
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import discuss
 from absl.testing import absltest
@@ -31,14 +31,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         observed_request = None
 
         async def fake_generate_message(
-            request: glm.GenerateMessageRequest,
+            request: protos.GenerateMessageRequest,
             **kwargs,
-        ) -> glm.GenerateMessageResponse:
+        ) -> protos.GenerateMessageResponse:
             nonlocal observed_request
             observed_request = request
-            return glm.GenerateMessageResponse(
+            return protos.GenerateMessageResponse(
                 candidates=[
-                    glm.Message(
+                    protos.Message(
                         author="1",
                         content="Why did the chicken cross the road?",
                     )
@@ -59,17 +59,17 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(
             observed_request,
-            glm.GenerateMessageRequest(
+            protos.GenerateMessageRequest(
                 model="models/bard",
-                prompt=glm.MessagePrompt(
+                prompt=protos.MessagePrompt(
                     context="Example Prompt",
                     examples=[
-                        glm.Example(
-                            input=glm.Message(content="Example from human"),
-                            output=glm.Message(content="Example response from AI"),
+                        protos.Example(
+                            input=protos.Message(content="Example from human"),
+                            output=protos.Message(content="Example response from AI"),
                         )
                     ],
-                    messages=[glm.Message(author="0", content="Tell me a joke")],
+                    messages=[protos.Message(author="0", content="Tell me a joke")],
                 ),
                 temperature=0.75,
                 candidate_count=1,
