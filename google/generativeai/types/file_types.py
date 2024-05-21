@@ -104,4 +104,8 @@ def to_file_data(file_data: FileDataType):
     if isinstance(file_data, glm.FileData):
         return file_data
     else:
-        raise TypeError(f"Could not convert a {type(file_data)} to `FileData`")
+        raise TypeError(
+            f"Invalid input type. Failed to convert input to `FileData`.\n"
+            f"Received an object of type: {type(file_data)}.\n"
+            f"Object Value: {file_data}"
+        )

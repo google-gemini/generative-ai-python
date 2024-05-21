@@ -152,7 +152,7 @@ class Permission:
         for update_path in updates:
             if update_path != "role":
                 raise ValueError(
-                    f"As of now, only `role` can be updated for `Permission`. Got: `{update_path}` instead."
+                    f"Invalid update path: '{update_path}'. Currently, only the 'role' attribute can be updated for 'Permission'."
                 )
         field_mask = field_mask_pb2.FieldMask()
 
@@ -182,7 +182,7 @@ class Permission:
         for update_path in updates:
             if update_path != "role":
                 raise ValueError(
-                    f"As of now, only `role` can be updated for `Permission`. Got: `{update_path}` instead."
+                    f"Invalid update path: '{update_path}'. Currently, only the 'role' attribute can be updated for 'Permission'."
                 )
         field_mask = field_mask_pb2.FieldMask()
 
@@ -271,12 +271,11 @@ class Permissions:
 
         if email_address and grantee_type == GranteeType.EVERYONE:
             raise ValueError(
-                f"Cannot limit access for: `{email_address}` when `grantee_type` is set to `EVERYONE`."
+                f"Invalid operation: Access cannot be limited for a specific email address ('{email_address}') when 'grantee_type' is set to 'EVERYONE'."
             )
-
         if not email_address and grantee_type != GranteeType.EVERYONE:
             raise ValueError(
-                f"`email_address` must be specified unless `grantee_type` is set to `EVERYONE`."
+                f"Invalid operation: An 'email_address' must be provided when 'grantee_type' is not set to 'EVERYONE'. Currently, 'grantee_type' is set to '{grantee_type}' and 'email_address' is '{email_address if email_address else 'not provided'}'."
             )
 
         permission = glm.Permission(

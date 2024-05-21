@@ -284,7 +284,7 @@ def _make_function_declaration(
         return CallableFunctionDeclaration.from_function(fun)
     else:
         raise TypeError(
-            "Expected an instance of `genai.FunctionDeclaraionType`. Got a:\n" f"  {type(fun)=}\n",
+            f"Invalid argument type: Expected an instance of `genai.FunctionDeclarationType`. Received type: {type(fun).__name__}.",
             fun,
         )
 
@@ -363,7 +363,7 @@ def _make_tool(tool: ToolType) -> Tool:
             return Tool(function_declarations=[tool])
         except Exception as e:
             raise TypeError(
-                "Expected an instance of `genai.ToolType`. Got a:\n" f"  {type(tool)=}",
+                f"Invalid argument type: Expected an instance of `genai.ToolType`. Received type: {type(tool).__name__}.",
                 tool,
             ) from e
 
@@ -380,8 +380,7 @@ class FunctionLibrary:
                 name = declaration.name
                 if name in self._index:
                     raise ValueError(
-                        f"A `FunctionDeclaration` named {name} is already defined. "
-                        "Each `FunctionDeclaration` must be uniquely named."
+                        f"Invalid operation: A `FunctionDeclaration` named '{name}' is already defined. Each `FunctionDeclaration` must have a unique name."
                     )
                 self._index[declaration.name] = declaration
 
@@ -483,7 +482,7 @@ def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCa
         obj["mode"] = to_function_calling_mode(mode)
     else:
         raise TypeError(
-            f"Could not convert input to `glm.FunctionCallingConfig`: \n'" f"  type: {type(obj)}\n",
+            f"Invalid argument type: Could not convert input to `glm.FunctionCallingConfig`. Received type: {type(obj).__name__}.",
             obj,
         )
 
@@ -507,5 +506,6 @@ def to_tool_config(obj: ToolConfigType) -> glm.ToolConfig:
         return glm.ToolConfig(**obj)
     else:
         raise TypeError(
-            f"Could not convert input to `glm.ToolConfig`: \n'" f"  type: {type(obj)}\n", obj
+            f"Invalid argument type: Could not convert input to `glm.ToolConfig`. Received type: {type(obj).__name__}.",
+            obj,
         )

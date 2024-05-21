@@ -82,7 +82,9 @@ except AttributeError:
 
     def _batched(iterable: Iterable[T], n: int) -> Iterable[list[T]]:
         if n < 1:
-            raise ValueError(f"Batch size `n` must be >0, got: {n}")
+            raise ValueError(
+                f"Invalid input: The batch size 'n' must be a positive integer. You entered: {n}. Please enter a number greater than 0."
+            )
         batch = []
         for item in iterable:
             batch.append(item)
@@ -167,11 +169,13 @@ def embed_content(
 
     if title and to_task_type(task_type) is not EmbeddingTaskType.RETRIEVAL_DOCUMENT:
         raise ValueError(
-            "If a title is specified, the task must be a retrieval document type task."
+            f"Invalid task type: When a title is specified, the task must be of a 'retrieval document' type. Received task type: {task_type} and title: {title}."
         )
 
     if output_dimensionality and output_dimensionality < 0:
-        raise ValueError("`output_dimensionality` must be a non-negative integer.")
+        raise ValueError(
+            f"Invalid value: `output_dimensionality` must be a non-negative integer. Received: {output_dimensionality}."
+        )
 
     if task_type:
         task_type = to_task_type(task_type)
@@ -247,7 +251,8 @@ async def embed_content_async(
     client: glm.GenerativeServiceAsyncClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
-    """The async version of `genai.embed_content`."""
+    """Calls the API to create async embeddings for content passed in."""
+
     model = model_types.make_model_name(model)
 
     if request_options is None:
@@ -258,11 +263,12 @@ async def embed_content_async(
 
     if title and to_task_type(task_type) is not EmbeddingTaskType.RETRIEVAL_DOCUMENT:
         raise ValueError(
-            "If a title is specified, the task must be a retrieval document type task."
+            f"Invalid task type: When a title is specified, the task must be of a 'retrieval document' type. Received task type: {task_type} and title: {title}."
         )
-
     if output_dimensionality and output_dimensionality < 0:
-        raise ValueError("`output_dimensionality` must be a non-negative integer.")
+        raise ValueError(
+            f"Invalid value: `output_dimensionality` must be a non-negative integer. Received: {output_dimensionality}."
+        )
 
     if task_type:
         task_type = to_task_type(task_type)

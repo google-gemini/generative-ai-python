@@ -37,7 +37,7 @@ def upload_file(
     display_name: str | None = None,
     resumable: bool = True,
 ) -> file_types.File:
-    """Uploads a file using a supported file service.
+    """Calls the API to upload a file using a supported file service.
 
     Args:
         path: The path to the file to be uploaded.
@@ -73,6 +73,7 @@ def upload_file(
 
 
 def list_files(page_size=100) -> Iterable[file_types.File]:
+    """Calls the API to list files using a supported file service."""
     client = get_default_file_client()
 
     response = client.list_files(glm.ListFilesRequest(page_size=page_size))
@@ -81,11 +82,13 @@ def list_files(page_size=100) -> Iterable[file_types.File]:
 
 
 def get_file(name) -> file_types.File:
+    """Calls the API to retrieve a specified file using a supported file service."""
     client = get_default_file_client()
     return file_types.File(client.get_file(name=name))
 
 
 def delete_file(name):
+    """Calls the API to permanently delete a specified file using a supported file service."""
     if isinstance(name, (file_types.File, glm.File)):
         name = name.name
     request = glm.DeleteFileRequest(name=name)
