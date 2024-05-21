@@ -34,6 +34,7 @@ def iter_part(texts: Iterable[str]) -> glm.Content:
 def simple_response(text: str) -> glm.GenerateContentResponse:
     return glm.GenerateContentResponse({"candidates": [{"content": simple_part(text)}]})
 
+
 class MockGenerativeServiceClient:
     def __init__(self, test):
         self.test = test
@@ -42,9 +43,9 @@ class MockGenerativeServiceClient:
         self.responses = collections.defaultdict(list)
 
     def generate_content(
-            self,
-            request: glm.GenerateContentRequest,
-            **kwargs,
+        self,
+        request: glm.GenerateContentRequest,
+        **kwargs,
     ) -> glm.GenerateContentResponse:
         self.test.assertIsInstance(request, glm.GenerateContentRequest)
         self.observed_requests.append(request)
@@ -53,9 +54,9 @@ class MockGenerativeServiceClient:
         return response
 
     def stream_generate_content(
-            self,
-            request: glm.GetModelRequest,
-            **kwargs,
+        self,
+        request: glm.GetModelRequest,
+        **kwargs,
     ) -> Iterable[glm.GenerateContentResponse]:
         self.observed_requests.append(request)
         self.observed_kwargs.append(kwargs)
@@ -71,6 +72,7 @@ class MockGenerativeServiceClient:
         self.observed_kwargs.append(kwargs)
         response = self.responses["count_tokens"].pop(0)
         return response
+
 
 class CUJTests(parameterized.TestCase):
     """Tests are in order with the design doc."""
@@ -90,7 +92,6 @@ class CUJTests(parameterized.TestCase):
     def setUp(self):
         self.client = MockGenerativeServiceClient(self)
         client_lib._client_manager.clients["generative"] = self.client
-
 
     def test_hello(self):
         # Generate text from text prompt
@@ -1267,7 +1268,7 @@ class CUJTests(parameterized.TestCase):
         self.assertIn("system_instruction='Be excellent.'", result)
 
     def test_count_tokens_called_with_request_options(self):
-        self.responses['count_tokens'].append(glm.CountTokensResponse())
+        self.responses["count_tokens"].append(glm.CountTokensResponse())
         request_options = {"timeout": 120}
 
         model = generative_models.GenerativeModel("gemini-pro-vision")
@@ -1276,18 +1277,20 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(request_options, self.observed_kwargs[0])
 
     def test_chat_with_request_options(self):
-        self.responses['generate_content'].append(glm.GenerateContentResponse(
-                        {
-                            "candidates": [{"finish_reason": "STOP"}],
-                        }
-                    ))
+        self.responses["generate_content"].append(
+            glm.GenerateContentResponse(
+                {
+                    "candidates": [{"finish_reason": "STOP"}],
+                }
+            )
+        )
         request_options = {"timeout": 120}
 
         model = generative_models.GenerativeModel("gemini-pro")
         chat = model.start_chat()
-        chat.send_message('hello', request_options = helper_types.RequestOptions(**request_options))
+        chat.send_message("hello", request_options=helper_types.RequestOptions(**request_options))
 
-        request_options['retry'] = None
+        request_options["retry"] = None
         self.assertEqual(request_options, self.observed_kwargs[0])
 
 
