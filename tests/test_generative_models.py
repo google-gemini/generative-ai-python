@@ -24,9 +24,9 @@ TEST_IMAGE_DATA = TEST_IMAGE_PATH.read_bytes()
 def simple_part(text: str) -> protos.Content:
     return protos.Content({"parts": [{"text": text}]})
 
+
 def noop(x: int):
     return x
-
 
 
 def iter_part(texts: Iterable[str]) -> protos.Content:
