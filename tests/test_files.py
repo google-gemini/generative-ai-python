@@ -18,7 +18,7 @@ from google.generativeai.types import file_types
 import collections
 import datetime
 import os
-from typing import Iterable
+from typing import Iterable, Union
 import pathlib
 
 import google
@@ -37,11 +37,11 @@ class FileServiceClient(client_lib.FileServiceClient):
 
     def create_file(
         self,
-        path: str | pathlib.Path | os.PathLike,
+        path: Union[str, pathlib.Path, os.PathLike],
         *,
-        mime_type: str | None = None,
-        name: str | None = None,
-        display_name: str | None = None,
+        mime_type: Union[str, None] = None,
+        name: Union[str, None] = None,
+        display_name: Union[str, None] = None,
         resumable: bool = True,
     ) -> glm.File:
         self.observed_requests.append(
