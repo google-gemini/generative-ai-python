@@ -69,7 +69,8 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(
             self.observed_requests[-1],
             protos.EmbedContentRequest(
-                model=DEFAULT_EMB_MODEL, content=protos.Content(parts=[protos.Part(text="What are you?")])
+                model=DEFAULT_EMB_MODEL,
+                content=protos.Content(parts=[protos.Part(text="What are you?")]),
             ),
         )
         self.assertIsInstance(emb["embedding"][0], float)

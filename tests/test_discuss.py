@@ -288,7 +288,9 @@ class UnitTests(parameterized.TestCase):
         self.mock_response = mock_response = protos.GenerateMessageResponse(
             candidates=[protos.Message(content="a", author="1")],
             filters=[
-                protos.ContentFilter(reason=palm_safety_types.BlockedReason.SAFETY, message="unsafe"),
+                protos.ContentFilter(
+                    reason=palm_safety_types.BlockedReason.SAFETY, message="unsafe"
+                ),
                 protos.ContentFilter(reason=palm_safety_types.BlockedReason.OTHER),
             ],
         )
@@ -303,7 +305,9 @@ class UnitTests(parameterized.TestCase):
         self.mock_response = protos.GenerateMessageResponse(
             candidates=[protos.Message(content="a", author="1")],
             filters=[
-                protos.ContentFilter(reason=palm_safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED)
+                protos.ContentFilter(
+                    reason=palm_safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED
+                )
             ],
         )
 

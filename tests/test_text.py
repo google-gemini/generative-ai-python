@@ -123,7 +123,9 @@ class UnitTests(parameterized.TestCase):
         emb = text_service.generate_embeddings(model=model, text=text)
 
         self.assertIsInstance(emb, dict)
-        self.assertEqual(self.observed_requests[-1], protos.EmbedTextRequest(model=model, text=text))
+        self.assertEqual(
+            self.observed_requests[-1], protos.EmbedTextRequest(model=model, text=text)
+        )
         self.assertIsInstance(emb["embedding"][0], float)
 
     @parameterized.named_parameters(

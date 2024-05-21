@@ -66,7 +66,9 @@ def to_answer_style(x: AnswerStyleOptions) -> AnswerStyle:
 
 
 GroundingPassageOptions = (
-    Union[protos.GroundingPassage, tuple[str, content_types.ContentType], content_types.ContentType],
+    Union[
+        protos.GroundingPassage, tuple[str, content_types.ContentType], content_types.ContentType
+    ],
 )
 
 GroundingPassagesOptions = Union[

@@ -70,8 +70,14 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(
             protos.GroundingPassages(
                 passages=[
-                    {"id": "0", "content": protos.Content(parts=[protos.Part(text="I am a chicken")])},
-                    {"id": "1", "content": protos.Content(parts=[protos.Part(text="I am a bird.")])},
+                    {
+                        "id": "0",
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
+                    },
+                    {
+                        "id": "1",
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    },
                     {"id": "2", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
                 ]
             ),
@@ -88,8 +94,14 @@ class UnitTests(parameterized.TestCase):
                             "id": "0",
                             "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
                         },
-                        {"id": "1", "content": protos.Content(parts=[protos.Part(text="I am a bird.")])},
-                        {"id": "2", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
+                        {
+                            "id": "1",
+                            "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                        },
+                        {
+                            "id": "2",
+                            "content": protos.Content(parts=[protos.Part(text="I can fly!")]),
+                        },
                     ]
                 ),
             ),
@@ -113,8 +125,14 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(
             protos.GroundingPassages(
                 passages=[
-                    {"id": "0", "content": protos.Content(parts=[protos.Part(text="I am a chicken")])},
-                    {"id": "1", "content": protos.Content(parts=[protos.Part(text="I am a bird.")])},
+                    {
+                        "id": "0",
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
+                    },
+                    {
+                        "id": "1",
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    },
                     {"id": "2", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
                 ]
             ),
@@ -151,8 +169,14 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(
             protos.GroundingPassages(
                 passages=[
-                    {"id": "4", "content": protos.Content(parts=[protos.Part(text="I am a chicken")])},
-                    {"id": "5", "content": protos.Content(parts=[protos.Part(text="I am a bird.")])},
+                    {
+                        "id": "4",
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
+                    },
+                    {
+                        "id": "5",
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    },
                     {"id": "6", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
                 ]
             ),
@@ -175,8 +199,14 @@ class UnitTests(parameterized.TestCase):
                         "id": "first",
                         "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
                     },
-                    {"id": "second", "content": protos.Content(parts=[protos.Part(text="I am a bird.")])},
-                    {"id": "third", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
+                    {
+                        "id": "second",
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    },
+                    {
+                        "id": "third",
+                        "content": protos.Content(parts=[protos.Part(text="I can fly!")]),
+                    },
                 ]
             ),
             x,

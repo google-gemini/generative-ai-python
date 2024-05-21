@@ -46,8 +46,8 @@ import PIL.Image  # must be imported before turning on TYPE_CHECKING
 typing.TYPE_CHECKING = True
 from google import generativeai as genai
 
-
 from tensorflow_docs.api_generator import generate_lib
+from tensorflow_docs.api_generator import public_api
 
 import yaml
 
@@ -75,33 +75,6 @@ _CODE_URL_PREFIX = flags.DEFINE_string(
 )
 
 
-class MyFilter:
-    def __init__(self, base_dirs):
-        self.filter_base_dirs = public_api.FilterBaseDirs(base_dirs)
-
-    def __call__(self, path, parent, children):
-        if any("generativelanguage" in part for part in path) or "generativeai" in path:
-            children = self.filter_base_dirs(path, parent, children)
-            children = public_api.explicit_package_contents_filter(path, parent, children)
-
-        return children
-
-
-class MyDocGenerator(generate_lib.DocGenerator):
-    def make_default_filters(self):
-        return [
-            # filter the api.
-            public_api.FailIfNestedTooDeep(10),
-            public_api.filter_module_all,
-            public_api.add_proto_fields,
-            public_api.filter_private_symbols,
-            MyFilter(self._base_dir),  # Replaces: public_api.FilterBaseDirs(self._base_dir),
-            public_api.FilterPrivateMap(self._private_map),
-            public_api.filter_doc_controls_skip,
-            public_api.ignore_typing,
-        ]
-
-
 def gen_api_docs():
     """Generates api docs for the generative-ai package."""
     for name in dir(google):
@@ -127,31 +100,11 @@ def gen_api_docs():
         ),
         search_hints=_SEARCH_HINTS.value,
         site_path=_SITE_PATH.value,
-        callbacks=[],
+        callbacks=[public_api.explicit_package_contents_filter],
     )
 
     out_path = pathlib.Path(_OUTPUT_DIR.value)
     doc_generator.build(out_path)
-
-    # Fixup the toc file.
-    toc_path = out_path / "google/_toc.yaml"
-    toc = yaml.safe_load(toc_path.read_text())
-    assert toc["toc"][0]["title"] == "google"
-    toc["toc"] = toc["toc"][1:]
-    toc["toc"][0]["title"] = "google.ai.generativelanguage"
-    toc["toc"][0]["section"] = toc["toc"][0]["section"][1]["section"]
-    toc["toc"][0], toc["toc"][1] = toc["toc"][1], toc["toc"][0]
-    toc_path.write_text(yaml.dump(toc))
-
-    # remove some dummy files and redirect them to `api/`
-    (out_path / "google.md").unlink()
-    (out_path / "google/ai.md").unlink()
-    redirects_path = out_path / "_redirects.yaml"
-    redirects = {"redirects": []}
-    redirects["redirects"].insert(0, {"from": "/api/python/google/ai", "to": "/api/"})
-    redirects["redirects"].insert(0, {"from": "/api/python/google", "to": "/api/"})
-    redirects["redirects"].insert(0, {"from": "/api/python", "to": "/api/"})
-    redirects_path.write_text(yaml.dump(redirects))
 
     # clear `oneof` junk from proto pages
     for fpath in out_path.rglob("*.md"):

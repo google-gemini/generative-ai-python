@@ -31,7 +31,9 @@ from absl.testing import parameterized
 
 
 def simple_response(text: str) -> protos.GenerateContentResponse:
-    return protos.GenerateContentResponse({"candidates": [{"content": {"parts": [{"text": text}]}}]})
+    return protos.GenerateContentResponse(
+        {"candidates": [{"content": {"parts": [{"text": text}]}}]}
+    )
 
 
 class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):

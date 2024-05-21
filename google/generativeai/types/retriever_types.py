@@ -785,7 +785,9 @@ class Document(abc.ABC):
             chunk_name = name
 
         if isinstance(data, str):
-            chunk = protos.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
+            chunk = protos.Chunk(
+                name=chunk_name, data={"string_value": data}, custom_metadata=c_data
+            )
         else:
             chunk = protos.Chunk(
                 name=chunk_name,
@@ -827,7 +829,9 @@ class Document(abc.ABC):
             chunk_name = name
 
         if isinstance(data, str):
-            chunk = protos.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
+            chunk = protos.Chunk(
+                name=chunk_name, data={"string_value": data}, custom_metadata=c_data
+            )
         else:
             chunk = protos.Chunk(
                 name=chunk_name,
@@ -1255,7 +1259,9 @@ class Document(abc.ABC):
                 for path, value in updates.items():
                     chunk_to_update._apply_update(path, value)
                 _requests.append(
-                    protos.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
+                    protos.UpdateChunkRequest(
+                        chunk=chunk_to_update.to_dict(), update_mask=field_mask
+                    )
                 )
             request = protos.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = client.batch_update_chunks(request, **request_options)
@@ -1343,7 +1349,9 @@ class Document(abc.ABC):
                 for path, value in updates.items():
                     chunk_to_update._apply_update(path, value)
                 _requests.append(
-                    protos.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
+                    protos.UpdateChunkRequest(
+                        chunk=chunk_to_update.to_dict(), update_mask=field_mask
+                    )
                 )
             request = protos.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = await client.batch_update_chunks(request, **request_options)

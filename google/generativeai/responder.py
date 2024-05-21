@@ -483,7 +483,8 @@ def to_function_calling_config(obj: FunctionCallingConfigType) -> protos.Functio
         obj["mode"] = to_function_calling_mode(mode)
     else:
         raise TypeError(
-            f"Could not convert input to `protos.FunctionCallingConfig`: \n'" f"  type: {type(obj)}\n",
+            f"Could not convert input to `protos.FunctionCallingConfig`: \n'"
+            f"  type: {type(obj)}\n",
             obj,
         )
 

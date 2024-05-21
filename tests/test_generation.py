@@ -26,7 +26,9 @@ class UnitTests(parameterized.TestCase):
         [
             "protos.GenerationConfig",
             protos.GenerationConfig(
-                temperature=0.1, stop_sequences=["end"], response_schema=protos.Schema(type="STRING")
+                temperature=0.1,
+                stop_sequences=["end"],
+                response_schema=protos.Schema(type="STRING"),
             ),
         ],
         [
@@ -126,7 +128,8 @@ class UnitTests(parameterized.TestCase):
         import string
 
         contents = [
-            protos.Content(role="assistant", parts=[protos.Part(text=a)]) for a in string.ascii_lowercase
+            protos.Content(role="assistant", parts=[protos.Part(text=a)])
+            for a in string.ascii_lowercase
         ]
 
         result = generation_types._join_contents(contents)
@@ -147,7 +150,9 @@ class UnitTests(parameterized.TestCase):
                 ),
                 citation_metadata=protos.CitationMetadata(
                     citation_sources=[
-                        protos.CitationSource(start_index=55, end_index=85, uri="https://google.com"),
+                        protos.CitationSource(
+                            start_index=55, end_index=85, uri="https://google.com"
+                        ),
                     ]
                 ),
             ),
@@ -159,8 +164,12 @@ class UnitTests(parameterized.TestCase):
                 ),
                 citation_metadata=protos.CitationMetadata(
                     citation_sources=[
-                        protos.CitationSource(start_index=55, end_index=92, uri="https://google.com"),
-                        protos.CitationSource(start_index=3, end_index=21, uri="https://google.com"),
+                        protos.CitationSource(
+                            start_index=55, end_index=92, uri="https://google.com"
+                        ),
+                        protos.CitationSource(
+                            start_index=3, end_index=21, uri="https://google.com"
+                        ),
                     ]
                 ),
             ),
@@ -168,12 +177,18 @@ class UnitTests(parameterized.TestCase):
                 index=0,
                 content=protos.Content(
                     role="assistant",
-                    parts=[protos.Part(inline_data=protos.Blob(mime_type="image/png", data=b"DATA!"))],
+                    parts=[
+                        protos.Part(inline_data=protos.Blob(mime_type="image/png", data=b"DATA!"))
+                    ],
                 ),
                 citation_metadata=protos.CitationMetadata(
                     citation_sources=[
-                        protos.CitationSource(start_index=55, end_index=92, uri="https://google.com"),
-                        protos.CitationSource(start_index=3, end_index=21, uri="https://google.com"),
+                        protos.CitationSource(
+                            start_index=55, end_index=92, uri="https://google.com"
+                        ),
+                        protos.CitationSource(
+                            start_index=3, end_index=21, uri="https://google.com"
+                        ),
                     ]
                 ),
                 finish_reason="STOP",

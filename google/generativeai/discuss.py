@@ -447,7 +447,9 @@ else:
 @string_utils.set_doc(discuss_types.ChatResponse.__doc__)
 @dataclasses.dataclass(**DATACLASS_KWARGS, init=False)
 class ChatResponse(discuss_types.ChatResponse):
-    _client: protos.DiscussServiceClient | None = dataclasses.field(default=lambda: None, repr=False)
+    _client: protos.DiscussServiceClient | None = dataclasses.field(
+        default=lambda: None, repr=False
+    )
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():

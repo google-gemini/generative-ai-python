@@ -55,7 +55,9 @@ class UnitTests(parameterized.TestCase):
         self.responses = {}
 
         @add_client_method
-        def get_model(request: Union[protos.GetModelRequest, None] = None, *, name=None) -> protos.Model:
+        def get_model(
+            request: Union[protos.GetModelRequest, None] = None, *, name=None
+        ) -> protos.Model:
             if request is None:
                 request = protos.GetModelRequest(name=name)
             self.assertIsInstance(request, protos.GetModelRequest)
