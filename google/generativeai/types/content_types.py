@@ -163,19 +163,16 @@ def to_blob(blob: BlobType) -> glm.Blob:
     elif isinstance(blob, IMAGE_TYPES):
         return image_to_blob(blob)
     else:
-        if "parts" not in blob:
+        if isinstance(blob, Mapping):
             raise KeyError(
-                "Unable to determine the intended type of the `dict`. "
-                "For `Content`, a 'parts' key is expected. "
-                f"However, the provided dictionary has the following keys: {list(blob.keys())}"
+                "Could not recognize the intended type of the `dict`\n" "A content should have "
             )
-        else:
-            raise TypeError(
-                "Failed to create `Blob`. Expected input to be of type `Blob`, `dict`, or `Image` "
-                "(either `PIL.Image.Image` or `IPython.display.Image`).\n"
-                f"However, received an object of type: {type(blob)}.\n"
-                f"Object Value: {blob}"
-            )
+        raise TypeError(
+            "Could not create `Blob`, expected `Blob`, `dict` or an `Image` type"
+            "(`PIL.Image.Image` or `IPython.display.Image`).\n"
+            f"Got a: {type(blob)}\n"
+            f"Value: {blob}"
+        )
 
 
 class PartDict(TypedDict):
