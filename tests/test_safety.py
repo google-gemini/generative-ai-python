@@ -46,7 +46,7 @@ class SafetyTests(parameterized.TestCase):
         ],
     )
     def test_safety_overwrite(self, setting):
-        setting = safety_types.to_easy_safety_dict(setting, "new")
+        setting = safety_types.to_easy_safety_dict(setting)
         self.assertEqual(
             setting[glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT],
             glm.SafetySetting.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,

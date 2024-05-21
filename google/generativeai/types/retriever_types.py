@@ -27,6 +27,8 @@ from google.protobuf import field_mask_pb2
 from google.generativeai.client import get_default_retriever_client
 from google.generativeai.client import get_default_retriever_async_client
 from google.generativeai import string_utils
+from google.generativeai.types import helper_types
+
 from google.generativeai.types import permission_types
 from google.generativeai.types.model_types import idecode_time
 from google.generativeai.utils import flatten_update_paths
@@ -261,7 +263,7 @@ class Corpus:
         display_name: str | None = None,
         custom_metadata: Iterable[CustomMetadata] | None = None,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Document:
         """
         Request to create a `Document`.
@@ -312,7 +314,7 @@ class Corpus:
         display_name: str | None = None,
         custom_metadata: Iterable[CustomMetadata] | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Document:
         """This is the async version of `Corpus.create_document`."""
         if request_options is None:
@@ -346,7 +348,7 @@ class Corpus:
         self,
         name: str,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Document:
         """
         Get information about a specific `Document`.
@@ -375,7 +377,7 @@ class Corpus:
         self,
         name: str,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Document:
         """This is the async version of `Corpus.get_document`."""
         if request_options is None:
@@ -401,7 +403,7 @@ class Corpus:
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
         Update a list of fields for a specified `Corpus`.
@@ -439,7 +441,7 @@ class Corpus:
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Corpus.update`."""
         if request_options is None:
@@ -470,7 +472,7 @@ class Corpus:
         metadata_filters: Iterable[MetadataFilter] | None = None,
         results_count: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Iterable[RelevantChunk]:
         """
         Query a corpus for information.
@@ -524,7 +526,7 @@ class Corpus:
         metadata_filters: Iterable[MetadataFilter] | None = None,
         results_count: int | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Iterable[RelevantChunk]:
         """This is the async version of `Corpus.query`."""
         if request_options is None:
@@ -566,7 +568,7 @@ class Corpus:
         name: str,
         force: bool = False,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
         Delete a document in the corpus.
@@ -593,7 +595,7 @@ class Corpus:
         name: str,
         force: bool = False,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Corpus.delete_document`."""
         if request_options is None:
@@ -612,7 +614,7 @@ class Corpus:
         self,
         page_size: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Iterable[Document]:
         """
         List documents in corpus.
@@ -642,7 +644,7 @@ class Corpus:
         self,
         page_size: int | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> AsyncIterable[Document]:
         """This is the async version of `Corpus.list_documents`."""
         if request_options is None:
@@ -744,7 +746,7 @@ class Document(abc.ABC):
         name: str | None = None,
         custom_metadata: Iterable[CustomMetadata] | None = None,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Chunk:
         """
         Create a `Chunk` object which has textual data.
@@ -801,7 +803,7 @@ class Document(abc.ABC):
         name: str | None = None,
         custom_metadata: Iterable[CustomMetadata] | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Chunk:
         """This is the async version of `Document.create_chunk`."""
         if request_options is None:
@@ -900,7 +902,7 @@ class Document(abc.ABC):
         self,
         chunks: BatchCreateChunkOptions,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
         Create chunks within the given document.
@@ -926,7 +928,7 @@ class Document(abc.ABC):
         self,
         chunks: BatchCreateChunkOptions,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.batch_create_chunk`."""
         if request_options is None:
@@ -943,7 +945,7 @@ class Document(abc.ABC):
         self,
         name: str,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
         Get information about a specific chunk.
@@ -972,7 +974,7 @@ class Document(abc.ABC):
         self,
         name: str,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.get_chunk`."""
         if request_options is None:
@@ -992,7 +994,7 @@ class Document(abc.ABC):
         self,
         page_size: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> Iterable[Chunk]:
         """
         List chunks of a document.
@@ -1018,7 +1020,7 @@ class Document(abc.ABC):
         self,
         page_size: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> AsyncIterable[Chunk]:
         """This is the async version of `Document.list_chunks`."""
         if request_options is None:
@@ -1037,7 +1039,7 @@ class Document(abc.ABC):
         metadata_filters: Iterable[MetadataFilter] | None = None,
         results_count: int | None = None,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> list[RelevantChunk]:
         """
         Query a `Document` in the `Corpus` for information.
@@ -1090,7 +1092,7 @@ class Document(abc.ABC):
         metadata_filters: Iterable[MetadataFilter] | None = None,
         results_count: int | None = None,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> list[RelevantChunk]:
         """This is the async version of `Document.query`."""
         if request_options is None:
@@ -1137,7 +1139,7 @@ class Document(abc.ABC):
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
         Update a list of fields for a specified document.
@@ -1174,7 +1176,7 @@ class Document(abc.ABC):
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.update`."""
         if request_options is None:
@@ -1202,7 +1204,7 @@ class Document(abc.ABC):
         self,
         chunks: BatchUpdateChunksOptions,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
         Update multiple chunks within the same document.
@@ -1299,7 +1301,7 @@ class Document(abc.ABC):
         self,
         chunks: BatchUpdateChunksOptions,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.batch_update_chunks`."""
         if request_options is None:
@@ -1387,7 +1389,7 @@ class Document(abc.ABC):
         self,
         name: str,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,  # fmt: {}
+        request_options: helper_types.RequestOptionsType | None = None,  # fmt: {}
     ):
         """
         Delete a `Chunk`.
@@ -1412,7 +1414,7 @@ class Document(abc.ABC):
         self,
         name: str,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,  # fmt: {}
+        request_options: helper_types.RequestOptionsType | None = None,  # fmt: {}
     ):
         """This is the async version of `Document.delete_chunk`."""
         if request_options is None:
@@ -1431,7 +1433,7 @@ class Document(abc.ABC):
         self,
         chunks: BatchDeleteChunkOptions,
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
         Delete multiple `Chunk`s from a document.
@@ -1464,7 +1466,7 @@ class Document(abc.ABC):
         self,
         chunks: BatchDeleteChunkOptions,
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.batch_delete_chunks`."""
         if request_options is None:
@@ -1570,7 +1572,7 @@ class Chunk(abc.ABC):
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
         Update a list of fields for a specified `Chunk`.
@@ -1619,7 +1621,7 @@ class Chunk(abc.ABC):
         self,
         updates: dict[str, Any],
         client: glm.RetrieverServiceAsyncClient | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Chunk.update`."""
         if request_options is None:
