@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import os
+import contextlib
 import dataclasses
 import pathlib
-import re
 import types
 from typing import Any, cast
 from collections.abc import Sequence
@@ -12,6 +12,8 @@ import httplib2
 import google.ai.generativelanguage as glm
 
 from google.auth import credentials as ga_credentials
+from google.auth import exceptions as ga_exceptions
+from google import auth
 from google.api_core import client_options as client_options_lib
 from google.api_core import gapic_v1
 from google.api_core import operations_v1
@@ -28,6 +30,18 @@ except ImportError:
 
 USER_AGENT = "genai-py"
 GENAI_API_DISCOVERY_URL = "https://generativelanguage.googleapis.com/$discovery/rest"
+
+
+@contextlib.contextmanager
+def patch_colab_gce_credentials():
+    get_gce = auth._default._get_gce_credentials
+    if "COLAB_RELEASE_TAG" in os.environ:
+        auth._default._get_gce_credentials = lambda *args, **kwargs: (None, None)
+
+    try:
+        yield
+    finally:
+        auth._default._get_gce_credentials = get_gce
 
 
 class FileServiceClient(glm.FileServiceClient):
@@ -183,7 +197,17 @@ class _ClientManager:
         if not self.client_config:
             configure()
 
-        client = cls(**self.client_config)
+        try:
+            with patch_colab_gce_credentials():
+                client = cls(**self.client_config)
+        except ga_exceptions.DefaultCredentialsError as e:
+            e.args = (
+                "\n  No API_KEY or ADC found. Please either:\n"
+                "    - Set the `GOOGLE_API_KEY` environment variable.\n"
+                "    - Manually pass the key with `genai.configure(api_key=my_api_key)`.\n"
+                "    - Or set up Application Default Credentials, see https://ai.google.dev/gemini-api/docs/oauth for more information.",
+            )
+            raise e
 
         if not self.default_metadata:
             return client
