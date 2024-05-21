@@ -21,6 +21,7 @@ import google.ai.generativelanguage as glm
 from google.generativeai import operations
 from google.generativeai.client import get_default_model_client
 from google.generativeai.types import model_types
+from google.generativeai.types import helper_types
 from google.api_core import operation
 from google.api_core import protobuf_helpers
 from google.protobuf import field_mask_pb2
@@ -31,23 +32,23 @@ def get_model(
     name: model_types.AnyModelNameOptions,
     *,
     client=None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model | model_types.TunedModel:
-    """Given a model name, fetch the `types.Model` or `types.TunedModel` object.
+    """Given a model name, fetch the `types.Model`
 
     ```
     import pprint
-    model = genai.get_tuned_model(model_name):
+    model = genai.get_model('models/gemini-pro')
     pprint.pprint(model)
     ```
 
     Args:
-        name: The name of the model to fetch.
+        name: The name of the model to fetch. Should start with `models/`
         client: The client to use.
         request_options: Options for the request.
 
     Returns:
-        A `types.Model` or `types.TunedModel` object.
+        A `types.Model`
     """
     name = model_types.make_model_name(name)
     if name.startswith("models/"):
@@ -55,25 +56,27 @@ def get_model(
     elif name.startswith("tunedModels/"):
         return get_tuned_model(name, client=client, request_options=request_options)
     else:
-        raise ValueError("Model names must start with `models/` or `tunedModels/`")
+        raise ValueError(
+            f"Model names must start with `models/` or `tunedModels/`. Received: {name}"
+        )
 
 
 def get_base_model(
     name: model_types.BaseModelNameOptions,
     *,
     client=None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model:
     """Get the `types.Model` for the given base model name.
 
     ```
     import pprint
-    model = genai.get_model('models/chat-bison-001'):
+    model = genai.get_base_model('models/chat-bison-001')
     pprint.pprint(model)
     ```
 
     Args:
-        name: The name of the model to fetch.
+        name: The name of the model to fetch. Should start with `models/`
         client: The client to use.
         request_options: Options for the request.
 
@@ -88,7 +91,7 @@ def get_base_model(
 
     name = model_types.make_model_name(name)
     if not name.startswith("models/"):
-        raise ValueError(f"Base model names must start with `models/`, got: {name}")
+        raise ValueError(f"Base model names must start with `models/`, received: {name}")
 
     result = client.get_model(name=name, **request_options)
     result = type(result).to_dict(result)
@@ -99,18 +102,18 @@ def get_tuned_model(
     name: model_types.TunedModelNameOptions,
     *,
     client=None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     """Get the `types.TunedModel` for the given tuned model name.
 
     ```
     import pprint
-    model = genai.get_tuned_model('tunedModels/my-model-1234'):
+    model = genai.get_tuned_model('tunedModels/gemini-1.0-pro-001')
     pprint.pprint(model)
     ```
 
     Args:
-        name: The name of the model to fetch.
+        name: The name of the model to fetch. Should start with `tunedModels/`
         client: The client to use.
         request_options: Options for the request.
 
@@ -126,7 +129,7 @@ def get_tuned_model(
     name = model_types.make_model_name(name)
 
     if not name.startswith("tunedModels/"):
-        raise ValueError("Tuned model names must start with `tunedModels/`")
+        raise ValueError("Tuned model names must start with `tunedModels/` received: {name}")
 
     result = client.get_tuned_model(name=name, **request_options)
 
@@ -162,7 +165,7 @@ def list_models(
     *,
     page_size: int | None = 50,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.ModelsIterable:
     """Lists available models.
 
@@ -196,7 +199,7 @@ def list_tuned_models(
     *,
     page_size: int | None = 50,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModelsIterable:
     """Lists available models.
 
@@ -244,7 +247,7 @@ def create_tuned_model(
     input_key: str = "text_input",
     output_key: str = "output",
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> operations.CreateTunedModelOperation:
     """Launches a tuning job to create a TunedModel.
 
@@ -273,7 +276,7 @@ def create_tuned_model(
           * A `glm.Dataset`, or
           * An `Iterable` of:
             *`glm.TuningExample`,
-            * {'text_input': text_input, 'output': output} dicts, or
+            * `{'text_input': text_input, 'output': output}` dicts
             * `(text_input, output)` tuples.
           * A `Mapping` of `Iterable[str]` - use `input_key` and `output_key` to choose which
             columns to use as the input/output
@@ -344,6 +347,7 @@ def create_tuned_model(
         top_k=top_k,
         tuning_task=tuning_task,
     )
+
     operation = client.create_tuned_model(
         dict(tuned_model_id=id, tuned_model=tuned_model), **request_options
     )
@@ -357,7 +361,7 @@ def update_tuned_model(
     updates: None = None,
     *,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     pass
 
@@ -368,7 +372,7 @@ def update_tuned_model(
     updates: dict[str, Any],
     *,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     pass
 
@@ -378,7 +382,7 @@ def update_tuned_model(
     updates: dict[str, Any] | None = None,
     *,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     """Push updates to the tuned model. Only certain attributes are updatable."""
     if request_options is None:
@@ -395,6 +399,7 @@ def update_tuned_model(
                 "`updates` must be a `dict`.\n"
                 f"got: {type(updates)}"
             )
+
         tuned_model = client.get_tuned_model(name=name, **request_options)
 
         updates = flatten_update_paths(updates)
@@ -436,7 +441,7 @@ def _apply_update(thing, path, value):
 def delete_tuned_model(
     tuned_model: model_types.TunedModelNameOptions,
     client: glm.ModelServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> None:
     if request_options is None:
         request_options = {}

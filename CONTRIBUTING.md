@@ -62,17 +62,41 @@ This "editable" mode lets you edit the source without needing to reinstall the p
 
 ### Testing
 
-Use the builtin unittest package:
+To ensure the integrity of the codebase, we have a suite of tests located in the `generative-ai-python/tests` directory. 
+
+You can run all these tests using Python's built-in `unittest` module or the `pytest` library. 
+
+For `unittest`, open a terminal and navigate to the root directory of the project. Then, execute the following command:
 
 ```
- python -m unittest
+python -m unittest discover -s tests
+
+# or more simply
+python -m unittest
 ```
+
+Alternatively, if you prefer using `pytest`, you can install it using pip:
+
+```
+pip install pytest
+```
+
+Then, run the tests with the following command:
+
+```
+pytest tests
+
+# or more simply
+pytest
+```
+
 
 Or to debug, use:
 
 ```commandline
+pip install nose2
+
 nose2 --debugger
-```
 
 ### Type checking 
 

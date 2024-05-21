@@ -68,21 +68,47 @@ class TestModel(text_model.TextModel):
 
 
 class TextModelTestCase(absltest.TestCase):
-    def test_generate_text(self):
+    def test_generate_text_without_args(self):
         model = TestModel()
 
         result = model.call_model("prompt goes in")
         self.assertEqual(result.text_results[0], "prompt goes in_1")
-        self.assertIsNone(result.text_results[1])
-        self.assertIsNone(result.text_results[2])
-        self.assertIsNone(result.text_results[3])
 
+    def test_generate_text_without_args_none_results(self):
+        model = TestModel()
+
+        result = model.call_model("prompt goes in")
+        self.assertEqual(result.text_results[1], "None")
+        self.assertEqual(result.text_results[2], "None")
+        self.assertEqual(result.text_results[3], "None")
+
+    def test_generate_text_with_args_first_result(self):
+        model = TestModel()
         args = model_lib.ModelArguments(model="model_name", temperature=0.42, candidate_count=5)
+
         result = model.call_model("prompt goes in", args)
         self.assertEqual(result.text_results[0], "prompt goes in_1")
+
+    def test_generate_text_with_args_model_name(self):
+        model = TestModel()
+        args = model_lib.ModelArguments(model="model_name", temperature=0.42, candidate_count=5)
+
+        result = model.call_model("prompt goes in", args)
         self.assertEqual(result.text_results[1], "model_name")
-        self.assertEqual(result.text_results[2], 0.42)
-        self.assertEqual(result.text_results[3], 5)
+
+    def test_generate_text_with_args_temperature(self):
+        model = TestModel()
+        args = model_lib.ModelArguments(model="model_name", temperature=0.42, candidate_count=5)
+        result = model.call_model("prompt goes in", args)
+
+        self.assertEqual(result.text_results[2], str(0.42))
+
+    def test_generate_text_with_args_candidate_count(self):
+        model = TestModel()
+        args = model_lib.ModelArguments(model="model_name", temperature=0.42, candidate_count=5)
+
+        result = model.call_model("prompt goes in", args)
+        self.assertEqual(result.text_results[3], str(5))
 
     def test_retry(self):
         model = TestModel()

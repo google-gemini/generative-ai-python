@@ -21,6 +21,10 @@ TEST_IMAGE_URL = "https://storage.googleapis.com/generativeai-downloads/data/tes
 TEST_IMAGE_DATA = TEST_IMAGE_PATH.read_bytes()
 
 
+def noop(x: int):
+    return x
+
+
 def simple_part(text: str) -> glm.Content:
     return glm.Content({"parts": [{"text": text}]})
 
@@ -725,18 +729,33 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(req.system_instruction, expected_instr)
 
     @parameterized.named_parameters(
-        ["basic", "Hello"],
-        ["list", ["Hello"]],
+        ["basic", {"contents": "Hello"}],
+        ["list", {"contents": ["Hello"]}],
         [
             "list2",
-            [{"text": "Hello"}, {"inline_data": {"data": b"PNG!", "mime_type": "image/png"}}],
+            {
+                "contents": [
+                    {"text": "Hello"},
+                    {"inline_data": {"data": b"PNG!", "mime_type": "image/png"}},
+                ]
+            },
         ],
-        ["contents", [{"role": "user", "parts": ["hello"]}]],
+        [
+            "contents",
+            {"contents": [{"role": "user", "parts": ["hello"]}]},
+        ],
+        ["empty", {}],
+        [
+            "system_instruction",
+            {"system_instruction": ["You are a cat"]},
+        ],
+        ["tools", {"tools": [noop]}],
     )
-    def test_count_tokens_smoke(self, contents):
+    def test_count_tokens_smoke(self, kwargs):
+        si = kwargs.pop("system_instruction", None)
         self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
-        model = generative_models.GenerativeModel("gemini-pro-vision")
-        response = model.count_tokens(contents)
+        model = generative_models.GenerativeModel("gemini-pro-vision", system_instruction=si)
+        response = model.count_tokens(**kwargs)
         self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
 
     @parameterized.named_parameters(
