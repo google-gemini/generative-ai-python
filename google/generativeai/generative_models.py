@@ -129,9 +129,6 @@ class GenerativeModel:
         tool_config: content_types.ToolConfigType | None,
     ) -> glm.GenerateContentRequest:
         """Creates a `glm.GenerateContentRequest` from raw inputs."""
-        if not contents:
-            raise TypeError("contents must not be empty")
-
         tools_lib = self._get_tools_lib(tools)
         if tools_lib is not None:
             tools_lib = tools_lib.to_proto()
@@ -235,6 +232,9 @@ class GenerativeModel:
             tools: `glm.Tools` more info coming soon.
             request_options: Options for the request.
         """
+        if not contents:
+            raise TypeError("contents must not be empty")
+
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
@@ -282,6 +282,9 @@ class GenerativeModel:
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `GenerativeModel.generate_content`."""
+        if not contents:
+            raise TypeError("contents must not be empty")
+
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
