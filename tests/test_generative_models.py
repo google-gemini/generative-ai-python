@@ -155,6 +155,7 @@ class CUJTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["dict", {"danger": "low"}, {"danger": "high"}],
+        ["quick", "low", "high"],
         [
             "list-dict",
             [
@@ -193,22 +194,25 @@ class CUJTests(parameterized.TestCase):
         ]
 
         _ = model.generate_content("hello")
+
+        danger = [
+            s
+            for s in self.observed_requests[-1].safety_settings
+            if s.category == glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+        ]
         self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
+            danger[0].threshold,
             glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
         )
 
         _ = model.generate_content("hello", safety_settings=safe2)
+        danger = [
+            s
+            for s in self.observed_requests[-1].safety_settings
+            if s.category == glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+        ]
         self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
+            danger[0].threshold,
             glm.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
         )
 
