@@ -1,6 +1,7 @@
 import inspect
 import string
 import textwrap
+from typing_extensions import TypedDict
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -8,16 +9,35 @@ import google.ai.generativelanguage as glm
 from google.generativeai.types import generation_types
 
 
+class Date(TypedDict):
+    day: int
+    month: int
+    year: int
+
+
+class Person(TypedDict):
+    name: str
+    favorite_color: str
+    birthday: Date
+
+
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         [
             "glm.GenerationConfig",
-            glm.GenerationConfig(temperature=0.1, stop_sequences=["end"]),
+            glm.GenerationConfig(
+                temperature=0.1, stop_sequences=["end"], response_schema=glm.Schema(type="STRING")
+            ),
         ],
-        ["GenerationConfigDict", {"temperature": 0.1, "stop_sequences": ["end"]}],
+        [
+            "GenerationConfigDict",
+            {"temperature": 0.1, "stop_sequences": ["end"], "response_schema": {"type": "STRING"}},
+        ],
         [
             "GenerationConfig",
-            generation_types.GenerationConfig(temperature=0.1, stop_sequences=["end"]),
+            generation_types.GenerationConfig(
+                temperature=0.1, stop_sequences=["end"], response_schema={"type": "STRING"}
+            ),
         ],
     )
     def test_to_generation_config(self, config):
@@ -503,7 +523,24 @@ class UnitTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=True,
                 iterator=None,
-                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'Hello world!'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+                result=glm.GenerateContentResponse({
+                  "candidates": [
+                    {
+                      "content": {
+                        "parts": [
+                          {
+                            "text": "Hello world!"
+                          }
+                        ],
+                        "role": ""
+                      },
+                      "finish_reason": 0,
+                      "safety_ratings": [],
+                      "token_count": 0,
+                      "grounding_attributions": []
+                    }
+                  ]
+                }),
             )"""
         )
         self.assertEqual(expected, result)
@@ -522,10 +559,69 @@ class UnitTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=False,
                 iterator=<list_iterator>,
-                result=glm.GenerateContentResponse({'candidates': [{'content': {'parts': [{'text': 'a'}], 'role': ''}, 'finish_reason': 0, 'safety_ratings': [], 'token_count': 0, 'grounding_attributions': []}]}),
+                result=glm.GenerateContentResponse({
+                  "candidates": [
+                    {
+                      "content": {
+                        "parts": [
+                          {
+                            "text": "a"
+                          }
+                        ],
+                        "role": ""
+                      },
+                      "finish_reason": 0,
+                      "safety_ratings": [],
+                      "token_count": 0,
+                      "grounding_attributions": []
+                    }
+                  ]
+                }),
             )"""
         )
         self.assertEqual(expected, result)
+
+    @parameterized.named_parameters(
+        [
+            "glm.Schema",
+            glm.Schema(type="STRING"),
+            glm.Schema(type="STRING"),
+        ],
+        [
+            "SchemaDict",
+            {"type": "STRING"},
+            glm.Schema(type="STRING"),
+        ],
+        [
+            "str",
+            str,
+            glm.Schema(type="STRING"),
+        ],
+        ["list_of_str", list[str], glm.Schema(type="ARRAY", items=glm.Schema(type="STRING"))],
+        [
+            "fancy",
+            Person,
+            glm.Schema(
+                type="OBJECT",
+                properties=dict(
+                    name=glm.Schema(type="STRING"),
+                    favorite_color=glm.Schema(type="STRING"),
+                    birthday=glm.Schema(
+                        type="OBJECT",
+                        properties=dict(
+                            day=glm.Schema(type="INTEGER"),
+                            month=glm.Schema(type="INTEGER"),
+                            year=glm.Schema(type="INTEGER"),
+                        ),
+                    ),
+                ),
+            ),
+        ],
+    )
+    def test_response_schema(self, schema, expected):
+        gd = generation_types.to_generation_config_dict(dict(response_schema=schema))
+        actual = gd["response_schema"]
+        self.assertEqual(actual, expected)
 
 
 if __name__ == "__main__":

@@ -48,7 +48,12 @@ class CodeMatch(absltest.TestCase):
                 if decorator.id in EXEMPT_DECORATORS:
                     return True
             elif isinstance(decorator, ast.Call):
-                if decorator.func.attr in EXEMPT_DECORATORS:
+                decorator_name = (
+                    decorator.func.attr
+                    if isinstance(decorator.func, ast.Attribute)
+                    else decorator.func.id
+                )
+                if decorator_name in EXEMPT_DECORATORS:
                     return True
             else:
                 raise TypeError(

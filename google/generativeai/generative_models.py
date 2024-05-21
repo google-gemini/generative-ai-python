@@ -14,10 +14,11 @@ import reprlib
 import google.api_core.exceptions
 from google.ai import generativelanguage as glm
 from google.generativeai import client
-from google.generativeai import string_utils
+
 from google.generativeai import caching
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
+from google.generativeai.types import helper_types
 from google.generativeai.types import safety_types
 from google.generativeai.types import caching_types
 
@@ -80,9 +81,7 @@ class GenerativeModel:
         if "/" not in model_name:
             model_name = "models/" + model_name
         self._model_name = model_name
-        self._safety_settings = safety_types.to_easy_safety_dict(
-            safety_settings, harm_category_set="new"
-        )
+        self._safety_settings = safety_types.to_easy_safety_dict(safety_settings)
         self._generation_config = generation_types.to_generation_config_dict(generation_config)
         self._tools = content_types.to_function_library(tools)
 
@@ -141,9 +140,6 @@ class GenerativeModel:
         tool_config: content_types.ToolConfigType | None,
     ) -> glm.GenerateContentRequest:
         """Creates a `glm.GenerateContentRequest` from raw inputs."""
-        if not contents:
-            raise TypeError("contents must not be empty")
-
         if hasattr(self, "cached_content") and any([self._system_instruction, tools, tool_config]):
             raise ValueError(
                 "`tools`, `tool_config`, `system_instruction` cannot be set on a model instantinated with `cached_content` as its context."
@@ -166,10 +162,10 @@ class GenerativeModel:
         merged_gc = self._generation_config.copy()
         merged_gc.update(generation_config)
 
-        safety_settings = safety_types.to_easy_safety_dict(safety_settings, harm_category_set="new")
+        safety_settings = safety_types.to_easy_safety_dict(safety_settings)
         merged_ss = self._safety_settings.copy()
         merged_ss.update(safety_settings)
-        merged_ss = safety_types.normalize_safety_settings(merged_ss, harm_category_set="new")
+        merged_ss = safety_types.normalize_safety_settings(merged_ss)
 
         return glm.GenerateContentRequest(
             model=self._model_name,
@@ -248,7 +244,7 @@ class GenerativeModel:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> generation_types.GenerateContentResponse:
         """A multipurpose function to generate responses from the model.
 
@@ -304,6 +300,9 @@ class GenerativeModel:
             tools: `glm.Tools` more info coming soon.
             request_options: Options for the request.
         """
+        if not contents:
+            raise TypeError("contents must not be empty")
+
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
@@ -348,9 +347,12 @@ class GenerativeModel:
         stream: bool = False,
         tools: content_types.FunctionLibraryType | None = None,
         tool_config: content_types.ToolConfigType | None = None,
-        request_options: dict[str, Any] | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> generation_types.AsyncGenerateContentResponse:
         """The async version of `GenerativeModel.generate_content`."""
+        if not contents:
+            raise TypeError("contents must not be empty")
+
         request = self._prepare_request(
             contents=contents,
             generation_config=generation_config,
@@ -389,35 +391,57 @@ class GenerativeModel:
     # fmt: off
     def count_tokens(
         self,
-        contents: content_types.ContentsType,
-        request_options: dict[str, Any] | None = None,
+        contents: content_types.ContentsType = None,
+        *,
+        generation_config: generation_types.GenerationConfigType | None = None,
+        safety_settings: safety_types.SafetySettingOptions | None = None,
+        tools: content_types.FunctionLibraryType | None = None,
+        tool_config: content_types.ToolConfigType | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> glm.CountTokensResponse:
         if request_options is None:
             request_options = {}
 
         if self._client is None:
             self._client = client.get_default_generative_client()
-        contents = content_types.to_contents(contents)
-        return self._client.count_tokens(
-            glm.CountTokensRequest(model=self.model_name, contents=contents),
-                **request_options,
-        )
+
+        request = glm.CountTokensRequest(
+            model=self.model_name,
+            generate_content_request=self._prepare_request(
+                contents=contents,
+                generation_config=generation_config,
+                safety_settings=safety_settings,
+                tools=tools,
+                tool_config=tool_config,
+        ))
+        return self._client.count_tokens(request, **request_options)
 
     async def count_tokens_async(
         self,
-        contents: content_types.ContentsType,
-        request_options: dict[str, Any] | None = None,
+        contents: content_types.ContentsType = None,
+        *,
+        generation_config: generation_types.GenerationConfigType | None = None,
+        safety_settings: safety_types.SafetySettingOptions | None = None,
+        tools: content_types.FunctionLibraryType | None = None,
+        tool_config: content_types.ToolConfigType | None = None,
+        request_options: helper_types.RequestOptionsType | None = None,
     ) -> glm.CountTokensResponse:
         if request_options is None:
             request_options = {}
 
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
-        contents = content_types.to_contents(contents)
-        return await self._async_client.count_tokens(
-            glm.CountTokensRequest(model=self.model_name, contents=contents),
-                **request_options,
-        )
+
+        request = glm.CountTokensRequest(
+            model=self.model_name,
+            generate_content_request=self._prepare_request(
+                contents=contents,
+                generation_config=generation_config,
+                safety_settings=safety_settings,
+                tools=tools,
+                tool_config=tool_config,
+        ))
+        return await self._async_client.count_tokens(request, **request_options)
 
     # fmt: on
 
@@ -434,7 +458,7 @@ class GenerativeModel:
         >>> response = chat.send_message("Hello?")
 
         Arguments:
-            history: An iterable of `glm.Content` objects, or equvalents to initialize the session.
+            history: An iterable of `glm.Content` objects, or equivalents to initialize the session.
         """
         if self._generation_config.get("candidate_count", 1) > 1:
             raise ValueError("Can't chat with `candidate_count > 1`")
@@ -448,11 +472,13 @@ class GenerativeModel:
 class ChatSession:
     """Contains an ongoing conversation with the model.
 
-    >>> model = genai.GenerativeModel(model="gemini-pro")
+    >>> model = genai.GenerativeModel('models/gemini-pro')
     >>> chat = model.start_chat()
     >>> response = chat.send_message("Hello")
     >>> print(response.text)
-    >>> response = chat.send_message(...)
+    >>> response = chat.send_message("Hello again")
+    >>> print(response.text)
+    >>> response = chat.send_message(...
 
     This `ChatSession` object collects the messages sent and received, in its
     `ChatSession.history` attribute.
@@ -491,7 +517,7 @@ class ChatSession:
 
         Appends the request and response to the conversation history.
 
-        >>> model = genai.GenerativeModel(model="gemini-pro")
+        >>> model = genai.GenerativeModel('models/gemini-pro')
         >>> chat = model.start_chat()
         >>> response = chat.send_message("Hello")
         >>> print(response.text)
@@ -751,7 +777,7 @@ class ChatSession:
 
         if last._error is not None:
             raise generation_types.BrokenResponseError(
-                "Can not build a coherent char history after a broken "
+                "Can not build a coherent chat history after a broken "
                 "streaming response "
                 "(See the previous Exception fro details). "
                 "To inspect the last response object, use `chat.last`."
