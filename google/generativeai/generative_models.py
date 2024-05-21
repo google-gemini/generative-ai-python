@@ -128,10 +128,7 @@ class GenerativeModel:
         tools: content_types.FunctionLibraryType | None,
         tool_config: content_types.ToolConfigType | None,
     ) -> protos.GenerateContentRequest:
-        """Creates a `glm.GenerateContentRequest` from raw inputs."""
-        if not contents:
-            raise TypeError("contents must not be empty")
-
+        """Creates a `protos.GenerateContentRequest` from raw inputs."""
         tools_lib = self._get_tools_lib(tools)
         if tools_lib is not None:
             tools_lib = tools_lib.to_proto()
