@@ -30,7 +30,7 @@ class File:
             proto = proto.to_proto()
         self._proto = glm.File(proto)
 
-    def to_proto(self):
+    def to_proto(self) -> glm.File:
         return self._proto
 
     @property
@@ -77,6 +77,7 @@ class File:
     def video_metadata(self) -> glm.VideoMetadata:
         return self._proto.video_metadata
 
+    @property
     def error(self) -> Status:
         return self._proto.error
 
