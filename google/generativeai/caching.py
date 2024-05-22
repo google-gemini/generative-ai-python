@@ -36,7 +36,7 @@ def get_cached_content(name: str, client: glm.CacheServiceClient | None = None) 
     Returns:
         `CachedContent` resource with specified name.
     """
-    return CachedContent.get_cached_content(name=name, client=client)
+    return CachedContent.get(name=name, client=client)
 
 
 def delete_cached_content(name: str, client: glm.CacheServiceClient | None = None) -> None:

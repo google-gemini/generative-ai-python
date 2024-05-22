@@ -193,9 +193,7 @@ class CachedContent:
         return decode_cached_content(response)
 
     @classmethod
-    def get_cached_content(
-        cls, name: str, client: glm.CacheServiceClient | None = None
-    ) -> CachedContent:
+    def get(cls, name: str, client: glm.CacheServiceClient | None = None) -> CachedContent:
         """Gets a `CachedContent` resource."""
         if client is None:
             client = get_default_cache_client()
