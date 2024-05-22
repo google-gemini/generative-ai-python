@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-import dataclasses
 import textwrap
 from typing import Any
-from typing import Union
 import reprlib
 
 # pylint: disable=bad-continuation, line-too-long
