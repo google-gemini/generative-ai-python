@@ -287,12 +287,18 @@ def _convert_dict(data, input_key, output_key):
     try:
         inputs = data[input_key]
     except KeyError:
-        raise KeyError(f'input_key is "{input_key}", but data has keys: {sorted(data.keys())}')
+        raise KeyError(
+            f"Invalid key: The input key '{input_key}' does not exist in the data. "
+            f"Available keys are: {sorted(data.keys())}."
+        )
 
     try:
         outputs = data[output_key]
     except KeyError:
-        raise KeyError(f'output_key is "{output_key}", but data has keys: {sorted(data.keys())}')
+        raise KeyError(
+            f"Invalid key: The output key '{output_key}' does not exist in the data. "
+            f"Available keys are: {sorted(data.keys())}."
+        )
 
     for i, o in zip(inputs, outputs):
         new_data.append(glm.TuningExample({"text_input": str(i), "output": str(o)}))
@@ -347,10 +353,14 @@ def make_model_name(name: AnyModelNameOptions):
     elif isinstance(name, str):
         name = name
     else:
-        raise TypeError("Expected: str, Model, or TunedModel")
+        raise TypeError(
+            "Invalid input type. Expected one of the following types: `str`, `Model`, or `TunedModel`."
+        )
 
     if not (name.startswith("models/") or name.startswith("tunedModels/")):
-        raise ValueError(f"Model names should start with `models/` or `tunedModels/`, got: {name}")
+        raise ValueError(
+            f"Invalid model name: '{name}'. Model names should start with 'models/' or 'tunedModels/'."
+        )
 
     return name
 

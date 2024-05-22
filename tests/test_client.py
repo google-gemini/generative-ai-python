@@ -42,7 +42,7 @@ class ClientTests(parameterized.TestCase):
     def test_api_key_cannot_be_set_twice(self):
         client_opts = client_options.ClientOptions(api_key="AIzA_client_opts")
 
-        with self.assertRaisesRegex(ValueError, "You can't set both"):
+        with self.assertRaisesRegex(ValueError, "Invalid configuration: Please set either"):
             client.configure(api_key="AIzA_client", client_options=client_opts)
 
     def test_api_key_and_client_options(self):

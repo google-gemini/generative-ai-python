@@ -93,10 +93,9 @@ def image_to_blob(image) -> glm.Blob:
             name = image.filename
             if name is None:
                 raise ValueError(
-                    "Can only convert `IPython.display.Image` if "
-                    "it is constructed from a local file (Image(filename=...))."
+                    "Conversion failed. The `IPython.display.Image` can only be converted if "
+                    "it is constructed from a local file. Please ensure you are using the format: Image(filename='...')."
                 )
-
             mime_type, _ = mimetypes.guess_type(name)
             if mime_type is None:
                 mime_type = "image/unknown"
@@ -104,10 +103,10 @@ def image_to_blob(image) -> glm.Blob:
             return glm.Blob(mime_type=mime_type, data=image.data)
 
     raise TypeError(
-        "Could not convert image. expected an `Image` type"
-        "(`PIL.Image.Image` or `IPython.display.Image`).\n"
-        f"Got a: {type(image)}\n"
-        f"Value: {image}"
+        "Image conversion failed. The input was expected to be of type `Image` "
+        "(either `PIL.Image.Image` or `IPython.display.Image`).\n"
+        f"However, received an object of type: {type(image)}.\n"
+        f"Object Value: {image}"
     )
 
 
@@ -135,11 +134,11 @@ def _convert_dict(d: Mapping) -> glm.Content | glm.Part | glm.Blob:
         return glm.Blob(blob)
     else:
         raise KeyError(
-            "Could not recognize the intended type of the `dict`. "
-            "A `Content` should have a 'parts' key. "
-            "A `Part` should have a 'inline_data' or a 'text' key. "
-            "A `Blob` should have 'mime_type' and 'data' keys. "
-            f"Got keys: {list(d.keys())}"
+            "Unable to determine the intended type of the `dict`. "
+            "For `Content`, a 'parts' key is expected. "
+            "For `Part`, either an 'inline_data' or a 'text' key is expected. "
+            "For `Blob`, both 'mime_type' and 'data' keys are expected. "
+            f"However, the provided dictionary has the following keys: {list(d.keys())}"
         )
 
 
@@ -244,7 +243,9 @@ StrictContentType = Union[glm.Content, ContentDict]
 
 def to_content(content: ContentType):
     if not content:
-        raise ValueError("content must not be empty")
+        raise ValueError(
+            "Invalid input: 'content' argument must not be empty. Please provide a non-empty value."
+        )
 
     if isinstance(content, Mapping):
         content = _convert_dict(content)
@@ -266,9 +267,9 @@ def strict_to_content(content: StrictContentType):
         return content
     else:
         raise TypeError(
-            "Expected a `glm.Content` or a `dict(parts=...)`.\n"
-            f"Got type: {type(content)}\n"
-            f"Value: {content}\n"
+            "Invalid input type. Expected a `glm.Content` or a `dict` with a 'parts' key.\n"
+            f"However, received an object of type: {type(content)}.\n"
+            f"Object Value: {content}"
         )
 
 
@@ -455,14 +456,20 @@ def convert_to_nullable(schema):
     anyof = schema.pop("anyOf", None)
     if anyof is not None:
         if len(anyof) != 2:
-            raise ValueError("Type Unions are not supported (except for Optional)")
+            raise ValueError(
+                "Invalid input: Type Unions are not supported, except for `Optional` types. "
+                "Please provide an `Optional` type or a non-Union type."
+            )
         a, b = anyof
         if a == {"type": "null"}:
             schema.update(b)
         elif b == {"type": "null"}:
             schema.update(a)
         else:
-            raise ValueError("Type Unions are not supported (except for Optional)")
+            raise ValueError(
+                "Invalid input: Type Unions are not supported, except for `Optional` types. "
+                "Please provide an `Optional` type or a non-Union type."
+            )
         schema["nullable"] = True
 
     properties = schema.get("properties", None)
@@ -600,8 +607,9 @@ def _make_function_declaration(
         return CallableFunctionDeclaration.from_function(fun)
     else:
         raise TypeError(
-            "Expected an instance of `genai.FunctionDeclaraionType`. Got a:\n" f"  {type(fun)=}\n",
-            fun,
+            "Invalid input type. Expected an instance of `genai.FunctionDeclarationType`.\n"
+            f"However, received an object of type: {type(fun)}.\n"
+            f"Object Value: {fun}"
         )
 
 
@@ -679,8 +687,9 @@ def _make_tool(tool: ToolType) -> Tool:
             return Tool(function_declarations=[tool])
         except Exception as e:
             raise TypeError(
-                "Expected an instance of `genai.ToolType`. Got a:\n" f"  {type(tool)=}",
-                tool,
+                "Invalid input type. Expected an instance of `genai.ToolType`.\n"
+                f"However, received an object of type: {type(tool)}.\n"
+                f"Object Value: {tool}"
             ) from e
 
 
@@ -696,8 +705,8 @@ class FunctionLibrary:
                 name = declaration.name
                 if name in self._index:
                     raise ValueError(
-                        f"A `FunctionDeclaration` named {name} is already defined. "
-                        "Each `FunctionDeclaration` must be uniquely named."
+                        f"Invalid operation: A `FunctionDeclaration` named '{name}' is already defined. "
+                        "Each `FunctionDeclaration` must have a unique name. Please use a different name."
                     )
                 self._index[declaration.name] = declaration
 
@@ -799,8 +808,9 @@ def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCa
         obj["mode"] = to_function_calling_mode(mode)
     else:
         raise TypeError(
-            f"Could not convert input to `glm.FunctionCallingConfig`: \n'" f"  type: {type(obj)}\n",
-            obj,
+            "Invalid input type. Failed to convert input to `glm.FunctionCallingConfig`.\n"
+            f"Received an object of type: {type(obj)}.\n"
+            f"Object Value: {obj}"
         )
 
     return glm.FunctionCallingConfig(obj)
@@ -823,5 +833,7 @@ def to_tool_config(obj: ToolConfigType) -> glm.ToolConfig:
         return glm.ToolConfig(**obj)
     else:
         raise TypeError(
-            f"Could not convert input to `glm.ToolConfig`: \n'" f"  type: {type(obj)}\n", obj
+            "Invalid input type. Failed to convert input to `glm.ToolConfig`.\n"
+            f"Received an object of type: {type(obj)}.\n"
+            f"Object Value: {obj}"
         )

@@ -13,6 +13,7 @@ from google.generativeai import generative_models
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
 from google.generativeai.types import caching_types
+from google.generativeai.types import helper_types
 
 import PIL.Image
 
@@ -38,50 +39,64 @@ def simple_response(text: str) -> glm.GenerateContentResponse:
     return glm.GenerateContentResponse({"candidates": [{"content": simple_part(text)}]})
 
 
+class MockGenerativeServiceClient:
+    def __init__(self, test):
+        self.test = test
+        self.observed_requests = []
+        self.observed_kwargs = []
+        self.responses = collections.defaultdict(list)
+
+    def generate_content(
+        self,
+        request: glm.GenerateContentRequest,
+        **kwargs,
+    ) -> glm.GenerateContentResponse:
+        self.test.assertIsInstance(request, glm.GenerateContentRequest)
+        self.observed_requests.append(request)
+        self.observed_kwargs.append(kwargs)
+        response = self.responses["generate_content"].pop(0)
+        return response
+
+    def stream_generate_content(
+        self,
+        request: glm.GetModelRequest,
+        **kwargs,
+    ) -> Iterable[glm.GenerateContentResponse]:
+        self.observed_requests.append(request)
+        self.observed_kwargs.append(kwargs)
+        response = self.responses["stream_generate_content"].pop(0)
+        return response
+
+    def count_tokens(
+        self,
+        request: glm.CountTokensRequest,
+        **kwargs,
+    ) -> Iterable[glm.GenerateContentResponse]:
+        self.observed_requests.append(request)
+        self.observed_kwargs.append(kwargs)
+        response = self.responses["count_tokens"].pop(0)
+        return response
+
+
 class CUJTests(parameterized.TestCase):
     """Tests are in order with the design doc."""
 
-    def setUp(self):
-        self.client = unittest.mock.MagicMock()
+    @property
+    def observed_requests(self):
+        return self.client.observed_requests
 
+    @property
+    def observed_kwargs(self):
+        return self.client.observed_kwargs
+
+    @property
+    def responses(self):
+        return self.client.responses
+
+    def setUp(self):
+        self.client = MockGenerativeServiceClient(self)
         client_lib._client_manager.clients["generative"] = self.client
         client_lib._client_manager.clients["cache"] = self.client
-
-        def add_client_method(f):
-            name = f.__name__
-            setattr(self.client, name, f)
-            return f
-
-        self.observed_requests = []
-        self.responses = collections.defaultdict(list)
-
-        @add_client_method
-        def generate_content(
-            request: glm.GenerateContentRequest,
-            **kwargs,
-        ) -> glm.GenerateContentResponse:
-            self.assertIsInstance(request, glm.GenerateContentRequest)
-            self.observed_requests.append(request)
-            response = self.responses["generate_content"].pop(0)
-            return response
-
-        @add_client_method
-        def stream_generate_content(
-            request: glm.GetModelRequest,
-            **kwargs,
-        ) -> Iterable[glm.GenerateContentResponse]:
-            self.observed_requests.append(request)
-            response = self.responses["stream_generate_content"].pop(0)
-            return response
-
-        @add_client_method
-        def count_tokens(
-            request: glm.CountTokensRequest,
-            **kwargs,
-        ) -> Iterable[glm.GenerateContentResponse]:
-            self.observed_requests.append(request)
-            response = self.responses["count_tokens"].pop(0)
-            return response
 
         @add_client_method
         def get_cached_content(
@@ -171,11 +186,12 @@ class CUJTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["dict", {"danger": "low"}, {"danger": "high"}],
+        ["quick", "low", "high"],
         [
             "list-dict",
             [
                 dict(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
+                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
                     threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
                 ),
             ],
@@ -187,21 +203,21 @@ class CUJTests(parameterized.TestCase):
             "object",
             [
                 glm.SafetySetting(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
+                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
                     threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
                 ),
             ],
             [
                 glm.SafetySetting(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
                 ),
             ],
         ],
     )
     def test_safety_overwrite(self, safe1, safe2):
         # Safety
-        model = generative_models.GenerativeModel("gemini-pro", safety_settings={"danger": "low"})
+        model = generative_models.GenerativeModel("gemini-pro", safety_settings=safe1)
 
         self.responses["generate_content"] = [
             simple_response(" world!"),
@@ -209,22 +225,25 @@ class CUJTests(parameterized.TestCase):
         ]
 
         _ = model.generate_content("hello")
+
+        danger = [
+            s
+            for s in self.observed_requests[-1].safety_settings
+            if s.category == glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+        ]
         self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
+            danger[0].threshold,
             glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
         )
 
-        _ = model.generate_content("hello", safety_settings={"danger": "high"})
+        _ = model.generate_content("hello", safety_settings=safe2)
+        danger = [
+            s
+            for s in self.observed_requests[-1].safety_settings
+            if s.category == glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+        ]
         self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
+            danger[0].threshold,
             glm.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
         )
 
@@ -505,7 +524,7 @@ class CUJTests(parameterized.TestCase):
         chat1 = model.start_chat()
         chat1.send_message("hello1")
 
-        chat2 = copy.deepcopy(chat1)
+        chat2 = copy.copy(chat1)
         chat2.send_message("hello2")
 
         chat1.send_message("hello3")
@@ -864,7 +883,7 @@ class CUJTests(parameterized.TestCase):
         )
 
         asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource)
+        self.assertEqual(source, asource, f"error in {obj=}")
 
     def test_repr_for_unary_non_streamed_response(self):
         model = generative_models.GenerativeModel(model_name="gemini-pro")
@@ -886,13 +905,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "world!"
                           }
-                        ],
-                        "role": ""
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                        ]
+                      }
                     }
                   ]
                 }),
@@ -924,13 +938,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first"
                           }
-                        ],
-                        "role": ""
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                        ]
+                      }
                     }
                   ]
                 }),
@@ -954,28 +963,14 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             )"""
         )
@@ -997,28 +992,14 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second third"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             )"""
         )
@@ -1047,10 +1028,8 @@ class CUJTests(parameterized.TestCase):
                 iterator=<generator>,
                 result=glm.GenerateContentResponse({
                   "prompt_feedback": {
-                    "block_reason": 1,
-                    "safety_ratings": []
-                  },
-                  "candidates": []
+                    "block_reason": "SAFETY"
+                  }
                 }),
             ),
             error=<BlockedPromptException> prompt_feedback {
@@ -1105,28 +1084,14 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "123"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             ),
             error=<ValueError> """
@@ -1178,28 +1143,15 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "abc"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
-                      "finish_reason": 3,
+                      "finish_reason": "SAFETY",
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             ),
             error=<StopCandidateException> index: 0
@@ -1329,15 +1281,30 @@ class CUJTests(parameterized.TestCase):
         self.assertIn("system_instruction='Be excellent.'", result)
 
     def test_count_tokens_called_with_request_options(self):
-        self.client.count_tokens = unittest.mock.MagicMock()
-        request = unittest.mock.ANY
+        self.responses["count_tokens"].append(glm.CountTokensResponse())
         request_options = {"timeout": 120}
 
-        self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
         model = generative_models.GenerativeModel("gemini-pro-vision")
         model.count_tokens([{"role": "user", "parts": ["hello"]}], request_options=request_options)
 
-        self.client.count_tokens.assert_called_once_with(request, **request_options)
+        self.assertEqual(request_options, self.observed_kwargs[0])
+
+    def test_chat_with_request_options(self):
+        self.responses["generate_content"].append(
+            glm.GenerateContentResponse(
+                {
+                    "candidates": [{"finish_reason": "STOP"}],
+                }
+            )
+        )
+        request_options = {"timeout": 120}
+
+        model = generative_models.GenerativeModel("gemini-pro")
+        chat = model.start_chat()
+        chat.send_message("hello", request_options=helper_types.RequestOptions(**request_options))
+
+        request_options["retry"] = None
+        self.assertEqual(request_options, self.observed_kwargs[0])
 
 
 if __name__ == "__main__":

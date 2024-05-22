@@ -185,8 +185,8 @@ def _normalize_schema(generation_config):
     elif isinstance(response_schema, types.GenericAlias):
         if not str(response_schema).startswith("list["):
             raise ValueError(
-                f"Could not understand {response_schema}, expected: `int`, `float`, `str`, `bool`, "
-                "`typing_extensions.TypedDict`, `dataclass`, or `list[...]`"
+                f"Invalid input: Could not understand the type of '{response_schema}'. "
+                "Expected one of the following types: `int`, `float`, `str`, `bool`, `typing_extensions.TypedDict`, `dataclass`, or `list[...]`."
             )
         response_schema = content_types._schema_for_class(response_schema)
 
@@ -214,9 +214,9 @@ def to_generation_config_dict(generation_config: GenerationConfigType):
         return generation_config
     else:
         raise TypeError(
-            "Did not understand `generation_config`, expected a `dict` or"
-            f" `GenerationConfig`\nGot type: {type(generation_config)}\nValue:"
-            f" {generation_config}"
+            "Invalid input type. Expected a `dict` or `GenerationConfig` for `generation_config`.\n"
+            f"However, received an object of type: {type(generation_config)}.\n"
+            f"Object Value: {generation_config}"
         )
 
 
@@ -389,14 +389,13 @@ class BaseGenerateContentResponse:
         candidates = self.candidates
         if not candidates:
             raise ValueError(
-                "The `response.parts` quick accessor only works for a single candidate, "
-                "but none were returned. Check the `response.prompt_feedback` to see if the prompt was blocked."
+                "Invalid operation: The `response.parts` quick accessor requires a single candidate, "
+                "but none were returned. Please check the `response.prompt_feedback` to determine if the prompt was blocked."
             )
         if len(candidates) > 1:
             raise ValueError(
-                "The `response.parts` quick accessor only works with a "
-                "single candidate. With multiple candidates use "
-                "result.candidates[index].text"
+                "Invalid operation: The `response.parts` quick accessor requires a single candidate. "
+                "For multiple candidates, please use `result.candidates[index].text`."
             )
         parts = candidates[0].content.parts
         return parts
@@ -411,18 +410,14 @@ class BaseGenerateContentResponse:
         parts = self.parts
         if not parts:
             raise ValueError(
-                "The `response.text` quick accessor only works when the response contains a valid "
-                "`Part`, but none was returned. Check the `candidate.safety_ratings` to see if the "
-                "response was blocked."
+                "Invalid operation: The `response.text` quick accessor requires the response to contain a valid `Part`, "
+                "but none were returned. Please check the `candidate.safety_ratings` to determine if the response was blocked."
             )
-
         if len(parts) != 1 or "text" not in parts[0]:
             raise ValueError(
-                "The `response.text` quick accessor only works for "
-                "simple (single-`Part`) text responses. This response is not simple text. "
-                "Use the `result.parts` accessor or the full "
-                "`result.candidates[index].content.parts` lookup "
-                "instead."
+                "Invalid operation: The `response.text` quick accessor requires a simple (single-`Part`) text response. "
+                "This response is not simple text. Please use the `result.parts` accessor or the full "
+                "`result.candidates[index].content.parts` lookup instead."
             )
         return parts[0].text
 
@@ -440,7 +435,9 @@ class BaseGenerateContentResponse:
         else:
             _iterator = f"<{self._iterator.__class__.__name__}>"
 
-        as_dict = self.to_dict()
+        as_dict = type(self._result).to_dict(
+            self._result, use_integers_for_enums=False, including_default_value_fields=False
+        )
         json_str = json.dumps(as_dict, indent=2)
 
         _result = f"glm.GenerateContentResponse({json_str})"

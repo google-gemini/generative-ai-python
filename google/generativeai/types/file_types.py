@@ -18,6 +18,7 @@ import datetime
 from typing import Union
 from typing_extensions import TypedDict
 
+from google.rpc.status_pb2 import Status
 from google.generativeai.client import get_default_file_client
 
 import google.ai.generativelanguage as glm
@@ -29,7 +30,7 @@ class File:
             proto = proto.to_proto()
         self._proto = glm.File(proto)
 
-    def to_proto(self):
+    def to_proto(self) -> glm.File:
         return self._proto
 
     @property
@@ -72,6 +73,14 @@ class File:
     def state(self) -> glm.File.State:
         return self._proto.state
 
+    @property
+    def video_metadata(self) -> glm.VideoMetadata:
+        return self._proto.video_metadata
+
+    @property
+    def error(self) -> Status:
+        return self._proto.error
+
     def delete(self):
         client = get_default_file_client()
         client.delete_file(name=self.name)
@@ -104,4 +113,8 @@ def to_file_data(file_data: FileDataType):
     if isinstance(file_data, glm.FileData):
         return file_data
     else:
-        raise TypeError(f"Could not convert a {type(file_data)} to `FileData`")
+        raise TypeError(
+            f"Invalid input type. Failed to convert input to `FileData`.\n"
+            f"Received an object of type: {type(file_data)}.\n"
+            f"Object Value: {file_data}"
+        )

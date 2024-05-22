@@ -34,7 +34,7 @@ def get_model(
     client=None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model | model_types.TunedModel:
-    """Given a model name, fetch the `types.Model`
+    """Calls the API to fetch a model by name.
 
     ```
     import pprint
@@ -57,7 +57,7 @@ def get_model(
         return get_tuned_model(name, client=client, request_options=request_options)
     else:
         raise ValueError(
-            f"Model names must start with `models/` or `tunedModels/`. Received: {name}"
+            f"Invalid model name: Model names must start with `models/` or `tunedModels/`. Received: {name}"
         )
 
 
@@ -67,7 +67,7 @@ def get_base_model(
     client=None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.Model:
-    """Get the `types.Model` for the given base model name.
+    """Calls the API to fetch a base model by name.
 
     ```
     import pprint
@@ -91,7 +91,9 @@ def get_base_model(
 
     name = model_types.make_model_name(name)
     if not name.startswith("models/"):
-        raise ValueError(f"Base model names must start with `models/`, received: {name}")
+        raise ValueError(
+            f"Invalid model name: Base model names must start with `models/`. Received: {name}"
+        )
 
     result = client.get_model(name=name, **request_options)
     result = type(result).to_dict(result)
@@ -104,7 +106,7 @@ def get_tuned_model(
     client=None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
-    """Get the `types.TunedModel` for the given tuned model name.
+    """Calls the API to fetch a tuned model by name.
 
     ```
     import pprint
@@ -129,7 +131,9 @@ def get_tuned_model(
     name = model_types.make_model_name(name)
 
     if not name.startswith("tunedModels/"):
-        raise ValueError("Tuned model names must start with `tunedModels/` received: {name}")
+        raise ValueError(
+            f"Invalid model name: Tuned model names must start with `tunedModels/`. Received: {name}"
+        )
 
     result = client.get_tuned_model(name=name, **request_options)
 
@@ -139,6 +143,8 @@ def get_tuned_model(
 def get_base_model_name(
     model: model_types.AnyModelNameOptions, client: glm.ModelServiceClient | None = None
 ):
+    """Calls the API to fetch the base model name of a model."""
+
     if isinstance(model, str):
         if model.startswith("tunedModels/"):
             model = get_model(model, client=client)
@@ -156,7 +162,10 @@ def get_base_model_name(
         if not base_model:
             base_model = model.tuned_model_source.base_model
     else:
-        raise TypeError(f"Cannot understand model: {model}")
+        raise TypeError(
+            f"Invalid model: The provided model '{model}' is not recognized or supported. "
+            "Supported types are: str, model_types.TunedModel, model_types.Model, glm.Model, and glm.TunedModel."
+        )
 
     return base_model
 
@@ -167,7 +176,7 @@ def list_models(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.ModelsIterable:
-    """Lists available models.
+    """Calls the API to list all available models.
 
     ```
     import pprint
@@ -201,7 +210,7 @@ def list_tuned_models(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModelsIterable:
-    """Lists available models.
+    """Calls the API to list all tuned models.
 
     ```
     import pprint
@@ -249,7 +258,7 @@ def create_tuned_model(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> operations.CreateTunedModelOperation:
-    """Launches a tuning job to create a TunedModel.
+    """Calls the API to initiate a tuning process that optimizes a model for specific data, returning an operation object to track and manage the tuning progress.
 
     Since tuning a model can take significant time, this API doesn't wait for the tuning to complete.
     Instead, it returns a `google.api_core.operation.Operation` object that lets you check on the
@@ -322,7 +331,9 @@ def create_tuned_model(
             }
         }
     else:
-        ValueError(f"Not understood: `{source_model=}`")
+        raise ValueError(
+            f"Invalid model name: The provided model '{source_model}' does not match any known model patterns such as 'models/' or 'tunedModels/'"
+        )
 
     training_data = model_types.encode_tuning_data(
         training_data, input_key=input_key, output_key=output_key
@@ -384,7 +395,8 @@ def update_tuned_model(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
-    """Push updates to the tuned model. Only certain attributes are updatable."""
+    """Calls the API to puch updates to a specified tuned model where only certain attributes are updatable."""
+
     if request_options is None:
         request_options = {}
 
@@ -395,9 +407,7 @@ def update_tuned_model(
         name = tuned_model
         if not isinstance(updates, dict):
             raise TypeError(
-                "When calling `update_tuned_model(name:str, updates: dict)`,\n"
-                "`updates` must be a `dict`.\n"
-                f"got: {type(updates)}"
+                f"Invalid argument type: In the function `update_tuned_model(name:str, updates: dict)`, the `updates` argument must be of type `dict`. Received type: {type(updates).__name__}."
             )
 
         tuned_model = client.get_tuned_model(name=name, **request_options)
@@ -411,8 +421,7 @@ def update_tuned_model(
     elif isinstance(tuned_model, glm.TunedModel):
         if updates is not None:
             raise ValueError(
-                "When calling `update_tuned_model(tuned_model:glm.TunedModel, updates=None)`,"
-                "`updates` must not be set."
+                "Invalid argument: When calling `update_tuned_model(tuned_model:glm.TunedModel, updates=None)`, the `updates` argument must not be set."
             )
 
         name = tuned_model.name
@@ -420,8 +429,7 @@ def update_tuned_model(
         field_mask = protobuf_helpers.field_mask(was._pb, tuned_model._pb)
     else:
         raise TypeError(
-            "For `update_tuned_model(tuned_model:dict|glm.TunedModel)`,"
-            f"`tuned_model` must be a `dict` or a `glm.TunedModel`. Got a: `{type(tuned_model)}`"
+            f"Invalid argument type: In the function `update_tuned_model(tuned_model:dict|glm.TunedModel)`, the `tuned_model` argument must be of type `dict` or `glm.TunedModel`. Received type: {type(tuned_model).__name__}."
         )
 
     result = client.update_tuned_model(
@@ -443,6 +451,8 @@ def delete_tuned_model(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> None:
+    """Calls the API to delete a specified tuned model"""
+
     if request_options is None:
         request_options = {}
 
