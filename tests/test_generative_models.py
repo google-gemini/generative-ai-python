@@ -155,11 +155,12 @@ class CUJTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["dict", {"danger": "low"}, {"danger": "high"}],
+        ["quick", "low", "high"],
         [
             "list-dict",
             [
                 dict(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
+                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
                     threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
                 ),
             ],
@@ -171,21 +172,21 @@ class CUJTests(parameterized.TestCase):
             "object",
             [
                 glm.SafetySetting(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
+                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
                     threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
                 ),
             ],
             [
                 glm.SafetySetting(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
                 ),
             ],
         ],
     )
     def test_safety_overwrite(self, safe1, safe2):
         # Safety
-        model = generative_models.GenerativeModel("gemini-pro", safety_settings={"danger": "low"})
+        model = generative_models.GenerativeModel("gemini-pro", safety_settings=safe1)
 
         self.responses["generate_content"] = [
             simple_response(" world!"),
@@ -193,22 +194,25 @@ class CUJTests(parameterized.TestCase):
         ]
 
         _ = model.generate_content("hello")
+
+        danger = [
+            s
+            for s in self.observed_requests[-1].safety_settings
+            if s.category == glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+        ]
         self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
+            danger[0].threshold,
             glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
         )
 
-        _ = model.generate_content("hello", safety_settings={"danger": "high"})
+        _ = model.generate_content("hello", safety_settings=safe2)
+        danger = [
+            s
+            for s in self.observed_requests[-1].safety_settings
+            if s.category == glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+        ]
         self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
+            danger[0].threshold,
             glm.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
         )
 

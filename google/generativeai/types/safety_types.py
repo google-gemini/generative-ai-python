@@ -201,18 +201,41 @@ class LooseSafetySettingDict(TypedDict):
 EasySafetySetting = Mapping[HarmCategoryOptions, HarmBlockThresholdOptions]
 EasySafetySettingDict = dict[HarmCategoryOptions, HarmBlockThresholdOptions]
 
-SafetySettingOptions = Union[EasySafetySetting, Iterable[LooseSafetySettingDict], None]
+SafetySettingOptions = Union[
+    HarmBlockThresholdOptions, EasySafetySetting, Iterable[LooseSafetySettingDict], None
+]
+
+
+def _expand_block_threshold(block_threshold: HarmBlockThresholdOptions):
+    block_threshold = to_block_threshold(block_threshold)
+    set(_HARM_CATEGORIES.values())
+    return {category: block_threshold for category in set(_HARM_CATEGORIES.values())}
 
 
 def to_easy_safety_dict(settings: SafetySettingOptions) -> EasySafetySettingDict:
     if settings is None:
         return {}
-    elif isinstance(settings, Mapping):
+
+    if isinstance(settings, (int, str, HarmBlockThreshold)):
+        settings = _expand_block_threshold(settings)
+
+    if isinstance(settings, Mapping):
         return {to_harm_category(key): to_block_threshold(value) for key, value in settings.items()}
+
     else:  # Iterable
-        return {
-            to_harm_category(d["category"]): to_block_threshold(d["threshold"]) for d in settings
-        }
+        result = {}
+        for setting in settings:
+            if isinstance(setting, glm.SafetySetting):
+                result[to_harm_category(setting.category)] = to_block_threshold(setting.threshold)
+            elif isinstance(setting, dict):
+                result[to_harm_category(setting["category"])] = to_block_threshold(
+                    setting["threshold"]
+                )
+            else:
+                raise ValueError(
+                    f"Could not understand safety setting:\n  {type(setting)=}\n  {setting=}"
+                )
+        return result
 
 
 def normalize_safety_settings(
@@ -220,6 +243,10 @@ def normalize_safety_settings(
 ) -> list[SafetySettingDict] | None:
     if settings is None:
         return None
+
+    if isinstance(settings, (int, str, HarmBlockThreshold)):
+        settings = _expand_block_threshold(settings)
+
     if isinstance(settings, Mapping):
         return [
             {
