@@ -18,6 +18,7 @@ import dataclasses
 from typing import Optional, Union, Any, Iterable, AsyncIterable
 import re
 
+import google.ai.generativelanguage as glm
 from google.generativeai import protos
 
 from google.protobuf import field_mask_pb2
