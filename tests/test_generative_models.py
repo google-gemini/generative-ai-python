@@ -353,6 +353,7 @@ class CUJTests(parameterized.TestCase):
         model_name = model.model_name
         self.assertEqual(cc_name, "cachedContent/test-cached-content")
         self.assertEqual(model_name, "models/gemini-1.0-pro-001")
+        self.assertEqual(model.cached_content, "cachedContent/test-cached-content")
 
     def test_content_generation_with_model_having_context(self):
         self.responses["generate_content"] = [simple_response("world!")]
@@ -362,6 +363,7 @@ class CUJTests(parameterized.TestCase):
         response = model.generate_content("Hello")
 
         self.assertEqual(response.text, "world!")
+        self.assertEqual(model.cached_content, "cachedContent/test-cached-content")
 
     def test_fail_content_generation_with_model_having_context(self):
         model = generative_models.GenerativeModel.from_cached_content(
