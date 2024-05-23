@@ -19,8 +19,6 @@ from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
 from google.generativeai.types import helper_types
 from google.generativeai.types import safety_types
-from google.generativeai.types import caching_types
-
 
 class GenerativeModel:
     """
@@ -198,7 +196,7 @@ class GenerativeModel:
     @classmethod
     def from_cached_content(
         cls,
-        cached_content: caching_types.CachedContent,
+        cached_content: caching.CachedContent,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
     ) -> GenerativeModel: ...
@@ -206,7 +204,7 @@ class GenerativeModel:
     @classmethod
     def from_cached_content(
         cls,
-        cached_content: str | caching_types.CachedContent,
+        cached_content: str | caching.CachedContent,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
     ) -> GenerativeModel:
@@ -219,7 +217,7 @@ class GenerativeModel:
             `GenerativeModel` object with `cached_content` as its context.
         """
         if isinstance(cached_content, str):
-            cached_content = caching.get_cached_content(name=cached_content)
+            cached_content = caching.CachedContent.get(name=cached_content)
 
         # call __new__ with the cached_content to set the model's context. This is done to avoid
         # the exposing `cached_content` as a public attribute.

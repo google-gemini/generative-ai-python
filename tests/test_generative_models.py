@@ -10,9 +10,9 @@ from absl.testing import parameterized
 import google.ai.generativelanguage as glm
 from google.generativeai import client as client_lib
 from google.generativeai import generative_models
+from google.generativeai import caching
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
-from google.generativeai.types import caching_types
 from google.generativeai.types import helper_types
 
 import PIL.Image
@@ -337,7 +337,7 @@ class CUJTests(parameterized.TestCase):
             dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
             dict(
                 testcase_name="test_cached_content_as_CachedContent_object",
-                cached_content=caching_types.CachedContent(
+                cached_content=caching.CachedContent(
                     name="cachedContent/test-cached-content",
                     model="models/gemini-1.0-pro-001",
                     create_time="2000-01-01T01:01:01.123456Z",

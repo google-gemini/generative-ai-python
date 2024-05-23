@@ -129,7 +129,7 @@ class UnitTests(parameterized.TestCase):
             ttl=datetime.timedelta(minutes=30),
         )
         self.assertIsInstance(self.observed_requests[-1], glm.CreateCachedContentRequest)
-        self.assertIsInstance(cc, caching_types.CachedContent)
+        self.assertIsInstance(cc, caching.CachedContent)
         self.assertEqual(cc.name, "cachedContent/test-cached-content")
         self.assertEqual(cc.model, "models/gemini-1.0-pro-001")
 
@@ -161,21 +161,21 @@ class UnitTests(parameterized.TestCase):
             ttl=ttl,
         )
         self.assertIsInstance(self.observed_requests[-1], glm.CreateCachedContentRequest)
-        self.assertIsInstance(cc, caching_types.CachedContent)
+        self.assertIsInstance(cc, caching.CachedContent)
 
     def test_get_cached_content(self):
-        cc = caching.get_cached_content(name="cachedContent/test-cached-content")
+        cc = caching.CachedContent.get(name="cachedContent/test-cached-content")
         self.assertIsInstance(self.observed_requests[-1], glm.GetCachedContentRequest)
-        self.assertIsInstance(cc, caching_types.CachedContent)
+        self.assertIsInstance(cc, caching.CachedContent)
         self.assertEqual(cc.name, "cachedContent/test-cached-content")
         self.assertEqual(cc.model, "models/gemini-1.0-pro-001")
 
     def test_list_cached_contents(self):
-        ccs = list(caching.list_cached_contents(page_size=2))
+        ccs = list(caching.CachedContent.list(page_size=2))
         self.assertIsInstance(self.observed_requests[-1], glm.ListCachedContentsRequest)
         self.assertLen(ccs, 2)
-        self.assertIsInstance(ccs[0], caching_types.CachedContent)
-        self.assertIsInstance(ccs[1], caching_types.CachedContent)
+        self.assertIsInstance(ccs[0], caching.CachedContent)
+        self.assertIsInstance(ccs[1], caching.CachedContent)
 
     def test_update_cached_content_invalid_update_paths(self):
         update_masks = dict(
@@ -185,7 +185,7 @@ class UnitTests(parameterized.TestCase):
             contents=["add this Content"],
         )
 
-        cc = caching.get_cached_content(name="cachedContent/test-cached-content")
+        cc = caching.CachedContent.get(name="cachedContent/test-cached-content")
         with self.assertRaises(ValueError):
             cc.update(updates=update_masks)
 
@@ -194,13 +194,13 @@ class UnitTests(parameterized.TestCase):
             ttl=datetime.timedelta(hours=2),
         )
 
-        cc = caching.get_cached_content(name="cachedContent/test-cached-content")
+        cc = caching.CachedContent.get(name="cachedContent/test-cached-content")
         cc = cc.update(updates=update_masks)
         self.assertIsInstance(self.observed_requests[-1], glm.UpdateCachedContentRequest)
-        self.assertIsInstance(cc, caching_types.CachedContent)
+        self.assertIsInstance(cc, caching.CachedContent)
 
     def test_delete_cached_content(self):
-        cc = caching.get_cached_content(name="cachedContent/test-cached-content")
+        cc = caching.CachedContent.get(name="cachedContent/test-cached-content")
         cc.delete()
         self.assertIsInstance(self.observed_requests[-1], glm.DeleteCachedContentRequest)
 
