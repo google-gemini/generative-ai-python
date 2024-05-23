@@ -29,7 +29,7 @@ when initializing a client:
 ```
 from google.generativeai import protos
 
-client = protos.DiscussServiceClient(
+client = glm.DiscussServiceClient(
     client_options={'api_key':'YOUR_API_KEY'})
 ```
 

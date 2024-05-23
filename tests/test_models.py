@@ -45,7 +45,7 @@ class UnitTests(parameterized.TestCase):
         client._client_manager.clients["model"] = self.client
 
         # TODO(markdaoust): Check if typechecking works better if wee define this as a
-        #                   subclass of `protos.ModelServiceClient`, would pyi files for `protos. help?
+        #                   subclass of `glm.ModelServiceClient`, would pyi files for `glm`. help?
         def add_client_method(f):
             name = f.__name__
             setattr(self.client, name, f)

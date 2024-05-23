@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from typing import Callable
 
+import google.ai.generativelanguage as glm
 from google.generativeai import protos
 
 from google.generativeai.types import permission_types
@@ -123,7 +124,7 @@ def _construct_name(
 def get_permission(
     name: str | None = None,
     *,
-    client: protos.PermissionServiceClient | None = None,
+    client: glm.PermissionServiceClient | None = None,
     resource_name: str | None = None,
     permission_id: str | int | None = None,
     resource_type: str | None = None,
@@ -152,7 +153,7 @@ def get_permission(
 async def get_permission_async(
     name: str | None = None,
     *,
-    client: protos.PermissionServiceAsyncClient | None = None,
+    client: glm.PermissionServiceAsyncClient | None = None,
     resource_name: str | None = None,
     permission_id: str | int | None = None,
     resource_type: str | None = None,

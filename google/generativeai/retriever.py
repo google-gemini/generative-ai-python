@@ -31,7 +31,7 @@ from google.generativeai.types import retriever_types
 def create_corpus(
     name: str | None = None,
     display_name: str | None = None,
-    client: protos.RetrieverServiceClient | None = None,
+    client: glm.RetrieverServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> retriever_types.Corpus:
     """
@@ -78,7 +78,7 @@ def create_corpus(
 async def create_corpus_async(
     name: str | None = None,
     display_name: str | None = None,
-    client: protos.RetrieverServiceAsyncClient | None = None,
+    client: glm.RetrieverServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> retriever_types.Corpus:
     """This is the async version of `retriever.create_corpus`."""
@@ -106,7 +106,7 @@ async def create_corpus_async(
 
 def get_corpus(
     name: str,
-    client: protos.RetrieverServiceClient | None = None,
+    client: glm.RetrieverServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> retriever_types.Corpus:  # fmt: skip
     """
@@ -139,7 +139,7 @@ def get_corpus(
 
 async def get_corpus_async(
     name: str,
-    client: protos.RetrieverServiceAsyncClient | None = None,
+    client: glm.RetrieverServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> retriever_types.Corpus:  # fmt: skip
     """This is the async version of `retriever.get_corpus`."""
@@ -164,7 +164,7 @@ async def get_corpus_async(
 def delete_corpus(
     name: str,
     force: bool = False,
-    client: protos.RetrieverServiceClient | None = None,
+    client: glm.RetrieverServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ):  # fmt: skip
     """
@@ -191,7 +191,7 @@ def delete_corpus(
 async def delete_corpus_async(
     name: str,
     force: bool = False,
-    client: protos.RetrieverServiceAsyncClient | None = None,
+    client: glm.RetrieverServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ):  # fmt: skip
     """This is the async version of `retriever.delete_corpus`."""
@@ -211,7 +211,7 @@ async def delete_corpus_async(
 def list_corpora(
     *,
     page_size: Optional[int] = None,
-    client: protos.RetrieverServiceClient | None = None,
+    client: glm.RetrieverServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> Iterable[retriever_types.Corpus]:
     """
@@ -242,7 +242,7 @@ def list_corpora(
 async def list_corpora_async(
     *,
     page_size: Optional[int] = None,
-    client: protos.RetrieverServiceClient | None = None,
+    client: glm.RetrieverServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> AsyncIterable[retriever_types.Corpus]:
     """This is the async version of `retriever.list_corpora`."""

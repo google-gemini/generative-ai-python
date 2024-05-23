@@ -317,7 +317,7 @@ def chat(
     top_p: float | None = None,
     top_k: float | None = None,
     prompt: discuss_types.MessagePromptOptions | None = None,
-    client: protos.DiscussServiceClient | None = None,
+    client: glm.DiscussServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> discuss_types.ChatResponse:
     """Calls the API and returns a `types.ChatResponse` containing the response.
@@ -384,7 +384,7 @@ def chat(
         prompt: You may pass a `types.MessagePromptOptions` **instead** of a
             setting `context`/`examples`/`messages`, but not both.
         client: If you're not relying on the default client, you pass a
-            `protos.DiscussServiceClient` instead.
+            `glm.DiscussServiceClient` instead.
         request_options: Options for the request.
 
     Returns:
@@ -417,7 +417,7 @@ async def chat_async(
     top_p: float | None = None,
     top_k: float | None = None,
     prompt: discuss_types.MessagePromptOptions | None = None,
-    client: protos.DiscussServiceAsyncClient | None = None,
+    client: glm.DiscussServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> discuss_types.ChatResponse:
     request = _make_generate_message_request(
@@ -447,7 +447,7 @@ else:
 @string_utils.set_doc(discuss_types.ChatResponse.__doc__)
 @dataclasses.dataclass(**DATACLASS_KWARGS, init=False)
 class ChatResponse(discuss_types.ChatResponse):
-    _client: protos.DiscussServiceClient | None = dataclasses.field(
+    _client: glm.DiscussServiceClient | None = dataclasses.field(
         default=lambda: None, repr=False
     )
 
@@ -498,7 +498,7 @@ class ChatResponse(discuss_types.ChatResponse):
     async def reply_async(
         self, message: discuss_types.MessageOptions
     ) -> discuss_types.ChatResponse:
-        if isinstance(self._client, protos.DiscussServiceClient):
+        if isinstance(self._client, glm.DiscussServiceClient):
             raise TypeError(
                 f"reply_async can't be called on a non-async client, use reply instead."
             )
@@ -514,7 +514,7 @@ class ChatResponse(discuss_types.ChatResponse):
 def _build_chat_response(
     request: protos.GenerateMessageRequest,
     response: protos.GenerateMessageResponse,
-    client: protos.DiscussServiceClient | protos.DiscussServiceAsyncClient,
+    client: glm.DiscussServiceClient | protos.DiscussServiceAsyncClient,
 ) -> ChatResponse:
     request = type(request).to_dict(request)
     prompt = request.pop("prompt")
@@ -540,7 +540,7 @@ def _build_chat_response(
 
 def _generate_response(
     request: protos.GenerateMessageRequest,
-    client: protos.DiscussServiceClient | None = None,
+    client: glm.DiscussServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> ChatResponse:
     if request_options is None:
@@ -556,7 +556,7 @@ def _generate_response(
 
 async def _generate_response_async(
     request: protos.GenerateMessageRequest,
-    client: protos.DiscussServiceAsyncClient | None = None,
+    client: glm.DiscussServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> ChatResponse:
     if request_options is None:
@@ -577,7 +577,7 @@ def count_message_tokens(
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
     model: model_types.AnyModelNameOptions = DEFAULT_DISCUSS_MODEL,
-    client: protos.DiscussServiceAsyncClient | None = None,
+    client: glm.DiscussServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> discuss_types.TokenCount:
     model = model_types.make_model_name(model)

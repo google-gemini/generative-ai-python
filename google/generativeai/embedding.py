@@ -17,6 +17,7 @@ from __future__ import annotations
 import itertools
 from typing import Any, Iterable, overload, TypeVar, Union, Mapping
 
+import google.ai.generativelanguage as glm
 from google.generativeai import protos
 
 from google.generativeai.client import get_default_generative_client
@@ -101,7 +102,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     output_dimensionality: int | None = None,
-    client: protos.GenerativeServiceClient | None = None,
+    client: glm.GenerativeServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict: ...
 
@@ -113,7 +114,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     output_dimensionality: int | None = None,
-    client: protos.GenerativeServiceClient | None = None,
+    client: glm.GenerativeServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
 
@@ -124,7 +125,7 @@ def embed_content(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     output_dimensionality: int | None = None,
-    client: protos.GenerativeServiceClient = None,
+    client: glm.GenerativeServiceClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
     """Calls the API to create embeddings for content passed in.
@@ -221,7 +222,7 @@ async def embed_content_async(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     output_dimensionality: int | None = None,
-    client: protos.GenerativeServiceAsyncClient | None = None,
+    client: glm.GenerativeServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict: ...
 
@@ -233,7 +234,7 @@ async def embed_content_async(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     output_dimensionality: int | None = None,
-    client: protos.GenerativeServiceAsyncClient | None = None,
+    client: glm.GenerativeServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
 
@@ -244,7 +245,7 @@ async def embed_content_async(
     task_type: EmbeddingTaskTypeOptions | None = None,
     title: str | None = None,
     output_dimensionality: int | None = None,
-    client: protos.GenerativeServiceAsyncClient = None,
+    client: glm.GenerativeServiceAsyncClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
     """The async version of `genai.embed_content`."""

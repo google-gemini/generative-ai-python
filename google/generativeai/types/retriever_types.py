@@ -21,6 +21,7 @@ import dataclasses
 from typing import Any, AsyncIterable, Optional, Union, Iterable, Mapping
 from typing_extensions import deprecated  # type: ignore
 
+import google.ai.generativelanguage as glm
 from google.generativeai import protos
 
 from google.protobuf import field_mask_pb2
@@ -262,7 +263,7 @@ class Corpus:
         name: str | None = None,
         display_name: str | None = None,
         custom_metadata: Iterable[CustomMetadata] | None = None,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Document:
         """
@@ -313,7 +314,7 @@ class Corpus:
         name: str | None = None,
         display_name: str | None = None,
         custom_metadata: Iterable[CustomMetadata] | None = None,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Document:
         """This is the async version of `Corpus.create_document`."""
@@ -347,7 +348,7 @@ class Corpus:
     def get_document(
         self,
         name: str,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Document:
         """
@@ -376,7 +377,7 @@ class Corpus:
     async def get_document_async(
         self,
         name: str,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Document:
         """This is the async version of `Corpus.get_document`."""
@@ -402,7 +403,7 @@ class Corpus:
     def update(
         self,
         updates: dict[str, Any],
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
@@ -440,7 +441,7 @@ class Corpus:
     async def update_async(
         self,
         updates: dict[str, Any],
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Corpus.update`."""
@@ -471,7 +472,7 @@ class Corpus:
         query: str,
         metadata_filters: Iterable[MetadataFilter] | None = None,
         results_count: int | None = None,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Iterable[RelevantChunk]:
         """
@@ -525,7 +526,7 @@ class Corpus:
         query: str,
         metadata_filters: Iterable[MetadataFilter] | None = None,
         results_count: int | None = None,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Iterable[RelevantChunk]:
         """This is the async version of `Corpus.query`."""
@@ -567,7 +568,7 @@ class Corpus:
         self,
         name: str,
         force: bool = False,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
@@ -594,7 +595,7 @@ class Corpus:
         self,
         name: str,
         force: bool = False,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Corpus.delete_document`."""
@@ -613,7 +614,7 @@ class Corpus:
     def list_documents(
         self,
         page_size: int | None = None,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Iterable[Document]:
         """
@@ -643,7 +644,7 @@ class Corpus:
     async def list_documents_async(
         self,
         page_size: int | None = None,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> AsyncIterable[Document]:
         """This is the async version of `Corpus.list_documents`."""
@@ -670,7 +671,7 @@ class Corpus:
         role: permission_types.RoleOptions,
         grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
         email_address: Optional[str] = None,
-        client: protos.PermissionServiceClient | None = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> permission_types.Permission:
         return self.permissions.create(
             role=role, grantee_type=grantee_type, email_address=email_address, client=client
@@ -685,7 +686,7 @@ class Corpus:
         role: permission_types.RoleOptions,
         grantee_type: Optional[permission_types.GranteeTypeOptions] = None,
         email_address: Optional[str] = None,
-        client: protos.PermissionServiceAsyncClient | None = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> permission_types.Permission:
         return await self.permissions.create_async(
             role=role, grantee_type=grantee_type, email_address=email_address, client=client
@@ -698,7 +699,7 @@ class Corpus:
     def list_permissions(
         self,
         page_size: Optional[int] = None,
-        client: protos.PermissionServiceClient | None = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> Iterable[permission_types.Permission]:
         return self.permissions.list(page_size=page_size, client=client)
 
@@ -709,7 +710,7 @@ class Corpus:
     async def list_permissions_async(
         self,
         page_size: Optional[int] = None,
-        client: protos.PermissionServiceAsyncClient | None = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> AsyncIterable[permission_types.Permission]:
         return self.permissions.list_async(page_size=page_size, client=client)
 
@@ -745,7 +746,7 @@ class Document(abc.ABC):
         data: str | ChunkData,
         name: str | None = None,
         custom_metadata: Iterable[CustomMetadata] | None = None,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Chunk:
         """
@@ -804,7 +805,7 @@ class Document(abc.ABC):
         data: str | ChunkData,
         name: str | None = None,
         custom_metadata: Iterable[CustomMetadata] | None = None,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Chunk:
         """This is the async version of `Document.create_chunk`."""
@@ -905,7 +906,7 @@ class Document(abc.ABC):
     def batch_create_chunks(
         self,
         chunks: BatchCreateChunkOptions,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
@@ -931,7 +932,7 @@ class Document(abc.ABC):
     async def batch_create_chunks_async(
         self,
         chunks: BatchCreateChunkOptions,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.batch_create_chunk`."""
@@ -948,7 +949,7 @@ class Document(abc.ABC):
     def get_chunk(
         self,
         name: str,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
@@ -977,7 +978,7 @@ class Document(abc.ABC):
     async def get_chunk_async(
         self,
         name: str,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.get_chunk`."""
@@ -997,7 +998,7 @@ class Document(abc.ABC):
     def list_chunks(
         self,
         page_size: int | None = None,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> Iterable[Chunk]:
         """
@@ -1023,7 +1024,7 @@ class Document(abc.ABC):
     async def list_chunks_async(
         self,
         page_size: int | None = None,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> AsyncIterable[Chunk]:
         """This is the async version of `Document.list_chunks`."""
@@ -1042,7 +1043,7 @@ class Document(abc.ABC):
         query: str,
         metadata_filters: Iterable[MetadataFilter] | None = None,
         results_count: int | None = None,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> list[RelevantChunk]:
         """
@@ -1095,7 +1096,7 @@ class Document(abc.ABC):
         query: str,
         metadata_filters: Iterable[MetadataFilter] | None = None,
         results_count: int | None = None,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> list[RelevantChunk]:
         """This is the async version of `Document.query`."""
@@ -1142,7 +1143,7 @@ class Document(abc.ABC):
     def update(
         self,
         updates: dict[str, Any],
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
@@ -1179,7 +1180,7 @@ class Document(abc.ABC):
     async def update_async(
         self,
         updates: dict[str, Any],
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.update`."""
@@ -1207,7 +1208,7 @@ class Document(abc.ABC):
     def batch_update_chunks(
         self,
         chunks: BatchUpdateChunksOptions,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
@@ -1306,7 +1307,7 @@ class Document(abc.ABC):
     async def batch_update_chunks_async(
         self,
         chunks: BatchUpdateChunksOptions,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.batch_update_chunks`."""
@@ -1396,7 +1397,7 @@ class Document(abc.ABC):
     def delete_chunk(
         self,
         name: str,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,  # fmt: {}
     ):
         """
@@ -1421,7 +1422,7 @@ class Document(abc.ABC):
     async def delete_chunk_async(
         self,
         name: str,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,  # fmt: {}
     ):
         """This is the async version of `Document.delete_chunk`."""
@@ -1440,7 +1441,7 @@ class Document(abc.ABC):
     def batch_delete_chunks(
         self,
         chunks: BatchDeleteChunkOptions,
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
@@ -1473,7 +1474,7 @@ class Document(abc.ABC):
     async def batch_delete_chunks_async(
         self,
         chunks: BatchDeleteChunkOptions,
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Document.batch_delete_chunks`."""
@@ -1579,7 +1580,7 @@ class Chunk(abc.ABC):
     def update(
         self,
         updates: dict[str, Any],
-        client: protos.RetrieverServiceClient | None = None,
+        client: glm.RetrieverServiceClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """
@@ -1628,7 +1629,7 @@ class Chunk(abc.ABC):
     async def update_async(
         self,
         updates: dict[str, Any],
-        client: protos.RetrieverServiceAsyncClient | None = None,
+        client: glm.RetrieverServiceAsyncClient | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ):
         """This is the async version of `Chunk.update`."""

@@ -19,6 +19,8 @@ from collections.abc import Iterable, Sequence
 import itertools
 from typing import Any, Iterable, overload, TypeVar
 
+import google.ai.generativelanguage as glm
+
 from google.generativeai import protos
 
 from google.generativeai.client import get_default_text_client
@@ -139,7 +141,7 @@ def generate_text(
     top_k: float | None = None,
     safety_settings: palm_safety_types.SafetySettingOptions | None = None,
     stop_sequences: str | Iterable[str] | None = None,
-    client: protos.TextServiceClient | None = None,
+    client: glm.TextServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.Completion:
     """Calls the API and returns a `types.Completion` containing the response.
@@ -180,7 +182,7 @@ def generate_text(
         stop_sequences: A set of up to 5 character sequences that will stop output generation.
           If specified, the API will stop at the first appearance of a stop
           sequence. The stop sequence will not be included as part of the response.
-        client: If you're not relying on a default client, you pass a `protos.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
         request_options: Options for the request.
 
     Returns:
@@ -215,11 +217,11 @@ class Completion(text_types.Completion):
 
 def _generate_response(
     request: protos.GenerateTextRequest,
-    client: protos.TextServiceClient = None,
+    client: glm.TextServiceClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> Completion:
     """
-    Generates a response using the provided `protos.GenerateTextRequest` and client.
+    Generates a response using the provided `glm.GenerateTextRequest` and client.
 
     Args:
         request: The text generation request.
@@ -251,7 +253,7 @@ def _generate_response(
 def count_text_tokens(
     model: model_types.AnyModelNameOptions,
     prompt: str,
-    client: protos.TextServiceClient | None = None,
+    client: glm.TextServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.TokenCount:
     base_model = models.get_base_model_name(model)
@@ -274,7 +276,7 @@ def count_text_tokens(
 def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: str,
-    client: protos.TextServiceClient = None,
+    client: glm.TextServiceClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict: ...
 
@@ -283,7 +285,7 @@ def generate_embeddings(
 def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: Sequence[str],
-    client: protos.TextServiceClient = None,
+    client: glm.TextServiceClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
 
@@ -291,7 +293,7 @@ def generate_embeddings(
 def generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: str | Sequence[str],
-    client: protos.TextServiceClient = None,
+    client: glm.TextServiceClient = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
     """Calls the API to create an embedding for the text passed in.
@@ -302,7 +304,7 @@ def generate_embeddings(
         text: Free-form input text given to the model. Given a string, the model will
               generate an embedding based on the input text.
 
-        client: If you're not relying on a default client, you pass a `protos.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
 
         request_options: Options for the request.
 

@@ -101,7 +101,7 @@ class Permission:
 
     def delete(
         self,
-        client: protos.PermissionServiceClient | None = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> None:
         """
         Delete permission (self).
@@ -113,7 +113,7 @@ class Permission:
 
     async def delete_async(
         self,
-        client: protos.PermissionServiceAsyncClient | None = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> None:
         """
         This is the async version of `Permission.delete`.
@@ -133,7 +133,7 @@ class Permission:
     def update(
         self,
         updates: dict[str, Any],
-        client: protos.PermissionServiceClient | None = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> Permission:
         """
         Update a list of fields for a specified permission.
@@ -170,7 +170,7 @@ class Permission:
     async def update_async(
         self,
         updates: dict[str, Any],
-        client: protos.PermissionServiceAsyncClient | None = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> Permission:
         """
         This is the async version of `Permission.update`.
@@ -212,7 +212,7 @@ class Permission:
     def get(
         cls,
         name: str,
-        client: protos.PermissionServiceClient | None = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> Permission:
         """
         Get information about a specific permission.
@@ -234,7 +234,7 @@ class Permission:
     async def get_async(
         cls,
         name: str,
-        client: protos.PermissionServiceAsyncClient | None = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> Permission:
         """
         This is the async version of `Permission.get`.
@@ -294,7 +294,7 @@ class Permissions:
         role: RoleOptions,
         grantee_type: Optional[GranteeTypeOptions] = None,
         email_address: Optional[str] = None,
-        client: protos.PermissionServiceClient | None = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> Permission:
         """
         Create a new permission on a resource (self).
@@ -327,7 +327,7 @@ class Permissions:
         role: RoleOptions,
         grantee_type: Optional[GranteeTypeOptions] = None,
         email_address: Optional[str] = None,
-        client: protos.PermissionServiceAsyncClient | None = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> Permission:
         """
         This is the async version of `PermissionAdapter.create_permission`.
@@ -345,7 +345,7 @@ class Permissions:
     def list(
         self,
         page_size: Optional[int] = None,
-        client: protos.PermissionServiceClient | None = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> Iterable[Permission]:
         """
         List `Permission`s enforced on a resource (self).
@@ -370,7 +370,7 @@ class Permissions:
     async def list_async(
         self,
         page_size: Optional[int] = None,
-        client: protos.PermissionServiceAsyncClient | None = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> AsyncIterable[Permission]:
         """
         This is the async version of `PermissionAdapter.list_permissions`.
@@ -388,7 +388,7 @@ class Permissions:
     def transfer_ownership(
         self,
         email_address: str,
-        client: protos.PermissionServiceClient | None = None,
+        client: glm.PermissionServiceClient | None = None,
     ) -> None:
         """
         Transfer ownership of a resource (self) to a new owner.
@@ -409,7 +409,7 @@ class Permissions:
     async def transfer_ownership_async(
         self,
         email_address: str,
-        client: protos.PermissionServiceAsyncClient | None = None,
+        client: glm.PermissionServiceAsyncClient | None = None,
     ) -> None:
         """This is the async version of `PermissionAdapter.transfer_ownership`."""
         if self.parent.startswith("corpora"):

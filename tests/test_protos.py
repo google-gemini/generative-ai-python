@@ -36,6 +36,6 @@ class UnitTests(parameterized.TestCase):
             content = fpath.read_text()
             self.assertNotRegex(
                 content,
-                "import google.ai.generativelanguage|from google.ai import generativelanguage",
+                "import google\.ai\.generativelanguage|from google\.ai import generativelanguage",
                 msg=f"generativelanguage found in {fpath}",
             )

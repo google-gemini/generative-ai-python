@@ -17,6 +17,8 @@ from __future__ import annotations
 import typing
 from typing import Any, Literal
 
+import google.ai.generativelanguage as glm
+
 from google.generativeai import protos
 from google.generativeai import operations
 from google.generativeai.client import get_default_model_client
@@ -137,7 +139,7 @@ def get_tuned_model(
 
 
 def get_base_model_name(
-    model: model_types.AnyModelNameOptions, client: protos.ModelServiceClient | None = None
+    model: model_types.AnyModelNameOptions, client: glm.ModelServiceClient | None = None
 ):
     if isinstance(model, str):
         if model.startswith("tunedModels/"):
@@ -164,7 +166,7 @@ def get_base_model_name(
 def list_models(
     *,
     page_size: int | None = 50,
-    client: protos.ModelServiceClient | None = None,
+    client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.ModelsIterable:
     """Lists available models.
@@ -177,7 +179,7 @@ def list_models(
 
     Args:
         page_size: How many `types.Models` to fetch per page (api call).
-        client: You may pass a `protos.ModelServiceClient` instead of using the default client.
+        client: You may pass a `glm.ModelServiceClient` instead of using the default client.
         request_options: Options for the request.
 
     Yields:
@@ -198,7 +200,7 @@ def list_models(
 def list_tuned_models(
     *,
     page_size: int | None = 50,
-    client: protos.ModelServiceClient | None = None,
+    client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModelsIterable:
     """Lists available models.
@@ -211,7 +213,7 @@ def list_tuned_models(
 
     Args:
         page_size: How many `types.Models` to fetch per page (api call).
-        client: You may pass a `protos.ModelServiceClient` instead of using the default client.
+        client: You may pass a `glm.ModelServiceClient` instead of using the default client.
         request_options: Options for the request.
 
     Yields:
@@ -246,7 +248,7 @@ def create_tuned_model(
     learning_rate: float | None = None,
     input_key: str = "text_input",
     output_key: str = "output",
-    client: protos.ModelServiceClient | None = None,
+    client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> operations.CreateTunedModelOperation:
     """Launches a tuning job to create a TunedModel.
@@ -360,7 +362,7 @@ def update_tuned_model(
     tuned_model: protos.TunedModel,
     updates: None = None,
     *,
-    client: protos.ModelServiceClient | None = None,
+    client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     pass
@@ -371,7 +373,7 @@ def update_tuned_model(
     tuned_model: str,
     updates: dict[str, Any],
     *,
-    client: protos.ModelServiceClient | None = None,
+    client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     pass
@@ -381,7 +383,7 @@ def update_tuned_model(
     tuned_model: str | protos.TunedModel,
     updates: dict[str, Any] | None = None,
     *,
-    client: protos.ModelServiceClient | None = None,
+    client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
     """Push updates to the tuned model. Only certain attributes are updatable."""
@@ -440,7 +442,7 @@ def _apply_update(thing, path, value):
 
 def delete_tuned_model(
     tuned_model: model_types.TunedModelNameOptions,
-    client: protos.ModelServiceClient | None = None,
+    client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> None:
     if request_options is None:

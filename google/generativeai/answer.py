@@ -20,6 +20,7 @@ import itertools
 from typing import Any, Iterable, Union, Mapping, Optional
 from typing_extensions import TypedDict
 
+import google.ai.generativelanguage as glm
 from google.generativeai import protos
 
 from google.generativeai.client import (
@@ -244,7 +245,7 @@ def generate_answer(
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
-    client: protos.GenerativeServiceClient | None = None,
+    client: glm.GenerativeServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ):
     """
@@ -281,7 +282,7 @@ def generate_answer(
         answer_style: Style in which the grounded answer should be returned.
         safety_settings: Safety settings for generated output. Defaults to None.
         temperature: Controls the randomness of the output.
-        client: If you're not relying on a default client, you pass a `protos.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
         request_options: Options for the request.
 
     Returns:
@@ -317,7 +318,7 @@ async def generate_answer_async(
     answer_style: AnswerStyle | None = None,
     safety_settings: safety_types.SafetySettingOptions | None = None,
     temperature: float | None = None,
-    client: protos.GenerativeServiceClient | None = None,
+    client: glm.GenerativeServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ):
     """
@@ -335,7 +336,7 @@ async def generate_answer_async(
         answer_style: Style in which the grounded answer should be returned.
         safety_settings: Safety settings for generated output. Defaults to None.
         temperature: Controls the randomness of the output.
-        client: If you're not relying on a default client, you pass a `protos.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
 
     Returns:
         A `types.Answer` containing the model's text answer response.
