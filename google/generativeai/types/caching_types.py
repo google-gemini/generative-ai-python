@@ -27,6 +27,7 @@ class TTL(TypedDict):
 
 ExpirationTypes = Union[TTL, int, datetime.timedelta]
 
+
 def to_ttl(expiration: Optional[ExpirationTypes]) -> TTL:
     if isinstance(expiration, datetime.timedelta):
         return {"seconds": int(expiration.total_seconds())}

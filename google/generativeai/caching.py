@@ -61,7 +61,7 @@ class CachedContent:
             value = self.expire_time + datetime.timedelta(seconds=value["seconds"])
             parts[-1] = "expire_time"
         setattr(self, parts[-1], value)
-    
+
     @classmethod
     def _decode_cached_content(cls, cached_content: glm.CachedContent) -> CachedContent:
         # not supposed to get INPUT_ONLY repeated fields, but local gapic lib build
@@ -186,17 +186,15 @@ class CachedContent:
         request = glm.GetCachedContentRequest(name=name)
         response = client.get_cached_content(request)
         return cls._decode_cached_content(response)
-    
+
     @classmethod
     def list(
-        cls,
-        page_size: Optional[int] = 1,
-        client: glm.CacheServiceClient | None = None
+        cls, page_size: Optional[int] = 1, client: glm.CacheServiceClient | None = None
     ) -> Iterable[CachedContent]:
         """Lists `CachedContent` objects associated with the project.
 
         Args:
-            page_size: The maximum number of permissions to return (per page). 
+            page_size: The maximum number of permissions to return (per page).
             The service may return fewer `CachedContent` objects.
 
         Returns:

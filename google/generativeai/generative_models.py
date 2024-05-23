@@ -20,6 +20,7 @@ from google.generativeai.types import generation_types
 from google.generativeai.types import helper_types
 from google.generativeai.types import safety_types
 
+
 class GenerativeModel:
     """
     The `genai.GenerativeModel` class wraps default parameters for calls to
