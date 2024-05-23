@@ -76,6 +76,20 @@ class MockGenerativeServiceClient:
         self.observed_kwargs.append(kwargs)
         response = self.responses["count_tokens"].pop(0)
         return response
+    
+    def get_cached_content(
+        self,
+        request: glm.GetCachedContentRequest,
+        **kwargs,
+    ) -> glm.CachedContent:
+        self.observed_requests.append(request)
+        return glm.CachedContent(
+            name="cachedContent/test-cached-content",
+            model="models/gemini-1.0-pro-001",
+            create_time="2000-01-01T01:01:01.123456Z",
+            update_time="2000-01-01T01:01:01.123456Z",
+            expire_time="2000-01-01T01:01:01.123456Z",
+        )
 
 
 class CUJTests(parameterized.TestCase):
@@ -98,19 +112,19 @@ class CUJTests(parameterized.TestCase):
         client_lib._client_manager.clients["generative"] = self.client
         client_lib._client_manager.clients["cache"] = self.client
 
-        @add_client_method
-        def get_cached_content(
-            request: glm.GetCachedContentRequest,
-            **kwargs,
-        ) -> glm.CachedContent:
-            self.observed_requests.append(request)
-            return glm.CachedContent(
-                name="cachedContent/test-cached-content",
-                model="models/gemini-1.0-pro-001",
-                create_time="2000-01-01T01:01:01.123456Z",
-                update_time="2000-01-01T01:01:01.123456Z",
-                expire_time="2000-01-01T01:01:01.123456Z",
-            )
+        # @add_client_method
+        # def get_cached_content(
+        #     request: glm.GetCachedContentRequest,
+        #     **kwargs,
+        # ) -> glm.CachedContent:
+        #     self.observed_requests.append(request)
+        #     return glm.CachedContent(
+        #         name="cachedContent/test-cached-content",
+        #         model="models/gemini-1.0-pro-001",
+        #         create_time="2000-01-01T01:01:01.123456Z",
+        #         update_time="2000-01-01T01:01:01.123456Z",
+        #         expire_time="2000-01-01T01:01:01.123456Z",
+        #     )
 
     def test_hello(self):
         # Generate text from text prompt
