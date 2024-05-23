@@ -204,7 +204,8 @@ class UnitTests(parameterized.TestCase):
         cc.delete()
         self.assertIsInstance(self.observed_requests[-1], glm.DeleteCachedContentRequest)
 
-        cc = caching.delete_cached_content(name="cachedContent/test-cached-content")
+        cc = caching.CachedContent.get(name="cachedContent/test-cached-content")
+        cc.delete()
         self.assertIsInstance(self.observed_requests[-1], glm.DeleteCachedContentRequest)
 
     def test_auto_delete_cached_content_with_context_manager(self):
