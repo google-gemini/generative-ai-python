@@ -14,11 +14,10 @@
 # limitations under the License.
 from __future__ import annotations
 
-import re
-import string
-import dataclasses
-from typing import Any, AsyncIterable, Iterable, Optional
 
+from typing import AsyncIterable, Iterable, Optional
+
+import google.ai.generativelanguage as glm
 from google.generativeai import protos
 
 from google.generativeai.client import get_default_retriever_client
