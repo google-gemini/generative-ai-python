@@ -27,6 +27,8 @@ import tqdm.auto as tqdm
 
 
 def list_operations(*, client=None) -> Iterator[CreateTunedModelOperation]:
+    """Calls the API to list all operations"""
+
     if client is None:
         client = client_lib.get_default_operations_client()
 
@@ -41,6 +43,7 @@ def list_operations(*, client=None) -> Iterator[CreateTunedModelOperation]:
 
 
 def get_operation(name: str, *, client=None) -> CreateTunedModelOperation:
+    """Calls the API to get a specific operation"""
     if client is None:
         client = client_lib.get_default_operations_client()
 
@@ -49,8 +52,9 @@ def get_operation(name: str, *, client=None) -> CreateTunedModelOperation:
 
 
 def delete_operation(name: str, *, client=None):
-    """Raises:
-    google.api_core.exceptions.MethodNotImplemented: Not implemented."""
+    """Calls the API to delete a specific operation"""
+
+    # Raises:google.api_core.exceptions.MethodNotImplemented: Not implemented.
     if client is None:
         client = client_lib.get_default_operations_client()
 

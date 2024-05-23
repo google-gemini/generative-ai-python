@@ -159,8 +159,8 @@ class MetadataFilter:
             elif isinstance(c.value, (int, float)):
                 kwargs["numeric_value"] = float(c.value)
             else:
-                ValueError(
-                    f"The value for the condition must be either a string or an integer/float, but got {c.value}."
+                raise ValueError(
+                    f"Invalid value type: The value for the condition must be either a string or an integer/float. Received: '{c.value}' of type {type(c.value).__name__}."
                 )
             kwargs["operation"] = c.operation
 
@@ -196,11 +196,11 @@ class CustomMetadata:
         elif isinstance(self.value, (int, float)):
             kwargs["numeric_value"] = float(self.value)
         else:
-            ValueError(
-                f"The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float, but got {self.value}."
+            raise ValueError(
+                f"Invalid value type: The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float. Received: '{self.value}' of type {type(self.value).__name__}."
             )
-
         return protos.CustomMetadata(key=self.key, **kwargs)
+
 
     @classmethod
     def _from_dict(cls, cm):
@@ -232,7 +232,7 @@ def make_custom_metadata(cm: CustomMetadataOptions) -> CustomMetadata:
         return CustomMetadata._from_dict(cm)
     else:
         raise ValueError(  # nofmt
-            "Could not create a `CustomMetadata` from:\n" f"  type: {type(cm)}\n" f"  value: {cm}"
+            f"Invalid input: Could not create a 'CustomMetadata' from the provided input. Received type: '{type(cm).__name__}', value: '{cm}'."
         )
 
 
@@ -426,7 +426,9 @@ class Corpus:
         # At this time, only `display_name` can be updated
         for item in updates:
             if item != "display_name":
-                raise ValueError("At this time, only `display_name` can be updated for `Corpus`.")
+                raise ValueError(
+                    "Invalid operation: Currently, only the 'display_name' attribute can be updated for a 'Corpus'."
+                )
         field_mask = field_mask_pb2.FieldMask()
 
         for path in updates.keys():
@@ -455,7 +457,9 @@ class Corpus:
         # At this time, only `display_name` can be updated
         for item in updates:
             if item != "display_name":
-                raise ValueError("At this time, only `display_name` can be updated for `Corpus`.")
+                raise ValueError(
+                    "Invalid operation: Currently, only the 'display_name' attribute can be updated for a 'Corpus'."
+                )
         field_mask = field_mask_pb2.FieldMask()
 
         for path in updates.keys():
@@ -495,7 +499,9 @@ class Corpus:
 
         if results_count:
             if results_count > 100:
-                raise ValueError("Number of results returned must be between 1 and 100.")
+                raise ValueError(
+                    "Invalid operation: The number of results returned must be between 1 and 100."
+                )
 
         m_f_ = []
         if metadata_filters:
@@ -538,7 +544,9 @@ class Corpus:
 
         if results_count:
             if results_count > 100:
-                raise ValueError("Number of results returned must be between 1 and 100.")
+                raise ValueError(
+                    "Invalid operation: The number of results returned must be between 1 and 100."
+                )
 
         m_f_ = []
         if metadata_filters:
@@ -874,7 +882,7 @@ class Document(abc.ABC):
             return protos.Chunk(chunk)
         else:
             raise TypeError(
-                f"Could not convert instance of `{type(chunk)}` chunk:" f"value: {chunk}"
+                f"Invalid input: Could not convert instance of type '{type(chunk).__name__}' to a chunk. Received value: '{chunk}'."
             )
 
     def _make_batch_create_chunk_request(
@@ -1065,7 +1073,9 @@ class Document(abc.ABC):
 
         if results_count:
             if results_count < 0 or results_count >= 100:
-                raise ValueError("Number of results returned must be between 1 and 100.")
+                raise ValueError(
+                    "Invalid operation: The number of results returned must be between 1 and 100."
+                )
 
         m_f_ = []
         if metadata_filters:
@@ -1108,7 +1118,9 @@ class Document(abc.ABC):
 
         if results_count:
             if results_count < 0 or results_count >= 100:
-                raise ValueError("Number of results returned must be between 1 and 100.")
+                raise ValueError(
+                    "Invalid operation: The number of results returned must be between 1 and 100."
+                )
 
         m_f_ = []
         if metadata_filters:
@@ -1166,7 +1178,9 @@ class Document(abc.ABC):
         # At this time, only `display_name` can be updated
         for item in updates:
             if item != "display_name":
-                raise ValueError("At this time, only `display_name` can be updated for `Document`.")
+                raise ValueError(
+                    "Invalid operation: Currently, only the 'display_name' attribute can be updated for a 'Document'."
+                )
         field_mask = field_mask_pb2.FieldMask()
         for path in updates.keys():
             field_mask.paths.append(path)
@@ -1194,7 +1208,9 @@ class Document(abc.ABC):
         # At this time, only `display_name` can be updated
         for item in updates:
             if item != "display_name":
-                raise ValueError("At this time, only `display_name` can be updated for `Document`.")
+                raise ValueError(
+                    "Invalid operation: Currently, only the 'display_name' attribute can be updated for a 'Document'."
+                )
         field_mask = field_mask_pb2.FieldMask()
         for path in updates.keys():
             field_mask.paths.append(path)
@@ -1252,7 +1268,7 @@ class Document(abc.ABC):
                 for item in updates:
                     if item != "data.string_value":
                         raise ValueError(
-                            f"At this time, only `data` can be updated for `Chunk`. Got {item}."
+                            f"Invalid operation: Currently, only the 'data' attribute can be updated for a 'Chunk'. Attempted to update '{item}'."
                         )
                 field_mask = field_mask_pb2.FieldMask()
                 for path in updates.keys():
@@ -1296,8 +1312,8 @@ class Document(abc.ABC):
                     )
                 else:
                     raise TypeError(
-                        "The `chunks` parameter must be a list of protos.UpdateChunkRequests,"
-                        "dictionaries, or tuples of dictionaries."
+                        "Invalid input: The 'chunks' parameter must be a list of 'protos.UpdateChunkRequests',"
+                        " dictionaries, or tuples of dictionaries."
                     )
             request = protos.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = client.batch_update_chunks(request, **request_options)
@@ -1342,7 +1358,7 @@ class Document(abc.ABC):
                 for item in updates:
                     if item != "data.string_value":
                         raise ValueError(
-                            f"At this time, only `data` can be updated for `Chunk`. Got {item}."
+                            f"Invalid operation: Currently, only the 'data' attribute can be updated for a 'Chunk'. Attempted to update '{item}'."
                         )
                 field_mask = field_mask_pb2.FieldMask()
                 for path in updates.keys():
@@ -1386,8 +1402,12 @@ class Document(abc.ABC):
                     )
                 else:
                     raise TypeError(
+<<<<<<< HEAD
                         "The `chunks` parameter must be a list of protos.UpdateChunkRequests,"
                         "dictionaries, or tuples of dictionaries."
+=======
+                        "Invalid input: The 'chunks' parameter must be a list of 'glm.UpdateChunkRequests', dictionaries, or tuples of dictionaries."
+>>>>>>> main
                     )
             request = protos.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = await client.batch_update_chunks(request, **request_options)
@@ -1468,7 +1488,11 @@ class Document(abc.ABC):
             client.batch_delete_chunks(request, **request_options)
         else:
             raise ValueError(
+<<<<<<< HEAD
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `protos.DeleteChunkRequest`s."
+=======
+                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple 'glm.DeleteChunkRequest's."
+>>>>>>> main
             )
 
     async def batch_delete_chunks_async(
@@ -1495,7 +1519,11 @@ class Document(abc.ABC):
             await client.batch_delete_chunks(request, **request_options)
         else:
             raise ValueError(
+<<<<<<< HEAD
                 "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `protos.DeleteChunkRequest`s."
+=======
+                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple 'glm.DeleteChunkRequest's."
+>>>>>>> main
             )
 
     def to_dict(self) -> dict[str, Any]:
@@ -1613,7 +1641,7 @@ class Chunk(abc.ABC):
         for item in updates:
             if item != "data.string_value":
                 raise ValueError(
-                    f"At this time, only `data` can be updated for `Chunk`. Got {item}."
+                    f"Invalid operation: Currently, only the 'data' attribute can be updated for a 'Chunk'. Attempted to update '{item}'."
                 )
         field_mask = field_mask_pb2.FieldMask()
 
@@ -1653,7 +1681,7 @@ class Chunk(abc.ABC):
         for item in updates:
             if item != "data.string_value":
                 raise ValueError(
-                    f"At this time, only `data` can be updated for `Chunk`. Got {item}."
+                    f"Invalid operation: Currently, only the 'data' attribute can be updated for a 'Chunk'. Attempted to update '{item}'."
                 )
         field_mask = field_mask_pb2.FieldMask()
 

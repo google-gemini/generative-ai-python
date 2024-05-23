@@ -71,7 +71,10 @@ class RequestOptions(collections.abc.Mapping):
         elif item == "timeout":
             return self.timeout
         else:
-            raise KeyError(f'RequestOptions does not have a "{item}" key')
+            raise KeyError(
+                f"Invalid key: 'RequestOptions' does not contain a key named '{item}'. "
+                "Please use a valid key."
+            )
 
     def __iter__(self):
         yield "retry"

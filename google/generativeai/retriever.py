@@ -34,10 +34,7 @@ def create_corpus(
     client: glm.RetrieverServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> retriever_types.Corpus:
-    """
-    Create a new `Corpus` in the retriever service, and return it as a `retriever_types.Corpus` instance.
-
-    Users can specify either a name or display_name.
+    """Calls the API to create a new `Corpus` by specifying either a corpus resource name as an ID or a display name, and returns the created `Corpus`.
 
     Args:
         name: The corpus resource name (ID). The name must be alphanumeric and fewer
@@ -109,8 +106,7 @@ def get_corpus(
     client: glm.RetrieverServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> retriever_types.Corpus:  # fmt: skip
-    """
-    Fetch a specific `Corpus` from the retriever service.
+    """Calls the API to fetch a `Corpus` by name and returns the `Corpus`.
 
     Args:
         name: The `Corpus` name.
@@ -143,6 +139,7 @@ async def get_corpus_async(
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> retriever_types.Corpus:  # fmt: skip
     """This is the async version of `retriever.get_corpus`."""
+
     if request_options is None:
         request_options = {}
 
@@ -167,13 +164,13 @@ def delete_corpus(
     client: glm.RetrieverServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ):  # fmt: skip
-    """
-    Delete a `Corpus` from the service.
+    """Calls the API to remove a `Corpus` from the service, optionally deleting associated `Document`s and objects if the `force` parameter is set to true.
 
     Args:
         name: The `Corpus` name.
         force: If set to true, any `Document`s and objects related to this `Corpus` will also be deleted.
         request_options: Options for the request.
+
     """
     if request_options is None:
         request_options = {}
@@ -214,8 +211,7 @@ def list_corpora(
     client: glm.RetrieverServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> Iterable[retriever_types.Corpus]:
-    """
-    List the Corpuses you own in the service.
+    """Calls the API to list all `Corpora` in the service and returns a list of paginated `Corpora`.
 
     Args:
         page_size: Maximum number of `Corpora` to request.
