@@ -13,64 +13,51 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-This module publishes the proto classes from `google.ai.generativelanguage`.
+This module publishes the ProtoBuffer "Message" classes used by the API.
 
-`google.ai.generativelanguage` is a low-level auto-generated client library for the Gemini API.
+ProtoBufers are Google API's serilization format. They are strongly typed and efficient.
 
-It is built using the same tooling as Google Cloud client libraries, and will be quite familiar if you've used
-those before.
+The `genai` SDK tries to be permissive about what objects it will accept from a user, but in the end
+the SDK always converts input to an apropriate Proto Message object to send as the request.
 
-While we encourage Python users to access the Geini API using the `google.generativeai` package (aka `palm`),
-the lower level package is also available.
+If you have any uncertianty about what the API may accept or return, these classes provide the
+complete/unambiguous answer. They come from the `google-ai-generativelanguage` package which is
+generated from a snapshot of the API definition.
 
-Each method in the Gemini API is connected to one of the client classes. Pass your API-key to the class' `client_options`
-when initializing a client:
+>>> from google.generativeai import protos
+>>> import inspect
+>>> print(inspect.getsource(protos.GenerateContentRequest))
 
-```
-from google.generativeai import protos
+Proto classes can have "oneof" fields. Use `in` to check which `oneof` field is set.
 
-client = glm.DiscussServiceClient(
-    client_options={'api_key':'YOUR_API_KEY'})
-```
+>>> p = protos.Part(text='hello')
+>>> 'text' in p
+True
+>>> p.inline_data = {'mime_type':'image/png', 'data': b'PNG'}
+>>> type(p.inline_data) is protos.Blob
+True
+>>> 'inline_data' in p
+False
+>>> 'text' in p
+True
 
-To call the api, pass an appropriate request-proto-object. For the `DiscussServiceClient.generate_message` pass
-a `generativelanguage.GenerateMessageRequest` instance:
+Instances of all Message classes can be converted a JSON compatible dict with the following construct:
 
-```
-request = protos.GenerateMessageRequest(
-    model='models/chat-bison-001',
-    prompt=protos.MessagePrompt(
-        messages=[protos.Message(content='Hello!')]))
+>>> p_dict = type(p).to_dict(p)
+>>> p_dict
+{'inline_data': {'mime_type': 'image/png', 'data': 'UE5H'}}
 
-client.generate_message(request)
-```
-```
-candidates {
-  author: "1"
-  content: "Hello! How can I help you today?"
-}
-...
-```
+Bytes are base64 encoded.
 
-For simplicity:
+Note when converting that `to_dict` accepts additional arguments, the
 
-* The API methods also accept key-word arguments.
-* Anywhere you might pass a proto-object, the library will also accept simple python structures.
+- `use_integers_for_enums:bool = True`, Set it to `False` to replace enum int values with their string
+   names in the output
+- ` including_default_value_fields:bool = True`, Set it to `False` to reduce the verbosity of the output.
 
-So the following is equivalent to the previous example:
+Additional arguments are described in the docstring:
 
-```
-client.generate_message(
-    model='models/chat-bison-001',
-    prompt={'messages':[{'content':'Hello!'}]})
-```
-```
-candidates {
-  author: "1"
-  content: "Hello! How can I help you today?"
-}
-...
-```
+>>> help(proto.Part.to_dict)
 
 """
 
