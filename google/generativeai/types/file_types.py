@@ -30,7 +30,7 @@ class File:
             proto = proto.to_proto()
         self._proto = protos.File(proto)
 
-    def to_proto(self) -> glm.File:
+    def to_proto(self) -> protos.File:
         return self._proto
 
     @property
@@ -74,7 +74,7 @@ class File:
         return self._proto.state
 
     @property
-    def video_metadata(self) -> glm.VideoMetadata:
+    def video_metadata(self) -> protos.VideoMetadata:
         return self._proto.video_metadata
 
     @property

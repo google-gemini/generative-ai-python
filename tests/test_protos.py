@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pathlib
+import re
 
 from absl.testing import parameterized
 import google.ai.generativelanguage as glm
@@ -24,18 +25,12 @@ ROOT = pathlib.Path(__file__).parent.parent
 class UnitTests(parameterized.TestCase):
     def test_check_glm_imports(self):
         for fpath in ROOT.rglob("*.py"):
-            if fpath.name in [
-                "client.py",
-                "discuss.py",
-                "test_protos.py",
-                "test_client.py",
-                "build_docs.py",
-            ]:
-                continue
-
             content = fpath.read_text()
-            self.assertNotRegex(
-                content,
-                "import google\.ai\.generativelanguage|from google\.ai import generativelanguage",
-                msg=f"generativelanguage found in {fpath}",
-            )
+            for match in re.findall("glm\.\w+", content):
+                if "__" in match:
+                    continue
+                self.assertIn(
+                    "Client",
+                    match,
+                    msg=f"Bad `glm.` usage, use `genai.protos` instead,\n   in {fpath}",
+                )

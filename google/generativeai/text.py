@@ -223,7 +223,7 @@ def _generate_response(
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> Completion:
     """
-    Generates a response using the provided `glm.GenerateTextRequest` and client.
+    Generates a response using the provided `protos.GenerateTextRequest` and client.
 
     Args:
         request: The text generation request.

@@ -166,7 +166,7 @@ def get_base_model_name(
     else:
         raise TypeError(
             f"Invalid model: The provided model '{model}' is not recognized or supported. "
-            "Supported types are: str, model_types.TunedModel, model_types.Model, glm.Model, and glm.TunedModel."
+            "Supported types are: str, model_types.TunedModel, model_types.Model, protos.Model, and protos.TunedModel."
         )
 
     return base_model
@@ -432,8 +432,8 @@ def update_tuned_model(
         field_mask = protobuf_helpers.field_mask(was._pb, tuned_model._pb)
     else:
         raise TypeError(
-            "Invalid argument type: In the function `update_tuned_model(tuned_model:dict|glm.TunedModel)`, the "
-            f"`tuned_model` argument must be of type `dict` or `glm.TunedModel`. Received type: {type(tuned_model).__name__}."
+            "Invalid argument type: In the function `update_tuned_model(tuned_model:dict|protos.TunedModel)`, the "
+            f"`tuned_model` argument must be of type `dict` or `protos.TunedModel`. Received type: {type(tuned_model).__name__}."
         )
 
     result = client.update_tuned_model(

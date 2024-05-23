@@ -17,7 +17,6 @@ from __future__ import annotations
 from typing import Callable
 
 import google.ai.generativelanguage as glm
-from google.generativeai import protos
 
 from google.generativeai.types import permission_types
 from google.generativeai.types import retriever_types

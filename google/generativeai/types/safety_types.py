@@ -225,7 +225,7 @@ def to_easy_safety_dict(settings: SafetySettingOptions) -> EasySafetySettingDict
     else:  # Iterable
         result = {}
         for setting in settings:
-            if isinstance(setting, glm.SafetySetting):
+            if isinstance(setting, protos.SafetySetting):
                 result[to_harm_category(setting.category)] = to_block_threshold(setting.threshold)
             elif isinstance(setting, dict):
                 result[to_harm_category(setting["category"])] = to_block_threshold(

@@ -201,7 +201,6 @@ class CustomMetadata:
             )
         return protos.CustomMetadata(key=self.key, **kwargs)
 
-
     @classmethod
     def _from_dict(cls, cm):
         key = cm["key"]
@@ -1402,12 +1401,8 @@ class Document(abc.ABC):
                     )
                 else:
                     raise TypeError(
-<<<<<<< HEAD
-                        "The `chunks` parameter must be a list of protos.UpdateChunkRequests,"
+                        "Invalid input: The 'chunks' parameter must be a list of 'protos.UpdateChunkRequests', "
                         "dictionaries, or tuples of dictionaries."
-=======
-                        "Invalid input: The 'chunks' parameter must be a list of 'glm.UpdateChunkRequests', dictionaries, or tuples of dictionaries."
->>>>>>> main
                     )
             request = protos.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = await client.batch_update_chunks(request, **request_options)
@@ -1488,11 +1483,8 @@ class Document(abc.ABC):
             client.batch_delete_chunks(request, **request_options)
         else:
             raise ValueError(
-<<<<<<< HEAD
-                "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `protos.DeleteChunkRequest`s."
-=======
-                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple 'glm.DeleteChunkRequest's."
->>>>>>> main
+                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, "
+                "or multiple 'protos.DeleteChunkRequest's."
             )
 
     async def batch_delete_chunks_async(
@@ -1519,11 +1511,8 @@ class Document(abc.ABC):
             await client.batch_delete_chunks(request, **request_options)
         else:
             raise ValueError(
-<<<<<<< HEAD
-                "To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple `protos.DeleteChunkRequest`s."
-=======
-                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple 'glm.DeleteChunkRequest's."
->>>>>>> main
+                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, "
+                "or multiple 'protos.DeleteChunkRequest's."
             )
 
     def to_dict(self) -> dict[str, Any]:

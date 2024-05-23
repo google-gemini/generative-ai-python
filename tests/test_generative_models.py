@@ -48,10 +48,10 @@ class MockGenerativeServiceClient:
 
     def generate_content(
         self,
-        request: glm.GenerateContentRequest,
+        request: protos.GenerateContentRequest,
         **kwargs,
-    ) -> glm.GenerateContentResponse:
-        self.test.assertIsInstance(request, glm.GenerateContentRequest)
+    ) -> protos.GenerateContentResponse:
+        self.test.assertIsInstance(request, protos.GenerateContentRequest)
         self.observed_requests.append(request)
         self.observed_kwargs.append(kwargs)
         response = self.responses["generate_content"].pop(0)
@@ -59,9 +59,9 @@ class MockGenerativeServiceClient:
 
     def stream_generate_content(
         self,
-        request: glm.GetModelRequest,
+        request: protos.GetModelRequest,
         **kwargs,
-    ) -> Iterable[glm.GenerateContentResponse]:
+    ) -> Iterable[protos.GenerateContentResponse]:
         self.observed_requests.append(request)
         self.observed_kwargs.append(kwargs)
         response = self.responses["stream_generate_content"].pop(0)
@@ -69,9 +69,9 @@ class MockGenerativeServiceClient:
 
     def count_tokens(
         self,
-        request: glm.CountTokensRequest,
+        request: protos.CountTokensRequest,
         **kwargs,
-    ) -> Iterable[glm.GenerateContentResponse]:
+    ) -> Iterable[protos.GenerateContentResponse]:
         self.observed_requests.append(request)
         self.observed_kwargs.append(kwargs)
         response = self.responses["count_tokens"].pop(0)
@@ -97,45 +97,6 @@ class CUJTests(parameterized.TestCase):
         self.client = MockGenerativeServiceClient(self)
         client_lib._client_manager.clients["generative"] = self.client
 
-<<<<<<< HEAD
-        def add_client_method(f):
-            name = f.__name__
-            setattr(self.client, name, f)
-            return f
-
-        self.observed_requests = []
-        self.responses = collections.defaultdict(list)
-
-        @add_client_method
-        def generate_content(
-            request: protos.GenerateContentRequest,
-            **kwargs,
-        ) -> protos.GenerateContentResponse:
-            self.assertIsInstance(request, protos.GenerateContentRequest)
-            self.observed_requests.append(request)
-            response = self.responses["generate_content"].pop(0)
-            return response
-
-        @add_client_method
-        def stream_generate_content(
-            request: protos.GetModelRequest,
-            **kwargs,
-        ) -> Iterable[protos.GenerateContentResponse]:
-            self.observed_requests.append(request)
-            response = self.responses["stream_generate_content"].pop(0)
-            return response
-
-        @add_client_method
-        def count_tokens(
-            request: protos.CountTokensRequest,
-            **kwargs,
-        ) -> Iterable[protos.GenerateContentResponse]:
-            self.observed_requests.append(request)
-            response = self.responses["count_tokens"].pop(0)
-            return response
-
-=======
->>>>>>> main
     def test_hello(self):
         # Generate text from text prompt
         model = generative_models.GenerativeModel(model_name="gemini-pro")
@@ -215,13 +176,8 @@ class CUJTests(parameterized.TestCase):
             "list-dict",
             [
                 dict(
-<<<<<<< HEAD
-                    category=protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
+                    category=protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
                     threshold=protos.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-=======
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
->>>>>>> main
                 ),
             ],
             [
@@ -231,27 +187,15 @@ class CUJTests(parameterized.TestCase):
         [
             "object",
             [
-<<<<<<< HEAD
                 protos.SafetySetting(
-                    category=protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
+                    category=protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
                     threshold=protos.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
                 ),
             ],
             [
                 protos.SafetySetting(
-                    category=protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
-                    threshold=protos.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-=======
-                glm.SafetySetting(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-                ),
-            ],
-            [
-                glm.SafetySetting(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
->>>>>>> main
+                    category=protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=protos.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
                 ),
             ],
         ],
@@ -270,40 +214,22 @@ class CUJTests(parameterized.TestCase):
         danger = [
             s
             for s in self.observed_requests[-1].safety_settings
-            if s.category == glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+            if s.category == protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
         ]
         self.assertEqual(
-<<<<<<< HEAD
-            self.observed_requests[-1].safety_settings[0].category,
-            protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
-            protos.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-=======
             danger[0].threshold,
-            glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
->>>>>>> main
+            protos.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
         )
 
         _ = model.generate_content("hello", safety_settings=safe2)
         danger = [
             s
             for s in self.observed_requests[-1].safety_settings
-            if s.category == glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+            if s.category == protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
         ]
         self.assertEqual(
-<<<<<<< HEAD
-            self.observed_requests[-1].safety_settings[0].category,
-            protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
-            protos.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
-=======
             danger[0].threshold,
-            glm.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
->>>>>>> main
+            protos.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
         )
 
     def test_stream_basic(self):
@@ -1308,7 +1234,7 @@ class CUJTests(parameterized.TestCase):
 
     def test_chat_with_request_options(self):
         self.responses["generate_content"].append(
-            glm.GenerateContentResponse(
+            protos.GenerateContentResponse(
                 {
                     "candidates": [{"finish_reason": "STOP"}],
                 }
