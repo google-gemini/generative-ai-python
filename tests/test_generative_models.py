@@ -76,7 +76,7 @@ class MockGenerativeServiceClient:
         self.observed_kwargs.append(kwargs)
         response = self.responses["count_tokens"].pop(0)
         return response
-    
+
     def get_cached_content(
         self,
         request: glm.GetCachedContentRequest,

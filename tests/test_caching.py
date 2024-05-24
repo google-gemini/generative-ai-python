@@ -163,6 +163,33 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(self.observed_requests[-1], glm.CreateCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
 
+    @parameterized.named_parameters(
+        [
+            dict(
+                testcase_name="upper_case",
+                name="Test-cached-content",
+            ),
+            dict(
+                testcase_name="special_characters_except_dot_and_hyphen",
+                name="test-cac*@/hed-conte#nt",
+            ),
+            dict(
+                testcase_name="empty_name",
+                name="",
+            ),
+            dict(
+                testcase_name="blank_spaces",
+                name="test cached content",
+            ),
+        ]
+    )
+    def test_create_cached_content_with_invalid_name_format(self, name):
+        with self.assertRaises(ValueError):
+            _ = caching.CachedContent.create(
+                name=name,
+                model="models/gemini-1.0-pro-001",
+            )
+
     def test_get_cached_content(self):
         cc = caching.CachedContent.get(name="cachedContent/test-cached-content")
         self.assertIsInstance(self.observed_requests[-1], glm.GetCachedContentRequest)
