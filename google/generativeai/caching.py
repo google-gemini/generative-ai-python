@@ -88,8 +88,10 @@ class CachedContent:
         ttl: Optional[caching_types.ExpirationTypes] = datetime.timedelta(hours=1),
     ) -> glm.CreateCachedContentRequest:
         """Prepares a CreateCachedContentRequest."""
-        if "cachedContents/" not in name:
+        if caching_types.valid_cached_content_name(name):
             name = "cachedContents/" + name
+        else:
+            raise ValueError(caching_types.NAME_ERROR_MESSAGE.format(name=name))
 
         if "/" not in model:
             model = "models/" + model

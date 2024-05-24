@@ -17,8 +17,19 @@ from __future__ import annotations
 import datetime
 from typing import Optional, Union
 from typing_extensions import TypedDict
+import re
 
 __all__ = ["TTL"]
+
+
+_VALID_CACHED_CONTENT_NAME = r"([a-z0-9-\.]+)$"
+NAME_ERROR_MESSAGE = (
+    "The `name` must consist of alphanumeric characters (or `-` or `.`). Received: `{name}`"
+)
+
+
+def valid_cached_content_name(name: str) -> bool:
+    return re.match(_VALID_CACHED_CONTENT_NAME, name) is not None
 
 
 class TTL(TypedDict):
