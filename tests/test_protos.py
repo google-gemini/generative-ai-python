@@ -16,8 +16,6 @@ import pathlib
 import re
 
 from absl.testing import parameterized
-import google.ai.generativelanguage as glm
-from google.generativeai import responder
 
 ROOT = pathlib.Path(__file__).parent.parent
 
