@@ -18,9 +18,9 @@ This module publishes the ProtoBuffer "Message" classes used by the API.
 ProtoBufers are Google API's serilization format. They are strongly typed and efficient.
 
 The `genai` SDK tries to be permissive about what objects it will accept from a user, but in the end
-the SDK always converts input to an apropriate Proto Message object to send as the request.
+the SDK always converts input to an appropriate Proto Message object to send as the request.
 
-If you have any uncertianty about what the API may accept or return, these classes provide the
+If you have any uncertainty about what the API may accept or return, these classes provide the
 complete/unambiguous answer. They come from the `google-ai-generativelanguage` package which is
 generated from a snapshot of the API definition.
 
@@ -41,15 +41,23 @@ False
 >>> 'text' in p
 True
 
-Instances of all Message classes can be converted a JSON compatible dict with the following construct:
+Instances of all Message classes can be converted into JSON compatible dictionaries with the following construct
+(Bytes are base64 encoded):
 
 >>> p_dict = type(p).to_dict(p)
 >>> p_dict
 {'inline_data': {'mime_type': 'image/png', 'data': 'UE5H'}}
 
-Bytes are base64 encoded.
+A compatible dict can ve converted to an instance of a Message class by passing it as the first argument to the
+constructor:
 
-Note when converting that `to_dict` accepts additional arguments, the
+>>> p = protos.Part(p_dict)
+inline_data {
+  mime_type: "image/png"
+  data: "PNG"
+}
+
+Note when converting that `to_dict` accepts additional arguments:
 
 - `use_integers_for_enums:bool = True`, Set it to `False` to replace enum int values with their string
    names in the output
@@ -58,7 +66,6 @@ Note when converting that `to_dict` accepts additional arguments, the
 Additional arguments are described in the docstring:
 
 >>> help(proto.Part.to_dict)
-
 """
 
 from google.ai.generativelanguage_v1beta.types import *
