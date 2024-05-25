@@ -667,6 +667,5 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(request_options, self.observed_kwargs[0])
 
 
-
 if __name__ == "__main__":
     absltest.main()

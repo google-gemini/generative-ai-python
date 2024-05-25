@@ -97,7 +97,6 @@ class CUJTests(parameterized.TestCase):
         self.client = MockGenerativeServiceClient(self)
         client_lib._client_manager.clients["generative"] = self.client
 
-
     def test_chat(self):
         # Multi turn chat
         model = generative_models.GenerativeModel("gemini-pro")
@@ -705,6 +704,40 @@ class CUJTests(parameterized.TestCase):
 
         request_options["retry"] = None
         self.assertEqual(request_options, self.observed_kwargs[0])
+
+    def test_serialize(self):
+        def add(x, y):
+            return x + y
+
+        model = generative_models.GenerativeModel(
+            model_name=",models/gemini-1.5-flash",
+            generation_config={"max_output_tokens": 65},
+            tools=[add],
+            safety_settings="block_none",
+            system_instruction="you are a cat",
+        )
+
+        chat = model.start_chat(
+            history=[
+                {"role": "user", "parts": "hello"},
+                {"role": "model", "parts": "meow!"},
+                {
+                    "role": "user",
+                    "parts": [
+                        "what's this picture?",
+                        {"mime_type": "image/png", "data": b"PNG!"},
+                    ],
+                },
+            ]
+        )
+
+        chat_json = chat.to_dict()
+
+        new_chat = generative_models.ChatSession.from_dict(chat_json)
+
+        new_chat_json = chat.to_dict()
+
+        self.assertEqual(chat_json, new_chat_json)
 
 
 if __name__ == "__main__":

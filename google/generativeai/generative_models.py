@@ -123,8 +123,8 @@ class GenerativeModel:
         contents: content_types.ContentsType,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
-        tools: content_types.FunctionLibraryType | None,
-        tool_config: content_types.ToolConfigType | None,
+        tools: content_types.FunctionLibraryType | None = None,
+        tool_config: content_types.ToolConfigType | None = None,
     ) -> protos.GenerateContentRequest:
         """Creates a `protos.GenerateContentRequest` from raw inputs."""
         tools_lib = self._get_tools_lib(tools)
@@ -435,9 +435,14 @@ class ChatSession:
         self._last_received: generation_types.BaseGenerateContentResponse | None = None
         self.enable_automatic_function_calling = enable_automatic_function_calling
 
-    def to_dict(self):
-        request = self.model._prepare_request(contents = self.history)
-        return type(request).to_dict(use_integers_for_enums=False, including_default_value_fields=False)
+    def to_dict(self, tools=True):
+        if tools == True and self.model._tools is not None:
+            pass  # raise ValueError("")
+
+        request = self.model._prepare_request(contents=self.history)
+        return type(request).to_dict(
+            request, use_integers_for_enums=False, including_default_value_fields=False
+        )
 
     @classmethod
     def from_dict(cls, obj):
@@ -448,7 +453,8 @@ class ChatSession:
             tool_config=request.tool_config,
             tools=request.tools,
             safety_settings=request.safety_settings,
-            system_instruction=request.system_instruction)
+            system_instruction=request.system_instruction,
+        )
 
         return model.start_chat(history=request.contents)
 
