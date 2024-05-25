@@ -435,6 +435,23 @@ class ChatSession:
         self._last_received: generation_types.BaseGenerateContentResponse | None = None
         self.enable_automatic_function_calling = enable_automatic_function_calling
 
+    def to_dict(self):
+        request = self.model._prepare_request(contents = self.history)
+        return type(request).to_dict(use_integers_for_enums=False, including_default_value_fields=False)
+
+    @classmethod
+    def from_dict(cls, obj):
+        request = protos.GenerateContentRequest(obj)
+        model = GenerativeModel(
+            model_name=request.model,
+            generation_config=request.generation_config,
+            tool_config=request.tool_config,
+            tools=request.tools,
+            safety_settings=request.safety_settings,
+            system_instruction=request.system_instruction)
+
+        return model.start_chat(history=request.contents)
+
     def send_message(
         self,
         content: content_types.ContentType,
