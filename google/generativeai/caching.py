@@ -79,8 +79,8 @@ class CachedContent:
 
     @staticmethod
     def _prepare_create_request(
-        name: str,
         model: str,
+        name: str = None,
         system_instruction: Optional[content_types.ContentType] = None,
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,
@@ -88,10 +88,11 @@ class CachedContent:
         ttl: Optional[caching_types.ExpirationTypes] = datetime.timedelta(hours=1),
     ) -> glm.CreateCachedContentRequest:
         """Prepares a CreateCachedContentRequest."""
-        if caching_types.valid_cached_content_name(name):
+        if name is not None:
+            if not caching_types.valid_cached_content_name(name):
+                raise ValueError(caching_types.NAME_ERROR_MESSAGE.format(name=name))
+            
             name = "cachedContents/" + name
-        else:
-            raise ValueError(caching_types.NAME_ERROR_MESSAGE.format(name=name))
 
         if "/" not in model:
             model = "models/" + model
@@ -127,8 +128,8 @@ class CachedContent:
     @classmethod
     def create(
         cls,
-        name: str,
         model: str,
+        name: str = None,
         system_instruction: Optional[content_types.ContentType] = None,
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,
@@ -139,11 +140,10 @@ class CachedContent:
         """Creates CachedContent resource.
 
         Args:
-            name: The resource name referring to the cached content.
-                  Format: cachedContents/{id}.
             model: The name of the `Model` to use for cached content
                     Format: models/{model}. Cached content resource can be only
                     used with model it was created for.
+            name: The resource name referring to the cached content.
             system_instruction: Developer set system instruction.
             contents: Contents to cache.
             tools: A list of `Tools` the model may use to generate response.
@@ -157,8 +157,8 @@ class CachedContent:
             client = get_default_cache_client()
 
         request = cls._prepare_create_request(
-            name=name,
             model=model,
+            name=name,
             system_instruction=system_instruction,
             contents=contents,
             tools=tools,
