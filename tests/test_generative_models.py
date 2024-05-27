@@ -1,6 +1,7 @@
 import collections
 from collections.abc import Iterable
 import copy
+import datetime
 import pathlib
 from typing import Any
 import textwrap
@@ -111,7 +112,6 @@ class CUJTests(parameterized.TestCase):
         self.client = MockGenerativeServiceClient(self)
         client_lib._client_manager.clients["generative"] = self.client
         client_lib._client_manager.clients["cache"] = self.client
-
 
     def test_hello(self):
         # Generate text from text prompt
@@ -338,7 +338,13 @@ class CUJTests(parameterized.TestCase):
             dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
             dict(
                 testcase_name="test_cached_content_as_CachedContent_object",
-                cached_content=caching.CachedContent.get(name="cachedContents/test-cached-content"),
+                cached_content=caching.CachedContent(
+                    name="cachedContents/test-cached-content",
+                    model="models/gemini-1.0-pro-001",
+                    create_time=datetime.datetime.now(),
+                    update_time=datetime.datetime.now(),
+                    expire_time=datetime.datetime.now(),
+                ),
             ),
         ],
     )
@@ -1289,7 +1295,7 @@ class CUJTests(parameterized.TestCase):
             cached_content="test-cached-content"
         )
         result = repr(model)
-        self.assertIn("cached_content=cachedContent/test-cached-content", result)
+        self.assertIn("cached_content=cachedContents/test-cached-content", result)
         self.assertIn("model_name='models/gemini-1.0-pro-001'", result)
 
     def test_count_tokens_called_with_request_options(self):

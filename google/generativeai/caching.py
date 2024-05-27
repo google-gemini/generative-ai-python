@@ -210,12 +210,7 @@ class CachedContent:
             yield cls._decode_cached_content(cached_content)
 
     def delete(self, client: glm.CachedServiceClient | None = None) -> None:
-        """Deletes `CachedContent` resource.
-
-        Args:
-            name: The resource name referring to the cached content.
-                Format: cachedContents/{id}.
-        """
+        """Deletes `CachedContent` resource."""
         if client is None:
             client = get_default_cache_client()
 
