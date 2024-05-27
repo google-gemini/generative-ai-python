@@ -123,6 +123,7 @@ class GenerativeModel:
                 safety_settings={self._safety_settings},
                 tools={self._tools},
                 system_instruction={maybe_text(self._system_instruction)},
+                cached_content={getattr(self, "cached_content", None)}
             )"""
         )
 

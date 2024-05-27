@@ -1213,6 +1213,7 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'first'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), glm.Content({'parts': [{'text': 'second'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
             )"""
@@ -1241,6 +1242,7 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
             )"""
@@ -1285,6 +1287,7 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
                 history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
             )"""
@@ -1295,6 +1298,14 @@ class CUJTests(parameterized.TestCase):
         model = generative_models.GenerativeModel("gemini-pro", system_instruction="Be excellent.")
         result = repr(model)
         self.assertIn("system_instruction='Be excellent.'", result)
+
+    def test_repr_for_model_created_from_cahced_content(self):
+        model = generative_models.GenerativeModel.from_cached_content(
+            cached_content="test-cached-content"
+        )
+        result = repr(model)
+        self.assertIn("cached_content=cachedContent/test-cached-content", result)
+        self.assertIn("model_name='models/gemini-1.0-pro-001'", result)
 
     def test_count_tokens_called_with_request_options(self):
         self.responses["count_tokens"].append(glm.CountTokensResponse())
