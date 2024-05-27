@@ -91,7 +91,7 @@ class CachedContent:
         if name is not None:
             if not caching_types.valid_cached_content_name(name):
                 raise ValueError(caching_types.NAME_ERROR_MESSAGE.format(name=name))
-            
+
             name = "cachedContents/" + name
 
         if "/" not in model:
