@@ -96,7 +96,7 @@ class GenerativeModel:
         self._client = None
         self._async_client = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> GenerativeModel:
         self = super().__new__(cls)
 
         if cached_instance := kwargs.pop("cached_content", None):
