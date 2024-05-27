@@ -80,7 +80,7 @@ class CachedContent:
     @staticmethod
     def _prepare_create_request(
         model: str,
-        name: str = None,
+        name: str | None = None,
         system_instruction: Optional[content_types.ContentType] = None,
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,
@@ -129,7 +129,7 @@ class CachedContent:
     def create(
         cls,
         model: str,
-        name: str = None,
+        name: str | None = None,
         system_instruction: Optional[content_types.ContentType] = None,
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,

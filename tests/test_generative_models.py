@@ -84,7 +84,7 @@ class MockGenerativeServiceClient:
     ) -> glm.CachedContent:
         self.observed_requests.append(request)
         return glm.CachedContent(
-            name="cachedContent/test-cached-content",
+            name="cachedContents/test-cached-content",
             model="models/gemini-1.0-pro-001",
             create_time="2000-01-01T01:01:01.123456Z",
             update_time="2000-01-01T01:01:01.123456Z",
@@ -112,19 +112,6 @@ class CUJTests(parameterized.TestCase):
         client_lib._client_manager.clients["generative"] = self.client
         client_lib._client_manager.clients["cache"] = self.client
 
-        # @add_client_method
-        # def get_cached_content(
-        #     request: glm.GetCachedContentRequest,
-        #     **kwargs,
-        # ) -> glm.CachedContent:
-        #     self.observed_requests.append(request)
-        #     return glm.CachedContent(
-        #         name="cachedContent/test-cached-content",
-        #         model="models/gemini-1.0-pro-001",
-        #         create_time="2000-01-01T01:01:01.123456Z",
-        #         update_time="2000-01-01T01:01:01.123456Z",
-        #         expire_time="2000-01-01T01:01:01.123456Z",
-        #     )
 
     def test_hello(self):
         # Generate text from text prompt
@@ -351,23 +338,19 @@ class CUJTests(parameterized.TestCase):
             dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
             dict(
                 testcase_name="test_cached_content_as_CachedContent_object",
-                cached_content=caching.CachedContent(
-                    name="cachedContent/test-cached-content",
-                    model="models/gemini-1.0-pro-001",
-                    create_time="2000-01-01T01:01:01.123456Z",
-                    update_time="2000-01-01T01:01:01.123456Z",
-                    expire_time="2000-01-01T01:01:01.123456Z",
-                ),
+                cached_content=caching.CachedContent.get(name="cachedContents/test-cached-content"),
             ),
         ],
     )
     def test_model_with_cached_content_as_context(self, cached_content):
         model = generative_models.GenerativeModel.from_cached_content(cached_content=cached_content)
-        cc_name = model.cached_content
+        cc_name = model.cached_content  # pytype: disable=attribute-error
         model_name = model.model_name
-        self.assertEqual(cc_name, "cachedContent/test-cached-content")
+        self.assertEqual(cc_name, "cachedContents/test-cached-content")
         self.assertEqual(model_name, "models/gemini-1.0-pro-001")
-        self.assertEqual(model.cached_content, "cachedContent/test-cached-content")
+        self.assertEqual(
+            model.cached_content, "cachedContents/test-cached-content"
+        )  # pytype: disable=attribute-error
 
     def test_content_generation_with_model_having_context(self):
         self.responses["generate_content"] = [simple_response("world!")]
@@ -377,7 +360,9 @@ class CUJTests(parameterized.TestCase):
         response = model.generate_content("Hello")
 
         self.assertEqual(response.text, "world!")
-        self.assertEqual(model.cached_content, "cachedContent/test-cached-content")
+        self.assertEqual(
+            model.cached_content, "cachedContents/test-cached-content"
+        )  # pytype: disable=attribute-error
 
     def test_fail_content_generation_with_model_having_context(self):
         model = generative_models.GenerativeModel.from_cached_content(
