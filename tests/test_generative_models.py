@@ -355,8 +355,8 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(cc_name, "cachedContents/test-cached-content")
         self.assertEqual(model_name, "models/gemini-1.0-pro-001")
         self.assertEqual(
-            model.cached_content, "cachedContents/test-cached-content"
-        )  # pytype: disable=attribute-error
+            model.cached_content, "cachedContents/test-cached-content"  # pytype: disable=attribute-error
+        )
 
     def test_content_generation_with_model_having_context(self):
         self.responses["generate_content"] = [simple_response("world!")]
@@ -367,8 +367,8 @@ class CUJTests(parameterized.TestCase):
 
         self.assertEqual(response.text, "world!")
         self.assertEqual(
-            model.cached_content, "cachedContents/test-cached-content"
-        )  # pytype: disable=attribute-error
+            model.cached_content, "cachedContents/test-cached-content"  # pytype: disable=attribute-error
+        )
 
     def test_fail_content_generation_with_model_having_context(self):
         model = generative_models.GenerativeModel.from_cached_content(
