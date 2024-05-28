@@ -13,12 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-This module publishes the ProtoBuffer "Message" classes used by the API.
+This module provides low level access to theProtoBuffer "Message" classes used by the API.
+
+**For typical usage of this SDK you do not need to use any of these classes.**
 
 ProtoBufers are Google API's serilization format. They are strongly typed and efficient.
 
 The `genai` SDK tries to be permissive about what objects it will accept from a user, but in the end
-the SDK always converts input to an appropriate Proto Message object to send as the request.
+the SDK always converts input to an appropriate Proto Message object to send as the request. Each API request
+has a `*Request` and `*Response` Message defined here.
 
 If you have any uncertainty about what the API may accept or return, these classes provide the
 complete/unambiguous answer. They come from the `google-ai-generativelanguage` package which is
@@ -48,7 +51,7 @@ Instances of all Message classes can be converted into JSON compatible dictionar
 >>> p_dict
 {'inline_data': {'mime_type': 'image/png', 'data': 'UE5H'}}
 
-A compatible dict can ve converted to an instance of a Message class by passing it as the first argument to the
+A compatible dict can be converted to an instance of a Message class by passing it as the first argument to the
 constructor:
 
 >>> p = protos.Part(p_dict)
