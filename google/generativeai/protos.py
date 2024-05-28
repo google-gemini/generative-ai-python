@@ -26,7 +26,7 @@ generated from a snapshot of the API definition.
 
 >>> from google.generativeai import protos
 >>> import inspect
->>> print(inspect.getsource(protos.GenerateContentRequest))
+>>> print(inspect.getsource(protos.Part))
 
 Proto classes can have "oneof" fields. Use `in` to check which `oneof` field is set.
 
@@ -37,9 +37,9 @@ True
 >>> type(p.inline_data) is protos.Blob
 True
 >>> 'inline_data' in p
-False
->>> 'text' in p
 True
+>>> 'text' in p
+False
 
 Instances of all Message classes can be converted into JSON compatible dictionaries with the following construct
 (Bytes are base64 encoded):

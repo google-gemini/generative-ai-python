@@ -23,10 +23,10 @@ ROOT = pathlib.Path(__file__).parent.parent
 class UnitTests(parameterized.TestCase):
     def test_check_glm_imports(self):
         for fpath in ROOT.rglob("*.py"):
+            if fpath.name == "build_docs.py":
+                continue
             content = fpath.read_text()
             for match in re.findall("glm\.\w+", content):
-                if "__" in match:
-                    continue
                 self.assertIn(
                     "Client",
                     match,
