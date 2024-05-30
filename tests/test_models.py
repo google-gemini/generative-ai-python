@@ -25,7 +25,7 @@ from unittest import mock
 from absl.testing import absltest
 from absl.testing import parameterized
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 from google.api_core import operation
 
 from google.generativeai import models
@@ -45,7 +45,7 @@ class UnitTests(parameterized.TestCase):
         client._client_manager.clients["model"] = self.client
 
         # TODO(markdaoust): Check if typechecking works better if wee define this as a
-        #                   subclass of `glm.ModelServiceClient`, would pyi files for `glm` help?
+        #                   subclass of `glm.ModelServiceClient`, would pyi files for `glm`. help?
         def add_client_method(f):
             name = f.__name__
             setattr(self.client, name, f)
@@ -55,63 +55,65 @@ class UnitTests(parameterized.TestCase):
         self.responses = {}
 
         @add_client_method
-        def get_model(request: Union[glm.GetModelRequest, None] = None, *, name=None) -> glm.Model:
+        def get_model(
+            request: Union[protos.GetModelRequest, None] = None, *, name=None
+        ) -> protos.Model:
             if request is None:
-                request = glm.GetModelRequest(name=name)
-            self.assertIsInstance(request, glm.GetModelRequest)
+                request = protos.GetModelRequest(name=name)
+            self.assertIsInstance(request, protos.GetModelRequest)
             self.observed_requests.append(request)
             response = copy.copy(self.responses["get_model"])
             return response
 
         @add_client_method
         def get_tuned_model(
-            request: Union[glm.GetTunedModelRequest, None] = None,
+            request: Union[protos.GetTunedModelRequest, None] = None,
             *,
             name=None,
             **kwargs,
-        ) -> glm.TunedModel:
+        ) -> protos.TunedModel:
             if request is None:
-                request = glm.GetTunedModelRequest(name=name)
-            self.assertIsInstance(request, glm.GetTunedModelRequest)
+                request = protos.GetTunedModelRequest(name=name)
+            self.assertIsInstance(request, protos.GetTunedModelRequest)
             self.observed_requests.append(request)
             response = copy.copy(self.responses["get_tuned_model"])
             return response
 
         @add_client_method
         def list_models(
-            request: Union[glm.ListModelsRequest, None] = None,
+            request: Union[protos.ListModelsRequest, None] = None,
             *,
             page_size=None,
             page_token=None,
             **kwargs,
-        ) -> glm.ListModelsResponse:
+        ) -> protos.ListModelsResponse:
             if request is None:
-                request = glm.ListModelsRequest(page_size=page_size, page_token=page_token)
-            self.assertIsInstance(request, glm.ListModelsRequest)
+                request = protos.ListModelsRequest(page_size=page_size, page_token=page_token)
+            self.assertIsInstance(request, protos.ListModelsRequest)
             self.observed_requests.append(request)
             response = self.responses["list_models"]
             return (item for item in response)
 
         @add_client_method
         def list_tuned_models(
-            request: glm.ListTunedModelsRequest = None,
+            request: protos.ListTunedModelsRequest = None,
             *,
             page_size=None,
             page_token=None,
             **kwargs,
-        ) -> Iterable[glm.TunedModel]:
+        ) -> Iterable[protos.TunedModel]:
             if request is None:
-                request = glm.ListTunedModelsRequest(page_size=page_size, page_token=page_token)
-            self.assertIsInstance(request, glm.ListTunedModelsRequest)
+                request = protos.ListTunedModelsRequest(page_size=page_size, page_token=page_token)
+            self.assertIsInstance(request, protos.ListTunedModelsRequest)
             self.observed_requests.append(request)
             response = self.responses["list_tuned_models"]
             return (item for item in response)
 
         @add_client_method
         def update_tuned_model(
-            request: glm.UpdateTunedModelRequest,
+            request: protos.UpdateTunedModelRequest,
             **kwargs,
-        ) -> glm.TunedModel:
+        ) -> protos.TunedModel:
             self.observed_requests.append(request)
             response = self.responses.get("update_tuned_model", None)
             if response is None:
@@ -120,7 +122,7 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def delete_tuned_model(name):
-            request = glm.DeleteTunedModelRequest(name=name)
+            request = protos.DeleteTunedModelRequest(name=name)
             self.observed_requests.append(request)
             response = True
             return response
@@ -130,26 +132,26 @@ class UnitTests(parameterized.TestCase):
             request,
             **kwargs,
         ):
-            request = glm.CreateTunedModelRequest(request)
+            request = protos.CreateTunedModelRequest(request)
             self.observed_requests.append(request)
             return self.responses["create_tuned_model"]
 
     def test_decode_tuned_model_time_round_trip(self):
         example_dt = datetime.datetime(2000, 1, 2, 3, 4, 5, 600_000, pytz.UTC)
-        tuned_model = glm.TunedModel(name="tunedModels/house-mouse-001", create_time=example_dt)
+        tuned_model = protos.TunedModel(name="tunedModels/house-mouse-001", create_time=example_dt)
         tuned_model = model_types.decode_tuned_model(tuned_model)
         self.assertEqual(tuned_model.create_time, example_dt)
 
     @parameterized.named_parameters(
         ["simple", "models/fake-bison-001"],
         ["simple-tuned", "tunedModels/my-pig-001"],
-        ["model-instance", glm.Model(name="models/fake-bison-001")],
-        ["tuned-model-instance", glm.TunedModel(name="tunedModels/my-pig-001")],
+        ["model-instance", protos.Model(name="models/fake-bison-001")],
+        ["tuned-model-instance", protos.TunedModel(name="tunedModels/my-pig-001")],
     )
     def test_get_model(self, name):
         self.responses = {
-            "get_model": glm.Model(name="models/fake-bison-001"),
-            "get_tuned_model": glm.TunedModel(name="tunedModels/my-pig-001"),
+            "get_model": protos.Model(name="models/fake-bison-001"),
+            "get_tuned_model": protos.TunedModel(name="tunedModels/my-pig-001"),
         }
 
         model = models.get_model(name)
@@ -160,7 +162,7 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["simple", "mystery-bison-001"],
-        ["model-instance", glm.Model(name="how?-bison-001")],
+        ["model-instance", protos.Model(name="how?-bison-001")],
     )
     def test_fail_with_unscoped_model_name(self, name):
         with self.assertRaises(ValueError):
@@ -170,9 +172,9 @@ class UnitTests(parameterized.TestCase):
         # The low level lib wraps the response in an iterable, so this is a fair test.
         self.responses = {
             "list_models": [
-                glm.Model(name="models/fake-bison-001"),
-                glm.Model(name="models/fake-bison-002"),
-                glm.Model(name="models/fake-bison-003"),
+                protos.Model(name="models/fake-bison-001"),
+                protos.Model(name="models/fake-bison-002"),
+                protos.Model(name="models/fake-bison-003"),
             ]
         }
 
@@ -185,9 +187,9 @@ class UnitTests(parameterized.TestCase):
         self.responses = {
             # The low level lib wraps the response in an iterable, so this is a fair test.
             "list_tuned_models": [
-                glm.TunedModel(name="tunedModels/my-pig-001"),
-                glm.TunedModel(name="tunedModels/my-pig-002"),
-                glm.TunedModel(name="tunedModels/my-pig-003"),
+                protos.TunedModel(name="tunedModels/my-pig-001"),
+                protos.TunedModel(name="tunedModels/my-pig-002"),
+                protos.TunedModel(name="tunedModels/my-pig-003"),
             ]
         }
         found_models = list(models.list_tuned_models())
@@ -197,8 +199,8 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         [
-            "edited-glm-model",
-            glm.TunedModel(
+            "edited-protos.model",
+            protos.TunedModel(
                 name="tunedModels/my-pig-001",
                 description="Trained on my data",
             ),
@@ -211,7 +213,7 @@ class UnitTests(parameterized.TestCase):
         ],
     )
     def test_update_tuned_model_basics(self, tuned_model, updates):
-        self.responses["get_tuned_model"] = glm.TunedModel(name="tunedModels/my-pig-001")
+        self.responses["get_tuned_model"] = protos.TunedModel(name="tunedModels/my-pig-001")
         # No self.responses['update_tuned_model'] the mock just returns the input.
         updated_model = models.update_tuned_model(tuned_model, updates)
         updated_model.description = "Trained on my data"
@@ -227,7 +229,7 @@ class UnitTests(parameterized.TestCase):
         ],
     )
     def test_update_tuned_model_nested_fields(self, updates):
-        self.responses["get_tuned_model"] = glm.TunedModel(
+        self.responses["get_tuned_model"] = protos.TunedModel(
             name="tunedModels/my-pig-001", base_model="models/dance-monkey-007"
         )
 
@@ -250,8 +252,8 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["name", "tunedModels/bipedal-pangolin-223"],
         [
-            "glm.TunedModel",
-            glm.TunedModel(name="tunedModels/bipedal-pangolin-223"),
+            "protos.TunedModel",
+            protos.TunedModel(name="tunedModels/bipedal-pangolin-223"),
         ],
         [
             "models.TunedModel",
@@ -275,23 +277,23 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(time["time"].microsecond, micros)
 
     def test_decode_tuned_model(self):
-        out_fields = glm.TunedModel(
-            state=glm.TunedModel.State.CREATING,
+        out_fields = protos.TunedModel(
+            state=protos.TunedModel.State.CREATING,
             create_time="2000-01-01T01:01:01.0Z",
             update_time="2001-01-01T01:01:01.0Z",
-            tuning_task=glm.TuningTask(
-                hyperparameters=glm.Hyperparameters(
+            tuning_task=protos.TuningTask(
+                hyperparameters=protos.Hyperparameters(
                     batch_size=72, epoch_count=1, learning_rate=0.1
                 ),
                 start_time="2002-01-01T01:01:01.0Z",
                 complete_time="2003-01-01T01:01:01.0Z",
                 snapshots=[
-                    glm.TuningSnapshot(
+                    protos.TuningSnapshot(
                         step=1,
                         epoch=1,
                         compute_time="2004-01-01T01:01:01.0Z",
                     ),
-                    glm.TuningSnapshot(
+                    protos.TuningSnapshot(
                         step=2,
                         epoch=1,
                         compute_time="2005-01-01T01:01:01.0Z",
@@ -301,7 +303,7 @@ class UnitTests(parameterized.TestCase):
         )
 
         decoded = model_types.decode_tuned_model(out_fields)
-        self.assertEqual(decoded.state, glm.TunedModel.State.CREATING)
+        self.assertEqual(decoded.state, protos.TunedModel.State.CREATING)
         self.assertEqual(decoded.create_time.year, 2000)
         self.assertEqual(decoded.update_time.year, 2001)
         self.assertIsInstance(decoded.tuning_task.hyperparameters, model_types.Hyperparameters)
@@ -314,10 +316,10 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(decoded.tuning_task.snapshots[1]["compute_time"].year, 2005)
 
     @parameterized.named_parameters(
-        ["simple", glm.TunedModel(base_model="models/swim-fish-000")],
+        ["simple", protos.TunedModel(base_model="models/swim-fish-000")],
         [
             "nested",
-            glm.TunedModel(
+            protos.TunedModel(
                 tuned_model_source={
                     "tuned_model": "tunedModels/hidden-fish-55",
                     "base_model": "models/swim-fish-000",
@@ -341,7 +343,7 @@ class UnitTests(parameterized.TestCase):
             training_data=[
                 ("in", "out"),
                 {"text_input": "in", "output": "out"},
-                glm.TuningExample(text_input="in", output="out"),
+                protos.TuningExample(text_input="in", output="out"),
             ],
         )
         req = self.observed_requests[-1]
@@ -351,10 +353,10 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(req.tuned_model.tuning_task.training_data.examples.examples, 3)
 
     @parameterized.named_parameters(
-        ["simple", glm.TunedModel(base_model="models/swim-fish-000")],
+        ["simple", protos.TunedModel(base_model="models/swim-fish-000")],
         [
             "nested",
-            glm.TunedModel(
+            protos.TunedModel(
                 tuned_model_source={
                     "tuned_model": "tunedModels/hidden-fish-55",
                     "base_model": "models/swim-fish-000",
@@ -380,9 +382,9 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         [
-            "glm",
-            glm.Dataset(
-                examples=glm.TuningExamples(
+            "protos",
+            protos.Dataset(
+                examples=protos.TuningExamples(
                     examples=[
                         {"text_input": "a", "output": "1"},
                         {"text_input": "b", "output": "2"},
@@ -396,7 +398,7 @@ class UnitTests(parameterized.TestCase):
             [
                 ("a", "1"),
                 {"text_input": "b", "output": "2"},
-                glm.TuningExample({"text_input": "c", "output": "3"}),
+                protos.TuningExample({"text_input": "c", "output": "3"}),
             ],
         ],
         ["dict", {"text_input": ["a", "b", "c"], "output": ["1", "2", "3"]}],
@@ -445,8 +447,8 @@ class UnitTests(parameterized.TestCase):
     def test_create_dataset(self, data, ik="text_input", ok="output"):
         ds = model_types.encode_tuning_data(data, input_key=ik, output_key=ok)
 
-        expect = glm.Dataset(
-            examples=glm.TuningExamples(
+        expect = protos.Dataset(
+            examples=protos.TuningExamples(
                 examples=[
                     {"text_input": "a", "output": "1"},
                     {"text_input": "b", "output": "2"},
@@ -502,7 +504,7 @@ class UnitTests(parameterized.TestCase):
         self.client.update_tuned_model = unittest.mock.MagicMock()
         request = unittest.mock.ANY
         request_options = {"timeout": 120}
-        self.responses["get_tuned_model"] = glm.TunedModel(name="tunedModels/")
+        self.responses["get_tuned_model"] = protos.TunedModel(name="tunedModels/")
 
         try:
             models.update_tuned_model(
@@ -534,7 +536,7 @@ class UnitTests(parameterized.TestCase):
                 training_data=[
                     ("in", "out"),
                     {"text_input": "in", "output": "out"},
-                    glm.TuningExample(text_input="in", output="out"),
+                    protos.TuningExample(text_input="in", output="out"),
                 ],
                 request_options=request_options,
             )

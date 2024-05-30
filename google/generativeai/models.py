@@ -18,6 +18,8 @@ import typing
 from typing import Any, Literal
 
 import google.ai.generativelanguage as glm
+
+from google.generativeai import protos
 from google.generativeai import operations
 from google.generativeai.client import get_default_model_client
 from google.generativeai.types import model_types
@@ -155,16 +157,16 @@ def get_base_model_name(
         base_model = model.base_model
     elif isinstance(model, model_types.Model):
         base_model = model.name
-    elif isinstance(model, glm.Model):
+    elif isinstance(model, protos.Model):
         base_model = model.name
-    elif isinstance(model, glm.TunedModel):
+    elif isinstance(model, protos.TunedModel):
         base_model = getattr(model, "base_model", None)
         if not base_model:
             base_model = model.tuned_model_source.base_model
     else:
         raise TypeError(
             f"Invalid model: The provided model '{model}' is not recognized or supported. "
-            "Supported types are: str, model_types.TunedModel, model_types.Model, glm.Model, and glm.TunedModel."
+            "Supported types are: str, model_types.TunedModel, model_types.Model, protos.Model, and protos.TunedModel."
         )
 
     return base_model
@@ -282,9 +284,9 @@ def create_tuned_model(
     Args:
         source_model: The name of the model to tune.
         training_data: The dataset to tune the model on. This must be either:
-          * A `glm.Dataset`, or
+          * A `protos.Dataset`, or
           * An `Iterable` of:
-            *`glm.TuningExample`,
+            *`protos.TuningExample`,
             * `{'text_input': text_input, 'output': output}` dicts
             * `(text_input, output)` tuples.
           * A `Mapping` of `Iterable[str]` - use `input_key` and `output_key` to choose which
@@ -339,17 +341,17 @@ def create_tuned_model(
         training_data, input_key=input_key, output_key=output_key
     )
 
-    hyperparameters = glm.Hyperparameters(
+    hyperparameters = protos.Hyperparameters(
         epoch_count=epoch_count,
         batch_size=batch_size,
         learning_rate=learning_rate,
     )
-    tuning_task = glm.TuningTask(
+    tuning_task = protos.TuningTask(
         training_data=training_data,
         hyperparameters=hyperparameters,
     )
 
-    tuned_model = glm.TunedModel(
+    tuned_model = protos.TunedModel(
         **source_model,
         display_name=display_name,
         description=description,
@@ -368,7 +370,7 @@ def create_tuned_model(
 
 @typing.overload
 def update_tuned_model(
-    tuned_model: glm.TunedModel,
+    tuned_model: protos.TunedModel,
     updates: None = None,
     *,
     client: glm.ModelServiceClient | None = None,
@@ -389,7 +391,7 @@ def update_tuned_model(
 
 
 def update_tuned_model(
-    tuned_model: str | glm.TunedModel,
+    tuned_model: str | protos.TunedModel,
     updates: dict[str, Any] | None = None,
     *,
     client: glm.ModelServiceClient | None = None,
@@ -418,10 +420,11 @@ def update_tuned_model(
             field_mask.paths.append(path)
         for path, value in updates.items():
             _apply_update(tuned_model, path, value)
-    elif isinstance(tuned_model, glm.TunedModel):
+    elif isinstance(tuned_model, protos.TunedModel):
         if updates is not None:
             raise ValueError(
-                "Invalid argument: When calling `update_tuned_model(tuned_model:glm.TunedModel, updates=None)`, the `updates` argument must not be set."
+                "Invalid argument: When calling `update_tuned_model(tuned_model:protos.TunedModel, updates=None)`, "
+                "the `updates` argument must not be set."
             )
 
         name = tuned_model.name
@@ -429,11 +432,12 @@ def update_tuned_model(
         field_mask = protobuf_helpers.field_mask(was._pb, tuned_model._pb)
     else:
         raise TypeError(
-            f"Invalid argument type: In the function `update_tuned_model(tuned_model:dict|glm.TunedModel)`, the `tuned_model` argument must be of type `dict` or `glm.TunedModel`. Received type: {type(tuned_model).__name__}."
+            "Invalid argument type: In the function `update_tuned_model(tuned_model:dict|protos.TunedModel)`, the "
+            f"`tuned_model` argument must be of type `dict` or `protos.TunedModel`. Received type: {type(tuned_model).__name__}."
         )
 
     result = client.update_tuned_model(
-        glm.UpdateTunedModelRequest(tuned_model=tuned_model, update_mask=field_mask),
+        protos.UpdateTunedModelRequest(tuned_model=tuned_model, update_mask=field_mask),
         **request_options,
     )
     return model_types.decode_tuned_model(result)

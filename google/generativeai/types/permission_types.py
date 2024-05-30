@@ -19,6 +19,7 @@ from typing import Optional, Union, Any, Iterable, AsyncIterable
 import re
 
 import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.protobuf import field_mask_pb2
 
@@ -28,8 +29,8 @@ from google.generativeai.utils import flatten_update_paths
 from google.generativeai import string_utils
 
 
-GranteeType = glm.Permission.GranteeType
-Role = glm.Permission.Role
+GranteeType = protos.Permission.GranteeType
+Role = protos.Permission.Role
 
 GranteeTypeOptions = Union[str, int, GranteeType]
 RoleOptions = Union[str, int, Role]
@@ -108,7 +109,7 @@ class Permission:
         """
         if client is None:
             client = get_default_permission_client()
-        delete_request = glm.DeletePermissionRequest(name=self.name)
+        delete_request = protos.DeletePermissionRequest(name=self.name)
         client.delete_permission(request=delete_request)
 
     async def delete_async(
@@ -120,7 +121,7 @@ class Permission:
         """
         if client is None:
             client = get_default_permission_async_client()
-        delete_request = glm.DeletePermissionRequest(name=self.name)
+        delete_request = protos.DeletePermissionRequest(name=self.name)
         await client.delete_permission(request=delete_request)
 
     # TODO (magashe): Add a method to validate update value. As of now only `role` is supported as a mask path
@@ -161,7 +162,7 @@ class Permission:
         for path, value in updates.items():
             self._apply_update(path, value)
 
-        update_request = glm.UpdatePermissionRequest(
+        update_request = protos.UpdatePermissionRequest(
             permission=self._to_proto(), update_mask=field_mask
         )
         client.update_permission(request=update_request)
@@ -191,14 +192,14 @@ class Permission:
         for path, value in updates.items():
             self._apply_update(path, value)
 
-        update_request = glm.UpdatePermissionRequest(
+        update_request = protos.UpdatePermissionRequest(
             permission=self._to_proto(), update_mask=field_mask
         )
         await client.update_permission(request=update_request)
         return self
 
-    def _to_proto(self) -> glm.Permission:
-        return glm.Permission(
+    def _to_proto(self) -> protos.Permission:
+        return protos.Permission(
             name=self.name,
             role=self.role,
             grantee_type=self.grantee_type,
@@ -225,7 +226,7 @@ class Permission:
         """
         if client is None:
             client = get_default_permission_client()
-        get_perm_request = glm.GetPermissionRequest(name=name)
+        get_perm_request = protos.GetPermissionRequest(name=name)
         get_perm_response = client.get_permission(request=get_perm_request)
         get_perm_response = type(get_perm_response).to_dict(get_perm_response)
         return cls(**get_perm_response)
@@ -241,7 +242,7 @@ class Permission:
         """
         if client is None:
             client = get_default_permission_async_client()
-        get_perm_request = glm.GetPermissionRequest(name=name)
+        get_perm_request = protos.GetPermissionRequest(name=name)
         get_perm_response = await client.get_permission(request=get_perm_request)
         get_perm_response = type(get_perm_response).to_dict(get_perm_response)
         return cls(**get_perm_response)
@@ -263,7 +264,7 @@ class Permissions:
         role: RoleOptions,
         grantee_type: Optional[GranteeTypeOptions] = None,
         email_address: Optional[str] = None,
-    ) -> glm.CreatePermissionRequest:
+    ) -> protos.CreatePermissionRequest:
         role = to_role(role)
 
         if grantee_type:
@@ -278,12 +279,12 @@ class Permissions:
                 f"Invalid operation: An 'email_address' must be provided when 'grantee_type' is not set to 'EVERYONE'. Currently, 'grantee_type' is set to '{grantee_type}' and 'email_address' is '{email_address if email_address else 'not provided'}'."
             )
 
-        permission = glm.Permission(
+        permission = protos.Permission(
             role=role,
             grantee_type=grantee_type,
             email_address=email_address,
         )
-        return glm.CreatePermissionRequest(
+        return protos.CreatePermissionRequest(
             parent=self.parent,
             permission=permission,
         )
@@ -359,7 +360,7 @@ class Permissions:
         if client is None:
             client = get_default_permission_client()
 
-        request = glm.ListPermissionsRequest(
+        request = protos.ListPermissionsRequest(
             parent=self.parent, page_size=page_size  # pytype: disable=attribute-error
         )
         for permission in client.list_permissions(request):
@@ -377,7 +378,7 @@ class Permissions:
         if client is None:
             client = get_default_permission_async_client()
 
-        request = glm.ListPermissionsRequest(
+        request = protos.ListPermissionsRequest(
             parent=self.parent, page_size=page_size  # pytype: disable=attribute-error
         )
         async for permission in await client.list_permissions(request):
@@ -400,7 +401,7 @@ class Permissions:
             raise NotImplementedError("Can'/t transfer_ownership for a Corpus")
         if client is None:
             client = get_default_permission_client()
-        transfer_request = glm.TransferOwnershipRequest(
+        transfer_request = protos.TransferOwnershipRequest(
             name=self.parent, email_address=email_address  # pytype: disable=attribute-error
         )
         return client.transfer_ownership(request=transfer_request)
@@ -415,7 +416,7 @@ class Permissions:
             raise NotImplementedError("Can'/t transfer_ownership for a Corpus")
         if client is None:
             client = get_default_permission_async_client()
-        transfer_request = glm.TransferOwnershipRequest(
+        transfer_request = protos.TransferOwnershipRequest(
             name=self.parent, email_address=email_address  # pytype: disable=attribute-error
         )
         return await client.transfer_ownership(request=transfer_request)

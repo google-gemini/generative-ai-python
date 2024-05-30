@@ -42,6 +42,7 @@ from __future__ import annotations
 
 from google.generativeai import version
 
+from google.generativeai import protos
 from google.generativeai import types
 from google.generativeai.types import GenerationConfig
 

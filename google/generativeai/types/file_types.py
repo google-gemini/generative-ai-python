@@ -21,16 +21,16 @@ from typing_extensions import TypedDict
 from google.rpc.status_pb2 import Status
 from google.generativeai.client import get_default_file_client
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 
 class File:
-    def __init__(self, proto: glm.File | File | dict):
+    def __init__(self, proto: protos.File | File | dict):
         if isinstance(proto, File):
             proto = proto.to_proto()
-        self._proto = glm.File(proto)
+        self._proto = protos.File(proto)
 
-    def to_proto(self) -> glm.File:
+    def to_proto(self) -> protos.File:
         return self._proto
 
     @property
@@ -70,11 +70,11 @@ class File:
         return self._proto.uri
 
     @property
-    def state(self) -> glm.File.State:
+    def state(self) -> protos.File.State:
         return self._proto.state
 
     @property
-    def video_metadata(self) -> glm.VideoMetadata:
+    def video_metadata(self) -> protos.VideoMetadata:
         return self._proto.video_metadata
 
     @property
@@ -91,26 +91,26 @@ class FileDataDict(TypedDict):
     file_uri: str
 
 
-FileDataType = Union[FileDataDict, glm.FileData, glm.File, File]
+FileDataType = Union[FileDataDict, protos.FileData, protos.File, File]
 
 
 def to_file_data(file_data: FileDataType):
     if isinstance(file_data, dict):
         if "file_uri" in file_data:
-            file_data = glm.FileData(file_data)
+            file_data = protos.FileData(file_data)
         else:
-            file_data = glm.File(file_data)
+            file_data = protos.File(file_data)
 
     if isinstance(file_data, File):
         file_data = file_data.to_proto()
 
-    if isinstance(file_data, glm.File):
-        file_data = glm.FileData(
+    if isinstance(file_data, protos.File):
+        file_data = protos.FileData(
             mime_type=file_data.mime_type,
             file_uri=file_data.uri,
         )
 
-    if isinstance(file_data, glm.FileData):
+    if isinstance(file_data, protos.FileData):
         return file_data
     else:
         raise TypeError(

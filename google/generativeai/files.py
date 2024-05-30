@@ -19,7 +19,7 @@ import pathlib
 import mimetypes
 from typing import Iterable
 import logging
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 from itertools import islice
 
 from google.generativeai.types import file_types
@@ -76,7 +76,7 @@ def list_files(page_size=100) -> Iterable[file_types.File]:
     """Calls the API to list files using a supported file service."""
     client = get_default_file_client()
 
-    response = client.list_files(glm.ListFilesRequest(page_size=page_size))
+    response = client.list_files(protos.ListFilesRequest(page_size=page_size))
     for proto in response:
         yield file_types.File(proto)
 
@@ -89,8 +89,8 @@ def get_file(name) -> file_types.File:
 
 def delete_file(name):
     """Calls the API to permanently delete a specified file using a supported file service."""
-    if isinstance(name, (file_types.File, glm.File)):
+    if isinstance(name, (file_types.File, protos.File)):
         name = name.name
-    request = glm.DeleteFileRequest(name=name)
+    request = protos.DeleteFileRequest(name=name)
     client = get_default_file_client()
     client.delete_file(request=request)

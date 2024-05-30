@@ -10,6 +10,7 @@ from collections.abc import Sequence
 import httplib2
 
 import google.ai.generativelanguage as glm
+import google.generativeai.protos as protos
 
 from google.auth import credentials as ga_credentials
 from google.auth import exceptions as ga_exceptions
@@ -76,7 +77,7 @@ class FileServiceClient(glm.FileServiceClient):
         name: str | None = None,
         display_name: str | None = None,
         resumable: bool = True,
-    ) -> glm.File:
+    ) -> protos.File:
         if self._discovery_api is None:
             self._setup_discovery_api()
 

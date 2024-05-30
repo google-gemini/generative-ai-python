@@ -30,7 +30,7 @@ import types
 import google.protobuf.json_format
 import google.api_core.exceptions
 
-from google.ai import generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai import string_utils
 from google.generativeai.types import content_types
 from google.generativeai.responder import _rename_schema_fields
@@ -85,7 +85,7 @@ class GenerationConfigDict(TypedDict, total=False):
     max_output_tokens: int
     temperature: float
     response_mime_type: str
-    response_schema: glm.Schema | Mapping[str, Any]  # fmt: off
+    response_schema: protos.Schema | Mapping[str, Any]  # fmt: off
 
 
 @dataclasses.dataclass
@@ -165,19 +165,19 @@ class GenerationConfig:
     top_p: float | None = None
     top_k: int | None = None
     response_mime_type: str | None = None
-    response_schema: glm.Schema | Mapping[str, Any] | None = None
+    response_schema: protos.Schema | Mapping[str, Any] | None = None
 
 
-GenerationConfigType = Union[glm.GenerationConfig, GenerationConfigDict, GenerationConfig]
+GenerationConfigType = Union[protos.GenerationConfig, GenerationConfigDict, GenerationConfig]
 
 
 def _normalize_schema(generation_config):
-    # Convert response_schema to glm.Schema for request
+    # Convert response_schema to protos.Schema for request
     response_schema = generation_config.get("response_schema", None)
     if response_schema is None:
         return
 
-    if isinstance(response_schema, glm.Schema):
+    if isinstance(response_schema, protos.Schema):
         return
 
     if isinstance(response_schema, type):
@@ -191,13 +191,13 @@ def _normalize_schema(generation_config):
         response_schema = content_types._schema_for_class(response_schema)
 
     response_schema = _rename_schema_fields(response_schema)
-    generation_config["response_schema"] = glm.Schema(response_schema)
+    generation_config["response_schema"] = protos.Schema(response_schema)
 
 
 def to_generation_config_dict(generation_config: GenerationConfigType):
     if generation_config is None:
         return {}
-    elif isinstance(generation_config, glm.GenerationConfig):
+    elif isinstance(generation_config, protos.GenerationConfig):
         schema = generation_config.response_schema
         generation_config = type(generation_config).to_dict(
             generation_config
@@ -221,14 +221,14 @@ def to_generation_config_dict(generation_config: GenerationConfigType):
 
 
 def _join_citation_metadatas(
-    citation_metadatas: Iterable[glm.CitationMetadata],
+    citation_metadatas: Iterable[protos.CitationMetadata],
 ):
     citation_metadatas = list(citation_metadatas)
     return citation_metadatas[-1]
 
 
 def _join_safety_ratings_lists(
-    safety_ratings_lists: Iterable[list[glm.SafetyRating]],
+    safety_ratings_lists: Iterable[list[protos.SafetyRating]],
 ):
     ratings = {}
     blocked = collections.defaultdict(list)
@@ -243,13 +243,13 @@ def _join_safety_ratings_lists(
     safety_list = []
     for (category, probability), blocked in zip(ratings.items(), blocked.values()):
         safety_list.append(
-            glm.SafetyRating(category=category, probability=probability, blocked=blocked)
+            protos.SafetyRating(category=category, probability=probability, blocked=blocked)
         )
 
     return safety_list
 
 
-def _join_contents(contents: Iterable[glm.Content]):
+def _join_contents(contents: Iterable[protos.Content]):
     contents = tuple(contents)
     roles = [c.role for c in contents if c.role]
     if roles:
@@ -271,22 +271,22 @@ def _join_contents(contents: Iterable[glm.Content]):
             merged_parts.append(part)
             continue
 
-        merged_part = glm.Part(merged_parts[-1])
+        merged_part = protos.Part(merged_parts[-1])
         merged_part.text += part.text
         merged_parts[-1] = merged_part
 
-    return glm.Content(
+    return protos.Content(
         role=role,
         parts=merged_parts,
     )
 
 
-def _join_candidates(candidates: Iterable[glm.Candidate]):
+def _join_candidates(candidates: Iterable[protos.Candidate]):
     candidates = tuple(candidates)
 
     index = candidates[0].index  # These should all be the same.
 
-    return glm.Candidate(
+    return protos.Candidate(
         index=index,
         content=_join_contents([c.content for c in candidates]),
         finish_reason=candidates[-1].finish_reason,
@@ -296,7 +296,7 @@ def _join_candidates(candidates: Iterable[glm.Candidate]):
     )
 
 
-def _join_candidate_lists(candidate_lists: Iterable[list[glm.Candidate]]):
+def _join_candidate_lists(candidate_lists: Iterable[list[protos.Candidate]]):
     # Assuming that is a candidate ends, it is no longer returned in the list of
     # candidates and that's why candidates have an index
     candidates = collections.defaultdict(list)
@@ -312,15 +312,15 @@ def _join_candidate_lists(candidate_lists: Iterable[list[glm.Candidate]]):
 
 
 def _join_prompt_feedbacks(
-    prompt_feedbacks: Iterable[glm.GenerateContentResponse.PromptFeedback],
+    prompt_feedbacks: Iterable[protos.GenerateContentResponse.PromptFeedback],
 ):
     # Always return the first prompt feedback.
     return next(iter(prompt_feedbacks))
 
 
-def _join_chunks(chunks: Iterable[glm.GenerateContentResponse]):
+def _join_chunks(chunks: Iterable[protos.GenerateContentResponse]):
     chunks = tuple(chunks)
-    return glm.GenerateContentResponse(
+    return protos.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
         usage_metadata=chunks[-1].usage_metadata,
@@ -338,11 +338,11 @@ class BaseGenerateContentResponse:
         done: bool,
         iterator: (
             None
-            | Iterable[glm.GenerateContentResponse]
-            | AsyncIterable[glm.GenerateContentResponse]
+            | Iterable[protos.GenerateContentResponse]
+            | AsyncIterable[protos.GenerateContentResponse]
         ),
-        result: glm.GenerateContentResponse,
-        chunks: Iterable[glm.GenerateContentResponse] | None = None,
+        result: protos.GenerateContentResponse,
+        chunks: Iterable[protos.GenerateContentResponse] | None = None,
     ):
         self._done = done
         self._iterator = iterator
@@ -440,7 +440,7 @@ class BaseGenerateContentResponse:
         )
         json_str = json.dumps(as_dict, indent=2)
 
-        _result = f"glm.GenerateContentResponse({json_str})"
+        _result = f"protos.GenerateContentResponse({json_str})"
         _result = _result.replace("\n", "\n                    ")
 
         if self._error:
@@ -478,7 +478,7 @@ def rewrite_stream_error():
 GENERATE_CONTENT_RESPONSE_DOC = """Instances of this class manage the response of the `generate_content` method.
 
     These are returned by `GenerativeModel.generate_content` and `ChatSession.send_message`.
-    This object is based on the low level `glm.GenerateContentResponse` class which just has `prompt_feedback`
+    This object is based on the low level `protos.GenerateContentResponse` class which just has `prompt_feedback`
     and `candidates` attributes. This class adds several quick accessors for common use cases.
 
     The same object type is returned for both `stream=True/False`.
@@ -507,7 +507,7 @@ ASYNC_GENERATE_CONTENT_RESPONSE_DOC = (
 @string_utils.set_doc(GENERATE_CONTENT_RESPONSE_DOC)
 class GenerateContentResponse(BaseGenerateContentResponse):
     @classmethod
-    def from_iterator(cls, iterator: Iterable[glm.GenerateContentResponse]):
+    def from_iterator(cls, iterator: Iterable[protos.GenerateContentResponse]):
         iterator = iter(iterator)
         with rewrite_stream_error():
             response = next(iterator)
@@ -519,7 +519,7 @@ class GenerateContentResponse(BaseGenerateContentResponse):
         )
 
     @classmethod
-    def from_response(cls, response: glm.GenerateContentResponse):
+    def from_response(cls, response: protos.GenerateContentResponse):
         return cls(
             done=True,
             iterator=None,
@@ -574,7 +574,7 @@ class GenerateContentResponse(BaseGenerateContentResponse):
 @string_utils.set_doc(ASYNC_GENERATE_CONTENT_RESPONSE_DOC)
 class AsyncGenerateContentResponse(BaseGenerateContentResponse):
     @classmethod
-    async def from_aiterator(cls, iterator: AsyncIterable[glm.GenerateContentResponse]):
+    async def from_aiterator(cls, iterator: AsyncIterable[protos.GenerateContentResponse]):
         iterator = aiter(iterator)  # type: ignore
         with rewrite_stream_error():
             response = await anext(iterator)  # type: ignore
@@ -586,7 +586,7 @@ class AsyncGenerateContentResponse(BaseGenerateContentResponse):
         )
 
     @classmethod
-    def from_response(cls, response: glm.GenerateContentResponse):
+    def from_response(cls, response: protos.GenerateContentResponse):
         return cls(
             done=True,
             iterator=None,

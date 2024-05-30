@@ -17,7 +17,7 @@ from typing import Any
 
 from absl.testing import absltest
 from absl.testing import parameterized
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai import responder
 import IPython.display
 import PIL.Image
@@ -42,9 +42,9 @@ class UnitTests(parameterized.TestCase):
         [
             "FunctionLibrary",
             responder.FunctionLibrary(
-                tools=glm.Tool(
+                tools=protos.Tool(
                     function_declarations=[
-                        glm.FunctionDeclaration(
+                        protos.FunctionDeclaration(
                             name="datetime", description="Returns the current UTC date and time."
                         )
                     ]
@@ -56,7 +56,7 @@ class UnitTests(parameterized.TestCase):
             [
                 responder.Tool(
                     function_declarations=[
-                        glm.FunctionDeclaration(
+                        protos.FunctionDeclaration(
                             name="datetime", description="Returns the current UTC date and time."
                         )
                     ]
@@ -64,11 +64,11 @@ class UnitTests(parameterized.TestCase):
             ],
         ],
         [
-            "IterableTool-glm.Tool",
+            "IterableTool-protos.Tool",
             [
-                glm.Tool(
+                protos.Tool(
                     function_declarations=[
-                        glm.FunctionDeclaration(
+                        protos.FunctionDeclaration(
                             name="datetime",
                             description="Returns the current UTC date and time.",
                         )
@@ -93,7 +93,7 @@ class UnitTests(parameterized.TestCase):
             "IterableTool-IterableFD",
             [
                 [
-                    glm.FunctionDeclaration(
+                    protos.FunctionDeclaration(
                         name="datetime",
                         description="Returns the current UTC date and time.",
                     )
@@ -103,7 +103,7 @@ class UnitTests(parameterized.TestCase):
         [
             "IterableTool-FD",
             [
-                glm.FunctionDeclaration(
+                protos.FunctionDeclaration(
                     name="datetime",
                     description="Returns the current UTC date and time.",
                 )
@@ -113,17 +113,17 @@ class UnitTests(parameterized.TestCase):
             "Tool",
             responder.Tool(
                 function_declarations=[
-                    glm.FunctionDeclaration(
+                    protos.FunctionDeclaration(
                         name="datetime", description="Returns the current UTC date and time."
                     )
                 ]
             ),
         ],
         [
-            "glm.Tool",
-            glm.Tool(
+            "protos.Tool",
+            protos.Tool(
                 function_declarations=[
-                    glm.FunctionDeclaration(
+                    protos.FunctionDeclaration(
                         name="datetime", description="Returns the current UTC date and time."
                     )
                 ]
@@ -175,8 +175,8 @@ class UnitTests(parameterized.TestCase):
             ),
         ],
         [
-            "glm.FD",
-            glm.FunctionDeclaration(
+            "protos.FD",
+            protos.FunctionDeclaration(
                 name="datetime", description="Returns the current UTC date and time."
             ),
         ],
@@ -216,32 +216,32 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(tools[0].function_declarations, 2)
 
     @parameterized.named_parameters(
-        ["int", int, glm.Schema(type=glm.Type.INTEGER)],
-        ["float", float, glm.Schema(type=glm.Type.NUMBER)],
-        ["str", str, glm.Schema(type=glm.Type.STRING)],
+        ["int", int, protos.Schema(type=protos.Type.INTEGER)],
+        ["float", float, protos.Schema(type=protos.Type.NUMBER)],
+        ["str", str, protos.Schema(type=protos.Type.STRING)],
         [
             "list",
             list[str],
-            glm.Schema(
-                type=glm.Type.ARRAY,
-                items=glm.Schema(type=glm.Type.STRING),
+            protos.Schema(
+                type=protos.Type.ARRAY,
+                items=protos.Schema(type=protos.Type.STRING),
             ),
         ],
         [
             "list-list-int",
             list[list[int]],
-            glm.Schema(
-                type=glm.Type.ARRAY,
-                items=glm.Schema(
-                    glm.Schema(
-                        type=glm.Type.ARRAY,
-                        items=glm.Schema(type=glm.Type.INTEGER),
+            protos.Schema(
+                type=protos.Type.ARRAY,
+                items=protos.Schema(
+                    protos.Schema(
+                        type=protos.Type.ARRAY,
+                        items=protos.Schema(type=protos.Type.INTEGER),
                     ),
                 ),
             ),
         ],
-        ["dict", dict, glm.Schema(type=glm.Type.OBJECT)],
-        ["dict-str-any", dict[str, Any], glm.Schema(type=glm.Type.OBJECT)],
+        ["dict", dict, protos.Schema(type=protos.Type.OBJECT)],
+        ["dict-str-any", dict[str, Any], protos.Schema(type=protos.Type.OBJECT)],
     )
     def test_auto_schema(self, annotation, expected):
         def fun(a: annotation):

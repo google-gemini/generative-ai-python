@@ -24,14 +24,16 @@ import unittest
 from google.generativeai import client as client_lib
 from google.generativeai import generative_models
 from google.generativeai.types import content_types
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from absl.testing import absltest
 from absl.testing import parameterized
 
 
-def simple_response(text: str) -> glm.GenerateContentResponse:
-    return glm.GenerateContentResponse({"candidates": [{"content": {"parts": [{"text": text}]}}]})
+def simple_response(text: str) -> protos.GenerateContentResponse:
+    return protos.GenerateContentResponse(
+        {"candidates": [{"content": {"parts": [{"text": text}]}}]}
+    )
 
 
 class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
@@ -50,28 +52,28 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         @add_client_method
         async def generate_content(
-            request: glm.GenerateContentRequest,
+            request: protos.GenerateContentRequest,
             **kwargs,
-        ) -> glm.GenerateContentResponse:
-            self.assertIsInstance(request, glm.GenerateContentRequest)
+        ) -> protos.GenerateContentResponse:
+            self.assertIsInstance(request, protos.GenerateContentRequest)
             self.observed_requests.append(request)
             response = self.responses["generate_content"].pop(0)
             return response
 
         @add_client_method
         async def stream_generate_content(
-            request: glm.GetModelRequest,
+            request: protos.GetModelRequest,
             **kwargs,
-        ) -> Iterable[glm.GenerateContentResponse]:
+        ) -> Iterable[protos.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["stream_generate_content"].pop(0)
             return response
 
         @add_client_method
         async def count_tokens(
-            request: glm.CountTokensRequest,
+            request: protos.CountTokensRequest,
             **kwargs,
-        ) -> Iterable[glm.GenerateContentResponse]:
+        ) -> Iterable[protos.GenerateContentResponse]:
             self.observed_requests.append(request)
             response = self.responses["count_tokens"].pop(0)
             return response
@@ -140,9 +142,9 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             },
         ),
         dict(
-            testcase_name="test_glm_FunctionCallingConfig",
+            testcase_name="test_protos.FunctionCallingConfig",
             tool_config={
-                "function_calling_config": glm.FunctionCallingConfig(
+                "function_calling_config": protos.FunctionCallingConfig(
                     mode=content_types.FunctionCallingMode.AUTO
                 )
             },
@@ -169,9 +171,9 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             },
         ),
         dict(
-            testcase_name="test_glm_ToolConfig",
-            tool_config=glm.ToolConfig(
-                function_calling_config=glm.FunctionCallingConfig(
+            testcase_name="test_protos.ToolConfig",
+            tool_config=protos.ToolConfig(
+                function_calling_config=protos.FunctionCallingConfig(
                     mode=content_types.FunctionCallingMode.NONE
                 )
             ),
@@ -211,7 +213,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         ["contents", [{"role": "user", "parts": ["hello"]}]],
     )
     async def test_count_tokens_smoke(self, contents):
-        self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
+        self.responses["count_tokens"] = [protos.CountTokensResponse(total_tokens=7)]
         model = generative_models.GenerativeModel("gemini-pro-vision")
         response = await model.count_tokens_async(contents)
         self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})

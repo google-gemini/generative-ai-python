@@ -22,6 +22,7 @@ from typing import Any, AsyncIterable, Optional, Union, Iterable, Mapping
 from typing_extensions import deprecated  # type: ignore
 
 import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.protobuf import field_mask_pb2
 from google.generativeai.client import get_default_retriever_client
@@ -44,14 +45,14 @@ def valid_name(name):
     return re.match(_VALID_NAME, name) and len(name) < 40
 
 
-Operator = glm.Condition.Operator
-State = glm.Chunk.State
+Operator = protos.Condition.Operator
+State = protos.Chunk.State
 
 OperatorOptions = Union[str, int, Operator]
 StateOptions = Union[str, int, State]
 
 ChunkOptions = Union[
-    glm.Chunk,
+    protos.Chunk,
     str,
     tuple[str, str],
     tuple[str, str, Any],
@@ -59,17 +60,17 @@ ChunkOptions = Union[
 ]  # fmt: no
 
 BatchCreateChunkOptions = Union[
-    glm.BatchCreateChunksRequest,
+    protos.BatchCreateChunksRequest,
     Mapping[str, str],
     Mapping[str, tuple[str, str]],
     Iterable[ChunkOptions],
 ]  # fmt: no
 
-UpdateChunkOptions = Union[glm.UpdateChunkRequest, Mapping[str, Any], tuple[str, Any]]
+UpdateChunkOptions = Union[protos.UpdateChunkRequest, Mapping[str, Any], tuple[str, Any]]
 
-BatchUpdateChunksOptions = Union[glm.BatchUpdateChunksRequest, Iterable[UpdateChunkOptions]]
+BatchUpdateChunksOptions = Union[protos.BatchUpdateChunksRequest, Iterable[UpdateChunkOptions]]
 
-BatchDeleteChunkOptions = Union[list[glm.DeleteChunkRequest], Iterable[str]]
+BatchDeleteChunkOptions = Union[list[protos.DeleteChunkRequest], Iterable[str]]
 
 _OPERATOR: dict[OperatorOptions, Operator] = {
     Operator.OPERATOR_UNSPECIFIED: Operator.OPERATOR_UNSPECIFIED,
@@ -163,10 +164,10 @@ class MetadataFilter:
                 )
             kwargs["operation"] = c.operation
 
-            condition = glm.Condition(**kwargs)
+            condition = protos.Condition(**kwargs)
             conditions.append(condition)
 
-        return glm.MetadataFilter(key=self.key, conditions=conditions)
+        return protos.MetadataFilter(key=self.key, conditions=conditions)
 
 
 @string_utils.prettyprint
@@ -188,17 +189,17 @@ class CustomMetadata:
             kwargs["string_value"] = self.value
         elif isinstance(self.value, Iterable):
             if isinstance(self.value, Mapping):
-                # If already converted to a glm.StringList, get the values
+                # If already converted to a protos.StringList, get the values
                 kwargs["string_list_value"] = self.value
             else:
-                kwargs["string_list_value"] = glm.StringList(values=self.value)
+                kwargs["string_list_value"] = protos.StringList(values=self.value)
         elif isinstance(self.value, (int, float)):
             kwargs["numeric_value"] = float(self.value)
         else:
             raise ValueError(
                 f"Invalid value type: The value for a custom_metadata specification must be either a list of string values, a string, or an integer/float. Received: '{self.value}' of type {type(self.value).__name__}."
             )
-        return glm.CustomMetadata(key=self.key, **kwargs)
+        return protos.CustomMetadata(key=self.key, **kwargs)
 
     @classmethod
     def _from_dict(cls, cm):
@@ -216,14 +217,14 @@ class CustomMetadata:
         return type(proto).to_dict(proto)
 
 
-CustomMetadataOptions = Union[CustomMetadata, glm.CustomMetadata, dict]
+CustomMetadataOptions = Union[CustomMetadata, protos.CustomMetadata, dict]
 
 
 def make_custom_metadata(cm: CustomMetadataOptions) -> CustomMetadata:
     if isinstance(cm, CustomMetadata):
         return cm
 
-    if isinstance(cm, glm.CustomMetadata):
+    if isinstance(cm, protos.CustomMetadata):
         cm = type(cm).to_dict(cm)
 
     if isinstance(cm, dict):
@@ -293,9 +294,9 @@ class Corpus:
                 c_data.append(cm._to_proto())
 
         if name is None:
-            document = glm.Document(display_name=display_name, custom_metadata=c_data)
+            document = protos.Document(display_name=display_name, custom_metadata=c_data)
         elif valid_name(name):
-            document = glm.Document(
+            document = protos.Document(
                 name=f"{self.name}/documents/{name}",
                 display_name=display_name,
                 custom_metadata=c_data,
@@ -303,7 +304,7 @@ class Corpus:
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
-        request = glm.CreateDocumentRequest(parent=self.name, document=document)
+        request = protos.CreateDocumentRequest(parent=self.name, document=document)
         response = client.create_document(request, **request_options)
         return decode_document(response)
 
@@ -329,9 +330,9 @@ class Corpus:
                 c_data.append(cm._to_proto())
 
         if name is None:
-            document = glm.Document(display_name=display_name, custom_metadata=c_data)
+            document = protos.Document(display_name=display_name, custom_metadata=c_data)
         elif valid_name(name):
-            document = glm.Document(
+            document = protos.Document(
                 name=f"{self.name}/documents/{name}",
                 display_name=display_name,
                 custom_metadata=c_data,
@@ -339,7 +340,7 @@ class Corpus:
         else:
             raise ValueError(NAME_ERROR_MSG.format(length=len(name), name=name))
 
-        request = glm.CreateDocumentRequest(parent=self.name, document=document)
+        request = protos.CreateDocumentRequest(parent=self.name, document=document)
         response = await client.create_document(request, **request_options)
         return decode_document(response)
 
@@ -368,7 +369,7 @@ class Corpus:
         if "/" not in name:
             name = f"{self.name}/documents/{name}"
 
-        request = glm.GetDocumentRequest(name=name)
+        request = protos.GetDocumentRequest(name=name)
         response = client.get_document(request, **request_options)
         return decode_document(response)
 
@@ -388,7 +389,7 @@ class Corpus:
         if "/" not in name:
             name = f"{self.name}/documents/{name}"
 
-        request = glm.GetDocumentRequest(name=name)
+        request = protos.GetDocumentRequest(name=name)
         response = await client.get_document(request, **request_options)
         return decode_document(response)
 
@@ -434,7 +435,7 @@ class Corpus:
         for path, value in updates.items():
             self._apply_update(path, value)
 
-        request = glm.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
+        request = protos.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
         client.update_corpus(request, **request_options)
         return self
 
@@ -465,7 +466,7 @@ class Corpus:
         for path, value in updates.items():
             self._apply_update(path, value)
 
-        request = glm.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
+        request = protos.UpdateCorpusRequest(corpus=self.to_dict(), update_mask=field_mask)
         await client.update_corpus(request, **request_options)
         return self
 
@@ -506,7 +507,7 @@ class Corpus:
             for mf in metadata_filters:
                 m_f_.append(mf._to_proto())
 
-        request = glm.QueryCorpusRequest(
+        request = protos.QueryCorpusRequest(
             name=self.name,
             query=query,
             metadata_filters=m_f_,
@@ -551,7 +552,7 @@ class Corpus:
             for mf in metadata_filters:
                 m_f_.append(mf._to_proto())
 
-        request = glm.QueryCorpusRequest(
+        request = protos.QueryCorpusRequest(
             name=self.name,
             query=query,
             metadata_filters=m_f_,
@@ -594,7 +595,7 @@ class Corpus:
         if "/" not in name:
             name = f"{self.name}/documents/{name}"
 
-        request = glm.DeleteDocumentRequest(name=name, force=bool(force))
+        request = protos.DeleteDocumentRequest(name=name, force=bool(force))
         client.delete_document(request, **request_options)
 
     async def delete_document_async(
@@ -614,7 +615,7 @@ class Corpus:
         if "/" not in name:
             name = f"{self.name}/documents/{name}"
 
-        request = glm.DeleteDocumentRequest(name=name, force=bool(force))
+        request = protos.DeleteDocumentRequest(name=name, force=bool(force))
         await client.delete_document(request, **request_options)
 
     def list_documents(
@@ -640,7 +641,7 @@ class Corpus:
         if client is None:
             client = get_default_retriever_client()
 
-        request = glm.ListDocumentsRequest(
+        request = protos.ListDocumentsRequest(
             parent=self.name,
             page_size=page_size,
         )
@@ -660,7 +661,7 @@ class Corpus:
         if client is None:
             client = get_default_retriever_async_client()
 
-        request = glm.ListDocumentsRequest(
+        request = protos.ListDocumentsRequest(
             parent=self.name,
             page_size=page_size,
         )
@@ -792,15 +793,17 @@ class Document(abc.ABC):
             chunk_name = name
 
         if isinstance(data, str):
-            chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
+            chunk = protos.Chunk(
+                name=chunk_name, data={"string_value": data}, custom_metadata=c_data
+            )
         else:
-            chunk = glm.Chunk(
+            chunk = protos.Chunk(
                 name=chunk_name,
                 data={"string_value": data.string_value},
                 custom_metadata=c_data,
             )
 
-        request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
+        request = protos.CreateChunkRequest(parent=self.name, chunk=chunk)
         response = client.create_chunk(request, **request_options)
         return decode_chunk(response)
 
@@ -834,24 +837,26 @@ class Document(abc.ABC):
             chunk_name = name
 
         if isinstance(data, str):
-            chunk = glm.Chunk(name=chunk_name, data={"string_value": data}, custom_metadata=c_data)
+            chunk = protos.Chunk(
+                name=chunk_name, data={"string_value": data}, custom_metadata=c_data
+            )
         else:
-            chunk = glm.Chunk(
+            chunk = protos.Chunk(
                 name=chunk_name,
                 data={"string_value": data.string_value},
                 custom_metadata=c_data,
             )
 
-        request = glm.CreateChunkRequest(parent=self.name, chunk=chunk)
+        request = protos.CreateChunkRequest(parent=self.name, chunk=chunk)
         response = await client.create_chunk(request, **request_options)
         return decode_chunk(response)
 
-    def _make_chunk(self, chunk: ChunkOptions) -> glm.Chunk:
+    def _make_chunk(self, chunk: ChunkOptions) -> protos.Chunk:
         # del self
-        if isinstance(chunk, glm.Chunk):
-            return glm.Chunk(chunk)
+        if isinstance(chunk, protos.Chunk):
+            return protos.Chunk(chunk)
         elif isinstance(chunk, str):
-            return glm.Chunk(data={"string_value": chunk})
+            return protos.Chunk(data={"string_value": chunk})
         elif isinstance(chunk, tuple):
             if len(chunk) == 2:
                 name, data = chunk  # pytype: disable=bad-unpacking
@@ -864,7 +869,7 @@ class Document(abc.ABC):
                     f"value: {chunk}"
                 )
 
-            return glm.Chunk(
+            return protos.Chunk(
                 name=name,
                 data={"string_value": data},
                 custom_metadata=custom_metadata,
@@ -873,7 +878,7 @@ class Document(abc.ABC):
             if isinstance(chunk["data"], str):
                 chunk = dict(chunk)
                 chunk["data"] = {"string_value": chunk["data"]}
-            return glm.Chunk(chunk)
+            return protos.Chunk(chunk)
         else:
             raise TypeError(
                 f"Invalid input: Could not convert instance of type '{type(chunk).__name__}' to a chunk. Received value: '{chunk}'."
@@ -881,8 +886,8 @@ class Document(abc.ABC):
 
     def _make_batch_create_chunk_request(
         self, chunks: BatchCreateChunkOptions
-    ) -> glm.BatchCreateChunksRequest:
-        if isinstance(chunks, glm.BatchCreateChunksRequest):
+    ) -> protos.BatchCreateChunksRequest:
+        if isinstance(chunks, protos.BatchCreateChunksRequest):
             return chunks
 
         if isinstance(chunks, Mapping):
@@ -901,9 +906,9 @@ class Document(abc.ABC):
 
             chunk.name = f"{self.name}/chunks/{chunk.name}"
 
-            requests.append(glm.CreateChunkRequest(parent=self.name, chunk=chunk))
+            requests.append(protos.CreateChunkRequest(parent=self.name, chunk=chunk))
 
-        return glm.BatchCreateChunksRequest(parent=self.name, requests=requests)
+        return protos.BatchCreateChunksRequest(parent=self.name, requests=requests)
 
     def batch_create_chunks(
         self,
@@ -973,7 +978,7 @@ class Document(abc.ABC):
         if "/" not in name:
             name = f"{self.name}/chunks/{name}"
 
-        request = glm.GetChunkRequest(name=name)
+        request = protos.GetChunkRequest(name=name)
         response = client.get_chunk(request, **request_options)
         return decode_chunk(response)
 
@@ -993,7 +998,7 @@ class Document(abc.ABC):
         if "/" not in name:
             name = f"{self.name}/chunks/{name}"
 
-        request = glm.GetChunkRequest(name=name)
+        request = protos.GetChunkRequest(name=name)
         response = await client.get_chunk(request, **request_options)
         return decode_chunk(response)
 
@@ -1019,7 +1024,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        request = glm.ListChunksRequest(parent=self.name, page_size=page_size)
+        request = protos.ListChunksRequest(parent=self.name, page_size=page_size)
         for chunk in client.list_chunks(request, **request_options):
             yield decode_chunk(chunk)
 
@@ -1036,7 +1041,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        request = glm.ListChunksRequest(parent=self.name, page_size=page_size)
+        request = protos.ListChunksRequest(parent=self.name, page_size=page_size)
         async for chunk in await client.list_chunks(request, **request_options):
             yield decode_chunk(chunk)
 
@@ -1076,7 +1081,7 @@ class Document(abc.ABC):
             for mf in metadata_filters:
                 m_f_.append(mf._to_proto())
 
-        request = glm.QueryDocumentRequest(
+        request = protos.QueryDocumentRequest(
             name=self.name,
             query=query,
             metadata_filters=m_f_,
@@ -1121,7 +1126,7 @@ class Document(abc.ABC):
             for mf in metadata_filters:
                 m_f_.append(mf._to_proto())
 
-        request = glm.QueryDocumentRequest(
+        request = protos.QueryDocumentRequest(
             name=self.name,
             query=query,
             metadata_filters=m_f_,
@@ -1181,7 +1186,7 @@ class Document(abc.ABC):
         for path, value in updates.items():
             self._apply_update(path, value)
 
-        request = glm.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
+        request = protos.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
         client.update_document(request, **request_options)
         return self
 
@@ -1211,7 +1216,7 @@ class Document(abc.ABC):
         for path, value in updates.items():
             self._apply_update(path, value)
 
-        request = glm.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
+        request = protos.UpdateDocumentRequest(document=self.to_dict(), update_mask=field_mask)
         await client.update_document(request, **request_options)
         return self
 
@@ -1237,7 +1242,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        if isinstance(chunks, glm.BatchUpdateChunksRequest):
+        if isinstance(chunks, protos.BatchUpdateChunksRequest):
             response = client.batch_update_chunks(chunks)
             response = type(response).to_dict(response)
             return response
@@ -1270,15 +1275,17 @@ class Document(abc.ABC):
                 for path, value in updates.items():
                     chunk_to_update._apply_update(path, value)
                 _requests.append(
-                    glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
+                    protos.UpdateChunkRequest(
+                        chunk=chunk_to_update.to_dict(), update_mask=field_mask
+                    )
                 )
-            request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
+            request = protos.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = client.batch_update_chunks(request, **request_options)
             response = type(response).to_dict(response)
             return response
         if isinstance(chunks, Iterable) and not isinstance(chunks, Mapping):
             for chunk in chunks:
-                if isinstance(chunk, glm.UpdateChunkRequest):
+                if isinstance(chunk, protos.UpdateChunkRequest):
                     _requests.append(chunk)
                 elif isinstance(chunk, tuple):
                     # First element is name of chunk, second element contains updates
@@ -1304,9 +1311,10 @@ class Document(abc.ABC):
                     )
                 else:
                     raise TypeError(
-                        "Invalid input: The 'chunks' parameter must be a list of 'glm.UpdateChunkRequests', dictionaries, or tuples of dictionaries."
+                        "Invalid input: The 'chunks' parameter must be a list of 'protos.UpdateChunkRequests',"
+                        " dictionaries, or tuples of dictionaries."
                     )
-            request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
+            request = protos.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = client.batch_update_chunks(request, **request_options)
             response = type(response).to_dict(response)
             return response
@@ -1324,7 +1332,7 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        if isinstance(chunks, glm.BatchUpdateChunksRequest):
+        if isinstance(chunks, protos.BatchUpdateChunksRequest):
             response = client.batch_update_chunks(chunks)
             response = type(response).to_dict(response)
             return response
@@ -1357,15 +1365,17 @@ class Document(abc.ABC):
                 for path, value in updates.items():
                     chunk_to_update._apply_update(path, value)
                 _requests.append(
-                    glm.UpdateChunkRequest(chunk=chunk_to_update.to_dict(), update_mask=field_mask)
+                    protos.UpdateChunkRequest(
+                        chunk=chunk_to_update.to_dict(), update_mask=field_mask
+                    )
                 )
-            request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
+            request = protos.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = await client.batch_update_chunks(request, **request_options)
             response = type(response).to_dict(response)
             return response
         if isinstance(chunks, Iterable) and not isinstance(chunks, Mapping):
             for chunk in chunks:
-                if isinstance(chunk, glm.UpdateChunkRequest):
+                if isinstance(chunk, protos.UpdateChunkRequest):
                     _requests.append(chunk)
                 elif isinstance(chunk, tuple):
                     # First element is name of chunk, second element contains updates
@@ -1391,9 +1401,10 @@ class Document(abc.ABC):
                     )
                 else:
                     raise TypeError(
-                        "Invalid input: The 'chunks' parameter must be a list of 'glm.UpdateChunkRequests', dictionaries, or tuples of dictionaries."
+                        "Invalid input: The 'chunks' parameter must be a list of 'protos.UpdateChunkRequests', "
+                        "dictionaries, or tuples of dictionaries."
                     )
-            request = glm.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
+            request = protos.BatchUpdateChunksRequest(parent=self.name, requests=_requests)
             response = await client.batch_update_chunks(request, **request_options)
             response = type(response).to_dict(response)
             return response
@@ -1420,7 +1431,7 @@ class Document(abc.ABC):
         if "/" not in name:
             name = f"{self.name}/chunks/{name}"
 
-        request = glm.DeleteChunkRequest(name=name)
+        request = protos.DeleteChunkRequest(name=name)
         client.delete_chunk(request, **request_options)
 
     async def delete_chunk_async(
@@ -1439,7 +1450,7 @@ class Document(abc.ABC):
         if "/" not in name:
             name = f"{self.name}/chunks/{name}"
 
-        request = glm.DeleteChunkRequest(name=name)
+        request = protos.DeleteChunkRequest(name=name)
         await client.delete_chunk(request, **request_options)
 
     def batch_delete_chunks(
@@ -1461,18 +1472,19 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_client()
 
-        if all(isinstance(x, glm.DeleteChunkRequest) for x in chunks):
-            request = glm.BatchDeleteChunksRequest(parent=self.name, requests=chunks)
+        if all(isinstance(x, protos.DeleteChunkRequest) for x in chunks):
+            request = protos.BatchDeleteChunksRequest(parent=self.name, requests=chunks)
             client.batch_delete_chunks(request, **request_options)
         elif isinstance(chunks, Iterable):
             _request_list = []
             for chunk_name in chunks:
-                _request_list.append(glm.DeleteChunkRequest(name=chunk_name))
-            request = glm.BatchDeleteChunksRequest(parent=self.name, requests=_request_list)
+                _request_list.append(protos.DeleteChunkRequest(name=chunk_name))
+            request = protos.BatchDeleteChunksRequest(parent=self.name, requests=_request_list)
             client.batch_delete_chunks(request, **request_options)
         else:
             raise ValueError(
-                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple 'glm.DeleteChunkRequest's."
+                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, "
+                "or multiple 'protos.DeleteChunkRequest's."
             )
 
     async def batch_delete_chunks_async(
@@ -1488,18 +1500,19 @@ class Document(abc.ABC):
         if client is None:
             client = get_default_retriever_async_client()
 
-        if all(isinstance(x, glm.DeleteChunkRequest) for x in chunks):
-            request = glm.BatchDeleteChunksRequest(parent=self.name, requests=chunks)
+        if all(isinstance(x, protos.DeleteChunkRequest) for x in chunks):
+            request = protos.BatchDeleteChunksRequest(parent=self.name, requests=chunks)
             await client.batch_delete_chunks(request, **request_options)
         elif isinstance(chunks, Iterable):
             _request_list = []
             for chunk_name in chunks:
-                _request_list.append(glm.DeleteChunkRequest(name=chunk_name))
-            request = glm.BatchDeleteChunksRequest(parent=self.name, requests=_request_list)
+                _request_list.append(protos.DeleteChunkRequest(name=chunk_name))
+            request = protos.BatchDeleteChunksRequest(parent=self.name, requests=_request_list)
             await client.batch_delete_chunks(request, **request_options)
         else:
             raise ValueError(
-                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, or multiple 'glm.DeleteChunkRequest's."
+                "Invalid operation: To delete chunks, you must pass in either the names of the chunks as an iterable, "
+                "or multiple 'protos.DeleteChunkRequest's."
             )
 
     def to_dict(self) -> dict[str, Any]:
@@ -1511,7 +1524,7 @@ class Document(abc.ABC):
         return result
 
 
-def decode_chunk(chunk: glm.Chunk) -> Chunk:
+def decode_chunk(chunk: protos.Chunk) -> Chunk:
     chunk = type(chunk).to_dict(chunk)
     idecode_time(chunk, "create_time")
     idecode_time(chunk, "update_time")
@@ -1625,7 +1638,7 @@ class Chunk(abc.ABC):
             field_mask.paths.append(path)
         for path, value in updates.items():
             self._apply_update(path, value)
-        request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
+        request = protos.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
 
         client.update_chunk(request, **request_options)
         return self
@@ -1665,7 +1678,7 @@ class Chunk(abc.ABC):
             field_mask.paths.append(path)
         for path, value in updates.items():
             self._apply_update(path, value)
-        request = glm.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
+        request = protos.UpdateChunkRequest(chunk=self.to_dict(), update_mask=field_mask)
 
         await client.update_chunk(request, **request_options)
         return self
