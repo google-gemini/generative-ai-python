@@ -18,7 +18,7 @@ from typing import Any
 import unittest
 import unittest.mock as mock
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import answer
 from google.generativeai import types as genai_types
@@ -47,14 +47,14 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def generate_answer(
-            request: glm.GenerateAnswerRequest,
+            request: protos.GenerateAnswerRequest,
             **kwargs,
-        ) -> glm.GenerateAnswerResponse:
+        ) -> protos.GenerateAnswerResponse:
             self.observed_requests.append(request)
-            return glm.GenerateAnswerResponse(
-                answer=glm.Candidate(
+            return protos.GenerateAnswerResponse(
+                answer=protos.Candidate(
                     index=1,
-                    content=(glm.Content(parts=[glm.Part(text="Demo answer.")])),
+                    content=(protos.Content(parts=[protos.Part(text="Demo answer.")])),
                 ),
                 answerable_probability=0.500,
             )
@@ -62,17 +62,23 @@ class UnitTests(parameterized.TestCase):
     def test_make_grounding_passages_mixed_types(self):
         inline_passages = [
             "I am a chicken",
-            glm.Content(parts=[glm.Part(text="I am a bird.")]),
-            glm.Content(parts=[glm.Part(text="I can fly!")]),
+            protos.Content(parts=[protos.Part(text="I am a bird.")]),
+            protos.Content(parts=[protos.Part(text="I can fly!")]),
         ]
         x = answer._make_grounding_passages(inline_passages)
-        self.assertIsInstance(x, glm.GroundingPassages)
+        self.assertIsInstance(x, protos.GroundingPassages)
         self.assertEqual(
-            glm.GroundingPassages(
+            protos.GroundingPassages(
                 passages=[
-                    {"id": "0", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
-                    {"id": "1", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
-                    {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+                    {
+                        "id": "0",
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
+                    },
+                    {
+                        "id": "1",
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    },
+                    {"id": "2", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
                 ]
             ),
             x,
@@ -82,23 +88,29 @@ class UnitTests(parameterized.TestCase):
         [
             dict(
                 testcase_name="grounding_passage",
-                inline_passages=glm.GroundingPassages(
+                inline_passages=protos.GroundingPassages(
                     passages=[
                         {
                             "id": "0",
-                            "content": glm.Content(parts=[glm.Part(text="I am a chicken")]),
+                            "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
                         },
-                        {"id": "1", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
-                        {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+                        {
+                            "id": "1",
+                            "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                        },
+                        {
+                            "id": "2",
+                            "content": protos.Content(parts=[protos.Part(text="I can fly!")]),
+                        },
                     ]
                 ),
             ),
             dict(
                 testcase_name="content_object",
                 inline_passages=[
-                    glm.Content(parts=[glm.Part(text="I am a chicken")]),
-                    glm.Content(parts=[glm.Part(text="I am a bird.")]),
-                    glm.Content(parts=[glm.Part(text="I can fly!")]),
+                    protos.Content(parts=[protos.Part(text="I am a chicken")]),
+                    protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    protos.Content(parts=[protos.Part(text="I can fly!")]),
                 ],
             ),
             dict(
@@ -109,13 +121,19 @@ class UnitTests(parameterized.TestCase):
     )
     def test_make_grounding_passages(self, inline_passages):
         x = answer._make_grounding_passages(inline_passages)
-        self.assertIsInstance(x, glm.GroundingPassages)
+        self.assertIsInstance(x, protos.GroundingPassages)
         self.assertEqual(
-            glm.GroundingPassages(
+            protos.GroundingPassages(
                 passages=[
-                    {"id": "0", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
-                    {"id": "1", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
-                    {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+                    {
+                        "id": "0",
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
+                    },
+                    {
+                        "id": "1",
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    },
+                    {"id": "2", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
                 ]
             ),
             x,
@@ -133,27 +151,33 @@ class UnitTests(parameterized.TestCase):
         dict(
             testcase_name="list_of_grounding_passages",
             inline_passages=[
-                glm.GroundingPassage(
-                    id="4", content=glm.Content(parts=[glm.Part(text="I am a chicken")])
+                protos.GroundingPassage(
+                    id="4", content=protos.Content(parts=[protos.Part(text="I am a chicken")])
                 ),
-                glm.GroundingPassage(
-                    id="5", content=glm.Content(parts=[glm.Part(text="I am a bird.")])
+                protos.GroundingPassage(
+                    id="5", content=protos.Content(parts=[protos.Part(text="I am a bird.")])
                 ),
-                glm.GroundingPassage(
-                    id="6", content=glm.Content(parts=[glm.Part(text="I can fly!")])
+                protos.GroundingPassage(
+                    id="6", content=protos.Content(parts=[protos.Part(text="I can fly!")])
                 ),
             ],
         ),
     )
     def test_make_grounding_passages_different_id(self, inline_passages):
         x = answer._make_grounding_passages(inline_passages)
-        self.assertIsInstance(x, glm.GroundingPassages)
+        self.assertIsInstance(x, protos.GroundingPassages)
         self.assertEqual(
-            glm.GroundingPassages(
+            protos.GroundingPassages(
                 passages=[
-                    {"id": "4", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
-                    {"id": "5", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
-                    {"id": "6", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+                    {
+                        "id": "4",
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
+                    },
+                    {
+                        "id": "5",
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    },
+                    {"id": "6", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
                 ]
             ),
             x,
@@ -167,16 +191,22 @@ class UnitTests(parameterized.TestCase):
         }
 
         x = answer._make_grounding_passages(inline_passages)
-        self.assertIsInstance(x, glm.GroundingPassages)
+        self.assertIsInstance(x, protos.GroundingPassages)
         self.assertEqual(
-            glm.GroundingPassages(
+            protos.GroundingPassages(
                 passages=[
                     {
                         "id": "first",
-                        "content": glm.Content(parts=[glm.Part(text="I am a chicken")]),
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
                     },
-                    {"id": "second", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
-                    {"id": "third", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+                    {
+                        "id": "second",
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    },
+                    {
+                        "id": "third",
+                        "content": protos.Content(parts=[protos.Part(text="I can fly!")]),
+                    },
                 ]
             ),
             x,
@@ -184,14 +214,14 @@ class UnitTests(parameterized.TestCase):
 
     def test_generate_answer_request(self):
         # Should be a list of contents to use to_contents() function.
-        contents = [glm.Content(parts=[glm.Part(text="I have wings.")])]
+        contents = [protos.Content(parts=[protos.Part(text="I have wings.")])]
 
         inline_passages = ["I am a chicken", "I am a bird.", "I can fly!"]
-        grounding_passages = glm.GroundingPassages(
+        grounding_passages = protos.GroundingPassages(
             passages=[
-                {"id": "0", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
-                {"id": "1", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
-                {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+                {"id": "0", "content": protos.Content(parts=[protos.Part(text="I am a chicken")])},
+                {"id": "1", "content": protos.Content(parts=[protos.Part(text="I am a bird.")])},
+                {"id": "2", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
             ]
         )
 
@@ -200,7 +230,7 @@ class UnitTests(parameterized.TestCase):
         )
 
         self.assertEqual(
-            glm.GenerateAnswerRequest(
+            protos.GenerateAnswerRequest(
                 model=DEFAULT_ANSWER_MODEL, contents=contents, inline_passages=grounding_passages
             ),
             x,
@@ -208,13 +238,13 @@ class UnitTests(parameterized.TestCase):
 
     def test_generate_answer(self):
         # Test handling return value of generate_answer().
-        contents = [glm.Content(parts=[glm.Part(text="I have wings.")])]
+        contents = [protos.Content(parts=[protos.Part(text="I have wings.")])]
 
-        grounding_passages = glm.GroundingPassages(
+        grounding_passages = protos.GroundingPassages(
             passages=[
-                {"id": "0", "content": glm.Content(parts=[glm.Part(text="I am a chicken")])},
-                {"id": "1", "content": glm.Content(parts=[glm.Part(text="I am a bird.")])},
-                {"id": "2", "content": glm.Content(parts=[glm.Part(text="I can fly!")])},
+                {"id": "0", "content": protos.Content(parts=[protos.Part(text="I am a chicken")])},
+                {"id": "1", "content": protos.Content(parts=[protos.Part(text="I am a bird.")])},
+                {"id": "2", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
             ]
         )
 
@@ -225,13 +255,13 @@ class UnitTests(parameterized.TestCase):
             answer_style="ABSTRACTIVE",
         )
 
-        self.assertIsInstance(a, glm.GenerateAnswerResponse)
+        self.assertIsInstance(a, protos.GenerateAnswerResponse)
         self.assertEqual(
             a,
-            glm.GenerateAnswerResponse(
-                answer=glm.Candidate(
+            protos.GenerateAnswerResponse(
+                answer=protos.Candidate(
                     index=1,
-                    content=(glm.Content(parts=[glm.Part(text="Demo answer.")])),
+                    content=(protos.Content(parts=[protos.Part(text="Demo answer.")])),
                 ),
                 answerable_probability=0.500,
             ),

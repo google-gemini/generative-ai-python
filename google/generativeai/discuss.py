@@ -18,37 +18,38 @@ import dataclasses
 import sys
 import textwrap
 
-from typing import Any, Iterable, List, Optional, Union
+from typing import Iterable, List
 
 import google.ai.generativelanguage as glm
 
 from google.generativeai.client import get_default_discuss_client
 from google.generativeai.client import get_default_discuss_async_client
 from google.generativeai import string_utils
+from google.generativeai import protos
 from google.generativeai.types import discuss_types
 from google.generativeai.types import helper_types
 from google.generativeai.types import model_types
 from google.generativeai.types import palm_safety_types
 
 
-def _make_message(content: discuss_types.MessageOptions) -> glm.Message:
-    """Creates a `glm.Message` object from the provided content."""
-    if isinstance(content, glm.Message):
+def _make_message(content: discuss_types.MessageOptions) -> protos.Message:
+    """Creates a `protos.Message` object from the provided content."""
+    if isinstance(content, protos.Message):
         return content
     if isinstance(content, str):
-        return glm.Message(content=content)
+        return protos.Message(content=content)
     else:
-        return glm.Message(content)
+        return protos.Message(content)
 
 
 def _make_messages(
     messages: discuss_types.MessagesOptions,
-) -> List[glm.Message]:
+) -> List[protos.Message]:
     """
-    Creates a list of `glm.Message` objects from the provided messages.
+    Creates a list of `protos.Message` objects from the provided messages.
 
     This function takes a variety of message content inputs, such as strings, dictionaries,
-    or `glm.Message` objects, and creates a list of `glm.Message` objects. It ensures that
+    or `protos.Message` objects, and creates a list of `protos.Message` objects. It ensures that
     the authors of the messages alternate appropriately. If authors are not provided,
     default authors are assigned based on their position in the list.
 
@@ -56,9 +57,9 @@ def _make_messages(
         messages: The messages to convert.
 
     Returns:
-        A list of `glm.Message` objects with alternating authors.
+        A list of `protos.Message` objects with alternating authors.
     """
-    if isinstance(messages, (str, dict, glm.Message)):
+    if isinstance(messages, (str, dict, protos.Message)):
         messages = [_make_message(messages)]
     else:
         messages = [_make_message(message) for message in messages]
@@ -93,39 +94,39 @@ def _make_messages(
     return messages
 
 
-def _make_example(item: discuss_types.ExampleOptions) -> glm.Example:
-    """Creates a `glm.Example` object from the provided item."""
-    if isinstance(item, glm.Example):
+def _make_example(item: discuss_types.ExampleOptions) -> protos.Example:
+    """Creates a `protos.Example` object from the provided item."""
+    if isinstance(item, protos.Example):
         return item
 
     if isinstance(item, dict):
         item = item.copy()
         item["input"] = _make_message(item["input"])
         item["output"] = _make_message(item["output"])
-        return glm.Example(item)
+        return protos.Example(item)
 
     if isinstance(item, Iterable):
         input, output = list(item)
-        return glm.Example(input=_make_message(input), output=_make_message(output))
+        return protos.Example(input=_make_message(input), output=_make_message(output))
 
     # try anyway
-    return glm.Example(item)
+    return protos.Example(item)
 
 
 def _make_examples_from_flat(
     examples: List[discuss_types.MessageOptions],
-) -> List[glm.Example]:
+) -> List[protos.Example]:
     """
-    Creates a list of `glm.Example` objects from a list of message options.
+    Creates a list of `protos.Example` objects from a list of message options.
 
     This function takes a list of `discuss_types.MessageOptions` and pairs them into
-    `glm.Example` objects. The input examples must be in pairs to create valid examples.
+    `protos.Example` objects. The input examples must be in pairs to create valid examples.
 
     Args:
         examples: The list of `discuss_types.MessageOptions`.
 
     Returns:
-        A list of `glm.Example objects` created by pairing up the provided messages.
+        A list of `protos.Example objects` created by pairing up the provided messages.
 
     Raises:
         ValueError: If the provided list of examples is not of even length.
@@ -145,7 +146,7 @@ def _make_examples_from_flat(
         pair.append(msg)
         if n % 2 == 0:
             continue
-        primer = glm.Example(
+        primer = protos.Example(
             input=pair[0],
             output=pair[1],
         )
@@ -156,21 +157,21 @@ def _make_examples_from_flat(
 
 def _make_examples(
     examples: discuss_types.ExamplesOptions,
-) -> List[glm.Example]:
+) -> List[protos.Example]:
     """
-    Creates a list of `glm.Example` objects from the provided examples.
+    Creates a list of `protos.Example` objects from the provided examples.
 
     This function takes various types of example content inputs and creates a list
-    of `glm.Example` objects. It handles the conversion of different input types and ensures
+    of `protos.Example` objects. It handles the conversion of different input types and ensures
     the appropriate structure for creating valid examples.
 
     Args:
         examples: The examples to convert.
 
     Returns:
-        A list of `glm.Example` objects created from the provided examples.
+        A list of `protos.Example` objects created from the provided examples.
     """
-    if isinstance(examples, glm.Example):
+    if isinstance(examples, protos.Example):
         return [examples]
 
     if isinstance(examples, dict):
@@ -208,11 +209,11 @@ def _make_message_prompt_dict(
     context: str | None = None,
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
-) -> glm.MessagePrompt:
+) -> protos.MessagePrompt:
     """
-    Creates a `glm.MessagePrompt` object from the provided prompt components.
+    Creates a `protos.MessagePrompt` object from the provided prompt components.
 
-    This function constructs a `glm.MessagePrompt` object using the provided `context`, `examples`,
+    This function constructs a `protos.MessagePrompt` object using the provided `context`, `examples`,
     or `messages`. It ensures the proper structure and handling of the input components.
 
     Either pass a `prompt` or it's component `context`, `examples`, `messages`.
@@ -224,7 +225,7 @@ def _make_message_prompt_dict(
         messages: The messages for the prompt.
 
     Returns:
-        A `glm.MessagePrompt` object created from the provided prompt components.
+        A `protos.MessagePrompt` object created from the provided prompt components.
     """
     if prompt is None:
         prompt = dict(
@@ -238,7 +239,7 @@ def _make_message_prompt_dict(
             raise ValueError(
                 "Invalid configuration: Either `prompt` or its fields `(context, examples, messages)` should be set, but not both simultaneously."
             )
-        if isinstance(prompt, glm.MessagePrompt):
+        if isinstance(prompt, protos.MessagePrompt):
             return prompt
         elif isinstance(prompt, dict):  # Always check dict before Iterable.
             pass
@@ -268,12 +269,12 @@ def _make_message_prompt(
     context: str | None = None,
     examples: discuss_types.ExamplesOptions | None = None,
     messages: discuss_types.MessagesOptions | None = None,
-) -> glm.MessagePrompt:
-    """Creates a `glm.MessagePrompt` object from the provided prompt components."""
+) -> protos.MessagePrompt:
+    """Creates a `protos.MessagePrompt` object from the provided prompt components."""
     prompt = _make_message_prompt_dict(
         prompt=prompt, context=context, examples=examples, messages=messages
     )
-    return glm.MessagePrompt(prompt)
+    return protos.MessagePrompt(prompt)
 
 
 def _make_generate_message_request(
@@ -287,15 +288,15 @@ def _make_generate_message_request(
     top_p: float | None = None,
     top_k: float | None = None,
     prompt: discuss_types.MessagePromptOptions | None = None,
-) -> glm.GenerateMessageRequest:
-    """Creates a `glm.GenerateMessageRequest` object for generating messages."""
+) -> protos.GenerateMessageRequest:
+    """Creates a `protos.GenerateMessageRequest` object for generating messages."""
     model = model_types.make_model_name(model)
 
     prompt = _make_message_prompt(
         prompt=prompt, context=context, examples=examples, messages=messages
     )
 
-    return glm.GenerateMessageRequest(
+    return protos.GenerateMessageRequest(
         model=model,
         prompt=prompt,
         temperature=temperature,
@@ -514,9 +515,9 @@ class ChatResponse(discuss_types.ChatResponse):
 
 
 def _build_chat_response(
-    request: glm.GenerateMessageRequest,
-    response: glm.GenerateMessageResponse,
-    client: glm.DiscussServiceClient | glm.DiscussServiceAsyncClient,
+    request: protos.GenerateMessageRequest,
+    response: protos.GenerateMessageResponse,
+    client: glm.DiscussServiceClient | protos.DiscussServiceAsyncClient,
 ) -> ChatResponse:
     request = type(request).to_dict(request)
     prompt = request.pop("prompt")
@@ -541,7 +542,7 @@ def _build_chat_response(
 
 
 def _generate_response(
-    request: glm.GenerateMessageRequest,
+    request: protos.GenerateMessageRequest,
     client: glm.DiscussServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> ChatResponse:
@@ -557,7 +558,7 @@ def _generate_response(
 
 
 async def _generate_response_async(
-    request: glm.GenerateMessageRequest,
+    request: protos.GenerateMessageRequest,
     client: glm.DiscussServiceAsyncClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> ChatResponse:

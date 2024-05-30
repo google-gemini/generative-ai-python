@@ -19,7 +19,7 @@ from typing import Any, Union
 
 from absl.testing import absltest
 from absl.testing import parameterized
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai.types import content_types
 import IPython.display
 import PIL.Image
@@ -71,7 +71,7 @@ class UnitTests(parameterized.TestCase):
     )
     def test_png_to_blob(self, image):
         blob = content_types.image_to_blob(image)
-        self.assertIsInstance(blob, glm.Blob)
+        self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/png")
         self.assertStartsWith(blob.data, b"\x89PNG")
 
@@ -81,29 +81,29 @@ class UnitTests(parameterized.TestCase):
     )
     def test_jpg_to_blob(self, image):
         blob = content_types.image_to_blob(image)
-        self.assertIsInstance(blob, glm.Blob)
+        self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/jpeg")
         self.assertStartsWith(blob.data, b"\xff\xd8\xff\xe0\x00\x10JFIF")
 
     @parameterized.named_parameters(
         ["BlobDict", {"mime_type": "image/png", "data": TEST_PNG_DATA}],
-        ["glm.Blob", glm.Blob(mime_type="image/png", data=TEST_PNG_DATA)],
+        ["protos.Blob", protos.Blob(mime_type="image/png", data=TEST_PNG_DATA)],
         ["Image", IPython.display.Image(filename=TEST_PNG_PATH)],
     )
     def test_to_blob(self, example):
         blob = content_types.to_blob(example)
-        self.assertIsInstance(blob, glm.Blob)
+        self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/png")
         self.assertStartsWith(blob.data, b"\x89PNG")
 
     @parameterized.named_parameters(
         ["dict", {"text": "Hello world!"}],
-        ["glm.Part", glm.Part(text="Hello world!")],
+        ["protos.Part", protos.Part(text="Hello world!")],
         ["str", "Hello world!"],
     )
     def test_to_part(self, example):
         part = content_types.to_part(example)
-        self.assertIsInstance(part, glm.Part)
+        self.assertIsInstance(part, protos.Part)
         self.assertEqual(part.text, "Hello world!")
 
     @parameterized.named_parameters(
@@ -116,12 +116,12 @@ class UnitTests(parameterized.TestCase):
     )
     def test_img_to_part(self, example):
         blob = content_types.to_part(example).inline_data
-        self.assertIsInstance(blob, glm.Blob)
+        self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/png")
         self.assertStartsWith(blob.data, b"\x89PNG")
 
     @parameterized.named_parameters(
-        ["glm.Content", glm.Content(parts=[{"text": "Hello world!"}])],
+        ["protos.Content", protos.Content(parts=[{"text": "Hello world!"}])],
         ["ContentDict", {"parts": [{"text": "Hello world!"}]}],
         ["ContentDict-str", {"parts": ["Hello world!"]}],
         ["list[parts]", [{"text": "Hello world!"}]],
@@ -135,7 +135,7 @@ class UnitTests(parameterized.TestCase):
         part = content.parts[0]
 
         self.assertLen(content.parts, 1)
-        self.assertIsInstance(part, glm.Part)
+        self.assertIsInstance(part, protos.Part)
         self.assertEqual(part.text, "Hello world!")
 
     @parameterized.named_parameters(
@@ -147,12 +147,12 @@ class UnitTests(parameterized.TestCase):
         content = content_types.to_content(example)
         blob = content.parts[0].inline_data
         self.assertLen(content.parts, 1)
-        self.assertIsInstance(blob, glm.Blob)
+        self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/png")
         self.assertStartsWith(blob.data, b"\x89PNG")
 
     @parameterized.named_parameters(
-        ["glm.Content", glm.Content(parts=[{"text": "Hello world!"}])],
+        ["protos.Content", protos.Content(parts=[{"text": "Hello world!"}])],
         ["ContentDict", {"parts": [{"text": "Hello world!"}]}],
         ["ContentDict-str", {"parts": ["Hello world!"]}],
     )
@@ -161,7 +161,7 @@ class UnitTests(parameterized.TestCase):
         part = content.parts[0]
 
         self.assertLen(content.parts, 1)
-        self.assertIsInstance(part, glm.Part)
+        self.assertIsInstance(part, protos.Part)
         self.assertEqual(part.text, "Hello world!")
 
     @parameterized.named_parameters(
@@ -176,7 +176,7 @@ class UnitTests(parameterized.TestCase):
             content_types.strict_to_content(examples)
 
     @parameterized.named_parameters(
-        ["glm.Content", [glm.Content(parts=[{"text": "Hello world!"}])]],
+        ["protos.Content", [protos.Content(parts=[{"text": "Hello world!"}])]],
         ["ContentDict", [{"parts": [{"text": "Hello world!"}]}]],
         ["ContentDict-unwraped", [{"parts": ["Hello world!"]}]],
         ["ContentDict+str-part", [{"parts": "Hello world!"}]],
@@ -188,7 +188,7 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(contents, 1)
 
         self.assertLen(contents[0].parts, 1)
-        self.assertIsInstance(part, glm.Part)
+        self.assertIsInstance(part, protos.Part)
         self.assertEqual(part.text, "Hello world!")
 
     def test_dict_to_content_fails(self):
@@ -209,7 +209,7 @@ class UnitTests(parameterized.TestCase):
 
         self.assertLen(contents, 1)
         self.assertLen(contents[0].parts, 1)
-        self.assertIsInstance(blob, glm.Blob)
+        self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/png")
         self.assertStartsWith(blob.data, b"\x89PNG")
 
@@ -217,9 +217,9 @@ class UnitTests(parameterized.TestCase):
         [
             "FunctionLibrary",
             content_types.FunctionLibrary(
-                tools=glm.Tool(
+                tools=protos.Tool(
                     function_declarations=[
-                        glm.FunctionDeclaration(
+                        protos.FunctionDeclaration(
                             name="datetime", description="Returns the current UTC date and time."
                         )
                     ]
@@ -231,7 +231,7 @@ class UnitTests(parameterized.TestCase):
             [
                 content_types.Tool(
                     function_declarations=[
-                        glm.FunctionDeclaration(
+                        protos.FunctionDeclaration(
                             name="datetime", description="Returns the current UTC date and time."
                         )
                     ]
@@ -239,11 +239,11 @@ class UnitTests(parameterized.TestCase):
             ],
         ],
         [
-            "IterableTool-glm.Tool",
+            "IterableTool-protos.Tool",
             [
-                glm.Tool(
+                protos.Tool(
                     function_declarations=[
-                        glm.FunctionDeclaration(
+                        protos.FunctionDeclaration(
                             name="datetime",
                             description="Returns the current UTC date and time.",
                         )
@@ -268,7 +268,7 @@ class UnitTests(parameterized.TestCase):
             "IterableTool-IterableFD",
             [
                 [
-                    glm.FunctionDeclaration(
+                    protos.FunctionDeclaration(
                         name="datetime",
                         description="Returns the current UTC date and time.",
                     )
@@ -278,7 +278,7 @@ class UnitTests(parameterized.TestCase):
         [
             "IterableTool-FD",
             [
-                glm.FunctionDeclaration(
+                protos.FunctionDeclaration(
                     name="datetime",
                     description="Returns the current UTC date and time.",
                 )
@@ -288,17 +288,17 @@ class UnitTests(parameterized.TestCase):
             "Tool",
             content_types.Tool(
                 function_declarations=[
-                    glm.FunctionDeclaration(
+                    protos.FunctionDeclaration(
                         name="datetime", description="Returns the current UTC date and time."
                     )
                 ]
             ),
         ],
         [
-            "glm.Tool",
-            glm.Tool(
+            "protos.Tool",
+            protos.Tool(
                 function_declarations=[
-                    glm.FunctionDeclaration(
+                    protos.FunctionDeclaration(
                         name="datetime", description="Returns the current UTC date and time."
                     )
                 ]
@@ -350,8 +350,8 @@ class UnitTests(parameterized.TestCase):
             ),
         ],
         [
-            "glm.FD",
-            glm.FunctionDeclaration(
+            "protos.FD",
+            protos.FunctionDeclaration(
                 name="datetime", description="Returns the current UTC date and time."
             ),
         ],
@@ -391,83 +391,83 @@ class UnitTests(parameterized.TestCase):
         self.assertLen(tools[0].function_declarations, 2)
 
     @parameterized.named_parameters(
-        ["int", int, glm.Schema(type=glm.Type.INTEGER)],
-        ["float", float, glm.Schema(type=glm.Type.NUMBER)],
-        ["str", str, glm.Schema(type=glm.Type.STRING)],
-        ["nullable_str", Union[str, None], glm.Schema(type=glm.Type.STRING, nullable=True)],
+        ["int", int, protos.Schema(type=protos.Type.INTEGER)],
+        ["float", float, protos.Schema(type=protos.Type.NUMBER)],
+        ["str", str, protos.Schema(type=protos.Type.STRING)],
+        ["nullable_str", Union[str, None], protos.Schema(type=protos.Type.STRING, nullable=True)],
         [
             "list",
             list[str],
-            glm.Schema(
-                type=glm.Type.ARRAY,
-                items=glm.Schema(type=glm.Type.STRING),
+            protos.Schema(
+                type=protos.Type.ARRAY,
+                items=protos.Schema(type=protos.Type.STRING),
             ),
         ],
         [
             "list-list-int",
             list[list[int]],
-            glm.Schema(
-                type=glm.Type.ARRAY,
-                items=glm.Schema(
-                    glm.Schema(
-                        type=glm.Type.ARRAY,
-                        items=glm.Schema(type=glm.Type.INTEGER),
+            protos.Schema(
+                type=protos.Type.ARRAY,
+                items=protos.Schema(
+                    protos.Schema(
+                        type=protos.Type.ARRAY,
+                        items=protos.Schema(type=protos.Type.INTEGER),
                     ),
                 ),
             ),
         ],
-        ["dict", dict, glm.Schema(type=glm.Type.OBJECT)],
-        ["dict-str-any", dict[str, Any], glm.Schema(type=glm.Type.OBJECT)],
+        ["dict", dict, protos.Schema(type=protos.Type.OBJECT)],
+        ["dict-str-any", dict[str, Any], protos.Schema(type=protos.Type.OBJECT)],
         [
             "dataclass",
             ADataClass,
-            glm.Schema(
-                type=glm.Type.OBJECT,
-                properties={"a": {"type_": glm.Type.INTEGER}},
+            protos.Schema(
+                type=protos.Type.OBJECT,
+                properties={"a": {"type_": protos.Type.INTEGER}},
             ),
         ],
         [
             "nullable_dataclass",
             Union[ADataClass, None],
-            glm.Schema(
-                type=glm.Type.OBJECT,
+            protos.Schema(
+                type=protos.Type.OBJECT,
                 nullable=True,
-                properties={"a": {"type_": glm.Type.INTEGER}},
+                properties={"a": {"type_": protos.Type.INTEGER}},
             ),
         ],
         [
             "list_of_dataclass",
             list[ADataClass],
-            glm.Schema(
+            protos.Schema(
                 type="ARRAY",
-                items=glm.Schema(
-                    type=glm.Type.OBJECT,
-                    properties={"a": {"type_": glm.Type.INTEGER}},
+                items=protos.Schema(
+                    type=protos.Type.OBJECT,
+                    properties={"a": {"type_": protos.Type.INTEGER}},
                 ),
             ),
         ],
         [
             "dataclass_with_nullable",
             ADataClassWithNullable,
-            glm.Schema(
-                type=glm.Type.OBJECT,
-                properties={"a": {"type_": glm.Type.INTEGER, "nullable": True}},
+            protos.Schema(
+                type=protos.Type.OBJECT,
+                properties={"a": {"type_": protos.Type.INTEGER, "nullable": True}},
             ),
         ],
         [
             "dataclass_with_list",
             ADataClassWithList,
-            glm.Schema(
-                type=glm.Type.OBJECT,
+            protos.Schema(
+                type=protos.Type.OBJECT,
                 properties={"a": {"type_": "ARRAY", "items": {"type_": "INTEGER"}}},
             ),
         ],
         [
             "list_of_dataclass_with_list",
             list[ADataClassWithList],
-            glm.Schema(
-                items=glm.Schema(
-                    type=glm.Type.OBJECT,
+            protos.Schema(
+                items=protos.Schema(
+                    type=protos.Type.OBJECT,
                     properties={"a": {"type_": "ARRAY", "items": {"type_": "INTEGER"}}},
                 ),
                 type="ARRAY",
@@ -476,31 +476,31 @@ class UnitTests(parameterized.TestCase):
         [
             "list_of_nullable",
             list[Union[int, None]],
-            glm.Schema(
+            protos.Schema(
                 type="ARRAY",
-                items={"type_": glm.Type.INTEGER, "nullable": True},
+                items={"type_": protos.Type.INTEGER, "nullable": True},
             ),
         ],
         [
             "TypedDict",
             ATypedDict,
-            glm.Schema(
-                type=glm.Type.OBJECT,
+            protos.Schema(
+                type=protos.Type.OBJECT,
                 properties={
-                    "a": {"type_": glm.Type.INTEGER},
+                    "a": {"type_": protos.Type.INTEGER},
                 },
             ),
         ],
         [
             "nested",
             Nested,
-            glm.Schema(
-                type=glm.Type.OBJECT,
+            protos.Schema(
+                type=protos.Type.OBJECT,
                 properties={
-                    "x": glm.Schema(
-                        type=glm.Type.OBJECT,
+                    "x": protos.Schema(
+                        type=protos.Type.OBJECT,
                         properties={
-                            "a": {"type_": glm.Type.INTEGER},
+                            "a": {"type_": protos.Type.INTEGER},
                         },
                     ),
                 },

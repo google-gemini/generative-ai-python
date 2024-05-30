@@ -16,11 +16,11 @@ from __future__ import annotations
 
 from typing import Union
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 __all__ = ["Answer"]
 
-FinishReason = glm.Candidate.FinishReason
+FinishReason = protos.Candidate.FinishReason
 
 FinishReasonOptions = Union[int, str, FinishReason]
 

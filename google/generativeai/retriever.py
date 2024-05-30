@@ -14,12 +14,11 @@
 # limitations under the License.
 from __future__ import annotations
 
-import re
-import string
-import dataclasses
-from typing import Any, AsyncIterable, Iterable, Optional
+
+from typing import AsyncIterable, Iterable, Optional
 
 import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai.client import get_default_retriever_client
 from google.generativeai.client import get_default_retriever_async_client
@@ -57,13 +56,13 @@ def create_corpus(
         client = get_default_retriever_client()
 
     if name is None:
-        corpus = glm.Corpus(display_name=display_name)
+        corpus = protos.Corpus(display_name=display_name)
     elif retriever_types.valid_name(name):
-        corpus = glm.Corpus(name=f"corpora/{name}", display_name=display_name)
+        corpus = protos.Corpus(name=f"corpora/{name}", display_name=display_name)
     else:
         raise ValueError(retriever_types.NAME_ERROR_MSG.format(length=len(name), name=name))
 
-    request = glm.CreateCorpusRequest(corpus=corpus)
+    request = protos.CreateCorpusRequest(corpus=corpus)
     response = client.create_corpus(request, **request_options)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
@@ -86,13 +85,13 @@ async def create_corpus_async(
         client = get_default_retriever_async_client()
 
     if name is None:
-        corpus = glm.Corpus(display_name=display_name)
+        corpus = protos.Corpus(display_name=display_name)
     elif retriever_types.valid_name(name):
-        corpus = glm.Corpus(name=f"corpora/{name}", display_name=display_name)
+        corpus = protos.Corpus(name=f"corpora/{name}", display_name=display_name)
     else:
         raise ValueError(retriever_types.NAME_ERROR_MSG.format(length=len(name), name=name))
 
-    request = glm.CreateCorpusRequest(corpus=corpus)
+    request = protos.CreateCorpusRequest(corpus=corpus)
     response = await client.create_corpus(request, **request_options)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
@@ -124,7 +123,7 @@ def get_corpus(
     if "/" not in name:
         name = "corpora/" + name
 
-    request = glm.GetCorpusRequest(name=name)
+    request = protos.GetCorpusRequest(name=name)
     response = client.get_corpus(request, **request_options)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
@@ -149,7 +148,7 @@ async def get_corpus_async(
     if "/" not in name:
         name = "corpora/" + name
 
-    request = glm.GetCorpusRequest(name=name)
+    request = protos.GetCorpusRequest(name=name)
     response = await client.get_corpus(request, **request_options)
     response = type(response).to_dict(response)
     idecode_time(response, "create_time")
@@ -181,7 +180,7 @@ def delete_corpus(
     if "/" not in name:
         name = "corpora/" + name
 
-    request = glm.DeleteCorpusRequest(name=name, force=force)
+    request = protos.DeleteCorpusRequest(name=name, force=force)
     client.delete_corpus(request, **request_options)
 
 
@@ -201,7 +200,7 @@ async def delete_corpus_async(
     if "/" not in name:
         name = "corpora/" + name
 
-    request = glm.DeleteCorpusRequest(name=name, force=force)
+    request = protos.DeleteCorpusRequest(name=name, force=force)
     await client.delete_corpus(request, **request_options)
 
 
@@ -227,7 +226,7 @@ def list_corpora(
     if client is None:
         client = get_default_retriever_client()
 
-    request = glm.ListCorporaRequest(page_size=page_size)
+    request = protos.ListCorporaRequest(page_size=page_size)
     for corpus in client.list_corpora(request, **request_options):
         corpus = type(corpus).to_dict(corpus)
         idecode_time(corpus, "create_time")
@@ -248,7 +247,7 @@ async def list_corpora_async(
     if client is None:
         client = get_default_retriever_async_client()
 
-    request = glm.ListCorporaRequest(page_size=page_size)
+    request = protos.ListCorporaRequest(page_size=page_size)
     async for corpus in await client.list_corpora(request, **request_options):
         corpus = type(corpus).to_dict(corpus)
         idecode_time(corpus, "create_time")

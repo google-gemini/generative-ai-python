@@ -22,10 +22,10 @@ from typing import Iterable, Union
 import pathlib
 
 import google
-import google.ai.generativelanguage as glm
 
 import google.generativeai as genai
 from google.generativeai import client as client_lib
+from google.generativeai import protos
 from absl.testing import parameterized
 
 
@@ -43,7 +43,7 @@ class FileServiceClient(client_lib.FileServiceClient):
         name: Union[str, None] = None,
         display_name: Union[str, None] = None,
         resumable: bool = True,
-    ) -> glm.File:
+    ) -> protos.File:
         self.observed_requests.append(
             dict(
                 path=path,
@@ -57,24 +57,24 @@ class FileServiceClient(client_lib.FileServiceClient):
 
     def get_file(
         self,
-        request: glm.GetFileRequest,
+        request: protos.GetFileRequest,
         **kwargs,
-    ) -> glm.File:
+    ) -> protos.File:
         self.observed_requests.append(request)
         return self.responses["get_file"].pop(0)
 
     def list_files(
         self,
-        request: glm.ListFilesRequest,
+        request: protos.ListFilesRequest,
         **kwargs,
-    ) -> Iterable[glm.File]:
+    ) -> Iterable[protos.File]:
         self.observed_requests.append(request)
         for f in self.responses["list_files"].pop(0):
             yield f
 
     def delete_file(
         self,
-        request: glm.DeleteFileRequest,
+        request: protos.DeleteFileRequest,
         **kwargs,
     ):
         self.observed_requests.append(request)
@@ -97,7 +97,7 @@ class UnitTests(parameterized.TestCase):
 
     def test_video_metadata(self):
         self.responses["create_file"].append(
-            glm.File(
+            protos.File(
                 uri="https://test",
                 state="ACTIVE",
                 video_metadata=dict(video_duration=datetime.timedelta(seconds=30)),
@@ -108,7 +108,8 @@ class UnitTests(parameterized.TestCase):
         f = genai.upload_file(path="dummy")
         self.assertEqual(google.rpc.status_pb2.Status(code=7, message="ok?"), f.error)
         self.assertEqual(
-            glm.VideoMetadata(dict(video_duration=datetime.timedelta(seconds=30))), f.video_metadata
+            protos.VideoMetadata(dict(video_duration=datetime.timedelta(seconds=30))),
+            f.video_metadata,
         )
 
     @parameterized.named_parameters(
@@ -123,11 +124,11 @@ class UnitTests(parameterized.TestCase):
             ),
             dict(
                 testcase_name="FileData",
-                file_data=glm.FileData(file_uri="https://test_uri"),
+                file_data=protos.FileData(file_uri="https://test_uri"),
             ),
             dict(
-                testcase_name="glm.File",
-                file_data=glm.File(uri="https://test_uri"),
+                testcase_name="protos.File",
+                file_data=protos.File(uri="https://test_uri"),
             ),
             dict(
                 testcase_name="file_types.File",
@@ -137,4 +138,4 @@ class UnitTests(parameterized.TestCase):
     )
     def test_to_file_data(self, file_data):
         file_data = file_types.to_file_data(file_data)
-        self.assertEqual(glm.FileData(file_uri="https://test_uri"), file_data)
+        self.assertEqual(protos.FileData(file_uri="https://test_uri"), file_data)

@@ -16,7 +16,7 @@ import copy
 
 import unittest.mock
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import discuss
 from google.generativeai import client
@@ -37,18 +37,18 @@ class UnitTests(parameterized.TestCase):
 
         self.observed_request = None
 
-        self.mock_response = glm.GenerateMessageResponse(
+        self.mock_response = protos.GenerateMessageResponse(
             candidates=[
-                glm.Message(content="a", author="1"),
-                glm.Message(content="b", author="1"),
-                glm.Message(content="c", author="1"),
+                protos.Message(content="a", author="1"),
+                protos.Message(content="b", author="1"),
+                protos.Message(content="c", author="1"),
             ],
         )
 
         def fake_generate_message(
-            request: glm.GenerateMessageRequest,
+            request: protos.GenerateMessageRequest,
             **kwargs,
-        ) -> glm.GenerateMessageResponse:
+        ) -> protos.GenerateMessageResponse:
             self.observed_request = request
             response = copy.copy(self.mock_response)
             response.messages = request.prompt.messages
@@ -60,22 +60,22 @@ class UnitTests(parameterized.TestCase):
         ["string", "Hello", ""],
         ["dict", {"content": "Hello"}, ""],
         ["dict_author", {"content": "Hello", "author": "me"}, "me"],
-        ["proto", glm.Message(content="Hello"), ""],
-        ["proto_author", glm.Message(content="Hello", author="me"), "me"],
+        ["proto", protos.Message(content="Hello"), ""],
+        ["proto_author", protos.Message(content="Hello", author="me"), "me"],
     )
     def test_make_message(self, message, author):
         x = discuss._make_message(message)
-        self.assertIsInstance(x, glm.Message)
+        self.assertIsInstance(x, protos.Message)
         self.assertEqual("Hello", x.content)
         self.assertEqual(author, x.author)
 
     @parameterized.named_parameters(
         ["string", "Hello", ["Hello"]],
         ["dict", {"content": "Hello"}, ["Hello"]],
-        ["proto", glm.Message(content="Hello"), ["Hello"]],
+        ["proto", protos.Message(content="Hello"), ["Hello"]],
         [
             "list",
-            ["hello0", {"content": "hello1"}, glm.Message(content="hello2")],
+            ["hello0", {"content": "hello1"}, protos.Message(content="hello2")],
             ["hello0", "hello1", "hello2"],
         ],
     )
@@ -90,15 +90,15 @@ class UnitTests(parameterized.TestCase):
         ["dict", {"input": "hello", "output": "goodbye"}],
         [
             "proto",
-            glm.Example(
-                input=glm.Message(content="hello"),
-                output=glm.Message(content="goodbye"),
+            protos.Example(
+                input=protos.Message(content="hello"),
+                output=protos.Message(content="goodbye"),
             ),
         ],
     )
     def test_make_example(self, example):
         x = discuss._make_example(example)
-        self.assertIsInstance(x, glm.Example)
+        self.assertIsInstance(x, protos.Example)
         self.assertEqual("hello", x.input.content)
         self.assertEqual("goodbye", x.output.content)
         return
@@ -110,7 +110,7 @@ class UnitTests(parameterized.TestCase):
                 "Hi",
                 {"content": "Hello!"},
                 "what's your name?",
-                glm.Message(content="Dave, what's yours"),
+                protos.Message(content="Dave, what's yours"),
             ],
         ],
         [
@@ -145,15 +145,15 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["str", "hello"],
-        ["message", glm.Message(content="hello")],
+        ["message", protos.Message(content="hello")],
         ["messages", ["hello"]],
         ["dict", {"messages": "hello"}],
         ["dict2", {"messages": ["hello"]}],
-        ["proto", glm.MessagePrompt(messages=[glm.Message(content="hello")])],
+        ["proto", protos.MessagePrompt(messages=[protos.Message(content="hello")])],
     )
     def test_make_message_prompt_from_messages(self, prompt):
         x = discuss._make_message_prompt(prompt)
-        self.assertIsInstance(x, glm.MessagePrompt)
+        self.assertIsInstance(x, protos.MessagePrompt)
         self.assertEqual(x.messages[0].content, "hello")
         return
 
@@ -181,15 +181,15 @@ class UnitTests(parameterized.TestCase):
         [
             "proto",
             [
-                glm.MessagePrompt(
+                protos.MessagePrompt(
                     context="you are a cat",
                     examples=[
-                        glm.Example(
-                            input=glm.Message(content="are you hungry?"),
-                            output=glm.Message(content="meow!"),
+                        protos.Example(
+                            input=protos.Message(content="are you hungry?"),
+                            output=protos.Message(content="meow!"),
                         )
                     ],
-                    messages=[glm.Message(content="hello")],
+                    messages=[protos.Message(content="hello")],
                 )
             ],
             {},
@@ -197,7 +197,7 @@ class UnitTests(parameterized.TestCase):
     )
     def test_make_message_prompt_from_prompt(self, args, kwargs):
         x = discuss._make_message_prompt(*args, **kwargs)
-        self.assertIsInstance(x, glm.MessagePrompt)
+        self.assertIsInstance(x, protos.MessagePrompt)
         self.assertEqual(x.context, "you are a cat")
         self.assertEqual(x.examples[0].input.content, "are you hungry?")
         self.assertEqual(x.examples[0].output.content, "meow!")
@@ -229,8 +229,8 @@ class UnitTests(parameterized.TestCase):
             }
         )
 
-        self.assertIsInstance(request0, glm.GenerateMessageRequest)
-        self.assertIsInstance(request1, glm.GenerateMessageRequest)
+        self.assertIsInstance(request0, protos.GenerateMessageRequest)
+        self.assertIsInstance(request1, protos.GenerateMessageRequest)
         self.assertEqual(request0, request1)
 
     @parameterized.parameters(
@@ -285,11 +285,13 @@ class UnitTests(parameterized.TestCase):
         response = response.reply("again")
 
     def test_receive_and_reply_with_filters(self):
-        self.mock_response = mock_response = glm.GenerateMessageResponse(
-            candidates=[glm.Message(content="a", author="1")],
+        self.mock_response = mock_response = protos.GenerateMessageResponse(
+            candidates=[protos.Message(content="a", author="1")],
             filters=[
-                glm.ContentFilter(reason=palm_safety_types.BlockedReason.SAFETY, message="unsafe"),
-                glm.ContentFilter(reason=palm_safety_types.BlockedReason.OTHER),
+                protos.ContentFilter(
+                    reason=palm_safety_types.BlockedReason.SAFETY, message="unsafe"
+                ),
+                protos.ContentFilter(reason=palm_safety_types.BlockedReason.OTHER),
             ],
         )
         response = discuss.chat(messages="do filters work?")
@@ -300,10 +302,12 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(filters[0]["reason"], palm_safety_types.BlockedReason.SAFETY)
         self.assertEqual(filters[0]["message"], "unsafe")
 
-        self.mock_response = glm.GenerateMessageResponse(
-            candidates=[glm.Message(content="a", author="1")],
+        self.mock_response = protos.GenerateMessageResponse(
+            candidates=[protos.Message(content="a", author="1")],
             filters=[
-                glm.ContentFilter(reason=palm_safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED)
+                protos.ContentFilter(
+                    reason=palm_safety_types.BlockedReason.BLOCKED_REASON_UNSPECIFIED
+                )
             ],
         )
 
@@ -317,7 +321,7 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_chat_citations(self):
-        self.mock_response = mock_response = glm.GenerateMessageResponse(
+        self.mock_response = mock_response = protos.GenerateMessageResponse(
             candidates=[
                 {
                     "content": "Hello google!",

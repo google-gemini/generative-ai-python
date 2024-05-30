@@ -17,7 +17,7 @@ from typing import List
 
 from typing_extensions import TypedDict
 
-from google.ai import generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai import string_utils
 
 
@@ -33,10 +33,10 @@ class CitationSourceDict(TypedDict):
     uri: str | None
     license: str | None
 
-    __doc__ = string_utils.strip_oneof(glm.CitationSource.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.CitationSource.__doc__)
 
 
 class CitationMetadataDict(TypedDict):
     citation_sources: List[CitationSourceDict | None]
 
-    __doc__ = string_utils.strip_oneof(glm.CitationMetadata.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.CitationMetadata.__doc__)

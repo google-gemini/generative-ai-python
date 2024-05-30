@@ -17,7 +17,7 @@ from typing import Any, Optional, Union
 import unittest
 import unittest.mock as mock
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import retriever
 from google.generativeai import permission
@@ -49,11 +49,11 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         @add_client_method
         async def create_corpus(
-            request: glm.CreateCorpusRequest,
+            request: protos.CreateCorpusRequest,
             **kwargs,
-        ) -> glm.Corpus:
+        ) -> protos.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(
+            return protos.Corpus(
                 name="corpora/demo-corpus",
                 display_name="demo-corpus",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -62,24 +62,24 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         @add_client_method
         def get_tuned_model(
-            request: Optional[glm.GetTunedModelRequest] = None,
+            request: Optional[protos.GetTunedModelRequest] = None,
             *,
             name=None,
             **kwargs,
-        ) -> glm.TunedModel:
+        ) -> protos.TunedModel:
             if request is None:
-                request = glm.GetTunedModelRequest(name=name)
-            self.assertIsInstance(request, glm.GetTunedModelRequest)
+                request = protos.GetTunedModelRequest(name=name)
+            self.assertIsInstance(request, protos.GetTunedModelRequest)
             self.observed_requests.append(request)
             response = copy.copy(self.responses["get_tuned_model"])
             return response
 
         @add_client_method
         async def create_permission(
-            request: glm.CreatePermissionRequest,
-        ) -> glm.Permission:
+            request: protos.CreatePermissionRequest,
+        ) -> protos.Permission:
             self.observed_requests.append(request)
-            return glm.Permission(
+            return protos.Permission(
                 name="corpora/demo-corpus/permissions/123456789",
                 role=permission_services.to_role("writer"),
                 grantee_type=permission_services.to_grantee_type("everyone"),
@@ -87,17 +87,17 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         @add_client_method
         async def delete_permission(
-            request: glm.DeletePermissionRequest,
+            request: protos.DeletePermissionRequest,
         ) -> None:
             self.observed_requests.append(request)
             return None
 
         @add_client_method
         async def get_permission(
-            request: glm.GetPermissionRequest,
-        ) -> glm.Permission:
+            request: protos.GetPermissionRequest,
+        ) -> protos.Permission:
             self.observed_requests.append(request)
-            return glm.Permission(
+            return protos.Permission(
                 name="corpora/demo-corpus/permissions/123456789",
                 role=permission_services.to_role("writer"),
                 grantee_type=permission_services.to_grantee_type("everyone"),
@@ -105,17 +105,17 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         @add_client_method
         async def list_permissions(
-            request: glm.ListPermissionsRequest,
-        ) -> glm.ListPermissionsResponse:
+            request: protos.ListPermissionsRequest,
+        ) -> protos.ListPermissionsResponse:
             self.observed_requests.append(request)
 
             async def results():
-                yield glm.Permission(
+                yield protos.Permission(
                     name="corpora/demo-corpus/permissions/123456789",
                     role=permission_services.to_role("writer"),
                     grantee_type=permission_services.to_grantee_type("everyone"),
                 )
-                yield glm.Permission(
+                yield protos.Permission(
                     name="corpora/demo-corpus/permissions/987654321",
                     role=permission_services.to_role("reader"),
                     grantee_type=permission_services.to_grantee_type("everyone"),
@@ -126,10 +126,10 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         @add_client_method
         async def update_permission(
-            request: glm.UpdatePermissionRequest,
-        ) -> glm.Permission:
+            request: protos.UpdatePermissionRequest,
+        ) -> protos.Permission:
             self.observed_requests.append(request)
-            return glm.Permission(
+            return protos.Permission(
                 name="corpora/demo-corpus/permissions/123456789",
                 role=permission_services.to_role("reader"),
                 grantee_type=permission_services.to_grantee_type("everyone"),
@@ -137,10 +137,10 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         @add_client_method
         async def transfer_ownership(
-            request: glm.TransferOwnershipRequest,
-        ) -> glm.TransferOwnershipResponse:
+            request: protos.TransferOwnershipRequest,
+        ) -> protos.TransferOwnershipResponse:
             self.observed_requests.append(request)
-            return glm.TransferOwnershipResponse()
+            return protos.TransferOwnershipResponse()
 
     async def test_create_permission_success(self):
         x = await retriever.create_corpus_async("demo-corpus")
@@ -148,7 +148,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             role="writer", grantee_type="everyone", email_address=None
         )
         self.assertIsInstance(perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.CreatePermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.CreatePermissionRequest)
 
     async def test_create_permission_failure_email_set_when_grantee_type_is_everyone(self):
         x = await retriever.create_corpus_async("demo-corpus")
@@ -168,14 +168,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         x = await retriever.create_corpus_async("demo-corpus")
         perm = await x.permissions.create_async("writer", "everyone")
         await perm.delete_async()
-        self.assertIsInstance(self.observed_requests[-1], glm.DeletePermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.DeletePermissionRequest)
 
     async def test_get_permission_with_full_name(self):
         x = await retriever.create_corpus_async("demo-corpus")
         perm = await x.permissions.create_async("writer", "everyone")
         fetch_perm = await permission.get_permission_async(name=perm.name)
         self.assertIsInstance(fetch_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.GetPermissionRequest)
         self.assertEqual(fetch_perm, perm)
 
     async def test_get_permission_with_resource_name_and_id_1(self):
@@ -185,7 +185,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             resource_name="corpora/demo-corpus", permission_id=123456789
         )
         self.assertIsInstance(fetch_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.GetPermissionRequest)
         self.assertEqual(fetch_perm, perm)
 
     async def test_get_permission_with_resource_name_name_and_id_2(self):
@@ -193,14 +193,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             resource_name="tunedModels/demo-corpus", permission_id=123456789
         )
         self.assertIsInstance(fetch_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.GetPermissionRequest)
 
     async def test_get_permission_with_resource_type(self):
         fetch_perm = await permission.get_permission_async(
             resource_name="demo-model", permission_id=123456789, resource_type="tunedModels"
         )
         self.assertIsInstance(fetch_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.GetPermissionRequest)
 
     @parameterized.named_parameters(
         dict(
@@ -264,14 +264,14 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         self.assertEqual(perms[1].email_address, "_")
         for perm in perms:
             self.assertIsInstance(perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.ListPermissionsRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.ListPermissionsRequest)
 
     async def test_update_permission_success(self):
         x = await retriever.create_corpus_async("demo-corpus")
         perm = await x.permissions.create_async("writer", "everyone")
         updated_perm = await perm.update_async({"role": permission_services.to_role("reader")})
         self.assertIsInstance(updated_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.UpdatePermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.UpdatePermissionRequest)
 
     async def test_update_permission_failure_restricted_update_path(self):
         x = await retriever.create_corpus_async("demo-corpus")
@@ -282,12 +282,12 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
             )
 
     async def test_transfer_ownership(self):
-        self.responses["get_tuned_model"] = glm.TunedModel(
+        self.responses["get_tuned_model"] = protos.TunedModel(
             name="tunedModels/fake-pig-001", base_model="models/dance-monkey-007"
         )
         x = models.get_tuned_model("tunedModels/fake-pig-001")
         response = await x.permissions.transfer_ownership_async(email_address="_")
-        self.assertIsInstance(self.observed_requests[-1], glm.TransferOwnershipRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.TransferOwnershipRequest)
 
     async def test_transfer_ownership_on_corpora(self):
         x = await retriever.create_corpus_async("demo-corpus")
