@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import copy
-import math
 import datetime
-from typing import Any
 import unittest
-import unittest.mock as mock
-
-import google.ai.generativelanguage as glm
 
 from google.generativeai import caching
-from google.generativeai.types import caching_types
+from google.generativeai import protos
 
 from google.generativeai import client
 from absl.testing import absltest
@@ -44,11 +38,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def create_cached_content(
-            request: glm.CreateCachedContentRequest,
+            request: protos.CreateCachedContentRequest,
             **kwargs,
-        ) -> glm.CachedContent:
+        ) -> protos.CachedContent:
             self.observed_requests.append(request)
-            return glm.CachedContent(
+            return protos.CachedContent(
                 name="cachedContents/test-cached-content",
                 model="models/gemini-1.0-pro-001",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -58,11 +52,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def get_cached_content(
-            request: glm.GetCachedContentRequest,
+            request: protos.GetCachedContentRequest,
             **kwargs,
-        ) -> glm.CachedContent:
+        ) -> protos.CachedContent:
             self.observed_requests.append(request)
-            return glm.CachedContent(
+            return protos.CachedContent(
                 name="cachedContents/test-cached-content",
                 model="models/gemini-1.0-pro-001",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -72,19 +66,19 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def list_cached_contents(
-            request: glm.ListCachedContentsRequest,
+            request: protos.ListCachedContentsRequest,
             **kwargs,
-        ) -> glm.ListCachedContentsResponse:
+        ) -> protos.ListCachedContentsResponse:
             self.observed_requests.append(request)
             return [
-                glm.CachedContent(
+                protos.CachedContent(
                     name="cachedContents/test-cached-content-1",
                     model="models/gemini-1.0-pro-001",
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                     expire_time="2000-01-01T01:01:01.123456Z",
                 ),
-                glm.CachedContent(
+                protos.CachedContent(
                     name="cachedContents/test-cached-content-2",
                     model="models/gemini-1.0-pro-001",
                     create_time="2000-01-01T01:01:01.123456Z",
@@ -95,11 +89,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def update_cached_content(
-            request: glm.UpdateCachedContentRequest,
+            request: protos.UpdateCachedContentRequest,
             **kwargs,
-        ) -> glm.CachedContent:
+        ) -> protos.CachedContent:
             self.observed_requests.append(request)
-            return glm.CachedContent(
+            return protos.CachedContent(
                 name="cachedContents/test-cached-content",
                 model="models/gemini-1.0-pro-001",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -109,7 +103,7 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def delete_cached_content(
-            request: glm.DeleteCachedContentRequest,
+            request: protos.DeleteCachedContentRequest,
             **kwargs,
         ) -> None:
             self.observed_requests.append(request)
@@ -128,7 +122,7 @@ class UnitTests(parameterized.TestCase):
             system_instruction="Always add 10 to the result.",
             ttl=datetime.timedelta(minutes=30),
         )
-        self.assertIsInstance(self.observed_requests[-1], glm.CreateCachedContentRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.CreateCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
         self.assertEqual(cc.name, "cachedContents/test-cached-content")
         self.assertEqual(cc.model, "models/gemini-1.0-pro-001")
@@ -160,7 +154,7 @@ class UnitTests(parameterized.TestCase):
             contents=["cache this please for 2 hours"],
             ttl=ttl,
         )
-        self.assertIsInstance(self.observed_requests[-1], glm.CreateCachedContentRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.CreateCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
 
     @parameterized.named_parameters(
@@ -192,14 +186,14 @@ class UnitTests(parameterized.TestCase):
 
     def test_get_cached_content(self):
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
-        self.assertIsInstance(self.observed_requests[-1], glm.GetCachedContentRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.GetCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
         self.assertEqual(cc.name, "cachedContents/test-cached-content")
         self.assertEqual(cc.model, "models/gemini-1.0-pro-001")
 
     def test_list_cached_contents(self):
         ccs = list(caching.CachedContent.list(page_size=2))
-        self.assertIsInstance(self.observed_requests[-1], glm.ListCachedContentsRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.ListCachedContentsRequest)
         self.assertLen(ccs, 2)
         self.assertIsInstance(ccs[0], caching.CachedContent)
         self.assertIsInstance(ccs[1], caching.CachedContent)
@@ -223,17 +217,17 @@ class UnitTests(parameterized.TestCase):
 
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
         cc = cc.update(updates=update_masks)
-        self.assertIsInstance(self.observed_requests[-1], glm.UpdateCachedContentRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.UpdateCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
 
     def test_delete_cached_content(self):
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
         cc.delete()
-        self.assertIsInstance(self.observed_requests[-1], glm.DeleteCachedContentRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.DeleteCachedContentRequest)
 
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
         cc.delete()
-        self.assertIsInstance(self.observed_requests[-1], glm.DeleteCachedContentRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.DeleteCachedContentRequest)
 
     def test_auto_delete_cached_content_with_context_manager(self):
         with caching.CachedContent.create(
@@ -245,7 +239,7 @@ class UnitTests(parameterized.TestCase):
         ) as cc:
             ...  # some logic
 
-        self.assertIsInstance(self.observed_requests[-1], glm.DeleteCachedContentRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.DeleteCachedContentRequest)
 
 
 if __name__ == "__main__":

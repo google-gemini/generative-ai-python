@@ -80,11 +80,11 @@ class MockGenerativeServiceClient:
 
     def get_cached_content(
         self,
-        request: glm.GetCachedContentRequest,
+        request: protos.GetCachedContentRequest,
         **kwargs,
-    ) -> glm.CachedContent:
+    ) -> protos.CachedContent:
         self.observed_requests.append(request)
-        return glm.CachedContent(
+        return protos.CachedContent(
             name="cachedContents/test-cached-content",
             model="models/gemini-1.0-pro-001",
             create_time="2000-01-01T01:01:01.123456Z",

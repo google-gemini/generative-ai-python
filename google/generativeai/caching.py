@@ -18,6 +18,7 @@ import dataclasses
 import datetime
 from typing import Any, Iterable, Optional
 
+from google.generativeai import protos
 from google.generativeai.types.model_types import idecode_time
 from google.generativeai.types import caching_types
 from google.generativeai.types import content_types
@@ -46,12 +47,12 @@ class CachedContent:
     def __exit__(self, exc_type, exc_value, exc_tb):
         self.delete()
 
-    def _to_dict(self) -> glm.CachedContent:
+    def _to_dict(self) -> protos.CachedContent:
         proto_paths = {
             "name": self.name,
             "model": self.model,
         }
-        return glm.CachedContent(**proto_paths)
+        return protos.CachedContent(**proto_paths)
 
     def _apply_update(self, path, value):
         parts = path.split(".")
@@ -63,7 +64,7 @@ class CachedContent:
         setattr(self, parts[-1], value)
 
     @classmethod
-    def _decode_cached_content(cls, cached_content: glm.CachedContent) -> CachedContent:
+    def _decode_cached_content(cls, cached_content: protos.CachedContent) -> CachedContent:
         # not supposed to get INPUT_ONLY repeated fields, but local gapic lib build
         # is returning these, hence setting including_default_value_fields to False
         cached_content = type(cached_content).to_dict(
@@ -86,7 +87,7 @@ class CachedContent:
         tools: Optional[content_types.FunctionLibraryType] = None,
         tool_config: Optional[content_types.ToolConfigType] = None,
         ttl: Optional[caching_types.ExpirationTypes] = datetime.timedelta(hours=1),
-    ) -> glm.CreateCachedContentRequest:
+    ) -> protos.CreateCachedContentRequest:
         """Prepares a CreateCachedContentRequest."""
         if name is not None:
             if not caching_types.valid_cached_content_name(name):
@@ -113,7 +114,7 @@ class CachedContent:
         if ttl:
             ttl = caching_types.to_ttl(ttl)
 
-        cached_content = glm.CachedContent(
+        cached_content = protos.CachedContent(
             name=name,
             model=model,
             system_instruction=system_instruction,
@@ -123,7 +124,7 @@ class CachedContent:
             ttl=ttl,
         )
 
-        return glm.CreateCachedContentRequest(cached_content=cached_content)
+        return protos.CreateCachedContentRequest(cached_content=cached_content)
 
     @classmethod
     def create(
@@ -137,12 +138,12 @@ class CachedContent:
         ttl: Optional[caching_types.ExpirationTypes] = datetime.timedelta(hours=1),
         client: glm.CacheServiceClient | None = None,
     ) -> CachedContent:
-        """Creates CachedContent resource.
+        """Creates `CachedContent` resource.
 
         Args:
-            model: The name of the `Model` to use for cached content
-                    Format: models/{model}. Cached content resource can be only
-                    used with model it was created for.
+            model: The name of the `model` to use for cached content creation.
+                   Any `CachedContent` resource can be only used with the
+                   `model` it was created for.
             name: The resource name referring to the cached content.
             system_instruction: Developer set system instruction.
             contents: Contents to cache.
@@ -174,10 +175,10 @@ class CachedContent:
         """Fetches required `CachedContent` resource.
 
         Args:
-            name: name: The resource name referring to the cached content.
+            name: The resource name referring to the cached content.
 
         Returns:
-            `CachedContent` resource with specified name.
+            `CachedContent` resource with specified `name`.
         """
         if client is None:
             client = get_default_cache_client()
@@ -185,7 +186,7 @@ class CachedContent:
         if "cachedContents/" not in name:
             name = "cachedContents/" + name
 
-        request = glm.GetCachedContentRequest(name=name)
+        request = protos.GetCachedContentRequest(name=name)
         response = client.get_cached_content(request)
         return cls._decode_cached_content(response)
 
@@ -205,7 +206,7 @@ class CachedContent:
         if client is None:
             client = get_default_cache_client()
 
-        request = glm.ListCachedContentsRequest(page_size=page_size)
+        request = protos.ListCachedContentsRequest(page_size=page_size)
         for cached_content in client.list_cached_contents(request):
             yield cls._decode_cached_content(cached_content)
 
@@ -214,7 +215,7 @@ class CachedContent:
         if client is None:
             client = get_default_cache_client()
 
-        request = glm.DeleteCachedContentRequest(name=self.name)
+        request = protos.DeleteCachedContentRequest(name=self.name)
         client.delete_cached_content(request)
         return
 
@@ -226,8 +227,8 @@ class CachedContent:
         """Updates requested `CachedContent` resource.
 
         Args:
-            updates: The list of fields to update.
-                     Currently only `ttl/expire_time` is supported as an update path.
+            updates: The list of fields to update. Currently only
+            `ttl/expire_time` is supported as an update path.
 
         Returns:
             `CachedContent` object with specified updates.
@@ -252,7 +253,7 @@ class CachedContent:
         for path, value in updates.items():
             self._apply_update(path, value)
 
-        request = glm.UpdateCachedContentRequest(
+        request = protos.UpdateCachedContentRequest(
             cached_content=self._to_dict(), update_mask=field_mask
         )
         client.update_cached_content(request)
