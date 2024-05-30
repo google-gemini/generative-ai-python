@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-This module provides low level access to theProtoBuffer "Message" classes used by the API.
+This module provides low level access to the ProtoBuffer "Message" classes used by the API.
 
 **For typical usage of this SDK you do not need to use any of these classes.**
 
