@@ -23,10 +23,14 @@ import typing
 from typing import Any, Callable, Union
 from typing_extensions import TypedDict
 
-import pydantic
-
 from google.generativeai.types import file_types
 from google.generativeai import protos
+try:
+    from pydantic import v1 as pydantic
+    from pydantic.v1 import fields as pydantic_fields
+except ImportError:
+  import pydantic
+  from pydantic import fields as pydantic_fields
 
 if typing.TYPE_CHECKING:
     import PIL.Image
@@ -337,8 +341,14 @@ def _schema_for_function(
             #     else None
             # ),
             field = pydantic.Field(
+                # We do not support default values for now.
+                default=(
+                    param.default if param.default != inspect.Parameter.empty
+                    # ! Need to use Undefined instead of None
+                    else pydantic_fields.Undefined
+                ),
                 # We support user-provided descriptions.
-                description=descriptions.get(name, None)
+                description=descriptions.get(name, None),
             )
 
             # 1. We infer the argument type here: use Any rather than None so
