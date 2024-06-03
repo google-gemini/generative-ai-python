@@ -68,7 +68,7 @@ class ADataClassWithList:
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_PNG_PATH)],
-        ['RGBA', PIL.Image.fromarray(np.zeros([6,6,4], dtype=np.uint8))],
+        ["RGBA", PIL.Image.fromarray(np.zeros([6, 6, 4], dtype=np.uint8))],
         ["IPython", IPython.display.Image(filename=TEST_PNG_PATH)],
     )
     def test_png_to_blob(self, image):
@@ -79,7 +79,7 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_JPG_PATH)],
-        ['RGB', PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8))],
+        ["RGB", PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8))],
         ["IPython", IPython.display.Image(filename=TEST_JPG_PATH)],
     )
     def test_jpg_to_blob(self, image):
