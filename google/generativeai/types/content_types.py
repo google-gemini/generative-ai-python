@@ -72,7 +72,7 @@ __all__ = [
 
 def pil_to_blob(img):
     bytesio = io.BytesIO()
-    if isinstance(img, PIL.PngImagePlugin.PngImageFile):
+    if isinstance(img, PIL.PngImagePlugin.PngImageFile) or img.mode == "RGBA":
         img.save(bytesio, format="PNG")
         mime_type = "image/png"
     else:
