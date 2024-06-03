@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
+
 import io
 import inspect
 import mimetypes
@@ -25,12 +25,15 @@ from typing_extensions import TypedDict
 
 from google.generativeai.types import file_types
 from google.generativeai import protos
+
+import pydantic
+
 try:
+    pydantic.Field
+except AttributeError:
     from pydantic import v1 as pydantic
-    from pydantic.v1 import fields as pydantic_fields
-except ImportError:
-  import pydantic
-  from pydantic import fields as pydantic_fields
+
+pydantic_major_version = int(pydantic.version.VERSION.split('.')[0])
 
 if typing.TYPE_CHECKING:
     import PIL.Image
@@ -340,16 +343,19 @@ def _schema_for_function(
             #     param.default if param.default != inspect.Parameter.empty
             #     else None
             # ),
-            field = pydantic.Field(
-                # We do not support default values for now.
-                default=(
-                    param.default if param.default != inspect.Parameter.empty
-                    # ! Need to use Undefined instead of None
-                    else pydantic_fields.Undefined
-                ),
-                # We support user-provided descriptions.
-                description=descriptions.get(name, None),
-            )
+            if pydantic_major_version <= 1:
+                field = pydantic.Field(
+                    # We do not support default values for now.
+                    default=(
+                        param.default if param.default != inspect.Parameter.empty
+                        # ! Need to use Undefined instead of None
+                        else pydantic.fields.Undefined
+                    ),
+                    # We support user-provided descriptions.
+                    description=descriptions.get(name, None),
+                )
+            else:
+                field = pydantic.Field(description=descriptions.get(name, None))
 
             # 1. We infer the argument type here: use Any rather than None so
             # it will not try to auto-infer the type based on the default value.
