@@ -22,6 +22,7 @@ from google.generativeai import protos
 from google.generativeai.types.model_types import idecode_time
 from google.generativeai.types import caching_types
 from google.generativeai.types import content_types
+from google.generativeai import string_utils
 from google.generativeai.utils import flatten_update_paths
 from google.generativeai.client import get_default_cache_client
 
@@ -29,6 +30,7 @@ from google.protobuf import field_mask_pb2
 import google.ai.generativelanguage as glm
 
 
+@string_utils.prettyprint
 @dataclasses.dataclass
 class CachedContent:
     """Cached content resource."""
@@ -38,14 +40,6 @@ class CachedContent:
     create_time: datetime.datetime
     update_time: datetime.datetime
     expire_time: datetime.datetime
-
-    # NOTE: Automatic CachedContent deletion using contextmanager is not P0(P1+).
-    # Adding basic support for now.
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, exc_tb):
-        self.delete()
 
     def _to_dict(self, **input_only_update_fields) -> protos.CachedContent:
         proto_paths = {
