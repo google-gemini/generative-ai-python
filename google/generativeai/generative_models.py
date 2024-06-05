@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 import textwrap
-from typing import Any
+from typing import Any, Union, overload
 import reprlib
 
 # pylint: disable=bad-continuation, line-too-long
@@ -13,6 +13,8 @@ import reprlib
 import google.api_core.exceptions
 from google.generativeai import protos
 from google.generativeai import client
+
+from google.generativeai import caching
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
 from google.generativeai.types import helper_types
@@ -94,6 +96,15 @@ class GenerativeModel:
         self._client = None
         self._async_client = None
 
+    def __new__(cls, *args, **kwargs) -> GenerativeModel:
+        self = super().__new__(cls)
+
+        if cached_instance := kwargs.pop("cached_content", None):
+            setattr(self, "_cached_content", cached_instance.name)
+            setattr(cls, "cached_content", property(fget=lambda self: self._cached_content))
+
+        return self
+
     @property
     def model_name(self):
         return self._model_name
@@ -112,6 +123,7 @@ class GenerativeModel:
                 safety_settings={self._safety_settings},
                 tools={self._tools},
                 system_instruction={maybe_text(self._system_instruction)},
+                cached_content={getattr(self, "cached_content", None)}
             )"""
         )
 
@@ -127,6 +139,13 @@ class GenerativeModel:
         tool_config: content_types.ToolConfigType | None,
     ) -> protos.GenerateContentRequest:
         """Creates a `protos.GenerateContentRequest` from raw inputs."""
+        if hasattr(self, "cached_content") and any([self._system_instruction, tools, tool_config]):
+            raise ValueError(
+                "`tools`, `tool_config`, `system_instruction` cannot be set on a model instantinated with `cached_content` as its context."
+            )
+
+        cached_content = getattr(self, "cached_content", None)
+
         tools_lib = self._get_tools_lib(tools)
         if tools_lib is not None:
             tools_lib = tools_lib.to_proto()
@@ -155,6 +174,7 @@ class GenerativeModel:
             tools=tools_lib,
             tool_config=tool_config,
             system_instruction=self._system_instruction,
+            cached_content=cached_content,
         )
 
     def _get_tools_lib(
@@ -164,6 +184,55 @@ class GenerativeModel:
             return self._tools
         else:
             return content_types.to_function_library(tools)
+
+    @overload
+    @classmethod
+    def from_cached_content(
+        cls,
+        cached_content: str,
+        generation_config: generation_types.GenerationConfigType | None = None,
+        safety_settings: safety_types.SafetySettingOptions | None = None,
+    ) -> GenerativeModel: ...
+
+    @overload
+    @classmethod
+    def from_cached_content(
+        cls,
+        cached_content: caching.CachedContent,
+        generation_config: generation_types.GenerationConfigType | None = None,
+        safety_settings: safety_types.SafetySettingOptions | None = None,
+    ) -> GenerativeModel: ...
+
+    @classmethod
+    def from_cached_content(
+        cls,
+        cached_content: str | caching.CachedContent,
+        generation_config: generation_types.GenerationConfigType | None = None,
+        safety_settings: safety_types.SafetySettingOptions | None = None,
+    ) -> GenerativeModel:
+        """Creates a model with `cached_content` as model's context.
+
+        Args:
+            cached_content: context for the model.
+
+        Returns:
+            `GenerativeModel` object with `cached_content` as its context.
+        """
+        if isinstance(cached_content, str):
+            cached_content = caching.CachedContent.get(name=cached_content)
+
+        # call __new__ with the cached_content to set the model's context. This is done to avoid
+        # the exposing `cached_content` as a public attribute.
+        self = cls.__new__(cls, cached_content=cached_content)
+
+        # call __init__ to set the model's `generation_config`, `safety_settings`.
+        # `model_name` will be the name of the model for which the `cached_content` was created.
+        self.__init__(
+            model_name=cached_content.model,
+            generation_config=generation_config,
+            safety_settings=safety_settings,
+        )
+        return self
 
     def generate_content(
         self,

@@ -315,6 +315,10 @@ _client_manager = _ClientManager()
 _client_manager.configure()
 
 
+def get_default_cache_client() -> glm.CacheServiceClient:
+    return _client_manager.get_default_client("cache")
+
+
 def get_default_discuss_client() -> glm.DiscussServiceClient:
     return _client_manager.get_default_client("discuss")
 

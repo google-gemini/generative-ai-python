@@ -1,6 +1,7 @@
 import collections
 from collections.abc import Iterable
 import copy
+import datetime
 import pathlib
 from typing import Any
 import textwrap
@@ -10,10 +11,10 @@ from absl.testing import parameterized
 from google.generativeai import protos
 from google.generativeai import client as client_lib
 from google.generativeai import generative_models
+from google.generativeai import caching
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
 from google.generativeai.types import helper_types
-
 
 import PIL.Image
 
@@ -77,6 +78,20 @@ class MockGenerativeServiceClient:
         response = self.responses["count_tokens"].pop(0)
         return response
 
+    def get_cached_content(
+        self,
+        request: protos.GetCachedContentRequest,
+        **kwargs,
+    ) -> protos.CachedContent:
+        self.observed_requests.append(request)
+        return protos.CachedContent(
+            name="cachedContents/test-cached-content",
+            model="models/gemini-1.0-pro-001",
+            create_time="2000-01-01T01:01:01.123456Z",
+            update_time="2000-01-01T01:01:01.123456Z",
+            expire_time="2000-01-01T01:01:01.123456Z",
+        )
+
 
 class CUJTests(parameterized.TestCase):
     """Tests are in order with the design doc."""
@@ -96,6 +111,7 @@ class CUJTests(parameterized.TestCase):
     def setUp(self):
         self.client = MockGenerativeServiceClient(self)
         client_lib._client_manager.clients["generative"] = self.client
+        client_lib._client_manager.clients["cache"] = self.client
 
     def test_hello(self):
         # Generate text from text prompt
@@ -316,6 +332,56 @@ class CUJTests(parameterized.TestCase):
 
         text = "".join(chunk.text for chunk in response)
         self.assertEqual(text, "first second")
+
+    @parameterized.named_parameters(
+        [
+            dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
+            dict(
+                testcase_name="test_cached_content_as_CachedContent_object",
+                cached_content=caching.CachedContent(
+                    name="cachedContents/test-cached-content",
+                    model="models/gemini-1.0-pro-001",
+                    create_time=datetime.datetime.now(),
+                    update_time=datetime.datetime.now(),
+                    expire_time=datetime.datetime.now(),
+                ),
+            ),
+        ],
+    )
+    def test_model_with_cached_content_as_context(self, cached_content):
+        model = generative_models.GenerativeModel.from_cached_content(cached_content=cached_content)
+        cc_name = model.cached_content  # pytype: disable=attribute-error
+        model_name = model.model_name
+        self.assertEqual(cc_name, "cachedContents/test-cached-content")
+        self.assertEqual(model_name, "models/gemini-1.0-pro-001")
+        self.assertEqual(
+            model.cached_content,  # pytype: disable=attribute-error
+            "cachedContents/test-cached-content",
+        )
+
+    def test_content_generation_with_model_having_context(self):
+        self.responses["generate_content"] = [simple_response("world!")]
+        model = generative_models.GenerativeModel.from_cached_content(
+            cached_content="test-cached-content"
+        )
+        response = model.generate_content("Hello")
+
+        self.assertEqual(response.text, "world!")
+        self.assertEqual(
+            model.cached_content,  # pytype: disable=attribute-error
+            "cachedContents/test-cached-content",
+        )
+
+    def test_fail_content_generation_with_model_having_context(self):
+        model = generative_models.GenerativeModel.from_cached_content(
+            cached_content="test-cached-content"
+        )
+
+        def add(a: int, b: int) -> int:
+            return a + b
+
+        with self.assertRaises(ValueError):
+            model.generate_content("Hello", tools=[add])
 
     def test_chat(self):
         # Multi turn chat
@@ -1140,6 +1206,7 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
                 history=[protos.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), protos.Content({'parts': [{'text': 'first'}], 'role': 'model'}), protos.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), protos.Content({'parts': [{'text': 'second'}], 'role': 'model'}), protos.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), protos.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
             )"""
@@ -1168,6 +1235,7 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
                 history=[protos.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
             )"""
@@ -1212,6 +1280,7 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
                 history=[protos.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
             )"""
@@ -1222,6 +1291,14 @@ class CUJTests(parameterized.TestCase):
         model = generative_models.GenerativeModel("gemini-pro", system_instruction="Be excellent.")
         result = repr(model)
         self.assertIn("system_instruction='Be excellent.'", result)
+
+    def test_repr_for_model_created_from_cahced_content(self):
+        model = generative_models.GenerativeModel.from_cached_content(
+            cached_content="test-cached-content"
+        )
+        result = repr(model)
+        self.assertIn("cached_content=cachedContents/test-cached-content", result)
+        self.assertIn("model_name='models/gemini-1.0-pro-001'", result)
 
     def test_count_tokens_called_with_request_options(self):
         self.responses["count_tokens"].append(protos.CountTokensResponse(total_tokens=7))
