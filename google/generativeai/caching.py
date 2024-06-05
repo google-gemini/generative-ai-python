@@ -41,7 +41,7 @@ class CachedContent:
     update_time: datetime.datetime
     expire_time: datetime.datetime
 
-    def _to_dict(self, **input_only_update_fields) -> protos.CachedContent:
+    def _get_update_fields(self, **input_only_update_fields) -> protos.CachedContent:
         proto_paths = {
             "name": self.name,
         }
@@ -252,7 +252,7 @@ class CachedContent:
             self._apply_update(path, value)
 
         request = protos.UpdateCachedContentRequest(
-            cached_content=self._to_dict(**updates), update_mask=field_mask
+            cached_content=self._get_update_fields(**updates), update_mask=field_mask
         )
         updated_cc = client.update_cached_content(request)
         updated_cc = self._decode_cached_content(updated_cc)
