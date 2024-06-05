@@ -35,18 +35,19 @@ def valid_cached_content_name(name: str) -> bool:
 class TTL(TypedDict):
     # Represents datetime.datetime.now() + desired ttl
     seconds: int
-    nanos: int = 0
+    nanos: int
+
 
 class ExpireTime(TypedDict):
     # Represents seconds of UTC time since Unix epoch
     seconds: int
-    nanos: int = 0
+    nanos: int
 
 
 ExpirationTypes = Union[TTL, ExpireTime, int, datetime.timedelta, datetime.datetime]
 
 
-def to_expiration(expiration: Optional[ExpirationTypes]) -> TTL:
+def to_expiration(expiration: Optional[ExpirationTypes]) -> TTL | ExpireTime:
     if isinstance(expiration, datetime.timedelta):  # consider `ttl`
         return {
             "seconds": int(expiration.total_seconds()),
@@ -63,7 +64,7 @@ def to_expiration(expiration: Optional[ExpirationTypes]) -> TTL:
     elif isinstance(expiration, dict):
         return expiration
     elif isinstance(expiration, int):  # consider `ttl`
-        return {"seconds": expiration}
+        return {"seconds": expiration, "nanos": 0}
     else:
         raise TypeError(
             f"Could not convert input to `expire_time` \n'" f"  type: {type(expiration)}\n",
