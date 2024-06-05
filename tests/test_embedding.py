@@ -70,7 +70,7 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests[-1],
             protos.EmbedContentRequest(
                 model=DEFAULT_EMB_MODEL,
-                content=protos.Content(parts=[protos.Part(text="What are you?")]),
+                content=protos.Content(parts=[protos.Part(text="What are you?")], role="user"),
             ),
         )
         self.assertIsInstance(emb["embedding"][0], float)

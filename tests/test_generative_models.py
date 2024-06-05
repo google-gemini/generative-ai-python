@@ -24,8 +24,8 @@ TEST_IMAGE_URL = "https://storage.googleapis.com/generativeai-downloads/data/tes
 TEST_IMAGE_DATA = TEST_IMAGE_PATH.read_bytes()
 
 
-def simple_part(text: str) -> protos.Content:
-    return protos.Content({"parts": [{"text": text}]})
+def simple_part(text: str, role: str = "user") -> protos.Content:
+    return protos.Content({"parts": [{"text": text}], "role": role})
 
 
 def noop(x: int):
@@ -33,11 +33,13 @@ def noop(x: int):
 
 
 def iter_part(texts: Iterable[str]) -> protos.Content:
-    return protos.Content({"parts": [{"text": t} for t in texts]})
+    return protos.Content({"parts": [{"text": t} for t in texts], "role": "user"})
 
 
 def simple_response(text: str) -> protos.GenerateContentResponse:
-    return protos.GenerateContentResponse({"candidates": [{"content": simple_part(text)}]})
+    return protos.GenerateContentResponse(
+        {"candidates": [{"content": simple_part(text, role="model")}]}
+    )
 
 
 class MockGenerativeServiceClient:
@@ -801,7 +803,7 @@ class CUJTests(parameterized.TestCase):
         [
             "part_dict",
             {"parts": [{"text": "talk like a pirate"}]},
-            simple_part("talk like a pirate"),
+            protos.Content(parts=[{"text": "talk like a pirate"}]),
         ],
         ["part_list", ["talk like:", "a pirate"], iter_part(["talk like:", "a pirate"])],
     )
@@ -914,7 +916,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "world!"
                           }
-                        ]
+                        ],
+                        "role": "model"
                       }
                     }
                   ]
@@ -947,7 +950,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first"
                           }
-                        ]
+                        ],
+                        "role": "model"
                       }
                     }
                   ]
@@ -972,7 +976,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second"
                           }
-                        ]
+                        ],
+                        "role": "model"
                       },
                       "index": 0,
                       "citation_metadata": {}
@@ -1001,7 +1006,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second third"
                           }
-                        ]
+                        ],
+                        "role": "model"
                       },
                       "index": 0,
                       "citation_metadata": {}
@@ -1093,7 +1099,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "123"
                           }
-                        ]
+                        ],
+                        "role": "model"
                       },
                       "index": 0,
                       "citation_metadata": {}
@@ -1152,7 +1159,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "abc"
                           }
-                        ]
+                        ],
+                        "role": "model"
                       },
                       "finish_reason": "SAFETY",
                       "index": 0,
@@ -1168,6 +1176,7 @@ class CUJTests(parameterized.TestCase):
               parts {
                 text: "abc"
               }
+              role: "model"
             }
             finish_reason: SAFETY
             citation_metadata {
