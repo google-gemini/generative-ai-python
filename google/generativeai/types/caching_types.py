@@ -19,7 +19,7 @@ from typing import Optional, Union
 from typing_extensions import TypedDict
 import re
 
-__all__ = ["TTL"]
+__all__ = ["ExpirationTypes", "ExpireTime", "TTL"]
 
 
 _VALID_CACHED_CONTENT_NAME = r"([a-z0-9-\.]+)$"
@@ -33,18 +33,36 @@ def valid_cached_content_name(name: str) -> bool:
 
 
 class TTL(TypedDict):
+    # Represents datetime.datetime.now() + desired ttl
     seconds: int
+    nanos: int = 0
+
+class ExpireTime(TypedDict):
+    # Represents seconds of UTC time since Unix epoch
+    seconds: int
+    nanos: int = 0
 
 
-ExpirationTypes = Union[TTL, int, datetime.timedelta]
+ExpirationTypes = Union[TTL, ExpireTime, int, datetime.timedelta, datetime.datetime]
 
 
-def to_ttl(expiration: Optional[ExpirationTypes]) -> TTL:
-    if isinstance(expiration, datetime.timedelta):
-        return {"seconds": int(expiration.total_seconds())}
+def to_expiration(expiration: Optional[ExpirationTypes]) -> TTL:
+    if isinstance(expiration, datetime.timedelta):  # consider `ttl`
+        return {
+            "seconds": int(expiration.total_seconds()),
+            "nanos": int(expiration.microseconds * 1000),
+        }
+    elif isinstance(expiration, datetime.datetime):  # consider `expire_time`
+        timestamp = expiration.timestamp()
+        seconds = int(timestamp)
+        nanos = int((seconds % 1) * 1000)
+        return {
+            "seconds": seconds,
+            "nanos": nanos,
+        }
     elif isinstance(expiration, dict):
         return expiration
-    elif isinstance(expiration, int):
+    elif isinstance(expiration, int):  # consider `ttl`
         return {"seconds": expiration}
     else:
         raise TypeError(

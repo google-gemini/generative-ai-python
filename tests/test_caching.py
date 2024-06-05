@@ -210,10 +210,19 @@ class UnitTests(parameterized.TestCase):
         with self.assertRaises(ValueError):
             cc.update(updates=update_masks)
 
-    def test_update_cached_content_valid_update_paths(self):
-        update_masks = dict(
-            ttl=datetime.timedelta(hours=2),
-        )
+    @parameterized.named_parameters(
+        [
+            dict(
+                testcase_name="ttl",
+                update_masks=dict(ttl=datetime.timedelta(hours=2))
+            ),
+            dict(
+                testcase_name="expire_time",
+                update_masks=dict(expire_time=datetime.datetime(2024, 6, 5, 12, 12, 12, 23))
+            )
+        ]
+    )
+    def test_update_cached_content_valid_update_paths(self, update_masks):
 
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
         cc = cc.update(updates=update_masks)

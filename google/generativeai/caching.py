@@ -47,21 +47,19 @@ class CachedContent:
     def __exit__(self, exc_type, exc_value, exc_tb):
         self.delete()
 
-    def _to_dict(self) -> protos.CachedContent:
+    def _to_dict(self, **input_only_update_fields) -> protos.CachedContent:
         proto_paths = {
             "name": self.name,
-            "model": self.model,
         }
+        proto_paths.update(input_only_update_fields)
         return protos.CachedContent(**proto_paths)
 
     def _apply_update(self, path, value):
         parts = path.split(".")
         for part in parts[:-1]:
             self = getattr(self, part)
-        if parts[-1] == "ttl":
-            value = self.expire_time + datetime.timedelta(seconds=value["seconds"])
-            parts[-1] = "expire_time"
-        setattr(self, parts[-1], value)
+        if path[-1] != "ttl":
+            setattr(self, parts[-1], value)
 
     @classmethod
     def _decode_cached_content(cls, cached_content: protos.CachedContent) -> CachedContent:
@@ -112,7 +110,7 @@ class CachedContent:
             contents = content_types.to_contents(contents)
 
         if ttl:
-            ttl = caching_types.to_ttl(ttl)
+            ttl = caching_types.to_expiration(ttl)
 
         cached_content = protos.CachedContent(
             name=name,
@@ -236,25 +234,35 @@ class CachedContent:
         if client is None:
             client = get_default_cache_client()
 
+        if "ttl" in updates and "expire_time" in updates:
+            raise ValueError(
+                "`expiration` is a _oneof field. Please provide either `ttl` or `expire_time`."
+            )
+
+        field_mask = field_mask_pb2.FieldMask()
+
         updates = flatten_update_paths(updates)
         for update_path in updates:
-            if update_path == "ttl":
+            if update_path == "ttl" or update_path == "expire_time":
                 updates = updates.copy()
                 update_path_val = updates.get(update_path)
-                updates[update_path] = caching_types.to_ttl(update_path_val)
+                updates[update_path] = caching_types.to_expiration(update_path_val)
             else:
                 raise ValueError(
                     f"As of now, only `ttl` can be updated for `CachedContent`. Got: `{update_path}` instead."
                 )
-        field_mask = field_mask_pb2.FieldMask()
 
-        for path in updates.keys():
-            field_mask.paths.append(path)
+            field_mask.paths.append(update_path)
+
         for path, value in updates.items():
             self._apply_update(path, value)
 
         request = protos.UpdateCachedContentRequest(
-            cached_content=self._to_dict(), update_mask=field_mask
+            cached_content=self._to_dict(**updates), update_mask=field_mask
         )
-        client.update_cached_content(request)
+        updated_cc = client.update_cached_content(request)
+        updated_cc = self._decode_cached_content(updated_cc)
+        for path, value in dataclasses.asdict(updated_cc).items():
+            self._apply_update(path, value)
+
         return self
