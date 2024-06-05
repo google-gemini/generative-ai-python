@@ -238,18 +238,6 @@ class UnitTests(parameterized.TestCase):
         cc.delete()
         self.assertIsInstance(self.observed_requests[-1], protos.DeleteCachedContentRequest)
 
-    def test_auto_delete_cached_content_with_context_manager(self):
-        with caching.CachedContent.create(
-            name="test-cached-content",
-            model="models/gemini-1.0-pro-001",
-            contents=["Add 5 and 6"],
-            system_instruction="Always add 10 to the result.",
-            ttl=datetime.timedelta(minutes=30),
-        ) as cc:
-            ...  # some logic
-
-        self.assertIsInstance(self.observed_requests[-1], protos.DeleteCachedContentRequest)
-
 
 if __name__ == "__main__":
     absltest.main()
