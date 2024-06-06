@@ -107,20 +107,19 @@ class CachedContent:
         if contents:
             contents = content_types.to_contents(contents)
 
+        ttl = caching_types.to_optional_ttl(ttl)
+        expire_time = caching_types.to_optional_expire_time(expire_time)
+            
         cached_content = protos.CachedContent(
             model=model,
             system_instruction=system_instruction,
             contents=contents,
             tools=tools_lib,
             tool_config=tool_config,
+            ttl=ttl,
+            expire_time=expire_time,
         )
 
-        if ttl:
-            ttl = caching_types.to_ttl(ttl)
-            cached_content.ttl = ttl
-        else:
-            expire_time = caching_types.to_expire_time(expire_time)
-            cached_content.expire_time = expire_time
 
         return protos.CreateCachedContentRequest(cached_content=cached_content)
 
