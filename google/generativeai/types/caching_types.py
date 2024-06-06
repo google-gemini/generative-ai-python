@@ -15,11 +15,11 @@
 from __future__ import annotations
 
 import datetime
-from typing import Optional, Union
+from typing import Union
 from typing_extensions import TypedDict
 import re
 
-__all__ = ["ExpirationTypes", "ExpireTime", "TTL"]
+__all__ = ["ExpireTime", "TTL", "TTLTypes", "ExpireTimeTypes"]
 
 
 _VALID_CACHED_CONTENT_NAME = r"([a-z0-9-\.]+)$"
@@ -44,29 +44,42 @@ class ExpireTime(TypedDict):
     nanos: int
 
 
-ExpirationTypes = Union[TTL, ExpireTime, int, datetime.timedelta, datetime.datetime]
+TTLTypes = Union[TTL, int, datetime.timedelta]
+ExpireTimeTypes = Union[ExpireTime, int, datetime.datetime]
 
 
-def to_expiration(expiration: Optional[ExpirationTypes]) -> TTL | ExpireTime:
-    if isinstance(expiration, datetime.timedelta):  # consider `ttl`
+def to_ttl(ttl: TTLTypes) -> TTL:
+    if isinstance(ttl, datetime.timedelta):
         return {
-            "seconds": int(expiration.total_seconds()),
-            "nanos": int(expiration.microseconds * 1000),
+            "seconds": int(ttl.total_seconds()),
+            "nanos": int(ttl.microseconds * 1000),
         }
-    elif isinstance(expiration, datetime.datetime):  # consider `expire_time`
-        timestamp = expiration.timestamp()
+    elif isinstance(ttl, dict):
+        return ttl
+    elif isinstance(ttl, int):
+        return {"seconds": ttl, "nanos": 0}
+    else:
+        raise TypeError(
+            f"Could not convert input to `ttl` \n'" f"  type: {type(ttl)}\n",
+            ttl,
+        )
+
+
+def to_expire_time(expire_time: ExpireTimeTypes) -> ExpireTime:
+    if isinstance(expire_time, datetime.datetime):
+        timestamp = expire_time.timestamp()
         seconds = int(timestamp)
         nanos = int((seconds % 1) * 1000)
         return {
             "seconds": seconds,
             "nanos": nanos,
         }
-    elif isinstance(expiration, dict):
-        return expiration
-    elif isinstance(expiration, int):  # consider `ttl`
-        return {"seconds": expiration, "nanos": 0}
+    elif isinstance(expire_time, dict):
+        return expire_time
+    elif isinstance(expire_time, int):
+        return {"seconds": expire_time, "nanos": 0}
     else:
         raise TypeError(
-            f"Could not convert input to `expire_time` \n'" f"  type: {type(expiration)}\n",
-            expiration,
+            f"Could not convert input to `expire_time` \n'" f"  type: {type(expire_time)}\n",
+            expire_time,
         )

@@ -78,7 +78,8 @@ class CachedContent:
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,
         tool_config: Optional[content_types.ToolConfigType] = None,
-        ttl: Optional[caching_types.ExpirationTypes] = datetime.timedelta(hours=1),
+        ttl: Optional[caching_types.TTLTypes] = None,
+        expire_time: Optional[caching_types.ExpireTimeTypes] = None,
     ) -> protos.CreateCachedContentRequest:
         """Prepares a CreateCachedContentRequest."""
         if name is not None:
@@ -86,6 +87,15 @@ class CachedContent:
                 raise ValueError(caching_types.NAME_ERROR_MESSAGE.format(name=name))
 
             name = "cachedContents/" + name
+
+        if ttl and expire_time:
+            raise ValueError(
+                "`expiration` is a _oneof field. Please provide either `ttl` or `expire_time`."
+            )
+
+        # default to 1 hour if neither ttl or expire_time is provided
+        if not ttl and not expire_time:
+            ttl = datetime.timedelta(hours=1)
 
         if "/" not in model:
             model = "models/" + model
@@ -103,9 +113,6 @@ class CachedContent:
         if contents:
             contents = content_types.to_contents(contents)
 
-        if ttl:
-            ttl = caching_types.to_expiration(ttl)
-
         cached_content = protos.CachedContent(
             name=name,
             model=model,
@@ -113,8 +120,14 @@ class CachedContent:
             contents=contents,
             tools=tools_lib,
             tool_config=tool_config,
-            ttl=ttl,
         )
+
+        if ttl:
+            ttl = caching_types.to_ttl(ttl)
+            cached_content.ttl = ttl
+        else:
+            expire_time = caching_types.to_expire_time(expire_time)
+            cached_content.expire_time = expire_time
 
         return protos.CreateCachedContentRequest(cached_content=cached_content)
 
@@ -127,7 +140,8 @@ class CachedContent:
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,
         tool_config: Optional[content_types.ToolConfigType] = None,
-        ttl: Optional[caching_types.ExpirationTypes] = datetime.timedelta(hours=1),
+        ttl: Optional[caching_types.TTLTypes] = None,
+        expire_time: Optional[caching_types.ExpireTimeTypes] = None,
         client: glm.CacheServiceClient | None = None,
     ) -> CachedContent:
         """Creates `CachedContent` resource.
@@ -142,6 +156,9 @@ class CachedContent:
             tools: A list of `Tools` the model may use to generate response.
             tool_config: Config to apply to all tools.
             ttl: TTL for cached resource (in seconds). Defaults to 1 hour.
+                 _oneof field with `expire_time`.
+            expire_time: Expiration time for cached resource.
+                         _oneof field with `ttl`.
 
         Returns:
             `CachedContent` resource with specified name.
@@ -157,6 +174,7 @@ class CachedContent:
             tools=tools,
             tool_config=tool_config,
             ttl=ttl,
+            expire_time=expire_time,
         )
 
         response = client.create_cached_content(request)
@@ -237,13 +255,15 @@ class CachedContent:
 
         updates = flatten_update_paths(updates)
         for update_path in updates:
-            if update_path == "ttl" or update_path == "expire_time":
-                updates = updates.copy()
-                update_path_val = updates.get(update_path)
-                updates[update_path] = caching_types.to_expiration(update_path_val)
+            updates = updates.copy()
+            update_path_val = updates.get(update_path)
+            if update_path == "ttl":
+                updates[update_path] = caching_types.to_ttl(update_path_val)
+            elif update_path == "expire_time":
+                updates[update_path] = caching_types.to_expire_time(update_path_val)
             else:
                 raise ValueError(
-                    f"As of now, only `ttl` can be updated for `CachedContent`. Got: `{update_path}` instead."
+                    f"As of now, only `ttl`  or `expire_time` can be updated for `CachedContent`. Got: `{update_path}` instead."
                 )
 
             field_mask.paths.append(update_path)

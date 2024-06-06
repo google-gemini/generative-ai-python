@@ -147,7 +147,7 @@ class UnitTests(parameterized.TestCase):
             ),
         ]
     )
-    def test_expiration_types_for_create_cached_content(self, ttl):
+    def test_ttl_types_for_create_cached_content(self, ttl):
         cc = caching.CachedContent.create(
             name="test-cached-content",
             model="models/gemini-1.0-pro-001",
@@ -156,6 +156,46 @@ class UnitTests(parameterized.TestCase):
         )
         self.assertIsInstance(self.observed_requests[-1], protos.CreateCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
+
+    @parameterized.named_parameters(
+        [
+            dict(
+                testcase_name="expire_time-is-int-seconds",
+                expire_time=1717653421,
+            ),
+            dict(
+                testcase_name="expire_time-is-datetime",
+                expire_time=datetime.datetime.now(),
+            ),
+            dict(
+                testcase_name="expire_time-is-dict",
+                expire_time={"seconds": 1717653421},
+            ),
+            dict(
+                testcase_name="expire_time-is-none-default-to-1-hr",
+                expire_time=None,
+            ),
+        ]
+    )
+    def test_expire_time_types_for_create_cached_content(self, expire_time):
+        cc = caching.CachedContent.create(
+            name="test-cached-content",
+            model="models/gemini-1.0-pro-001",
+            contents=["cache this please for 2 hours"],
+            expire_time=expire_time,
+        )
+        self.assertIsInstance(self.observed_requests[-1], protos.CreateCachedContentRequest)
+        self.assertIsInstance(cc, caching.CachedContent)
+
+    def test_mutual_exclusivity_for_ttl_and_expire_time_in_create_cached_content(self):
+        with self.assertRaises(ValueError):
+            _ = caching.CachedContent.create(
+                name="test-cached-content",
+                model="models/gemini-1.0-pro-001",
+                contents=["cache this please for 2 hours"],
+                ttl=datetime.timedelta(hours=2),
+                expire_time=datetime.datetime.now(),
+            )
 
     @parameterized.named_parameters(
         [
