@@ -183,6 +183,7 @@ class GenerativeModel:
     def from_cached_content(
         cls,
         cached_content: str,
+        *,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
     ) -> GenerativeModel: ...
@@ -192,6 +193,7 @@ class GenerativeModel:
     def from_cached_content(
         cls,
         cached_content: caching.CachedContent,
+        *,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
     ) -> GenerativeModel: ...
@@ -200,6 +202,7 @@ class GenerativeModel:
     def from_cached_content(
         cls,
         cached_content: str | caching.CachedContent,
+        *,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
     ) -> GenerativeModel:
@@ -207,6 +210,8 @@ class GenerativeModel:
 
         Args:
             cached_content: context for the model.
+            generation_config: Overrides for the model's generation config.
+            safety_settings: Overrides for the model's safety settings.
 
         Returns:
             `GenerativeModel` object with `cached_content` as its context.
@@ -216,7 +221,7 @@ class GenerativeModel:
 
         # call __init__ to set the model's `generation_config`, `safety_settings`.
         # `model_name` will be the name of the model for which the `cached_content` was created.
-        self = GenerativeModel(
+        self = cls(
             model_name=cached_content.model,
             generation_config=generation_config,
             safety_settings=safety_settings,

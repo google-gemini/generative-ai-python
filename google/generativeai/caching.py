@@ -73,7 +73,7 @@ class CachedContent:
     @staticmethod
     def _prepare_create_request(
         model: str,
-        name: str | None = None,
+        *,
         system_instruction: Optional[content_types.ContentType] = None,
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,
@@ -82,12 +82,6 @@ class CachedContent:
         expire_time: Optional[caching_types.ExpireTimeTypes] = None,
     ) -> protos.CreateCachedContentRequest:
         """Prepares a CreateCachedContentRequest."""
-        if name is not None:
-            if not caching_types.valid_cached_content_name(name):
-                raise ValueError(caching_types.NAME_ERROR_MESSAGE.format(name=name))
-
-            name = "cachedContents/" + name
-
         if ttl and expire_time:
             raise ValueError(
                 "`expiration` is a _oneof field. Please provide either `ttl` or `expire_time`."
@@ -114,7 +108,6 @@ class CachedContent:
             contents = content_types.to_contents(contents)
 
         cached_content = protos.CachedContent(
-            name=name,
             model=model,
             system_instruction=system_instruction,
             contents=contents,
@@ -135,7 +128,7 @@ class CachedContent:
     def create(
         cls,
         model: str,
-        name: str | None = None,
+        *,
         system_instruction: Optional[content_types.ContentType] = None,
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,
@@ -150,7 +143,6 @@ class CachedContent:
             model: The name of the `model` to use for cached content creation.
                    Any `CachedContent` resource can be only used with the
                    `model` it was created for.
-            name: The resource name referring to the cached content.
             system_instruction: Developer set system instruction.
             contents: Contents to cache.
             tools: A list of `Tools` the model may use to generate response.
@@ -168,7 +160,6 @@ class CachedContent:
 
         request = cls._prepare_create_request(
             model=model,
-            name=name,
             system_instruction=system_instruction,
             contents=contents,
             tools=tools,

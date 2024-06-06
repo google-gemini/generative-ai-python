@@ -88,7 +88,7 @@ class MockGenerativeServiceClient:
         self.observed_requests.append(request)
         return protos.CachedContent(
             name="cachedContents/test-cached-content",
-            model="models/gemini-1.0-pro-001",
+            model="models/gemini-1.5-flash",
             create_time="2000-01-01T01:01:01.123456Z",
             update_time="2000-01-01T01:01:01.123456Z",
             expire_time="2000-01-01T01:01:01.123456Z",
@@ -342,7 +342,7 @@ class CUJTests(parameterized.TestCase):
                 testcase_name="test_cached_content_as_CachedContent_object",
                 cached_content=caching.CachedContent(
                     name="cachedContents/test-cached-content",
-                    model="models/gemini-1.0-pro-001",
+                    model="models/gemini-1.5-flash",
                     create_time=datetime.datetime.now(),
                     update_time=datetime.datetime.now(),
                     expire_time=datetime.datetime.now(),
@@ -355,7 +355,7 @@ class CUJTests(parameterized.TestCase):
         cc_name = model.cached_content  # pytype: disable=attribute-error
         model_name = model.model_name
         self.assertEqual(cc_name, "cachedContents/test-cached-content")
-        self.assertEqual(model_name, "models/gemini-1.0-pro-001")
+        self.assertEqual(model_name, "models/gemini-1.5-flash")
         self.assertEqual(
             model.cached_content,  # pytype: disable=attribute-error
             "cachedContents/test-cached-content",
@@ -1307,7 +1307,7 @@ class CUJTests(parameterized.TestCase):
         )
         result = repr(model)
         self.assertIn("cached_content=cachedContents/test-cached-content", result)
-        self.assertIn("model_name='models/gemini-1.0-pro-001'", result)
+        self.assertIn("model_name='models/gemini-1.5-flash'", result)
 
     def test_count_tokens_called_with_request_options(self):
         self.responses["count_tokens"].append(protos.CountTokensResponse(total_tokens=7))
