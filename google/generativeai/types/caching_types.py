@@ -48,8 +48,10 @@ TTLTypes = Union[TTL, int, datetime.timedelta]
 ExpireTimeTypes = Union[ExpireTime, int, datetime.datetime]
 
 
-def to_ttl(ttl: TTLTypes) -> TTL:
-    if isinstance(ttl, datetime.timedelta):
+def to_optional_ttl(ttl: TTLTypes | None) -> TTL | None:
+    if ttl is None:
+        return None
+    elif isinstance(ttl, datetime.timedelta):
         return {
             "seconds": int(ttl.total_seconds()),
             "nanos": int(ttl.microseconds * 1000),
@@ -65,8 +67,10 @@ def to_ttl(ttl: TTLTypes) -> TTL:
         )
 
 
-def to_expire_time(expire_time: ExpireTimeTypes) -> ExpireTime:
-    if isinstance(expire_time, datetime.datetime):
+def to_optional_expire_time(expire_time: ExpireTimeTypes | None) -> ExpireTime | None:
+    if expire_time is None:
+        return expire_time
+    elif isinstance(expire_time, datetime.datetime):
         timestamp = expire_time.timestamp()
         seconds = int(timestamp)
         nanos = int((seconds % 1) * 1000)
