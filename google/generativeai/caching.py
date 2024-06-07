@@ -105,7 +105,7 @@ class CachedContent:
 
         ttl = caching_types.to_optional_ttl(ttl)
         expire_time = caching_types.to_optional_expire_time(expire_time)
-            
+
         cached_content = protos.CachedContent(
             model=model,
             system_instruction=system_instruction,
@@ -115,7 +115,6 @@ class CachedContent:
             ttl=ttl,
             expire_time=expire_time,
         )
-
 
         return protos.CreateCachedContentRequest(cached_content=cached_content)
 
@@ -241,7 +240,6 @@ class CachedContent:
 
         updates = flatten_update_paths(updates)
         for update_path in updates:
-            updates = updates.copy()
             update_path_val = updates.get(update_path)
             if update_path == "ttl":
                 updates[update_path] = caching_types.to_optional_ttl(update_path_val)
