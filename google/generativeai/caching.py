@@ -84,7 +84,7 @@ class CachedContent:
         """Prepares a CreateCachedContentRequest."""
         if ttl and expire_time:
             raise ValueError(
-                "`expiration` is a _oneof field. Please provide either `ttl` or `expire_time`."
+                "Exclusive arguments: Please provide either `ttl` or `expire_time`, not both."
             )
 
         # default to 1 hour if neither ttl or expire_time is provided
@@ -148,9 +148,9 @@ class CachedContent:
             tools: A list of `Tools` the model may use to generate response.
             tool_config: Config to apply to all tools.
             ttl: TTL for cached resource (in seconds). Defaults to 1 hour.
-                 _oneof field with `expire_time`.
+                 `ttl` and `expire_time` are exclusive arguments.
             expire_time: Expiration time for cached resource.
-                         _oneof field with `ttl`.
+                         `ttl` and `expire_time` are exclusive arguments.
 
         Returns:
             `CachedContent` resource with specified name.
@@ -239,7 +239,7 @@ class CachedContent:
 
         if "ttl" in updates and "expire_time" in updates:
             raise ValueError(
-                "`expiration` is a _oneof field. Please provide either `ttl` or `expire_time`."
+                "Exclusive arguments: Please provide either `ttl` or `expire_time`, not both."
             )
 
         field_mask = field_mask_pb2.FieldMask()
@@ -254,7 +254,8 @@ class CachedContent:
                 updates[update_path] = caching_types.to_expire_time(update_path_val)
             else:
                 raise ValueError(
-                    f"As of now, only `ttl`  or `expire_time` can be updated for `CachedContent`. Got: `{update_path}` instead."
+                    f"Bad update name: As of now, only `ttl`  or `expire_time` can be \
+                    updated for `CachedContent`. Got: `{update_path}` instead."
                 )
 
             field_mask.paths.append(update_path)
