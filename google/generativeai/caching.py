@@ -87,10 +87,6 @@ class CachedContent:
                 "Exclusive arguments: Please provide either `ttl` or `expire_time`, not both."
             )
 
-        # default to 1 hour if neither ttl or expire_time is provided
-        if not ttl and not expire_time:
-            ttl = datetime.timedelta(hours=1)
-
         if "/" not in model:
             model = "models/" + model
 
@@ -248,9 +244,9 @@ class CachedContent:
             updates = updates.copy()
             update_path_val = updates.get(update_path)
             if update_path == "ttl":
-                updates[update_path] = caching_types.to_ttl(update_path_val)
+                updates[update_path] = caching_types.to_optional_ttl(update_path_val)
             elif update_path == "expire_time":
-                updates[update_path] = caching_types.to_expire_time(update_path_val)
+                updates[update_path] = caching_types.to_optional_expire_time(update_path_val)
             else:
                 raise ValueError(
                     f"Bad update name: As of now, only `ttl`  or `expire_time` can be \
