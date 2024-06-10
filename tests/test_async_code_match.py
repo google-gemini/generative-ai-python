@@ -87,7 +87,7 @@ class CodeMatch(absltest.TestCase):
             for node in ast.walk(source_nodes):
                 if isinstance(
                     node, (ast.FunctionDef, ast.AsyncFunctionDef)
-                ) and not node.name.startswith("_"):
+                ) and not node.name.startswith("__"):
                     name = node.name[:-6] if node.name.endswith("_async") else node.name
                     if name in EXEMPT_FUNCTIONS or self._inspect_decorator_exemption(node, fpath):
                         continue
