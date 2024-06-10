@@ -27,7 +27,6 @@ from google.generativeai.utils import flatten_update_paths
 from google.generativeai.client import get_default_cache_client
 
 from google.protobuf import field_mask_pb2
-import google.ai.generativelanguage as glm
 
 
 @string_utils.prettyprint
@@ -129,7 +128,6 @@ class CachedContent:
         tool_config: Optional[content_types.ToolConfigType] = None,
         ttl: Optional[caching_types.TTLTypes] = None,
         expire_time: Optional[caching_types.ExpireTimeTypes] = None,
-        client: glm.CacheServiceClient | None = None,
     ) -> CachedContent:
         """Creates `CachedContent` resource.
 
@@ -149,8 +147,7 @@ class CachedContent:
         Returns:
             `CachedContent` resource with specified name.
         """
-        if client is None:
-            client = get_default_cache_client()
+        client = get_default_cache_client()
 
         request = cls._prepare_create_request(
             model=model,
@@ -166,7 +163,7 @@ class CachedContent:
         return cls._decode_cached_content(response)
 
     @classmethod
-    def get(cls, name: str, client: glm.CacheServiceClient | None = None) -> CachedContent:
+    def get(cls, name: str) -> CachedContent:
         """Fetches required `CachedContent` resource.
 
         Args:
@@ -175,8 +172,7 @@ class CachedContent:
         Returns:
             `CachedContent` resource with specified `name`.
         """
-        if client is None:
-            client = get_default_cache_client()
+        client = get_default_cache_client()
 
         if "cachedContents/" not in name:
             name = "cachedContents/" + name
@@ -186,9 +182,7 @@ class CachedContent:
         return cls._decode_cached_content(response)
 
     @classmethod
-    def list(
-        cls, page_size: Optional[int] = 1, client: glm.CacheServiceClient | None = None
-    ) -> Iterable[CachedContent]:
+    def list(cls, page_size: Optional[int] = 1) -> Iterable[CachedContent]:
         """Lists `CachedContent` objects associated with the project.
 
         Args:
@@ -198,17 +192,15 @@ class CachedContent:
         Returns:
             A paginated list of `CachedContent` objects.
         """
-        if client is None:
-            client = get_default_cache_client()
+        client = get_default_cache_client()
 
         request = protos.ListCachedContentsRequest(page_size=page_size)
         for cached_content in client.list_cached_contents(request):
             yield cls._decode_cached_content(cached_content)
 
-    def delete(self, client: glm.CachedServiceClient | None = None) -> None:
+    def delete(self) -> None:
         """Deletes `CachedContent` resource."""
-        if client is None:
-            client = get_default_cache_client()
+        client = get_default_cache_client()
 
         request = protos.DeleteCachedContentRequest(name=self.name)
         client.delete_cached_content(request)
@@ -217,7 +209,6 @@ class CachedContent:
     def update(
         self,
         updates: dict[str, Any],
-        client: glm.CacheServiceClient | None = None,
     ) -> CachedContent:
         """Updates requested `CachedContent` resource.
 
@@ -228,8 +219,7 @@ class CachedContent:
         Returns:
             `CachedContent` object with specified updates.
         """
-        if client is None:
-            client = get_default_cache_client()
+        client = get_default_cache_client()
 
         if "ttl" in updates and "expire_time" in updates:
             raise ValueError(
