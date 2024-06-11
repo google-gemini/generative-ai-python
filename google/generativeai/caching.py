@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import dataclasses
 import datetime
-import dis
 from typing import Any, Iterable, Optional
 
 from google.generativeai import protos

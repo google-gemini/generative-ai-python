@@ -255,10 +255,10 @@ def to_content(content: ContentType):
     if isinstance(content, protos.Content):
         return content
     elif isinstance(content, Iterable) and not isinstance(content, str):
-        return protos.Content(parts=[to_part(part) for part in content], role=_USER_ROLE)
+        return protos.Content(parts=[to_part(part) for part in content])
     else:
         # Maybe this is a Part?
-        return protos.Content(parts=[to_part(content)], role=_USER_ROLE)
+        return protos.Content(parts=[to_part(content)])
 
 
 def strict_to_content(content: StrictContentType):

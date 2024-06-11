@@ -20,6 +20,9 @@ from google.generativeai.types import generation_types
 from google.generativeai.types import helper_types
 from google.generativeai.types import safety_types
 
+_USER_ROLE = "user"
+_MODEL_ROLE = "model"
+
 
 class GenerativeModel:
     """
@@ -306,6 +309,10 @@ class GenerativeModel:
             tools=tools,
             tool_config=tool_config,
         )
+
+        if request.contents and not request.contents[-1].role:
+            request.contents[-1].role = _USER_ROLE
+
         if self._client is None:
             self._client = client.get_default_generative_client()
 
@@ -356,6 +363,10 @@ class GenerativeModel:
             tools=tools,
             tool_config=tool_config,
         )
+
+        if request.contents and not request.contents[-1].role:
+            request.contents[-1].role = _USER_ROLE
+
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
 
@@ -486,8 +497,8 @@ class ChatSession:
         history: A chat history to initialize the object with.
     """
 
-    _USER_ROLE = "user"
-    _MODEL_ROLE = "model"
+    _USER_ROLE = _USER_ROLE
+    _MODEL_ROLE = _MODEL_ROLE
 
     def __init__(
         self,

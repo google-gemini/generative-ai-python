@@ -72,9 +72,7 @@ class UnitTests(parameterized.TestCase):
                 passages=[
                     {
                         "id": "0",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I am a chicken")], role="user"
-                        ),
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
                     },
                     {
                         "id": "1",
@@ -94,21 +92,15 @@ class UnitTests(parameterized.TestCase):
                     passages=[
                         {
                             "id": "0",
-                            "content": protos.Content(
-                                parts=[protos.Part(text="I am a chicken")], role="user"
-                            ),
+                            "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
                         },
                         {
                             "id": "1",
-                            "content": protos.Content(
-                                parts=[protos.Part(text="I am a bird.")], role="user"
-                            ),
+                            "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
                         },
                         {
                             "id": "2",
-                            "content": protos.Content(
-                                parts=[protos.Part(text="I can fly!")], role="user"
-                            ),
+                            "content": protos.Content(parts=[protos.Part(text="I can fly!")]),
                         },
                     ]
                 ),
@@ -116,9 +108,9 @@ class UnitTests(parameterized.TestCase):
             dict(
                 testcase_name="content_object",
                 inline_passages=[
-                    protos.Content(parts=[protos.Part(text="I am a chicken")], role="user"),
-                    protos.Content(parts=[protos.Part(text="I am a bird.")], role="user"),
-                    protos.Content(parts=[protos.Part(text="I can fly!")], role="user"),
+                    protos.Content(parts=[protos.Part(text="I am a chicken")]),
+                    protos.Content(parts=[protos.Part(text="I am a bird.")]),
+                    protos.Content(parts=[protos.Part(text="I can fly!")]),
                 ],
             ),
             dict(
@@ -135,22 +127,13 @@ class UnitTests(parameterized.TestCase):
                 passages=[
                     {
                         "id": "0",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I am a chicken")], role="user"
-                        ),
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
                     },
                     {
                         "id": "1",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I am a bird.")], role="user"
-                        ),
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
                     },
-                    {
-                        "id": "2",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I can fly!")], role="user"
-                        ),
-                    },
+                    {"id": "2", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
                 ]
             ),
             x,
@@ -169,16 +152,13 @@ class UnitTests(parameterized.TestCase):
             testcase_name="list_of_grounding_passages",
             inline_passages=[
                 protos.GroundingPassage(
-                    id="4",
-                    content=protos.Content(parts=[protos.Part(text="I am a chicken")], role="user"),
+                    id="4", content=protos.Content(parts=[protos.Part(text="I am a chicken")])
                 ),
                 protos.GroundingPassage(
-                    id="5",
-                    content=protos.Content(parts=[protos.Part(text="I am a bird.")], role="user"),
+                    id="5", content=protos.Content(parts=[protos.Part(text="I am a bird.")])
                 ),
                 protos.GroundingPassage(
-                    id="6",
-                    content=protos.Content(parts=[protos.Part(text="I can fly!")], role="user"),
+                    id="6", content=protos.Content(parts=[protos.Part(text="I can fly!")])
                 ),
             ],
         ),
@@ -191,22 +171,13 @@ class UnitTests(parameterized.TestCase):
                 passages=[
                     {
                         "id": "4",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I am a chicken")], role="user"
-                        ),
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
                     },
                     {
                         "id": "5",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I am a bird.")], role="user"
-                        ),
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
                     },
-                    {
-                        "id": "6",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I can fly!")], role="user"
-                        ),
-                    },
+                    {"id": "6", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
                 ]
             ),
             x,
@@ -226,21 +197,15 @@ class UnitTests(parameterized.TestCase):
                 passages=[
                     {
                         "id": "first",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I am a chicken")], role="user"
-                        ),
+                        "content": protos.Content(parts=[protos.Part(text="I am a chicken")]),
                     },
                     {
                         "id": "second",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I am a bird.")], role="user"
-                        ),
+                        "content": protos.Content(parts=[protos.Part(text="I am a bird.")]),
                     },
                     {
                         "id": "third",
-                        "content": protos.Content(
-                            parts=[protos.Part(text="I can fly!")], role="user"
-                        ),
+                        "content": protos.Content(parts=[protos.Part(text="I can fly!")]),
                     },
                 ]
             ),
@@ -254,22 +219,9 @@ class UnitTests(parameterized.TestCase):
         inline_passages = ["I am a chicken", "I am a bird.", "I can fly!"]
         grounding_passages = protos.GroundingPassages(
             passages=[
-                {
-                    "id": "0",
-                    "content": protos.Content(
-                        parts=[protos.Part(text="I am a chicken")], role="user"
-                    ),
-                },
-                {
-                    "id": "1",
-                    "content": protos.Content(
-                        parts=[protos.Part(text="I am a bird.")], role="user"
-                    ),
-                },
-                {
-                    "id": "2",
-                    "content": protos.Content(parts=[protos.Part(text="I can fly!")], role="user"),
-                },
+                {"id": "0", "content": protos.Content(parts=[protos.Part(text="I am a chicken")])},
+                {"id": "1", "content": protos.Content(parts=[protos.Part(text="I am a bird.")])},
+                {"id": "2", "content": protos.Content(parts=[protos.Part(text="I can fly!")])},
             ]
         )
 

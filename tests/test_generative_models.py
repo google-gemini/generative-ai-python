@@ -26,7 +26,7 @@ TEST_IMAGE_DATA = TEST_IMAGE_PATH.read_bytes()
 
 
 def simple_part(text: str, role: str = "user") -> protos.Content:
-    return protos.Content({"parts": [{"text": text}], "role": role})
+    return protos.Content({"parts": [{"text": text}]})
 
 
 def noop(x: int):
@@ -34,7 +34,7 @@ def noop(x: int):
 
 
 def iter_part(texts: Iterable[str]) -> protos.Content:
-    return protos.Content({"parts": [{"text": t} for t in texts], "role": "user"})
+    return protos.Content({"parts": [{"text": t} for t in texts]})
 
 
 def simple_response(text: str) -> protos.GenerateContentResponse:
@@ -810,7 +810,7 @@ class CUJTests(parameterized.TestCase):
             {"parts": [{"text": "talk like a pirate"}]},
             protos.Content(parts=[{"text": "talk like a pirate"}]),
         ],
-        ["part_list", ["talk like:", "a pirate"], iter_part(["talk like:", "a pirate"])],
+        ["part_list", ["talk like", "a pirate"], iter_part(["talk like", "a pirate"])],
     )
     def test_system_instruction(self, instruction, expected_instr):
         self.responses["generate_content"] = [simple_response("echo echo")]
@@ -924,8 +924,7 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "world!"
                           }
-                        ],
-                        "role": "model"
+                        ]
                       }
                     }
                   ]
@@ -958,8 +957,7 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first"
                           }
-                        ],
-                        "role": "model"
+                        ]
                       }
                     }
                   ]
@@ -984,8 +982,7 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second"
                           }
-                        ],
-                        "role": "model"
+                        ]
                       },
                       "index": 0,
                       "citation_metadata": {}
@@ -1014,8 +1011,7 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second third"
                           }
-                        ],
-                        "role": "model"
+                        ]
                       },
                       "index": 0,
                       "citation_metadata": {}
@@ -1107,8 +1103,7 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "123"
                           }
-                        ],
-                        "role": "model"
+                        ]
                       },
                       "index": 0,
                       "citation_metadata": {}
@@ -1167,8 +1162,7 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "abc"
                           }
-                        ],
-                        "role": "model"
+                        ]
                       },
                       "finish_reason": "SAFETY",
                       "index": 0,
@@ -1184,7 +1178,6 @@ class CUJTests(parameterized.TestCase):
               parts {
                 text: "abc"
               }
-              role: "model"
             }
             finish_reason: SAFETY
             citation_metadata {
