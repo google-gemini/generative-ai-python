@@ -93,6 +93,8 @@ def to_optional_expire_time(expire_time: ExpireTimeTypes | None) -> ExpireTime |
             expire_time,
         )
 
+
 class UsageMetadata(TypedDict):
     """Metadata about the usage of the cached content."""
+
     total_token_count: int

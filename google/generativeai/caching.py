@@ -92,11 +92,9 @@ class CachedContent:
 
         if "/" not in model:
             model = "models/" + model
-        
+
         if display_name and len(display_name) > 128:
-            raise ValueError(
-                "`display_name` must be no more than 128 unicode characters."
-            )
+            raise ValueError("`display_name` must be no more than 128 unicode characters.")
 
         if system_instruction:
             system_instruction = content_types.to_content(system_instruction)
@@ -146,7 +144,7 @@ class CachedContent:
             model: The name of the `model` to use for cached content creation.
                    Any `CachedContent` resource can be only used with the
                    `model` it was created for.
-            display_name: The user-generated meaningful display name 
+            display_name: The user-generated meaningful display name
                           of the cached content. `display_name` must be no
                           more than 128 unicode characters.
             system_instruction: Developer set system instruction.
