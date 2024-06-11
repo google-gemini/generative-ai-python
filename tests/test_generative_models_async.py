@@ -216,7 +216,10 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         self.responses["count_tokens"] = [protos.CountTokensResponse(total_tokens=7)]
         model = generative_models.GenerativeModel("gemini-pro-vision")
         response = await model.count_tokens_async(contents)
-        self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
+        self.assertEqual(
+            type(response).to_dict(response, including_default_value_fields=False),
+            {"total_tokens": 7},
+        )
 
     async def test_stream_generate_content_called_with_request_options(self):
         self.client.stream_generate_content = unittest.mock.AsyncMock()

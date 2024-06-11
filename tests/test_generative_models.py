@@ -842,7 +842,10 @@ class CUJTests(parameterized.TestCase):
         self.responses["count_tokens"] = [protos.CountTokensResponse(total_tokens=7)]
         model = generative_models.GenerativeModel("gemini-pro-vision", system_instruction=si)
         response = model.count_tokens(**kwargs)
-        self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
+        self.assertEqual(
+            type(response).to_dict(response, including_default_value_fields=False),
+            {"total_tokens": 7},
+        )
 
     @parameterized.named_parameters(
         [
