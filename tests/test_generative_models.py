@@ -2,11 +2,8 @@ import collections
 from collections.abc import Iterable
 import copy
 import datetime
-import dis
 import pathlib
-from typing import Any
 import textwrap
-import unittest.mock
 from absl.testing import absltest
 from absl.testing import parameterized
 from google.generativeai import protos
@@ -25,7 +22,7 @@ TEST_IMAGE_URL = "https://storage.googleapis.com/generativeai-downloads/data/tes
 TEST_IMAGE_DATA = TEST_IMAGE_PATH.read_bytes()
 
 
-def simple_part(text: str, role: str = "user") -> protos.Content:
+def simple_part(text: str) -> protos.Content:
     return protos.Content({"parts": [{"text": text}]})
 
 
@@ -39,7 +36,7 @@ def iter_part(texts: Iterable[str]) -> protos.Content:
 
 def simple_response(text: str) -> protos.GenerateContentResponse:
     return protos.GenerateContentResponse(
-        {"candidates": [{"content": simple_part(text, role="model")}]}
+        {"candidates": [{"content": simple_part(text)}]}
     )
 
 
