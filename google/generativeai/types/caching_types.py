@@ -19,7 +19,12 @@ from typing import Union
 from typing_extensions import TypedDict
 import re
 
-__all__ = ["ExpireTime", "TTL", "TTLTypes", "ExpireTimeTypes"]
+__all__ = [
+    "ExpireTime",
+    "TTL",
+    "TTLTypes",
+    "ExpireTimeTypes",
+]
 
 
 _VALID_CACHED_CONTENT_NAME = r"([a-z0-9-\.]+)$"
@@ -87,3 +92,7 @@ def to_optional_expire_time(expire_time: ExpireTimeTypes | None) -> ExpireTime |
             f"Could not convert input to `expire_time` \n'" f"  type: {type(expire_time)}\n",
             expire_time,
         )
+
+class UsageMetadata(TypedDict):
+    """Metadata about the usage of the cached content."""
+    total_token_count: int

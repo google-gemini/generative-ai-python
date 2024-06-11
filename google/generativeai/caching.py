@@ -36,6 +36,7 @@ class CachedContent:
 
     name: str
     model: str
+    usage_metadata: caching_types.UsageMetadataType
     create_time: datetime.datetime
     update_time: datetime.datetime
     expire_time: datetime.datetime
