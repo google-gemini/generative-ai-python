@@ -2,6 +2,7 @@ import collections
 from collections.abc import Iterable
 import copy
 import datetime
+import dis
 import pathlib
 from typing import Any
 import textwrap
@@ -89,6 +90,7 @@ class MockGenerativeServiceClient:
         return protos.CachedContent(
             name="cachedContents/test-cached-content",
             model="models/gemini-1.5-pro",
+            display_name="Cached content for test",
             usage_metadata={"total_token_count": 1},
             create_time="2000-01-01T01:01:01.123456Z",
             update_time="2000-01-01T01:01:01.123456Z",
@@ -344,6 +346,7 @@ class CUJTests(parameterized.TestCase):
                 cached_content=caching.CachedContent(
                     name="cachedContents/test-cached-content",
                     model="models/gemini-1.5-pro",
+                    display_name="Cached content for test",
                     usage_metadata={"total_token_count": 1},
                     create_time=datetime.datetime.now(),
                     update_time=datetime.datetime.now(),

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import datetime
+import dis
 import unittest
 
 from google.generativeai import caching
@@ -45,6 +46,7 @@ class UnitTests(parameterized.TestCase):
             return protos.CachedContent(
                 name="cachedContents/test-cached-content",
                 model="models/gemini-1.5-pro",
+                display_name="Cached content for test",
                 usage_metadata={"total_token_count": 1},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
@@ -60,6 +62,7 @@ class UnitTests(parameterized.TestCase):
             return protos.CachedContent(
                 name="cachedContents/test-cached-content",
                 model="models/gemini-1.5-pro",
+                display_name="Cached content for test",
                 usage_metadata={"total_token_count": 1},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
@@ -76,6 +79,7 @@ class UnitTests(parameterized.TestCase):
                 protos.CachedContent(
                     name="cachedContents/test-cached-content-1",
                     model="models/gemini-1.5-pro",
+                    display_name="Cached content for test",
                     usage_metadata={"total_token_count": 1},
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
@@ -84,6 +88,7 @@ class UnitTests(parameterized.TestCase):
                 protos.CachedContent(
                     name="cachedContents/test-cached-content-2",
                     model="models/gemini-1.5-pro",
+                    display_name="Cached content for test",
                     usage_metadata={"total_token_count": 1},
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
@@ -100,6 +105,7 @@ class UnitTests(parameterized.TestCase):
             return protos.CachedContent(
                 name="cachedContents/test-cached-content",
                 model="models/gemini-1.5-pro",
+                display_name="Cached content for test",
                 usage_metadata={"total_token_count": 1},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import dataclasses
 import datetime
+import dis
 from typing import Any, Iterable, Optional
 
 from google.generativeai import protos
@@ -36,6 +37,7 @@ class CachedContent:
 
     name: str
     model: str
+    display_name: str
     usage_metadata: caching_types.UsageMetadataType
     create_time: datetime.datetime
     update_time: datetime.datetime
@@ -74,6 +76,7 @@ class CachedContent:
     def _prepare_create_request(
         model: str,
         *,
+        display_name: str | None = None,
         system_instruction: Optional[content_types.ContentType] = None,
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,
@@ -89,6 +92,11 @@ class CachedContent:
 
         if "/" not in model:
             model = "models/" + model
+        
+        if display_name and len(display_name) > 128:
+            raise ValueError(
+                "`display_name` must be no more than 128 unicode characters."
+            )
 
         if system_instruction:
             system_instruction = content_types.to_content(system_instruction)
@@ -108,6 +116,7 @@ class CachedContent:
 
         cached_content = protos.CachedContent(
             model=model,
+            display_name=display_name,
             system_instruction=system_instruction,
             contents=contents,
             tools=tools_lib,
@@ -123,6 +132,7 @@ class CachedContent:
         cls,
         model: str,
         *,
+        display_name: str | None = None,
         system_instruction: Optional[content_types.ContentType] = None,
         contents: Optional[content_types.ContentsType] = None,
         tools: Optional[content_types.FunctionLibraryType] = None,
@@ -136,6 +146,9 @@ class CachedContent:
             model: The name of the `model` to use for cached content creation.
                    Any `CachedContent` resource can be only used with the
                    `model` it was created for.
+            display_name: The user-generated meaningful display name 
+                          of the cached content. `display_name` must be no
+                          more than 128 unicode characters.
             system_instruction: Developer set system instruction.
             contents: Contents to cache.
             tools: A list of `Tools` the model may use to generate response.
@@ -152,6 +165,7 @@ class CachedContent:
 
         request = cls._prepare_create_request(
             model=model,
+            display_name=display_name,
             system_instruction=system_instruction,
             contents=contents,
             tools=tools,
