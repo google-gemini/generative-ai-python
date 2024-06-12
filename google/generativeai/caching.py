@@ -30,7 +30,8 @@ from google.protobuf import field_mask_pb2
 _USER_ROLE = "user"
 _MODEL_ROLE = "model"
 
-#@string_utils.prettyprint
+
+# @string_utils.prettyprint
 class CachedContent:
     """Cached content resource."""
 
