@@ -88,7 +88,7 @@ class CachedContent:
     def _update(self, updates):
         """Updates this instance inplace, does not call the API's `update` method"""
         if isinstance(updates, CachedContent):
-            updates = CachedContent._proto
+            updates = updates._proto
 
         if not isinstance(updates, dict):
             updates = type(updates).to_dict(updates, including_default_value_fields=False)
@@ -250,12 +250,12 @@ class CachedContent:
 
     def update(
         self,
-        updates: dict[str, Any],
+        updates: dict[str, Any] = None,
     ) -> CachedContent:
         """Updates requested `CachedContent` resource.
 
         Args:
-            updates: The list of fields to update. Currently only
+            updates: A dict of {field_name: new_value} updates. Currently only
             `ttl/expire_time` is supported as an update path.
 
         Returns:
@@ -271,7 +271,7 @@ class CachedContent:
         field_mask = field_mask_pb2.FieldMask()
 
         updates = flatten_update_paths(updates)
-        for update_path, update_path_cal in updates.items():
+        for update_path, update_path_val in updates.items():
             if update_path == "ttl":
                 updates[update_path] = caching_types.to_optional_ttl(update_path_val)
             elif update_path == "expire_time":
