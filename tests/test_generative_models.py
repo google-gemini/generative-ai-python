@@ -340,7 +340,7 @@ class CUJTests(parameterized.TestCase):
             dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
             dict(
                 testcase_name="test_cached_content_as_CachedContent_object",
-                cached_content=caching.CachedContent(
+                cached_content=object.__new__(caching.CachedContent)._with_updates(
                     name="cachedContents/test-cached-content",
                     model="models/gemini-1.5-pro",
                     display_name="Cached content for test",

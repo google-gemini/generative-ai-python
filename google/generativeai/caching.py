@@ -14,12 +14,11 @@
 # limitations under the License.
 from __future__ import annotations
 
+import copy
 import dataclasses
-import datetime
 from typing import Any, Iterable, Optional
 
 from google.generativeai import protos
-from google.generativeai.types.model_types import idecode_time
 from google.generativeai.types import caching_types
 from google.generativeai.types import content_types
 from google.generativeai import string_utils
@@ -30,17 +29,70 @@ from google.protobuf import field_mask_pb2
 
 
 @string_utils.prettyprint
-@dataclasses.dataclass
 class CachedContent:
     """Cached content resource."""
 
-    name: str
-    model: str
-    display_name: str
-    usage_metadata: caching_types.UsageMetadataType
-    create_time: datetime.datetime
-    update_time: datetime.datetime
-    expire_time: datetime.datetime
+    def __init__(self, name):
+        """Fetches a `CachedContent` resource.
+
+        Identical to `CachedContent.get`.
+
+        Args:
+            name: The resource name referring to the cached content.
+        """
+        client = get_default_cache_client()
+
+        if "cachedContents/" not in name:
+            name = "cachedContents/" + name
+
+        request = protos.GetCachedContentRequest(name=name)
+        response = client.get_cached_content(request)
+        self._proto = response
+
+    @property
+    def name(self) -> str:
+        return self._proto.name
+
+    @property
+    def model(self) -> str:
+        return self._proto.model
+
+    @property
+    def display_name(self) -> str:
+        return self._proto.display_name
+
+    @property
+    def usage_metadata(self) -> protos.CachedContent.UsageMetadata:
+        return self._proto.usage_metadata
+
+    @property
+    def create_time(self) -> datetime.datetime:
+        return self._proto.create_time
+    @property
+    def update_time(self) -> datetime.datetime:
+        return self._proto.update_time
+    @property
+    def expire_time(self) -> datetime.datetime:
+        return self._proto.expire_time
+
+    def _update(self, updates):
+        if not hasattr(self, "_proto"):
+            self._proto = protos.CachedContent(updates)
+            return
+
+        if not isinstance(updates, CachedContent):
+            updates = protos.CachedContent(updates)
+        updates = type(updates).to_dict(updates, including_default_value_fields=False)
+        for key, value in updates.items():
+            setattr(self._proto, key, value)
+    def _with_updates(self, updates=None, **kwargs):
+        if updates is None:
+            updates = kwargs
+        else:
+            raise ValueError("supply an object, or key word arguments, not both")
+        new = copy.deepcopy(self)
+        new._update(updates)
+        return new
 
     def _get_update_fields(self, **input_only_update_fields) -> protos.CachedContent:
         proto_paths = {
@@ -50,26 +102,11 @@ class CachedContent:
         return protos.CachedContent(**proto_paths)
 
     def _apply_update(self, path, value):
+        self = self._proto
         parts = path.split(".")
         for part in parts[:-1]:
             self = getattr(self, part)
-        if path[-1] != "ttl":
-            setattr(self, parts[-1], value)
-
-    @classmethod
-    def _decode_cached_content(cls, cached_content: protos.CachedContent) -> CachedContent:
-        # not supposed to get INPUT_ONLY repeated fields, but local gapic lib build
-        # is returning these, hence setting including_default_value_fields to False
-        cached_content = type(cached_content).to_dict(
-            cached_content, including_default_value_fields=False
-        )
-
-        idecode_time(cached_content, "create_time")
-        idecode_time(cached_content, "update_time")
-        # always decode `expire_time` as Timestamp is returned
-        # regardless of what was sent on input
-        idecode_time(cached_content, "expire_time")
-        return cls(**cached_content)
+        setattr(self, parts[-1], value)
 
     @staticmethod
     def _prepare_create_request(
@@ -172,7 +209,9 @@ class CachedContent:
         )
 
         response = client.create_cached_content(request)
-        return cls._decode_cached_content(response)
+        result = object.__new__(CachedContent)
+        result._update(response)
+        return result
 
     @classmethod
     def get(cls, name: str) -> CachedContent:
@@ -191,7 +230,9 @@ class CachedContent:
 
         request = protos.GetCachedContentRequest(name=name)
         response = client.get_cached_content(request)
-        return cls._decode_cached_content(response)
+        result = object.__new__(CachedContent)
+        result._update(response)
+        return result
 
     @classmethod
     def list(cls, page_size: Optional[int] = 1) -> Iterable[CachedContent]:
@@ -207,8 +248,10 @@ class CachedContent:
         client = get_default_cache_client()
 
         request = protos.ListCachedContentsRequest(page_size=page_size)
-        for cached_content in client.list_cached_contents(request):
-            yield cls._decode_cached_content(cached_content)
+        for cc in client.list_cached_contents(request):
+            cached_content = object.__new__(CachedContent)
+            cached_content._update(cc)
+            yield cached_content
 
     def delete(self) -> None:
         """Deletes `CachedContent` resource."""
@@ -262,8 +305,6 @@ class CachedContent:
             cached_content=self._get_update_fields(**updates), update_mask=field_mask
         )
         updated_cc = client.update_cached_content(request)
-        updated_cc = self._decode_cached_content(updated_cc)
-        for path, value in dataclasses.asdict(updated_cc).items():
-            self._apply_update(path, value)
+        self._update(updated_cc)
 
         return self
