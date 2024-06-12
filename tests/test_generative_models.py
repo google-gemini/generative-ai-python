@@ -35,9 +35,7 @@ def iter_part(texts: Iterable[str]) -> protos.Content:
 
 
 def simple_response(text: str) -> protos.GenerateContentResponse:
-    return protos.GenerateContentResponse(
-        {"candidates": [{"content": simple_part(text)}]}
-    )
+    return protos.GenerateContentResponse({"candidates": [{"content": simple_part(text)}]})
 
 
 class MockGenerativeServiceClient:
@@ -340,14 +338,16 @@ class CUJTests(parameterized.TestCase):
             dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
             dict(
                 testcase_name="test_cached_content_as_CachedContent_object",
-                cached_content=object.__new__(caching.CachedContent)._with_updates(
-                    name="cachedContents/test-cached-content",
-                    model="models/gemini-1.5-pro",
-                    display_name="Cached content for test",
-                    usage_metadata={"total_token_count": 1},
-                    create_time=datetime.datetime.now(),
-                    update_time=datetime.datetime.now(),
-                    expire_time=datetime.datetime.now(),
+                cached_content=caching.CachedContent._from_obj(
+                    dict(
+                        name="cachedContents/test-cached-content",
+                        model="models/gemini-1.5-pro",
+                        display_name="Cached content for test",
+                        usage_metadata={"total_token_count": 1},
+                        create_time=datetime.datetime.now(),
+                        update_time=datetime.datetime.now(),
+                        expire_time=datetime.datetime.now(),
+                    )
                 ),
             ),
         ],

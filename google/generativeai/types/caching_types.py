@@ -92,5 +92,3 @@ def to_optional_expire_time(expire_time: ExpireTimeTypes | None) -> ExpireTime |
             f"Could not convert input to `expire_time` \n'" f"  type: {type(expire_time)}\n",
             expire_time,
         )
-
-

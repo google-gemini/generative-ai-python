@@ -27,8 +27,10 @@ from google.generativeai.client import get_default_cache_client
 
 from google.protobuf import field_mask_pb2
 
+_USER_ROLE = "user"
+_MODEL_ROLE = "model"
 
-@string_utils.prettyprint
+#@string_utils.prettyprint
 class CachedContent:
     """Cached content resource."""
 
@@ -68,36 +70,31 @@ class CachedContent:
     @property
     def create_time(self) -> datetime.datetime:
         return self._proto.create_time
+
     @property
     def update_time(self) -> datetime.datetime:
         return self._proto.update_time
+
     @property
     def expire_time(self) -> datetime.datetime:
         return self._proto.expire_time
 
-     def __new__(cls, param: str | Protos.CachedContent | CachedContent | dict) -> CachedContent:
-         self = super().__new__(cls)
-         
-         if not isinstance(param, str):  # since we are using __init__ as a get call, this should work just fine
-             if not hasattr(self, "_proto"):
-                 self._proto = protos.CachedContent(updates)
-                 return
-    
-              if not isinstance(updates, CachedContent):
-                  updates = protos.CachedContent(updates)
-              updates = type(updates).to_dict(updates, including_default_value_fields=False)
-              for key, value in updates.items():
-                  setattr(self._proto, key, value)
-           
-           return self
-    def _with_updates(self, updates=None, **kwargs):
-        if updates is None:
-            updates = kwargs
-        else:
-            raise ValueError("supply an object, or key word arguments, not both")
-        new = copy.deepcopy(self)
-        new._update(updates)
-        return new
+    @classmethod
+    def _from_obj(cls, obj: CachedContent | protos.CachedContent | dict) -> CachedContent:
+        self = cls.__new__(cls)
+        self._proto = protos.CachedContent()
+        self._update(obj)
+        return self
+
+    def _update(self, updates):
+        if isinstance(updates, CachedContent):
+            updates = CachedContent._proto
+
+        if not isinstance(updates, dict):
+            updates = type(updates).to_dict(updates, including_default_value_fields=False)
+
+        for key, value in updates.items():
+            setattr(self._proto, key, value)
 
     def _get_update_fields(self, **input_only_update_fields) -> protos.CachedContent:
         proto_paths = {
@@ -150,7 +147,7 @@ class CachedContent:
         if contents:
             contents = content_types.to_contents(contents)
             if not contents[-1].role:
-                contents[-1].role = _USER_ROLE   # define _USER_ROLE at the top
+                contents[-1].role = _USER_ROLE  # define _USER_ROLE at the top
 
         ttl = caching_types.to_optional_ttl(ttl)
         expire_time = caching_types.to_optional_expire_time(expire_time)
@@ -216,8 +213,7 @@ class CachedContent:
         )
 
         response = client.create_cached_content(request)
-        result = object.__new__(CachedContent)
-        result._update(response)
+        result = CachedContent._from_obj(response)
         return result
 
     @classmethod
@@ -237,8 +233,7 @@ class CachedContent:
 
         request = protos.GetCachedContentRequest(name=name)
         response = client.get_cached_content(request)
-        result = object.__new__(CachedContent)
-        result._update(response)
+        result = CachedContent._from_obj(response)
         return result
 
     @classmethod
@@ -255,9 +250,8 @@ class CachedContent:
         client = get_default_cache_client()
 
         request = protos.ListCachedContentsRequest(page_size=page_size)
-        for cc in client.list_cached_contents(request):
-            cached_content = object.__new__(CachedContent)
-            cached_content._update(cc)
+        for cached_content in client.list_cached_contents(request):
+            cached_content = CachedContent._from_obj(cached_content)
             yield cached_content
 
     def delete(self) -> None:
@@ -312,6 +306,8 @@ class CachedContent:
             cached_content=self._get_update_fields(**updates), update_mask=field_mask
         )
         updated_cc = client.update_cached_content(request)
+
+        new = CachedContent._from_obj(updated_cc)
         self._update(updated_cc)
 
         return self
