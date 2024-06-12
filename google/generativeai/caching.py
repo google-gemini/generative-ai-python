@@ -250,7 +250,7 @@ class CachedContent:
 
     def update(
         self,
-        updates: dict[str, Any] = None,
+        updates: dict[str, Any],
     ) -> CachedContent:
         """Updates requested `CachedContent` resource.
 
