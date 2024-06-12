@@ -75,16 +75,21 @@ class CachedContent:
     def expire_time(self) -> datetime.datetime:
         return self._proto.expire_time
 
-    def _update(self, updates):
-        if not hasattr(self, "_proto"):
-            self._proto = protos.CachedContent(updates)
-            return
-
-        if not isinstance(updates, CachedContent):
-            updates = protos.CachedContent(updates)
-        updates = type(updates).to_dict(updates, including_default_value_fields=False)
-        for key, value in updates.items():
-            setattr(self._proto, key, value)
+     def __new__(cls, param: str | Protos.CachedContent | CachedContent | dict) -> CachedContent:
+         self = super().__new__(cls)
+         
+         if not isinstance(param, str):  # since we are using __init__ as a get call, this should work just fine
+             if not hasattr(self, "_proto"):
+                 self._proto = protos.CachedContent(updates)
+                 return
+    
+              if not isinstance(updates, CachedContent):
+                  updates = protos.CachedContent(updates)
+              updates = type(updates).to_dict(updates, including_default_value_fields=False)
+              for key, value in updates.items():
+                  setattr(self._proto, key, value)
+           
+           return self
     def _with_updates(self, updates=None, **kwargs):
         if updates is None:
             updates = kwargs
@@ -144,6 +149,8 @@ class CachedContent:
 
         if contents:
             contents = content_types.to_contents(contents)
+            if not contents[-1].role:
+                contents[-1].role = _USER_ROLE   # define _USER_ROLE at the top
 
         ttl = caching_types.to_optional_ttl(ttl)
         expire_time = caching_types.to_optional_expire_time(expire_time)
