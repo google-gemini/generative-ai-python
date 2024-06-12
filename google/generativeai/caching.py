@@ -14,14 +14,12 @@
 # limitations under the License.
 from __future__ import annotations
 
-import copy
-import dataclasses
+import datetime
 from typing import Any, Iterable, Optional
 
 from google.generativeai import protos
 from google.generativeai.types import caching_types
 from google.generativeai.types import content_types
-from google.generativeai import string_utils
 from google.generativeai.utils import flatten_update_paths
 from google.generativeai.client import get_default_cache_client
 
@@ -31,7 +29,6 @@ _USER_ROLE = "user"
 _MODEL_ROLE = "model"
 
 
-# @string_utils.prettyprint
 class CachedContent:
     """Cached content resource."""
 
@@ -307,8 +304,6 @@ class CachedContent:
             cached_content=self._get_update_fields(**updates), update_mask=field_mask
         )
         updated_cc = client.update_cached_content(request)
-
-        new = CachedContent._from_obj(updated_cc)
         self._update(updated_cc)
 
         return self
