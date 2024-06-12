@@ -79,12 +79,14 @@ class CachedContent:
 
     @classmethod
     def _from_obj(cls, obj: CachedContent | protos.CachedContent | dict) -> CachedContent:
+        """Creates an instance of CachedContent form an object, without calling `get`."""
         self = cls.__new__(cls)
         self._proto = protos.CachedContent()
         self._update(obj)
         return self
 
     def _update(self, updates):
+        """Updates this instance inplace, does not call the API's `update` method"""
         if isinstance(updates, CachedContent):
             updates = CachedContent._proto
 
@@ -93,20 +95,6 @@ class CachedContent:
 
         for key, value in updates.items():
             setattr(self._proto, key, value)
-
-    def _get_update_fields(self, **input_only_update_fields) -> protos.CachedContent:
-        proto_paths = {
-            "name": self.name,
-        }
-        proto_paths.update(input_only_update_fields)
-        return protos.CachedContent(**proto_paths)
-
-    def _apply_update(self, path, value):
-        self = self._proto
-        parts = path.split(".")
-        for part in parts[:-1]:
-            self = getattr(self, part)
-        setattr(self, parts[-1], value)
 
     @staticmethod
     def _prepare_create_request(
@@ -283,8 +271,7 @@ class CachedContent:
         field_mask = field_mask_pb2.FieldMask()
 
         updates = flatten_update_paths(updates)
-        for update_path in updates:
-            update_path_val = updates.get(update_path)
+        for update_path, update_path_cal in updates.items():
             if update_path == "ttl":
                 updates[update_path] = caching_types.to_optional_ttl(update_path_val)
             elif update_path == "expire_time":
@@ -307,3 +294,17 @@ class CachedContent:
         self._update(updated_cc)
 
         return self
+
+    def _get_update_fields(self, **input_only_update_fields) -> protos.CachedContent:
+        proto_paths = {
+            "name": self.name,
+        }
+        proto_paths.update(input_only_update_fields)
+        return protos.CachedContent(**proto_paths)
+
+    def _apply_update(self, path, value):
+        self = self._proto
+        parts = path.split(".")
+        for part in parts[:-1]:
+            self = getattr(self, part)
+        setattr(self, parts[-1], value)
