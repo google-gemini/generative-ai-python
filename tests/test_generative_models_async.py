@@ -214,7 +214,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
     )
     async def test_count_tokens_smoke(self, contents):
         self.responses["count_tokens"] = [protos.CountTokensResponse(total_tokens=7)]
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         response = await model.count_tokens_async(contents)
         self.assertEqual(
             type(response).to_dict(response, including_default_value_fields=False),
@@ -256,7 +256,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         request = unittest.mock.ANY
         request_options = {"timeout": 120}
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         response = await model.count_tokens_async(
             contents=["Hello?"], request_options=request_options
         )
