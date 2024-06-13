@@ -228,11 +228,7 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         [
-            dict(
-                testcase_name="ttl",
-                ttl=datetime.timedelta(hours=2)
-            ),
-
+            dict(testcase_name="ttl", ttl=datetime.timedelta(hours=2)),
             dict(
                 testcase_name="expire_time",
                 expire_time=datetime.datetime(2024, 6, 5, 12, 12, 12, 23),
@@ -254,7 +250,7 @@ class UnitTests(parameterized.TestCase):
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
         cc.delete()
         self.assertIsInstance(self.observed_requests[-1], protos.DeleteCachedContentRequest)
-    
+
     def test_repr_cached_content(self):
         expexted_repr = textwrap.dedent(
             """\

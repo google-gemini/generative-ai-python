@@ -308,9 +308,7 @@ class CachedContent:
                 updated for `CachedContent`."
             )
 
-        request = protos.UpdateCachedContentRequest(
-            cached_content=updates, update_mask=field_mask
-        )
+        request = protos.UpdateCachedContentRequest(cached_content=updates, update_mask=field_mask)
         updated_cc = client.update_cached_content(request)
         self._update(updated_cc)
 
