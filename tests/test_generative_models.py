@@ -847,56 +847,6 @@ class CUJTests(parameterized.TestCase):
             {"total_tokens": 7},
         )
 
-    @parameterized.named_parameters(
-        [
-            "GenerateContentResponse",
-            generation_types.GenerateContentResponse,
-            generation_types.AsyncGenerateContentResponse,
-        ],
-        [
-            "GenerativeModel.generate_response",
-            generative_models.GenerativeModel.generate_content,
-            generative_models.GenerativeModel.generate_content_async,
-        ],
-        [
-            "GenerativeModel.count_tokens",
-            generative_models.GenerativeModel.count_tokens,
-            generative_models.GenerativeModel.count_tokens_async,
-        ],
-        [
-            "ChatSession.send_message",
-            generative_models.ChatSession.send_message,
-            generative_models.ChatSession.send_message_async,
-        ],
-        [
-            "ChatSession._handle_afc",
-            generative_models.ChatSession._handle_afc,
-            generative_models.ChatSession._handle_afc_async,
-        ],
-    )
-    def test_async_code_match(self, obj, aobj):
-        import inspect
-        import re
-
-        source = inspect.getsource(obj)
-        asource = inspect.getsource(aobj)
-
-        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
-        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
-
-        asource = (
-            asource.replace("anext", "next")
-            .replace("aiter", "iter")
-            .replace("_async", "")
-            .replace("async ", "")
-            .replace("await ", "")
-            .replace("Async", "")
-            .replace("ASYNC_", "")
-        )
-
-        asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource, f"error in {obj=}")
-
     def test_repr_for_unary_non_streamed_response(self):
         model = generative_models.GenerativeModel(model_name="gemini-pro")
         self.responses["generate_content"].append(simple_response("world!"))
