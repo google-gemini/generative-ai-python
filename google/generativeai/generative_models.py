@@ -497,9 +497,6 @@ class ChatSession:
         history: A chat history to initialize the object with.
     """
 
-    _USER_ROLE = _USER_ROLE
-    _MODEL_ROLE = _MODEL_ROLE
-
     def __init__(
         self,
         model: GenerativeModel,
@@ -567,7 +564,7 @@ class ChatSession:
         content = content_types.to_content(content)
 
         if not content.role:
-            content.role = self._USER_ROLE
+            content.role = _USER_ROLE
 
         history = self.history[:]
         history.append(content)
@@ -654,7 +651,7 @@ class ChatSession:
                 )
                 function_response_parts.append(fr)
 
-            send = protos.Content(role=self._USER_ROLE, parts=function_response_parts)
+            send = protos.Content(role=_USER_ROLE, parts=function_response_parts)
             history.append(send)
 
             response = self.model.generate_content(
@@ -696,7 +693,7 @@ class ChatSession:
         content = content_types.to_content(content)
 
         if not content.role:
-            content.role = self._USER_ROLE
+            content.role = _USER_ROLE
 
         history = self.history[:]
         history.append(content)
@@ -761,7 +758,7 @@ class ChatSession:
                 )
                 function_response_parts.append(fr)
 
-            send = protos.Content(role=self._USER_ROLE, parts=function_response_parts)
+            send = protos.Content(role=_USER_ROLE, parts=function_response_parts)
             history.append(send)
 
             response = await self.model.generate_content_async(
@@ -828,7 +825,7 @@ class ChatSession:
         sent = self._last_sent
         received = last.candidates[0].content
         if not received.role:
-            received.role = self._MODEL_ROLE
+            received.role = _MODEL_ROLE
         self._history.extend([sent, received])
 
         self._last_sent = None

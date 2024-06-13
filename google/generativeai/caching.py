@@ -151,7 +151,7 @@ class CachedContent:
         if contents:
             contents = content_types.to_contents(contents)
             if not contents[-1].role:
-                contents[-1].role = _USER_ROLE  # define _USER_ROLE at the top
+                contents[-1].role = _USER_ROLE
 
         ttl = caching_types.to_optional_ttl(ttl)
         expire_time = caching_types.to_optional_expire_time(expire_time)
@@ -304,8 +304,7 @@ class CachedContent:
             field_mask.paths.append("expire_time")
         else:
             raise ValueError(
-                f"Bad update name: As of now, only `ttl`  or `expire_time` can be \
-                updated for `CachedContent`."
+                f"Bad update name: Only `ttl`  or `expire_time` can be updated for `CachedContent`."
             )
 
         request = protos.UpdateCachedContentRequest(cached_content=updates, update_mask=field_mask)
