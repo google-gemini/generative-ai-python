@@ -218,31 +218,31 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(ccs[0], caching.CachedContent)
         self.assertIsInstance(ccs[1], caching.CachedContent)
 
-    def test_update_cached_content_invalid_update_paths(self):
-        update_masks = dict(
-            name="change",
-            model="models/gemini-1.5-pro",
-            system_instruction="Always add 10 to the result.",
-            contents=["add this Content"],
-        )
+    def test_update_cached_content_ttl_and_expire_time_are_mutually_exclusive(self):
+        ttl = datetime.timedelta(hours=2)
+        expire_time = datetime.datetime.now()
 
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
         with self.assertRaises(ValueError):
-            cc.update(updates=update_masks)
+            cc.update(ttl=ttl, expire_time=expire_time)
 
     @parameterized.named_parameters(
         [
-            dict(testcase_name="ttl", update_masks=dict(ttl=datetime.timedelta(hours=2))),
+            dict(
+                testcase_name="ttl",
+                ttl=datetime.timedelta(hours=2)
+            ),
+
             dict(
                 testcase_name="expire_time",
-                update_masks=dict(expire_time=datetime.datetime(2024, 6, 5, 12, 12, 12, 23)),
+                expire_time=datetime.datetime(2024, 6, 5, 12, 12, 12, 23),
             ),
         ]
     )
-    def test_update_cached_content_valid_update_paths(self, update_masks):
+    def test_update_cached_content_valid_update_paths(self, ttl=None, expire_time=None):
 
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
-        cc = cc.update(updates=update_masks)
+        cc.update(ttl=ttl, expire_time=expire_time)
         self.assertIsInstance(self.observed_requests[-1], protos.UpdateCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
 

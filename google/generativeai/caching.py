@@ -15,12 +15,11 @@
 from __future__ import annotations
 
 import datetime
-from typing import Any, Iterable, Optional
+from typing import Iterable, Optional
 
 from google.generativeai import protos
 from google.generativeai.types import caching_types
 from google.generativeai.types import content_types
-from google.generativeai.utils import flatten_update_paths
 from google.generativeai.client import get_default_cache_client
 
 from google.protobuf import field_mask_pb2
@@ -250,61 +249,50 @@ class CachedContent:
 
     def update(
         self,
-        updates: dict[str, Any],
-    ) -> CachedContent:
+        *,
+        ttl: Optional[caching_types.TTLTypes] = None,
+        expire_time: Optional[caching_types.ExpireTimeTypes] = None,
+    ) -> None:
         """Updates requested `CachedContent` resource.
 
         Args:
-            updates: A dict of {field_name: new_value} updates. Currently only
-            `ttl/expire_time` is supported as an update path.
-
-        Returns:
-            `CachedContent` object with specified updates.
+            ttl: TTL for cached resource (in seconds). Defaults to 1 hour.
+                 `ttl` and `expire_time` are exclusive arguments.
+            expire_time: Expiration time for cached resource.
+                         `ttl` and `expire_time` are exclusive arguments.
         """
         client = get_default_cache_client()
 
-        if "ttl" in updates and "expire_time" in updates:
+        if ttl and expire_time:
             raise ValueError(
                 "Exclusive arguments: Please provide either `ttl` or `expire_time`, not both."
             )
 
+        ttl = caching_types.to_optional_ttl(ttl)
+        expire_time = caching_types.to_optional_expire_time(expire_time)
+
+        updates = protos.CachedContent(
+            name=self.name,
+            ttl=ttl,
+            expire_time=expire_time,
+        )
+
         field_mask = field_mask_pb2.FieldMask()
 
-        updates = flatten_update_paths(updates)
-        for update_path, update_path_val in updates.items():
-            if update_path == "ttl":
-                updates[update_path] = caching_types.to_optional_ttl(update_path_val)
-            elif update_path == "expire_time":
-                updates[update_path] = caching_types.to_optional_expire_time(update_path_val)
-            else:
-                raise ValueError(
-                    f"Bad update name: As of now, only `ttl`  or `expire_time` can be \
-                    updated for `CachedContent`. Got: `{update_path}` instead."
-                )
-
-            field_mask.paths.append(update_path)
-
-        for path, value in updates.items():
-            self._apply_update(path, value)
+        if ttl:
+            field_mask.paths.append("ttl")
+        elif expire_time:
+            field_mask.paths.append("expire_time")
+        else:
+            raise ValueError(
+                f"Bad update name: As of now, only `ttl`  or `expire_time` can be \
+                updated for `CachedContent`."
+            )
 
         request = protos.UpdateCachedContentRequest(
-            cached_content=self._get_update_fields(**updates), update_mask=field_mask
+            cached_content=updates, update_mask=field_mask
         )
         updated_cc = client.update_cached_content(request)
         self._update(updated_cc)
 
-        return self
-
-    def _get_update_fields(self, **input_only_update_fields) -> protos.CachedContent:
-        proto_paths = {
-            "name": self.name,
-        }
-        proto_paths.update(input_only_update_fields)
-        return protos.CachedContent(**proto_paths)
-
-    def _apply_update(self, path, value):
-        self = self._proto
-        parts = path.split(".")
-        for part in parts[:-1]:
-            self = getattr(self, part)
-        setattr(self, parts[-1], value)
+        return
