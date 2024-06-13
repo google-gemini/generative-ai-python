@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import datetime
+import textwrap
 import unittest
 
 from google.generativeai import caching
@@ -44,7 +45,9 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return protos.CachedContent(
                 name="cachedContents/test-cached-content",
-                model="models/gemini-1.0-pro-001",
+                model="models/gemini-1.5-pro",
+                display_name="Cached content for test",
+                usage_metadata={"total_token_count": 1},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
                 expire_time="2000-01-01T01:01:01.123456Z",
@@ -58,7 +61,9 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return protos.CachedContent(
                 name="cachedContents/test-cached-content",
-                model="models/gemini-1.0-pro-001",
+                model="models/gemini-1.5-pro",
+                display_name="Cached content for test",
+                usage_metadata={"total_token_count": 1},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
                 expire_time="2000-01-01T01:01:01.123456Z",
@@ -73,14 +78,18 @@ class UnitTests(parameterized.TestCase):
             return [
                 protos.CachedContent(
                     name="cachedContents/test-cached-content-1",
-                    model="models/gemini-1.0-pro-001",
+                    model="models/gemini-1.5-pro",
+                    display_name="Cached content for test",
+                    usage_metadata={"total_token_count": 1},
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                     expire_time="2000-01-01T01:01:01.123456Z",
                 ),
                 protos.CachedContent(
                     name="cachedContents/test-cached-content-2",
-                    model="models/gemini-1.0-pro-001",
+                    model="models/gemini-1.5-pro",
+                    display_name="Cached content for test",
+                    usage_metadata={"total_token_count": 1},
                     create_time="2000-01-01T01:01:01.123456Z",
                     update_time="2000-01-01T01:01:01.123456Z",
                     expire_time="2000-01-01T01:01:01.123456Z",
@@ -95,7 +104,9 @@ class UnitTests(parameterized.TestCase):
             self.observed_requests.append(request)
             return protos.CachedContent(
                 name="cachedContents/test-cached-content",
-                model="models/gemini-1.0-pro-001",
+                model="models/gemini-1.5-pro",
+                display_name="Cached content for test",
+                usage_metadata={"total_token_count": 1},
                 create_time="2000-01-01T01:01:01.123456Z",
                 update_time="2000-01-01T01:01:01.123456Z",
                 expire_time="2000-01-01T03:01:01.123456Z",
@@ -114,8 +125,7 @@ class UnitTests(parameterized.TestCase):
             return a + b
 
         cc = caching.CachedContent.create(
-            name="test-cached-content",
-            model="models/gemini-1.0-pro-001",
+            model="models/gemini-1.5-pro",
             contents=["Add 5 and 6"],
             tools=[add],
             tool_config={"function_calling_config": "ANY"},
@@ -125,7 +135,7 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(self.observed_requests[-1], protos.CreateCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
         self.assertEqual(cc.name, "cachedContents/test-cached-content")
-        self.assertEqual(cc.model, "models/gemini-1.0-pro-001")
+        self.assertEqual(cc.model, "models/gemini-1.5-pro")
 
     @parameterized.named_parameters(
         [
@@ -147,10 +157,9 @@ class UnitTests(parameterized.TestCase):
             ),
         ]
     )
-    def test_expiration_types_for_create_cached_content(self, ttl):
+    def test_ttl_types_for_create_cached_content(self, ttl):
         cc = caching.CachedContent.create(
-            name="test-cached-content",
-            model="models/gemini-1.0-pro-001",
+            model="models/gemini-1.5-pro",
             contents=["cache this please for 2 hours"],
             ttl=ttl,
         )
@@ -160,28 +169,39 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         [
             dict(
-                testcase_name="upper_case",
-                name="Test-cached-content",
+                testcase_name="expire_time-is-int-seconds",
+                expire_time=1717653421,
             ),
             dict(
-                testcase_name="special_characters_except_dot_and_hyphen",
-                name="test-cac*@/hed-conte#nt",
+                testcase_name="expire_time-is-datetime",
+                expire_time=datetime.datetime.now(),
             ),
             dict(
-                testcase_name="empty_name",
-                name="",
+                testcase_name="expire_time-is-dict",
+                expire_time={"seconds": 1717653421},
             ),
             dict(
-                testcase_name="blank_spaces",
-                name="test cached content",
+                testcase_name="expire_time-is-none-default-to-1-hr",
+                expire_time=None,
             ),
         ]
     )
-    def test_create_cached_content_with_invalid_name_format(self, name):
+    def test_expire_time_types_for_create_cached_content(self, expire_time):
+        cc = caching.CachedContent.create(
+            model="models/gemini-1.5-pro",
+            contents=["cache this please for 2 hours"],
+            expire_time=expire_time,
+        )
+        self.assertIsInstance(self.observed_requests[-1], protos.CreateCachedContentRequest)
+        self.assertIsInstance(cc, caching.CachedContent)
+
+    def test_mutual_exclusivity_for_ttl_and_expire_time_in_create_cached_content(self):
         with self.assertRaises(ValueError):
             _ = caching.CachedContent.create(
-                name=name,
-                model="models/gemini-1.0-pro-001",
+                model="models/gemini-1.5-pro",
+                contents=["cache this please for 2 hours"],
+                ttl=datetime.timedelta(hours=2),
+                expire_time=datetime.datetime.now(),
             )
 
     def test_get_cached_content(self):
@@ -189,7 +209,7 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(self.observed_requests[-1], protos.GetCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
         self.assertEqual(cc.name, "cachedContents/test-cached-content")
-        self.assertEqual(cc.model, "models/gemini-1.0-pro-001")
+        self.assertEqual(cc.model, "models/gemini-1.5-pro")
 
     def test_list_cached_contents(self):
         ccs = list(caching.CachedContent.list(page_size=2))
@@ -198,25 +218,27 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(ccs[0], caching.CachedContent)
         self.assertIsInstance(ccs[1], caching.CachedContent)
 
-    def test_update_cached_content_invalid_update_paths(self):
-        update_masks = dict(
-            name="change",
-            model="models/gemini-1.5-pro-001",
-            system_instruction="Always add 10 to the result.",
-            contents=["add this Content"],
-        )
+    def test_update_cached_content_ttl_and_expire_time_are_mutually_exclusive(self):
+        ttl = datetime.timedelta(hours=2)
+        expire_time = datetime.datetime.now()
 
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
         with self.assertRaises(ValueError):
-            cc.update(updates=update_masks)
+            cc.update(ttl=ttl, expire_time=expire_time)
 
-    def test_update_cached_content_valid_update_paths(self):
-        update_masks = dict(
-            ttl=datetime.timedelta(hours=2),
-        )
+    @parameterized.named_parameters(
+        [
+            dict(testcase_name="ttl", ttl=datetime.timedelta(hours=2)),
+            dict(
+                testcase_name="expire_time",
+                expire_time=datetime.datetime(2024, 6, 5, 12, 12, 12, 23),
+            ),
+        ]
+    )
+    def test_update_cached_content_valid_update_paths(self, ttl=None, expire_time=None):
 
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
-        cc = cc.update(updates=update_masks)
+        cc.update(ttl=ttl, expire_time=expire_time)
         self.assertIsInstance(self.observed_requests[-1], protos.UpdateCachedContentRequest)
         self.assertIsInstance(cc, caching.CachedContent)
 
@@ -229,17 +251,23 @@ class UnitTests(parameterized.TestCase):
         cc.delete()
         self.assertIsInstance(self.observed_requests[-1], protos.DeleteCachedContentRequest)
 
-    def test_auto_delete_cached_content_with_context_manager(self):
-        with caching.CachedContent.create(
-            name="test-cached-content",
-            model="models/gemini-1.0-pro-001",
-            contents=["Add 5 and 6"],
-            system_instruction="Always add 10 to the result.",
-            ttl=datetime.timedelta(minutes=30),
-        ) as cc:
-            ...  # some logic
-
-        self.assertIsInstance(self.observed_requests[-1], protos.DeleteCachedContentRequest)
+    def test_repr_cached_content(self):
+        expexted_repr = textwrap.dedent(
+            """\
+            CachedContent(
+                name='cachedContents/test-cached-content',
+                model='models/gemini-1.5-pro',
+                display_name='Cached content for test',
+                usage_metadata={
+                    'total_token_count': 1,
+                },
+                create_time=2000-01-01 01:01:01.123456+00:00,
+                update_time=2000-01-01 01:01:01.123456+00:00,
+                expire_time=2000-01-01 01:01:01.123456+00:00
+            )"""
+        )
+        cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
+        self.assertEqual(repr(cc), expexted_repr)
 
 
 if __name__ == "__main__":

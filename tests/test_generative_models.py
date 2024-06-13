@@ -3,9 +3,7 @@ from collections.abc import Iterable
 import copy
 import datetime
 import pathlib
-from typing import Any
 import textwrap
-import unittest.mock
 from absl.testing import absltest
 from absl.testing import parameterized
 from google.generativeai import protos
@@ -86,7 +84,9 @@ class MockGenerativeServiceClient:
         self.observed_requests.append(request)
         return protos.CachedContent(
             name="cachedContents/test-cached-content",
-            model="models/gemini-1.0-pro-001",
+            model="models/gemini-1.5-pro",
+            display_name="Cached content for test",
+            usage_metadata={"total_token_count": 1},
             create_time="2000-01-01T01:01:01.123456Z",
             update_time="2000-01-01T01:01:01.123456Z",
             expire_time="2000-01-01T01:01:01.123456Z",
@@ -338,12 +338,16 @@ class CUJTests(parameterized.TestCase):
             dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
             dict(
                 testcase_name="test_cached_content_as_CachedContent_object",
-                cached_content=caching.CachedContent(
-                    name="cachedContents/test-cached-content",
-                    model="models/gemini-1.0-pro-001",
-                    create_time=datetime.datetime.now(),
-                    update_time=datetime.datetime.now(),
-                    expire_time=datetime.datetime.now(),
+                cached_content=caching.CachedContent._from_obj(
+                    dict(
+                        name="cachedContents/test-cached-content",
+                        model="models/gemini-1.5-pro",
+                        display_name="Cached content for test",
+                        usage_metadata={"total_token_count": 1},
+                        create_time=datetime.datetime.now(),
+                        update_time=datetime.datetime.now(),
+                        expire_time=datetime.datetime.now(),
+                    )
                 ),
             ),
         ],
@@ -353,7 +357,7 @@ class CUJTests(parameterized.TestCase):
         cc_name = model.cached_content  # pytype: disable=attribute-error
         model_name = model.model_name
         self.assertEqual(cc_name, "cachedContents/test-cached-content")
-        self.assertEqual(model_name, "models/gemini-1.0-pro-001")
+        self.assertEqual(model_name, "models/gemini-1.5-pro")
         self.assertEqual(
             model.cached_content,  # pytype: disable=attribute-error
             "cachedContents/test-cached-content",
@@ -801,9 +805,9 @@ class CUJTests(parameterized.TestCase):
         [
             "part_dict",
             {"parts": [{"text": "talk like a pirate"}]},
-            simple_part("talk like a pirate"),
+            protos.Content(parts=[{"text": "talk like a pirate"}]),
         ],
-        ["part_list", ["talk like:", "a pirate"], iter_part(["talk like:", "a pirate"])],
+        ["part_list", ["talk like", "a pirate"], iter_part(["talk like", "a pirate"])],
     )
     def test_system_instruction(self, instruction, expected_instr):
         self.responses["generate_content"] = [simple_response("echo echo")]
@@ -1251,7 +1255,7 @@ class CUJTests(parameterized.TestCase):
         )
         result = repr(model)
         self.assertIn("cached_content=cachedContents/test-cached-content", result)
-        self.assertIn("model_name='models/gemini-1.0-pro-001'", result)
+        self.assertIn("model_name='models/gemini-1.5-pro'", result)
 
     def test_count_tokens_called_with_request_options(self):
         self.responses["count_tokens"].append(protos.CountTokensResponse(total_tokens=7))
