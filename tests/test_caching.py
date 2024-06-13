@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import datetime
-import dis
+import textwrap
 import unittest
 
 from google.generativeai import caching
@@ -254,6 +254,24 @@ class UnitTests(parameterized.TestCase):
         cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
         cc.delete()
         self.assertIsInstance(self.observed_requests[-1], protos.DeleteCachedContentRequest)
+    
+    def test_repr_cached_content(self):
+        expexted_repr = textwrap.dedent(
+            """\
+            CachedContent(
+                name='cachedContents/test-cached-content',
+                model='models/gemini-1.5-pro',
+                display_name='Cached content for test',
+                usage_metadata={
+                    'total_token_count': 1,
+                },
+                create_time=2000-01-01 01:01:01.123456+00:00,
+                update_time=2000-01-01 01:01:01.123456+00:00,
+                expire_time=2000-01-01 01:01:01.123456+00:00
+            )"""
+        )
+        cc = caching.CachedContent.get(name="cachedContents/test-cached-content")
+        self.assertEqual(repr(cc), expexted_repr)
 
 
 if __name__ == "__main__":

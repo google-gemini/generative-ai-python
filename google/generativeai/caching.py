@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import datetime
+import textwrap
 from typing import Iterable, Optional
 
 from google.generativeai import protos
@@ -75,6 +76,24 @@ class CachedContent:
     @property
     def expire_time(self) -> datetime.datetime:
         return self._proto.expire_time
+
+    def __str__(self):
+        return textwrap.dedent(
+            f"""\
+            CachedContent(
+                name='{self.name}',
+                model='{self.model}',
+                display_name='{self.display_name}',
+                usage_metadata={'{'}
+                    'total_token_count': {self.usage_metadata.total_token_count},
+                {'}'},
+                create_time={self.create_time},
+                update_time={self.update_time},
+                expire_time={self.expire_time}
+            )"""
+        )
+
+    __repr__ = __str__
 
     @classmethod
     def _from_obj(cls, obj: CachedContent | protos.CachedContent | dict) -> CachedContent:
