@@ -69,8 +69,6 @@ __all__ = [
     "FunctionLibraryType",
 ]
 
-_USER_ROLE = "user"
-
 
 def pil_to_blob(img):
     bytesio = io.BytesIO()
