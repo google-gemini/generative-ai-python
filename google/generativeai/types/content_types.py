@@ -623,7 +623,9 @@ def _encode_fd(fd: FunctionDeclaration | protos.FunctionDeclaration) -> protos.F
 class Tool:
     """A wrapper for `protos.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
 
-    def __init__(self, function_declarations: Iterable[FunctionDeclarationType]):
+    def __init__(self, 
+                 function_declarations: Iterable[FunctionDeclarationType] | None = None,
+                 code_execution: protos.CodeExecution | None = None):
         # The main path doesn't use this but is seems useful.
         self._function_declarations = [_make_function_declaration(f) for f in function_declarations]
         self._index = {}
@@ -634,12 +636,17 @@ class Tool:
             self._index[fd.name] = fd
 
         self._proto = protos.Tool(
-            function_declarations=[_encode_fd(fd) for fd in self._function_declarations]
+            function_declarations=[_encode_fd(fd) for fd in self._function_declarations],
+            code_execution = code_execution
         )
 
     @property
     def function_declarations(self) -> list[FunctionDeclaration | protos.FunctionDeclaration]:
         return self._function_declarations
+    
+    @property
+    def code_execution(self) -> protos.CodeExecution:
+        return self._proto.code_execution
 
     def __getitem__(
         self, name: str | protos.FunctionCall
@@ -673,9 +680,10 @@ def _make_tool(tool: ToolType) -> Tool:
     if isinstance(tool, Tool):
         return tool
     elif isinstance(tool, protos.Tool):
-        return Tool(function_declarations=tool.function_declarations)
+        return Tool(function_declarations=tool.function_declarations,
+                    code_execution=tool.code_execution)
     elif isinstance(tool, dict):
-        if "function_declarations" in tool:
+        if "function_declarations" in tool or "code_execution" in tool:
             return Tool(**tool)
         else:
             fd = tool
