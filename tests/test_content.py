@@ -367,7 +367,7 @@ class UnitTests(parameterized.TestCase):
             raise ValueError("This shouldn't happen")
         tools = function_library.to_proto()
 
-        tools = type(tools[0]).to_dict(tools[0])
+        tools = type(tools[0]).to_dict(tools[0], including_default_value_fields=False)
         tools["function_declarations"][0].pop("parameters", None)
 
         expected = dict(
