@@ -378,6 +378,48 @@ class UnitTests(parameterized.TestCase):
 
         self.assertEqual(tools, expected)
 
+    @parameterized.named_parameters(
+            [
+                "string",
+                'code_execution'
+            ],
+            [   "proto_object",
+                protos.CodeExecution()
+            ],
+            [
+                'proto_passed_in',
+                protos.Tool(code_execution=protos.CodeExecution())
+            ],
+            [
+                'empty_dictionary',
+                {'code_execution': {}}
+            ],
+                        [
+                "string_list",
+                ['code_execution']
+            ],
+            [   "proto_object_list",
+                [protos.CodeExecution()]
+            ],
+            [
+                'proto_passed_in_list',
+                [protos.Tool(code_execution=protos.CodeExecution())]
+            ],
+            [
+                'empty_dictionary_list',
+                {'code_execution': {}}
+            ]
+    )
+    def test_code_execution(self, tools):
+        # Pass code execution into tools 
+        t = content_types._make_tool(tools)
+        expected = dict(
+            'code_execution'
+        )
+        # Create the proto object
+        #expected = 
+        #self.assertEqual(tools, t.code_execution)
+
     def test_two_fun_is_one_tool(self):
         def a():
             pass
