@@ -261,24 +261,38 @@ def _join_contents(contents: Iterable[protos.Content]):
     for content in contents:
         parts.extend(content.parts)
 
-    merged_parts = [parts.pop(0)]
-    for part in parts:
-        if not merged_parts[-1].text:
-            merged_parts.append(part)
+    merged_parts = []
+    last = parts[0]
+    for part in parts[1:]:
+        if 'text' in last and 'text' in part:
+            last = protos.Part(text=last.text + part.text)
+            continue
+        
+        # Can we merge the new thing into last?
+        # If not, put last in list of parts, and new thing becomes last
+        if 'executable_code' in last and 'executable_code' in part:
+            last = protos.Part(executable_code=_join_executable_code(last.executable_code, part.executable_code))
             continue
 
-        if not part.text:
-            merged_parts.append(part)
+        if 'code_execution_result' in last and 'code_execution_result' in part:
+            last = protos.Part(code_execution_result=_join_code_execution_result(last.code_execution_result, part.code_execution_result))
             continue
 
-        merged_part = protos.Part(merged_parts[-1])
-        merged_part.text += part.text
-        merged_parts[-1] = merged_part
+        merged_parts.append(last)
+        last = part
+    
+    merged_parts.append(last)
 
     return protos.Content(
         role=role,
         parts=merged_parts,
     )
+
+def _join_executable_code(code_1, code_2):
+    return protos.ExecutableCode(language=code_1.language, code=code_1.code + code_2.code)
+
+def _join_code_execution_result(result_1, result_2):
+    return protos.CodeExecutionResult(outcome=result_2.outcome, output=result_1.output + result_2.output)
 
 
 def _join_candidates(candidates: Iterable[protos.Candidate]):
