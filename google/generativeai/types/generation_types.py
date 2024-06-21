@@ -427,13 +427,33 @@ class BaseGenerateContentResponse:
                 "Invalid operation: The `response.text` quick accessor requires the response to contain a valid `Part`, "
                 "but none were returned. Please check the `candidate.safety_ratings` to determine if the response was blocked."
             )
-        if len(parts) != 1 or "text" not in parts[0]:
-            raise ValueError(
-                "Invalid operation: The `response.text` quick accessor requires a simple (single-`Part`) text response. "
-                "This response is not simple text. Please use the `result.parts` accessor or the full "
-                "`result.candidates[index].content.parts` lookup instead."
-            )
-        return parts[0].text
+        
+        texts = []
+        for part in parts:
+            if 'text' in part:
+                texts.append(part.text)
+                continue
+            if 'executable_code' in part:
+                language = part.executable_code.language.name.lower()
+                if language == "language_unspecified":
+                    language = ""
+                else:
+                    language = f" {language}"
+                texts.extend([f"```{language}", part.executable_code.code, "```"])
+                continue
+            if 'code_execution_result' in part:
+                outcome_result = part.code_execution_result.outcome.name.lower().replace("outcome_", "")
+                if outcome_result == "ok" or outcome_result == "unspecified":
+                    outcome_result = ""
+                else:
+                    outcome_result = f" {outcome_result}"
+                texts.extend([f"```{outcome_result}", part.code_execution_result.output, "```"])
+                continue
+            
+            part_type = protos.Part.pb(part).whichOneof('data')
+            raise ValueError(f"Could not convert `part.{part_type}` to text.")
+        
+        return "\n".join(texts)
 
     @property
     def prompt_feedback(self):

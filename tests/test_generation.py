@@ -143,6 +143,26 @@ class UnitTests(parameterized.TestCase):
                                                         ])
         self.assertEqual(expected, g)
 
+    def test_code_execution_text(self):
+        content = protos.Content(role="assistant", parts=[protos.Part(text="AB"), 
+                                                    protos.Part(executable_code={'language': 'PYTHON', 'code': "CD"}),
+                                                    protos.Part(code_execution_result={'outcome': 'OUTCOME_OK', 'output': "EF"}),
+                                                    protos.Part(text="GH")
+                                                ])
+        response = generation_types.GenerateContentResponse(done=True, 
+                                                            iterator=None, 
+                                                            result=protos.GenerateContentResponse({'candidates': [{'content': content}]}))
+        expected = textwrap.dedent("""\
+            AB
+            ``` python
+            CD
+            ```
+            ```
+            EF
+            ```
+            GH""")
+        self.assertEqual(expected, response.text)
+
     def test_many_join_contents(self):
         import string
 
