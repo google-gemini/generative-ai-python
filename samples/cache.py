@@ -21,6 +21,7 @@ import pathlib
 
 media = pathlib.Path(__file__).parents[1] / "third_party"
 
+
 class UnitTests(absltest.TestCase):
     def test_cache_create(self):
         # [START cache_create]
@@ -29,7 +30,7 @@ class UnitTests(absltest.TestCase):
         cache = caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
-            contents=[document]
+            contents=[document],
         )
         print(cache)
         print()
@@ -42,7 +43,7 @@ class UnitTests(absltest.TestCase):
         cache = caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
-            contents=[document]
+            contents=[document],
         )
         cache.delete()
         print()
@@ -55,7 +56,7 @@ class UnitTests(absltest.TestCase):
         cache = caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
-            contents=[document]
+            contents=[document],
         )
         print(cache.get(name=cache.name))
         print()
@@ -68,7 +69,7 @@ class UnitTests(absltest.TestCase):
         cache = caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
-            contents=[document]
+            contents=[document],
         )
         print(cache.list())
         print()
@@ -77,12 +78,13 @@ class UnitTests(absltest.TestCase):
     def test_cache_update(self):
         # [START cache_update]
         import datetime
+
         document = genai.upload_file(path=media / "a11.txt")
         model_name = "gemini-1.5-flash-latest"
         cache = caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
-            contents=[document]
+            contents=[document],
         )
         print(f"Before update:\n {cache}")
         print(cache)
@@ -91,6 +93,7 @@ class UnitTests(absltest.TestCase):
         print(cache)
         print()
         # [END cache_update]
+
 
 if __name__ == "__main__":
     absltest.main()
