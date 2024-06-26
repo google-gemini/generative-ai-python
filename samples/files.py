@@ -18,7 +18,7 @@ import google
 import google.generativeai as genai
 import pathlib
 
-media = pathlib.Path(__file__).parents[1]/'third_party'
+media = pathlib.Path(__file__).parents[1] / "third_party"
 
 
 class UnitTests(absltest.TestCase):
