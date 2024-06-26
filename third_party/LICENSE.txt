@@ -1,0 +1,6 @@
+* poem.txt:
+  * This is the first paragraph from shakespear's spring, no copyright.
+* Big_Buck_Bunny.mp4:
+  * This is a clip from https://peach.blender.org/download/
+  * License CC-BY 3.0 (Attribution)
+
