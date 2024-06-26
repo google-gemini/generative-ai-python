@@ -16,20 +16,17 @@ import google.generativeai as genai
 import typing_extensions as typing
 
 
-class Recipe(typing.TypedDict):
-    recipe_name: str
-
-
 class UnitTests(absltest.TestCase):
     def test_controlled_generation(self):
         # [START controlled_generation]
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        class Recipe(typing.TypedDict):
+            recipe_name: str
+
+        model = genai.GenerativeModel("gemini-1.5-pro-latest")
         result = model.generate_content(
             "List a few popular cookie recipes.",
             generation_config=genai.GenerationConfig(
-                response_mime_type="application/json",
-                response_schema=list([Recipe]),
-                request_options={"timeout": 600},
+                response_mime_type="application/json", response_schema=list([Recipe])
             ),
         )
         print(result)
