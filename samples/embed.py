@@ -14,30 +14,36 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google
+
 import google.generativeai as genai
-import pathlib
+
 
 class UnitTests(absltest.TestCase):
     def test_embed_content(self):
         # [START embed_content]
+
         text = "Hello World!"
-        result = genai.embed_content(model="models/text-embedding-004",
-                                     content=text)
-        print(result['embedding'])
+        result = genai.embed_content(
+            model="models/text-embedding-004", content=text, output_dimensionality=10
+        )
+        print(result["embedding"])
         print()
         # [END embed_content]
 
     def batch_embed_content(self):
         # [START batch_embed_content]
-        texts = ["What is the meaning of life?",
-                 "How much wood would a woodchuck chuck?",
-                 "How does the brain work?"]
-        result = genai.embed_content(model="models/text-embedding-004",
-                                     content=texts)
+        texts = [
+            "What is the meaning of life?",
+            "How much wood would a woodchuck chuck?",
+            "How does the brain work?",
+        ]
+        result = genai.embed_content(
+            model="models/text-embedding-004", content=texts, output_dimensionality=10
+        )
         print(result)
         print()
         # [END batch_embed_content]
+
 
 if __name__ == "__main__":
     absltest.main()
