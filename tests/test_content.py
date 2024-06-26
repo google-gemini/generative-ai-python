@@ -393,7 +393,7 @@ class UnitTests(parameterized.TestCase):
             t = content_types._make_tools(tools)
             self.assertIsInstance(t[0].code_execution, protos.CodeExecution)
         else:
-            t = content_types._make_tool(tools) # Pass code execution into tools
+            t = content_types._make_tool(tools)  # Pass code execution into tools
             self.assertIsInstance(t.code_execution, protos.CodeExecution)
 
     def test_two_fun_is_one_tool(self):
