@@ -15,7 +15,7 @@
 import dataclasses
 import pathlib
 import typing_extensions
-from typing import Any, Union
+from typing import Any, Union, Iterable
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -367,7 +367,7 @@ class UnitTests(parameterized.TestCase):
             raise ValueError("This shouldn't happen")
         tools = function_library.to_proto()
 
-        tools = type(tools[0]).to_dict(tools[0])
+        tools = type(tools[0]).to_dict(tools[0], including_default_value_fields=False)
         tools["function_declarations"][0].pop("parameters", None)
 
         expected = dict(
@@ -377,6 +377,24 @@ class UnitTests(parameterized.TestCase):
         )
 
         self.assertEqual(tools, expected)
+
+    @parameterized.named_parameters(
+        ["string", "code_execution"],
+        ["proto_object", protos.CodeExecution()],
+        ["proto_passed_in", protos.Tool(code_execution=protos.CodeExecution())],
+        ["empty_dictionary", {"code_execution": {}}],
+        ["string_list", ["code_execution"]],
+        ["proto_object_list", [protos.CodeExecution()]],
+        ["proto_passed_in_list", [protos.Tool(code_execution=protos.CodeExecution())]],
+        ["empty_dictionary_list", [{"code_execution": {}}]],
+    )
+    def test_code_execution(self, tools):
+        if isinstance(tools, Iterable):
+            t = content_types._make_tools(tools)
+            self.assertIsInstance(t[0].code_execution, protos.CodeExecution)
+        else:
+            t = content_types._make_tool(tools)  # Pass code execution into tools
+            self.assertIsInstance(t.code_execution, protos.CodeExecution)
 
     def test_two_fun_is_one_tool(self):
         def a():

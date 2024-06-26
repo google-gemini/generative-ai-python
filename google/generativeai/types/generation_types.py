@@ -261,23 +261,47 @@ def _join_contents(contents: Iterable[protos.Content]):
     for content in contents:
         parts.extend(content.parts)
 
-    merged_parts = [parts.pop(0)]
-    for part in parts:
-        if not merged_parts[-1].text:
-            merged_parts.append(part)
+    merged_parts = []
+    last = parts[0]
+    for part in parts[1:]:
+        if "text" in last and "text" in part:
+            last = protos.Part(text=last.text + part.text)
             continue
 
-        if not part.text:
-            merged_parts.append(part)
+        # Can we merge the new thing into last?
+        # If not, put last in list of parts, and new thing becomes last
+        if "executable_code" in last and "executable_code" in part:
+            last = protos.Part(
+                executable_code=_join_executable_code(last.executable_code, part.executable_code)
+            )
             continue
 
-        merged_part = protos.Part(merged_parts[-1])
-        merged_part.text += part.text
-        merged_parts[-1] = merged_part
+        if "code_execution_result" in last and "code_execution_result" in part:
+            last = protos.Part(
+                code_execution_result=_join_code_execution_result(
+                    last.code_execution_result, part.code_execution_result
+                )
+            )
+            continue
+
+        merged_parts.append(last)
+        last = part
+
+    merged_parts.append(last)
 
     return protos.Content(
         role=role,
         parts=merged_parts,
+    )
+
+
+def _join_executable_code(code_1, code_2):
+    return protos.ExecutableCode(language=code_1.language, code=code_1.code + code_2.code)
+
+
+def _join_code_execution_result(result_1, result_2):
+    return protos.CodeExecutionResult(
+        outcome=result_2.outcome, output=result_1.output + result_2.output
     )
 
 
@@ -413,13 +437,35 @@ class BaseGenerateContentResponse:
                 "Invalid operation: The `response.text` quick accessor requires the response to contain a valid `Part`, "
                 "but none were returned. Please check the `candidate.safety_ratings` to determine if the response was blocked."
             )
-        if len(parts) != 1 or "text" not in parts[0]:
-            raise ValueError(
-                "Invalid operation: The `response.text` quick accessor requires a simple (single-`Part`) text response. "
-                "This response is not simple text. Please use the `result.parts` accessor or the full "
-                "`result.candidates[index].content.parts` lookup instead."
-            )
-        return parts[0].text
+
+        texts = []
+        for part in parts:
+            if "text" in part:
+                texts.append(part.text)
+                continue
+            if "executable_code" in part:
+                language = part.executable_code.language.name.lower()
+                if language == "language_unspecified":
+                    language = ""
+                else:
+                    language = f" {language}"
+                texts.extend([f"```{language}", part.executable_code.code, "```"])
+                continue
+            if "code_execution_result" in part:
+                outcome_result = part.code_execution_result.outcome.name.lower().replace(
+                    "outcome_", ""
+                )
+                if outcome_result == "ok" or outcome_result == "unspecified":
+                    outcome_result = ""
+                else:
+                    outcome_result = f" {outcome_result}"
+                texts.extend([f"```{outcome_result}", part.code_execution_result.output, "```"])
+                continue
+
+            part_type = protos.Part.pb(part).whichOneof("data")
+            raise ValueError(f"Could not convert `part.{part_type}` to text.")
+
+        return "\n".join(texts)
 
     @property
     def prompt_feedback(self):

@@ -623,23 +623,39 @@ def _encode_fd(fd: FunctionDeclaration | protos.FunctionDeclaration) -> protos.F
 class Tool:
     """A wrapper for `protos.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
 
-    def __init__(self, function_declarations: Iterable[FunctionDeclarationType]):
+    def __init__(
+        self,
+        function_declarations: Iterable[FunctionDeclarationType] | None = None,
+        code_execution: protos.CodeExecution | None = None,
+    ):
         # The main path doesn't use this but is seems useful.
-        self._function_declarations = [_make_function_declaration(f) for f in function_declarations]
-        self._index = {}
-        for fd in self._function_declarations:
-            name = fd.name
-            if name in self._index:
-                raise ValueError("")
-            self._index[fd.name] = fd
+        if function_declarations:
+            self._function_declarations = [
+                _make_function_declaration(f) for f in function_declarations
+            ]
+            self._index = {}
+            for fd in self._function_declarations:
+                name = fd.name
+                if name in self._index:
+                    raise ValueError("")
+                self._index[fd.name] = fd
+        else:
+            # Consistent fields
+            self._function_declarations = []
+            self._index = {}
 
         self._proto = protos.Tool(
-            function_declarations=[_encode_fd(fd) for fd in self._function_declarations]
+            function_declarations=[_encode_fd(fd) for fd in self._function_declarations],
+            code_execution=code_execution,
         )
 
     @property
     def function_declarations(self) -> list[FunctionDeclaration | protos.FunctionDeclaration]:
         return self._function_declarations
+
+    @property
+    def code_execution(self) -> protos.CodeExecution:
+        return self._proto.code_execution
 
     def __getitem__(
         self, name: str | protos.FunctionCall
@@ -673,13 +689,24 @@ def _make_tool(tool: ToolType) -> Tool:
     if isinstance(tool, Tool):
         return tool
     elif isinstance(tool, protos.Tool):
-        return Tool(function_declarations=tool.function_declarations)
+        if "code_execution" in tool:
+            code_execution = tool.code_execution
+        else:
+            code_execution = None
+        return Tool(function_declarations=tool.function_declarations, code_execution=code_execution)
     elif isinstance(tool, dict):
-        if "function_declarations" in tool:
+        if "function_declarations" in tool or "code_execution" in tool:
             return Tool(**tool)
         else:
             fd = tool
             return Tool(function_declarations=[protos.FunctionDeclaration(**fd)])
+    elif isinstance(tool, str):
+        if tool.lower() == "code_execution":
+            return Tool(code_execution=protos.CodeExecution())
+        else:
+            raise ValueError("The only string that can be passed as a tool is 'code_execution'.")
+    elif isinstance(tool, protos.CodeExecution):
+        return Tool(code_execution=tool)
     elif isinstance(tool, Iterable):
         return Tool(function_declarations=tool)
     else:
@@ -734,7 +761,12 @@ ToolsType = Union[Iterable[ToolType], ToolType]
 
 
 def _make_tools(tools: ToolsType) -> list[Tool]:
-    if isinstance(tools, Iterable) and not isinstance(tools, Mapping):
+    if isinstance(tools, str):
+        if tools.lower() == "code_execution":
+            return [_make_tool(tools)]
+        else:
+            raise ValueError("The only string that can be passed as a tool is 'code_execution'.")
+    elif isinstance(tools, Iterable) and not isinstance(tools, Mapping):
         tools = [_make_tool(t) for t in tools]
         if len(tools) > 1 and all(len(t.function_declarations) == 1 for t in tools):
             # flatten into a single tool.

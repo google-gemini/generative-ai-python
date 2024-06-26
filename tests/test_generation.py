@@ -124,6 +124,61 @@ class UnitTests(parameterized.TestCase):
 
         self.assertEqual(expected, type(result).to_dict(result))
 
+    def test_join_parts(self):
+        contents = [
+            protos.Content(role="assistant", parts=[protos.Part(text="A")]),
+            protos.Content(role="assistant", parts=[protos.Part(text="B")]),
+            protos.Content(role="assistant", parts=[protos.Part(executable_code={"code": "C"})]),
+            protos.Content(role="assistant", parts=[protos.Part(executable_code={"code": "D"})]),
+            protos.Content(
+                role="assistant", parts=[protos.Part(code_execution_result={"output": "E"})]
+            ),
+            protos.Content(
+                role="assistant", parts=[protos.Part(code_execution_result={"output": "F"})]
+            ),
+            protos.Content(role="assistant", parts=[protos.Part(text="G")]),
+            protos.Content(role="assistant", parts=[protos.Part(text="H")]),
+        ]
+        g = generation_types._join_contents(contents=contents)
+        expected = protos.Content(
+            role="assistant",
+            parts=[
+                protos.Part(text="AB"),
+                protos.Part(executable_code={"code": "CD"}),
+                protos.Part(code_execution_result={"output": "EF"}),
+                protos.Part(text="GH"),
+            ],
+        )
+        self.assertEqual(expected, g)
+
+    def test_code_execution_text(self):
+        content = protos.Content(
+            role="assistant",
+            parts=[
+                protos.Part(text="AB"),
+                protos.Part(executable_code={"language": "PYTHON", "code": "CD"}),
+                protos.Part(code_execution_result={"outcome": "OUTCOME_OK", "output": "EF"}),
+                protos.Part(text="GH"),
+            ],
+        )
+        response = generation_types.GenerateContentResponse(
+            done=True,
+            iterator=None,
+            result=protos.GenerateContentResponse({"candidates": [{"content": content}]}),
+        )
+        expected = textwrap.dedent(
+            """\
+            AB
+            ``` python
+            CD
+            ```
+            ```
+            EF
+            ```
+            GH"""
+        )
+        self.assertEqual(expected, response.text)
+
     def test_many_join_contents(self):
         import string
 
