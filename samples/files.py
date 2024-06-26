@@ -18,13 +18,13 @@ import google
 import google.generativeai as genai
 import pathlib
 
-samples = pathlib.Path(__file__).parent
+media = pathlib.Path(__file__).parents[1]/'third_party'
 
 
 class UnitTests(absltest.TestCase):
     def test_files_create(self):
         # [START files_create]
-        myfile = genai.upload_file(samples / "poem.txt")
+        myfile = genai.upload_file(media / "poem.txt")
         print(f"{myfile=}")
         print()
 
@@ -41,7 +41,7 @@ class UnitTests(absltest.TestCase):
         import time
 
         # Video clip from https://peach.blender.org/download/
-        myfile = genai.upload_file(samples / "Big_Buck_Bunny.mp4")
+        myfile = genai.upload_file(media / "Big_Buck_Bunny.mp4")
         print(f"{myfile=}")
         print()
 
@@ -66,7 +66,7 @@ class UnitTests(absltest.TestCase):
 
     def test_files_delete(self):
         # [START files_delete]
-        myfile = genai.upload_file(samples / "poem.txt")
+        myfile = genai.upload_file(media / "poem.txt")
 
         myfile.delete()
 
@@ -80,7 +80,7 @@ class UnitTests(absltest.TestCase):
 
     def test_files_get(self):
         # [START files_get]
-        myfile = genai.upload_file(samples / "poem.txt")
+        myfile = genai.upload_file(media / "poem.txt")
         file_name = myfile.name
         print(file_name)  # "files/*"
 
