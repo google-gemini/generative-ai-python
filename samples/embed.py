@@ -18,7 +18,6 @@ from absl.testing import absltest
 import google.generativeai as genai
 
 
-
 class UnitTests(absltest.TestCase):
     def test_embed_content(self):
         # [START embed_content]
