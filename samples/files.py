@@ -26,14 +26,12 @@ class UnitTests(absltest.TestCase):
         # [START files_create]
         myfile = genai.upload_file(media / "poem.txt")
         print(f"{myfile=}")
-        print()
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         result = model.generate_content(
             [myfile, "\n\n", "Can you add a few more lines to this poem?"]
         )
         print(f"{result.text=}")
-        print()
         # [END files_create]
 
     def test_files_create_video(self):
@@ -43,7 +41,6 @@ class UnitTests(absltest.TestCase):
         # Video clip from https://peach.blender.org/download/
         myfile = genai.upload_file(media / "Big_Buck_Bunny.mp4")
         print(f"{myfile=}")
-        print()
 
         while myfile.state.name == "PROCESSING":
             print("processing video...")
@@ -52,9 +49,7 @@ class UnitTests(absltest.TestCase):
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         result = model.generate_content([myfile, "Describe this video clip"])
-        print()
         print(f"{result.text=}")
-        print()
         # [END files_create_video]
 
     def test_files_list(self):
@@ -63,6 +58,16 @@ class UnitTests(absltest.TestCase):
         for f in genai.list_files():
             print("  ", f.name)
         # [END files_list]
+
+    def test_files_get(self):
+        # [START files_get]
+        myfile = genai.upload_file(media / "poem.txt")
+        file_name = myfile.name
+        print(file_name)  # "files/*"
+
+        myfile = genai.get_file(file_name)
+        print(myfile)
+        # [END files_get]
 
     def test_files_delete(self):
         # [START files_delete]
@@ -78,15 +83,6 @@ class UnitTests(absltest.TestCase):
             pass
         # [END files_delete]
 
-    def test_files_get(self):
-        # [START files_get]
-        myfile = genai.upload_file(media / "poem.txt")
-        file_name = myfile.name
-        print(file_name)  # "files/*"
-
-        myfile = genai.get_file(file_name)
-        print(myfile)
-        # [END files_get]
 
 
 if __name__ == "__main__":
