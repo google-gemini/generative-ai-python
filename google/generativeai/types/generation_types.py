@@ -449,7 +449,7 @@ class BaseGenerateContentResponse:
                     language = ""
                 else:
                     language = f" {language}"
-                texts.extend([f"```{language}", part.executable_code.code, "```"])
+                texts.extend([f"```{language}", part.executable_code.code.lstrip("\n"), "```"])
                 continue
             if "code_execution_result" in part:
                 outcome_result = part.code_execution_result.outcome.name.lower().replace(
