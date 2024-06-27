@@ -19,6 +19,7 @@ import pathlib
 
 media = pathlib.Path(__file__).parents[1] / "third_party"
 
+
 def add(a: float, b: float):
     """returns a + b."""
     return a + b
@@ -38,45 +39,50 @@ def divide(a: float, b: float):
     """returns a / b."""
     return a / b
 
+
 class UnitTests(absltest.TestCase):
     def test_tokens_text_only(self):
         # [START tokens_text_only]
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
         print(model.count_tokens("The quick brown fox jumps over the lazy dog."))
         # [END tokens_text_only]
 
     def test_tokens_chat(self):
         # [START tokens_chat]
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
-        chat = model.start_chat(history=[{'role':'user', 
-                                          'parts':'Hi, my name is Bob.'},  
-                                        {'role':'model', 
-                                         'parts':'Hi Bob!'}])
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
+        chat = model.start_chat(
+            history=[
+                {"role": "user", "parts": "Hi, my name is Bob."},
+                {"role": "model", "parts": "Hi Bob!"},
+            ]
+        )
         model.count_tokens(chat.history)
 
         from google.generativeai.types.content_types import to_contents
-        model.count_tokens(chat.history + to_contents('What is the meaning of life?'))
+
+        model.count_tokens(chat.history + to_contents("What is the meaning of life?"))
         # [END tokens_chat]
 
     def test_tokens_multimodal_image_inline(self):
         # [START tokens_multimodal_image_inline]
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
         import PIL
-        organ = PIL.Image.open(media / 'organ.jpg')
-        print(model.count_tokens(['Tell me about this instrument', organ]))
+
+        organ = PIL.Image.open(media / "organ.jpg")
+        print(model.count_tokens(["Tell me about this instrument", organ]))
         # [END tokens_multimodal_image_inline]
 
     def test_tokens_multimodal_image_file_api(self):
         # [START tokens_multimodal_image_file_api]
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
-        organ_upload = genai.upload_file(media / 'organ.jpg')
-        print(model.count_tokens(['Tell me about this instrument', organ_upload]))
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
+        organ_upload = genai.upload_file(media / "organ.jpg")
+        print(model.count_tokens(["Tell me about this instrument", organ_upload]))
         # [END tokens_multimodal_image_file_api]
 
     def test_tokens_video_audio_file_api(self):
         # [START tokens_video_audio_file_api]
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
-        audio_upload = genai.upload_file(media / 'sample.mp3')
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
+        audio_upload = genai.upload_file(media / "sample.mp3")
         print(model.count_tokens(audio_upload))
         # [END tokens_video_audio_file_api]
 
@@ -89,7 +95,7 @@ class UnitTests(absltest.TestCase):
             contents=[document],
         )
         print(genai.GenerativeModel().count_tokens(cache))
-        cache.delete() # Clear
+        cache.delete()  # Clear
         # [END tokens_cached_content]
 
     def test_tokens_cached_system_instruction(self):
@@ -100,10 +106,9 @@ class UnitTests(absltest.TestCase):
             model=model_name,
             system_instruction="You are an expert analyzing transcripts. Give a summary of this document.",
             contents=[document],
-
         )
         print(genai.GenerativeModel().count_tokens(cache))
-        cache.delete() # Clear
+        cache.delete()  # Clear
         # [END tokens_cached_system_instruction]
 
     def test_tokens_cached_tools(self):
@@ -114,8 +119,9 @@ class UnitTests(absltest.TestCase):
             tools=[add, subtract, multiply, divide],
         )
         print(genai.GenerativeModel().count_tokens(cache_functions))
-        cache_functions.delete() # Clear     
+        cache_functions.delete()  # Clear
         # [END tokens_cached_tools]
+
 
 if __name__ == "__main__":
     absltest.main()
