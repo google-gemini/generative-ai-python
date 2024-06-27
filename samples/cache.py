@@ -69,7 +69,7 @@ class UnitTests(absltest.TestCase):
             system_instruction="You are an expert analyzing transcripts.",
             contents=[document],
         )
-        print('My caches:')
+        print("My caches:")
         for c in genai.caching.CachedContent.list():
             print("    ", c.name)
         # [END cache_list]
