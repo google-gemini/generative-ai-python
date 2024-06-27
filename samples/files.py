@@ -38,10 +38,11 @@ class UnitTests(absltest.TestCase):
         # [START files_create_video]
         import time
 
-        # Video clip from https://peach.blender.org/download/
+        # Video clip (CC BY 3.0) from https://peach.blender.org/download/
         myfile = genai.upload_file(media / "Big_Buck_Bunny.mp4")
         print(f"{myfile=}")
 
+        # Videos need to be processed before you can use them.
         while myfile.state.name == "PROCESSING":
             print("processing video...")
             time.sleep(5)

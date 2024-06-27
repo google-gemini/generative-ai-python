@@ -33,6 +33,7 @@ class UnitTests(absltest.TestCase):
         )
         print(cache)
         # [END cache_create]
+        cache.delete()
 
     def test_cache_delete(self):
         # [START cache_delete]
@@ -57,6 +58,7 @@ class UnitTests(absltest.TestCase):
         )
         print(genai.caching.CachedContent.get(name=cache.name))
         # [END cache_get]
+        cache.delete()
 
     def test_cache_list(self):
         # [START cache_list]
@@ -68,9 +70,10 @@ class UnitTests(absltest.TestCase):
             contents=[document],
         )
         print('My caches:')
-        for cache in genai.caching.CachedContent.list():
-            print("    ", cache.name)
+        for c in genai.caching.CachedContent.list():
+            print("    ", c.name)
         # [END cache_list]
+        cache.delete()
 
     def test_cache_update(self):
         # [START cache_update]
@@ -83,12 +86,15 @@ class UnitTests(absltest.TestCase):
             system_instruction="You are an expert analyzing transcripts.",
             contents=[document],
         )
-        print(f"Before update:\n {cache}")
-        print(cache)
+
+        # You can update the ttl
         cache.update(ttl=datetime.timedelta(hours=2))
         print(f"After update:\n {cache}")
-        print(cache)
+
+        # Or you can update the expire_time
+        cache.update(expire_time=datetime.now() + datetime.timedelta(minutes=15))
         # [END cache_update]
+        cache.delete()
 
 
 if __name__ == "__main__":
