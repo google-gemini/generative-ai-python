@@ -95,8 +95,8 @@ class UnitTests(absltest.TestCase):
             contents=[document],
         )
         print(genai.GenerativeModel().count_tokens(cache))
-        cache.delete()  # Clear
         # [END tokens_cached_content]
+        cache.delete()  # Clear
 
     def test_tokens_cached_system_instruction(self):
         # [START tokens_cached_system_instruction]
@@ -108,8 +108,8 @@ class UnitTests(absltest.TestCase):
             contents=[document],
         )
         print(genai.GenerativeModel().count_tokens(cache))
-        cache.delete()  # Clear
         # [END tokens_cached_system_instruction]
+        cache.delete()  # Clear
 
     def test_tokens_cached_tools(self):
         # [START tokens_cached_tools]
@@ -119,8 +119,8 @@ class UnitTests(absltest.TestCase):
             tools=[add, subtract, multiply, divide],
         )
         print(genai.GenerativeModel().count_tokens(cache_functions))
-        cache_functions.delete()  # Clear
         # [END tokens_cached_tools]
+        cache_functions.delete()  # Clear
 
 
 if __name__ == "__main__":
