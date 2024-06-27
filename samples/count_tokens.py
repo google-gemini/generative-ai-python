@@ -19,8 +19,31 @@ import google.generativeai as genai
 class UnitTests(absltest.TestCase):
     def test_tokens_text_only(self):
         # [START tokens_text_only]
-        print()
         # [END tokens_text_only]
+
+    def test_tokens_chat(self):
+        # [START tokens_chat]
+        # [END tokens_chat]
+
+    def test_tokens_multimodal_image_inline(self):
+        # [START tokens_multimodal_image_inline]
+        # [END tokens_multimodal_image_inline]
+
+    def test_tokens_multimodal_image_file_api(self):
+        # [START tokens_multimodal_image_file_api]
+        # [END tokens_multimodal_image_file_api]
+
+    def test_tokens_video_audio_file_api(self):
+        # [START tokens_video_audio_file_api]
+        # [END tokens_video_audio_file_api]
+
+    def test_tokens_multimodal_image_inline(self):
+        # [START tokens_multimodal_image_inline]
+        # [END tokens_multimodal_image_inline]
+
+    def test_count_tokens_and_usage_metadata(self):
+        # [START count_tokens_and_usage_metadata]
+        # [END count_tokens_and_usage_metadata]
 
 if __name__ == "__main__":
     absltest.main()
