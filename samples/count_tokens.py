@@ -19,6 +19,25 @@ import pathlib
 
 media = pathlib.Path(__file__).parents[1] / "third_party"
 
+def add(a: float, b: float):
+    """returns a + b."""
+    return a + b
+
+
+def subtract(a: float, b: float):
+    """returns a - b."""
+    return a - b
+
+
+def multiply(a: float, b: float):
+    """returns a * b."""
+    return a * b
+
+
+def divide(a: float, b: float):
+    """returns a / b."""
+    return a / b
+
 class UnitTests(absltest.TestCase):
     def test_tokens_text_only(self):
         # [START tokens_text_only]
@@ -63,20 +82,39 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_cached_content(self):
         # [START tokens_cached_content]
+        document = genai.upload_file(path=media / "a11.txt")
+        model_name = "gemini-1.5-flash-001"
+        cache = genai.caching.CachedContent.create(
+            model=model_name,
+            contents=[document],
+        )
+        print(genai.GenerativeModel().count_tokens(cache))
+        cache.delete() # Clear
         # [END tokens_cached_content]
 
     def test_tokens_cached_system_instruction(self):
         # [START tokens_cached_system_instruction]
-        print(genai.GenerativeModel().count_tokens("The quick brown fox jumps over the lazy dog."))
-        print(genai.GenerativeModel(
-            system_instruction='Talk like a pirate!'
-            ).count_tokens(
-                "The quick brown fox jumps over the lazy dog."
-                ))
+        document = genai.upload_file(path=media / "a11.txt")
+        model_name = "gemini-1.5-flash-001"
+        cache = genai.caching.CachedContent.create(
+            model=model_name,
+            system_instruction="You are an expert analyzing transcripts. Give a summary of this document.",
+            contents=[document],
+
+        )
+        print(genai.GenerativeModel().count_tokens(cache))
+        cache.delete() # Clear
         # [END tokens_cached_system_instruction]
 
     def test_tokens_cached_tools(self):
         # [START tokens_cached_tools]
+        model_name = "gemini-1.5-flash-001"
+        cache_functions = genai.caching.CachedContent.create(
+            model=model_name,
+            tools=[add, subtract, multiply, divide],
+        )
+        print(genai.GenerativeModel().count_tokens(cache_functions))
+        cache_functions.delete() # Clear     
         # [END tokens_cached_tools]
 
 if __name__ == "__main__":
