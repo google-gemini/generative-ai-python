@@ -26,25 +26,23 @@ class UnitTests(absltest.TestCase):
         # [START files_create]
         myfile = genai.upload_file(media / "poem.txt")
         print(f"{myfile=}")
-        print()
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         result = model.generate_content(
             [myfile, "\n\n", "Can you add a few more lines to this poem?"]
         )
         print(f"{result.text=}")
-        print()
         # [END files_create]
 
     def test_files_create_video(self):
         # [START files_create_video]
         import time
 
-        # Video clip from https://peach.blender.org/download/
+        # Video clip (CC BY 3.0) from https://peach.blender.org/download/
         myfile = genai.upload_file(media / "Big_Buck_Bunny.mp4")
         print(f"{myfile=}")
-        print()
 
+        # Videos need to be processed before you can use them.
         while myfile.state.name == "PROCESSING":
             print("processing video...")
             time.sleep(5)
@@ -52,9 +50,7 @@ class UnitTests(absltest.TestCase):
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         result = model.generate_content([myfile, "Describe this video clip"])
-        print()
         print(f"{result.text=}")
-        print()
         # [END files_create_video]
 
     def test_files_list(self):

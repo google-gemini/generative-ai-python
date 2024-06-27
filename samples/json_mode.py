@@ -13,12 +13,13 @@
 from absl.testing import absltest
 
 import google.generativeai as genai
-import typing_extensions as typing
 
 
 class UnitTests(absltest.TestCase):
     def test_controlled_generation(self):
         # [START controlled_generation]
+        import typing_extensions as typing
+
         class Recipe(typing.TypedDict):
             recipe_name: str
 
@@ -30,7 +31,6 @@ class UnitTests(absltest.TestCase):
             ),
         )
         print(result)
-        print()
         # [END controlled_generation]
 
 
