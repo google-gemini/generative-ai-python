@@ -15,7 +15,6 @@
 from absl.testing import absltest
 
 import google.generativeai as genai
-from google.generativeai import caching
 
 import pathlib
 
@@ -26,53 +25,51 @@ class UnitTests(absltest.TestCase):
     def test_cache_create(self):
         # [START cache_create]
         document = genai.upload_file(path=media / "a11.txt")
-        model_name = "gemini-1.5-flash-latest"
-        cache = caching.CachedContent.create(
+        model_name = "gemini-1.5-flash-001"
+        cache = genai.caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
             contents=[document],
         )
         print(cache)
-        print()
         # [END cache_create]
 
     def test_cache_delete(self):
         # [START cache_delete]
         document = genai.upload_file(path=media / "a11.txt")
-        model_name = "gemini-1.5-flash-latest"
-        cache = caching.CachedContent.create(
+        model_name = "gemini-1.5-flash-001"
+        cache = genai.caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
             contents=[document],
         )
         cache.delete()
-        print()
         # [END cache_delete]
 
     def test_cache_get(self):
         # [START cache_get]
         document = genai.upload_file(path=media / "a11.txt")
-        model_name = "gemini-1.5-flash-latest"
-        cache = caching.CachedContent.create(
+        model_name = "gemini-1.5-flash-001"
+        cache = genai.caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
             contents=[document],
         )
-        print(cache.get(name=cache.name))
-        print()
+        print(genai.caching.CachedContent.get(name=cache.name))
         # [END cache_get]
 
     def test_cache_list(self):
         # [START cache_list]
         document = genai.upload_file(path=media / "a11.txt")
-        model_name = "gemini-1.5-flash-latest"
-        cache = caching.CachedContent.create(
+        model_name = "gemini-1.5-flash-001"
+        cache = genai.caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
             contents=[document],
         )
-        print(cache.list())
-        print()
+        print('My caches:')
+        for cache in genai.caching.CachedContent.list():
+            print("    ", cache.name)
         # [END cache_list]
 
     def test_cache_update(self):
@@ -80,8 +77,8 @@ class UnitTests(absltest.TestCase):
         import datetime
 
         document = genai.upload_file(path=media / "a11.txt")
-        model_name = "gemini-1.5-flash-latest"
-        cache = caching.CachedContent.create(
+        model_name = "gemini-1.5-flash-001"
+        cache = genai.caching.CachedContent.create(
             model=model_name,
             system_instruction="You are an expert analyzing transcripts.",
             contents=[document],
@@ -91,7 +88,6 @@ class UnitTests(absltest.TestCase):
         cache.update(ttl=datetime.timedelta(hours=2))
         print(f"After update:\n {cache}")
         print(cache)
-        print()
         # [END cache_update]
 
 

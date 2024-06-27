@@ -27,11 +27,11 @@ class UnitTests(absltest.TestCase):
         result = model.generate_content(
             "List a few popular cookie recipes.",
             generation_config=genai.GenerationConfig(
-                response_mime_type="application/json", response_schema=list([Recipe])
+                response_mime_type="application/json",
+                response_schema=list([Recipe])
             ),
         )
         print(result)
-        print()
         # [END controlled_generation]
 
 
