@@ -28,7 +28,7 @@ from google.generativeai.client import get_default_permission_async_client
 from google.generativeai.utils import flatten_update_paths
 from google.generativeai import string_utils
 
-__all__ = ['Permission', 'Permissions']
+__all__ = ["Permission", "Permissions"]
 
 GranteeType = protos.Permission.GranteeType
 Role = protos.Permission.Role
@@ -152,8 +152,7 @@ class Permission:
 
     def update(
         self,
-        updates: dict[str, Any]|None,
-        *,
+        updates: dict[str, Any],
         client: glm.PermissionServiceClient | None = None,
     ) -> Permission:
         """
@@ -396,7 +395,6 @@ class Permissions:
     def __iter__(self):
         return self.list()
 
-
     async def list_async(
         self,
         page_size: Optional[int] = None,
@@ -419,11 +417,7 @@ class Permissions:
         return await self.async_list()
 
     @classmethod
-    def get(
-        cls,
-        name: str,
-        client: glm.PermissionServiceClient | None = None,
-    ) -> Permission:
+    def get(cls, name: str) -> Permission:
         """
         Get information about a specific permission.
 
@@ -436,10 +430,7 @@ class Permissions:
         return Permission.get(name)
 
     @classmethod
-    async def get_async(
-        cls,
-        name: str
-    ):
+    async def get_async(cls, name: str) -> Permission:
         """
         Get information about a specific permission.
 

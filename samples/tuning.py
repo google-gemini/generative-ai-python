@@ -29,78 +29,33 @@ class UnitTests(absltest.TestCase):
 
         base_model = "models/gemini-1.0-pro-001"
         training_data = [
-            {
-                "text_input": "1",
-                "output": "2"
-            },
+            {"text_input": "1", "output": "2"},
             # ... more examples ...
             # [START_EXCLUDE]
-            {
-                "text_input": "3",
-                "output": "4"
-            },
-            {
-                "text_input": "-3",
-                "output": "-2"
-            },
-            {
-                "text_input": "twenty two",
-                "output": "twenty three"
-            },
-            {
-                "text_input": "two hundred",
-                "output": "two hundred one"
-            },
-            {
-                "text_input": "ninety nine",
-                "output": "one hundred"
-            },
-            {
-                "text_input": "8",
-                "output": "9"
-            },
-            {
-                "text_input": "-98",
-                "output": "-97"
-            },
-            {
-                "text_input": "1,000",
-                "output": "1,001"
-            },
-            {
-                "text_input": "10,100,000",
-                "output": "10,100,001"
-            },
-            {
-                "text_input": "thirteen",
-                "output": "fourteen"
-            },
-            {
-                "text_input": "eighty",
-                "output": "eighty one"
-            },
-            {
-                "text_input": "one",
-                "output": "two"
-            },
-            {
-                "text_input": "three",
-                "output": "four"
-            },
+            {"text_input": "3", "output": "4"},
+            {"text_input": "-3", "output": "-2"},
+            {"text_input": "twenty two", "output": "twenty three"},
+            {"text_input": "two hundred", "output": "two hundred one"},
+            {"text_input": "ninety nine", "output": "one hundred"},
+            {"text_input": "8", "output": "9"},
+            {"text_input": "-98", "output": "-97"},
+            {"text_input": "1,000", "output": "1,001"},
+            {"text_input": "10,100,000", "output": "10,100,001"},
+            {"text_input": "thirteen", "output": "fourteen"},
+            {"text_input": "eighty", "output": "eighty one"},
+            {"text_input": "one", "output": "two"},
+            {"text_input": "three", "output": "four"},
             # [END_EXCLUDE]
-            {
-                "text_input": "seven",
-                "output": "eight"
-            }
+            {"text_input": "seven", "output": "eight"},
         ]
         operation = genai.create_tuned_model(
             # You can use a tuned model here too. Set `source_model="tunedModels/..."`
-            display_name='increment',
+            display_name="increment",
             source_model=base_model,
             epoch_count=20,
             batch_size=4,
             learning_rate=0.001,
-            training_data=training_data
+            training_data=training_data,
         )
 
         for status in operation.wait_bar():
@@ -113,15 +68,15 @@ class UnitTests(absltest.TestCase):
         # sns.lineplot(data=snapshots, x='epoch', y='mean_loss')
 
         model = genai.GenerativeModel(model_name=result.name)
-        result = model.generate_content('III')
-        print(result.text) # IV
+        result = model.generate_content("III")
+        print(result.text)  # IV
         # [END tuned_models_create]
 
     def test_tuned_models_generate_content(self):
         # [START tuned_models_generate_content]
         model = genai.GenerativeModel(model_name="tunedModels/my-increment-model")
-        result = model.generate_content('III')
-        print(result.text) # "IV"
+        result = model.generate_content("III")
+        print(result.text)  # "IV"
         # [END tuned_models_create]
 
     def test_tuned_models_get(self):
@@ -140,24 +95,23 @@ class UnitTests(absltest.TestCase):
         import time
 
         base_model = "models/gemini-1.0-pro-001"
-        training_data = samples/"increment_tuning_data.json"
+        training_data = samples / "increment_tuning_data.json"
         try:
             operation = genai.create_tuned_model(
                 id="delete-this-model",
                 # You can use a tuned model here too. Set `source_model="tunedModels/..."`
-                display_name='increment',
+                display_name="increment",
                 source_model=base_model,
                 epoch_count=20,
                 batch_size=4,
                 learning_rate=0.001,
-                training_data=training_data
+                training_data=training_data,
             )
         except google.api_core.exceptions.AlreadyExists:
             pass
         else:
             for status in operation.wait_bar():
                 time.sleep(10)
-
 
         # [START tuned_models_delete]
         model_name = "tunedModels/delete-this-model"
@@ -183,10 +137,10 @@ class UnitTests(absltest.TestCase):
         )
 
         group_permission = model_info.permissions.create(
-            role='READER',
+            role="READER",
             # Use "user" for an individual email address.
             grantee_type="group",
-            email_address="genai-samples-test-group@googlegroups.com"
+            email_address="genai-samples-test-group@googlegroups.com",
         )
         # [END tuned_models_permissions_create]
         public_permission.delete()
@@ -207,9 +161,9 @@ class UnitTests(absltest.TestCase):
         )
 
         group_permission = model_info.permissions.create(
-            role='READER',
+            role="READER",
             grantee_type="group",
-            email_address="genai-samples-test-group@googlegroups.com"
+            email_address="genai-samples-test-group@googlegroups.com",
         )
         # [END_EXCLUDE]
 
@@ -235,7 +189,7 @@ class UnitTests(absltest.TestCase):
         )
         print(public)
         name = public.name
-        print(name) # tunedModels/{tunedModel}/permissions/{permission}
+        print(name)  # tunedModels/{tunedModel}/permissions/{permission}
 
         from_name = genai.types.Permissions.get(name)
         print(from_name)
@@ -252,12 +206,12 @@ class UnitTests(absltest.TestCase):
         # [END_EXCLUDE]
 
         test_group = model_info.permissions.create(
-            role='writer',
+            role="writer",
             grantee_type="group",
-            email_address="genai-samples-test-group@googlegroups.com"
+            email_address="genai-samples-test-group@googlegroups.com",
         )
 
-        test_group.update({'role': 'READER'})
+        test_group.update({"role": "READER"})
         # [END tuned_models_permissions_get]
 
     def test_tuned_models_permission_delete(self):
