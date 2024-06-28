@@ -17,24 +17,21 @@ from absl.testing import absltest
 import google.generativeai as genai
 
 
-def enable_lights():
-    """Turn on the lighting system."""
-    print("LIGHTBOT: Lights enabled.")
-
-
-def set_light_color(rgb_hex: str):
-    """Set the light color. Lights must be enabled for this to work."""
-    print(f"LIGHTBOT: Lights set to {rgb_hex}.")
-
-
-def stop_lights():
-    """Stop flashing lights."""
-    print("LIGHTBOT: Lights turned off.")
-
-
 class UnitTests(absltest.TestCase):
     def test_function_calling(self):
         # [START function_calling]
+        def enable_lights():
+            """Turn on the lighting system."""
+            print("LIGHTBOT: Lights enabled.")
+
+        def set_light_color(rgb_hex: str):
+            """Set the light color. Lights must be enabled for this to work."""
+            print(f"LIGHTBOT: Lights set to {rgb_hex}.")
+
+        def stop_lights():
+            """Stop flashing lights."""
+            print("LIGHTBOT: Lights turned off.")
+
         light_controls = [enable_lights, set_light_color, stop_lights]
         instruction = "You are a helpful lighting system bot. You can turn lights on and off, and you can set the color. Do not perform any other tasks."
         model = genai.GenerativeModel(
