@@ -40,9 +40,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_one_image_prompt(self):
         # [START text_gen_multimodal_one_image_prompt]
-        model = genai.GenerativeModel("gemini-1.5-flash")
         import PIL
-
+        model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
         response = model.generate_content(["Tell me about this instrument", organ])
         print(response.text)
@@ -50,9 +49,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_one_image_prompt_streaming(self):
         # [START text_gen_multimodal_one_image_prompt_streaming]
-        model = genai.GenerativeModel("gemini-1.5-flash")
         import PIL
-
+        model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
         response = model.generate_content(["Tell me about this instrument", organ], stream=True)
         for chunk in response:
@@ -62,9 +60,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_multi_image_prompt(self):
         # [START text_gen_multimodal_multi_image_prompt]
-        model = genai.GenerativeModel("gemini-1.5-flash")
         import PIL
-
+        model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
         cajun_instrument = PIL.Image.open(media / "Cajun_instruments.jpg")
         response = model.generate_content(
@@ -75,9 +72,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_multi_image_prompt_streaming(self):
         # [START text_gen_multimodal_multi_image_prompt_streaming]
-        model = genai.GenerativeModel("gemini-1.5-flash")
         import PIL
-
+        model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
         cajun_instrument = PIL.Image.open(media / "Cajun_instruments.jpg")
         response = model.generate_content(
@@ -94,7 +90,7 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("gemini-1.5-flash")
         sample_audio = genai.upload_file(media / "sample.mp3")
         response = model.generate_content(["Give me a summary of this audio file.", sample_audio])
-        print(response)
+        print(response.text)
         # [END text_gen_multimodal_audio]
 
     def test_text_gen_multimodal_video_prompt(self):
@@ -102,7 +98,7 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("gemini-1.5-flash")
         video = genai.upload_file(media / "Big_Buck_Bunny.mp4")
         response = model.generate_content(["Describe this video clip.", video])
-        print(response)
+        print(response.text)
         # [END text_gen_multimodal_video_prompt]
 
     def test_text_gen_multimodal_video_prompt_streaming(self):
