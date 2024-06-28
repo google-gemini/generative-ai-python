@@ -20,9 +20,6 @@ import pathlib
 media = pathlib.Path(__file__).parents[1] / "third_party"
 
 
-
-
-
 class UnitTests(absltest.TestCase):
     def test_tokens_text_only(self):
         # [START tokens_text_only]
@@ -84,8 +81,10 @@ class UnitTests(absltest.TestCase):
     def test_tokens_system_instruction(self):
         # [START tokens_system_instruction]
         document = genai.upload_file(path=media / "a11.txt")
-        model = genai.GenerativeModel("models/gemini-1.5-flash-001",
-                                      system_instruction="You are an expert analyzing transcripts. Give a summary of this document.")
+        model = genai.GenerativeModel(
+            "models/gemini-1.5-flash-001",
+            system_instruction="You are an expert analyzing transcripts. Give a summary of this document.",
+        )
         print(model.count_tokens(document))
         # [END tokens_system_instruction]
 
@@ -95,25 +94,27 @@ class UnitTests(absltest.TestCase):
             """returns a + b."""
             return a + b
 
-
         def subtract(a: float, b: float):
             """returns a - b."""
             return a - b
-
 
         def multiply(a: float, b: float):
             """returns a * b."""
             return a * b
 
-
         def divide(a: float, b: float):
             """returns a / b."""
             return a / b
-        
-        model = genai.GenerativeModel("models/gemini-1.5-flash-001",
-                                      tools=[add, subtract, multiply, divide])
-        
-        print(model.count_tokens("I have 57 cats, each owns 44 mittens, how many mittens is that in total?"))
+
+        model = genai.GenerativeModel(
+            "models/gemini-1.5-flash-001", tools=[add, subtract, multiply, divide]
+        )
+
+        print(
+            model.count_tokens(
+                "I have 57 cats, each owns 44 mittens, how many mittens is that in total?"
+            )
+        )
         # [END tokens_tools]
 
 
