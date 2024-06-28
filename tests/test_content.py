@@ -380,14 +380,12 @@ class UnitTests(parameterized.TestCase):
 
     def test_empty_function(self):
         def no_args():
-            print('hello')
+            print("hello")
 
         fd = content_types.to_function_library(no_args).to_proto()[0]
         fd = type(fd).to_dict(fd, including_default_value_fields=False)
         # parameters are not set.
-        self.assertEqual({'function_declarations': [{'name': 'no_args'}]}, fd)
-
-
+        self.assertEqual({"function_declarations": [{"name": "no_args"}]}, fd)
 
     @parameterized.named_parameters(
         ["string", "code_execution"],

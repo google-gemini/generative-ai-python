@@ -35,7 +35,8 @@ class UnitTests(absltest.TestCase):
         light_controls = [enable_lights, set_light_color, stop_lights]
         instruction = (
             "You are a helpful lighting system bot. You can turn lights on and off, "
-            "and you can set the color. Do not perform any other tasks.")
+            "and you can set the color. Do not perform any other tasks."
+        )
         model = genai.GenerativeModel(
             "models/gemini-1.5-pro", tools=light_controls, system_instruction=instruction
         )
