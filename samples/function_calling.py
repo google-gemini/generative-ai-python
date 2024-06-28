@@ -33,12 +33,14 @@ class UnitTests(absltest.TestCase):
             print("LIGHTBOT: Lights turned off.")
 
         light_controls = [enable_lights, set_light_color, stop_lights]
-        instruction = "You are a helpful lighting system bot. You can turn lights on and off, and you can set the color. Do not perform any other tasks."
+        instruction = (
+            "You are a helpful lighting system bot. You can turn lights on and off, "
+            "and you can set the color. Do not perform any other tasks.")
         model = genai.GenerativeModel(
             "models/gemini-1.5-pro", tools=light_controls, system_instruction=instruction
         )
-        response = model.generate_content(contents="Hello light-bot, what can you do?")
-        print(response.text)
+        response = model.generate_content(contents="Red Alert!")
+        print(response.candidates[0].content.parts)
         # [END function_calling]
 
 
