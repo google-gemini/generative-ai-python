@@ -19,6 +19,7 @@ import pathlib
 
 media = pathlib.Path(__file__).parents[1] / "third_party"
 
+
 class UnitTests(absltest.TestCase):
     def test_chat(self):
         # [START chat]
@@ -45,7 +46,7 @@ class UnitTests(absltest.TestCase):
         response = chat.send_message("How many paws are in my house?", stream=True)
         for chunk in response:
             print(chunk.text)
-            print("_"*80)
+            print("_" * 80)
         # [END chat_streaming]
 
     def test_chat_streaming_with_images(self):
@@ -53,13 +54,24 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat(
             history=[
-                {"role": "user", "parts": "Hello, I'm interested in learning about musical instruments. Can I show you one?"},
+                {
+                    "role": "user",
+                    "parts": "Hello, I'm interested in learning about musical instruments. Can I show you one?",
+                },
                 {"role": "model", "parts": "Absolutely! What would you like to know?"},
+                {"role": "user", "parts": "Can you name the instrument?"},
+                {"role": "model", "parts": "It's an organ. What else do you want to know?"},
             ]
         )
         organ = genai.upload_file(media / "organ.jpg")
-        response = chat.send_message(["What family of intruments does this instrument belong to?", organ], stream=True)
+        response = chat.send_message(
+            ["What family of intruments does this instrument belong to?", organ], stream=True
+        )
+        for chunk in response:
+            print(chunk.text)
+            print("_" * 80)
         # [END chat_streaming_with_images]
+
 
 if __name__ == "__main__":
     absltest.main()
