@@ -414,7 +414,7 @@ class Permissions:
             yield Permission(**permission)
 
     async def __aiter__(self):
-        return await self.list_async()
+        return self.list_async()
 
     @classmethod
     def get(cls, name: str) -> Permission:
