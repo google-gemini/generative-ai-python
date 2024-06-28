@@ -20,24 +20,29 @@ import google.generativeai as genai
 class UnitTests(absltest.TestCase):
     def test_function_calling(self):
         # [START function_calling]
-        def enable_lights():
-            """Turn on the lighting system."""
-            print("LIGHTBOT: Lights enabled.")
+        def add(a: float, b: float):
+            """returns a + b."""
+            return a + b
 
-        def set_light_color(rgb_hex: str):
-            """Set the light color. Lights must be enabled for this to work."""
-            print(f"LIGHTBOT: Lights set to {rgb_hex}.")
+        def subtract(a: float, b: float):
+            """returns a - b."""
+            return a - b
 
-        def stop_lights():
-            """Stop flashing lights."""
-            print("LIGHTBOT: Lights turned off.")
+        def multiply(a: float, b: float):
+            """returns a * b."""
+            return a * b
 
-        light_controls = [enable_lights, set_light_color, stop_lights]
-        instruction = "You are a helpful lighting system bot. You can turn lights on and off, and you can set the color. Do not perform any other tasks."
+        def divide(a: float, b: float):
+            """returns a / b."""
+            return a / b
+
         model = genai.GenerativeModel(
-            "models/gemini-1.5-pro", tools=light_controls, system_instruction=instruction
+            model_name="gemini-1.5-flash", tools=[add, subtract, multiply, divide]
         )
-        response = model.generate_content(contents="Hello light-bot, what can you do?")
+        chat = model.start_chat(enable_automatic_function_calling=True)
+        response = chat.send_message(
+            "I have 57 cats, each owns 44 mittens, how many mittens is that in total?"
+        )
         print(response.text)
         # [END function_calling]
 
