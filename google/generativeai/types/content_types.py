@@ -369,7 +369,9 @@ def _schema_for_function(
                 )
             )
         ]
-    schema = dict(name=f.__name__, description=f.__doc__, parameters=parameters)
+    schema = dict(name=f.__name__, description=f.__doc__)
+    if parameters["properties"]:
+        schema["parameters"] = parameters
 
     return schema
 

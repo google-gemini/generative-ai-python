@@ -41,6 +41,7 @@ class UnitTests(absltest.TestCase):
     def test_text_gen_multimodal_one_image_prompt(self):
         # [START text_gen_multimodal_one_image_prompt]
         import PIL
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
         response = model.generate_content(["Tell me about this instrument", organ])
@@ -50,6 +51,7 @@ class UnitTests(absltest.TestCase):
     def test_text_gen_multimodal_one_image_prompt_streaming(self):
         # [START text_gen_multimodal_one_image_prompt_streaming]
         import PIL
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
         response = model.generate_content(["Tell me about this instrument", organ], stream=True)
@@ -61,6 +63,7 @@ class UnitTests(absltest.TestCase):
     def test_text_gen_multimodal_multi_image_prompt(self):
         # [START text_gen_multimodal_multi_image_prompt]
         import PIL
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
         cajun_instrument = PIL.Image.open(media / "Cajun_instruments.jpg")
@@ -73,6 +76,7 @@ class UnitTests(absltest.TestCase):
     def test_text_gen_multimodal_multi_image_prompt_streaming(self):
         # [START text_gen_multimodal_multi_image_prompt_streaming]
         import PIL
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
         cajun_instrument = PIL.Image.open(media / "Cajun_instruments.jpg")
