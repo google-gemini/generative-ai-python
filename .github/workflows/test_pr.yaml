@@ -93,6 +93,6 @@ jobs:
       run: |
         python --version
         pip install -q .
-        pip install -q black
+        pip install black
         black . --check
 
