@@ -6,3 +6,5 @@
   * License CC-BY 3.0 (Attribution)
 * poem.txt:
   * This is the first paragraph from Shakespeare's "spring", public domain.
+* Cajun_instruments.jpg
+  * This image is from Wikimedia Commons, a public domain (https://commons.wikimedia.org/wiki/Category:Musical_instruments#/media/File:Cajun_instruments.jpg).
