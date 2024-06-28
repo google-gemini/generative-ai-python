@@ -20,24 +20,7 @@ import pathlib
 media = pathlib.Path(__file__).parents[1] / "third_party"
 
 
-def add(a: float, b: float):
-    """returns a + b."""
-    return a + b
 
-
-def subtract(a: float, b: float):
-    """returns a - b."""
-    return a - b
-
-
-def multiply(a: float, b: float):
-    """returns a * b."""
-    return a * b
-
-
-def divide(a: float, b: float):
-    """returns a / b."""
-    return a / b
 
 
 class UnitTests(absltest.TestCase):
@@ -98,29 +81,40 @@ class UnitTests(absltest.TestCase):
         # [END tokens_cached_content]
         cache.delete()  # Clear
 
-    def test_tokens_cached_system_instruction(self):
-        # [START tokens_cached_system_instruction]
+    def test_tokens_system_instruction(self):
+        # [START tokens_system_instruction]
         document = genai.upload_file(path=media / "a11.txt")
-        model_name = "gemini-1.5-flash-001"
-        cache = genai.caching.CachedContent.create(
-            model=model_name,
-            system_instruction="You are an expert analyzing transcripts. Give a summary of this document.",
-            contents=[document],
-        )
-        print(genai.GenerativeModel().count_tokens(cache))
-        # [END tokens_cached_system_instruction]
-        cache.delete()  # Clear
+        model = genai.GenerativeModel("models/gemini-1.5-flash-001",
+                                      system_instruction="You are an expert analyzing transcripts. Give a summary of this document.")
+        print(model.count_tokens(document))
+        # [END tokens_system_instruction]
 
-    def test_tokens_cached_tools(self):
-        # [START tokens_cached_tools]
-        model_name = "gemini-1.5-flash-001"
-        cache_functions = genai.caching.CachedContent.create(
-            model=model_name,
-            tools=[add, subtract, multiply, divide],
-        )
-        print(genai.GenerativeModel().count_tokens(cache_functions))
-        # [END tokens_cached_tools]
-        cache_functions.delete()  # Clear
+    def test_tokens_tools(self):
+        # [START tokens_tools]
+        def add(a: float, b: float):
+            """returns a + b."""
+            return a + b
+
+
+        def subtract(a: float, b: float):
+            """returns a - b."""
+            return a - b
+
+
+        def multiply(a: float, b: float):
+            """returns a * b."""
+            return a * b
+
+
+        def divide(a: float, b: float):
+            """returns a / b."""
+            return a / b
+        
+        model = genai.GenerativeModel("models/gemini-1.5-flash-001",
+                                      tools=[add, subtract, multiply, divide])
+        
+        print(model.count_tokens("I have 57 cats, each owns 44 mittens, how many mittens is that in total?"))
+        # [END tokens_tools]
 
 
 if __name__ == "__main__":
