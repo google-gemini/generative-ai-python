@@ -26,10 +26,12 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat(
             history=[
-                {"role": "user", "parts": "Hello, I have 2 dogs in my house."},
+                {"role": "user", "parts": "Hello"},
                 {"role": "model", "parts": "Great to meet you. What would you like to know?"},
             ]
         )
+        response = chat.send_message("I have 2 dogs in my house.")
+        print(response.text) 
         response = chat.send_message("How many paws are in my house?")
         print(response.text)
         # [END chat]
@@ -39,30 +41,32 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat(
             history=[
-                {"role": "user", "parts": "Hello, I have 2 dogs in my house."},
+                {"role": "user", "parts": "Hello"},
                 {"role": "model", "parts": "Great to meet you. What would you like to know?"},
             ]
         )
+        response = chat.send_message("I have 2 dogs in my house.", stream=True)
+        for chunk in response:
+            print(chunk.text)
+            print("_" * 80)
         response = chat.send_message("How many paws are in my house?", stream=True)
         for chunk in response:
             print(chunk.text)
             print("_" * 80)
+
+        print(chat.history)
         # [END chat_streaming]
 
     def test_chat_streaming_with_images(self):
         # [START chat_streaming_with_images]
         model = genai.GenerativeModel("gemini-1.5-flash")
-        chat = model.start_chat(
-            history=[
-                {
-                    "role": "user",
-                    "parts": "Hello, I'm interested in learning about musical instruments. Can I show you one?",
-                },
-                {"role": "model", "parts": "Absolutely! What would you like to know?"},
-                {"role": "user", "parts": "Can you name the instrument?"},
-                {"role": "model", "parts": "It's an organ. What else do you want to know?"},
-            ]
-        )
+        chat = model.start_chat()
+
+        response = chat.send_message("Hello, I'm interested in learning about musical instruments. Can I show you one?", stream=True)
+        for chunk in response:
+            print(chunk.text)  # Yes.
+            print("_" * 80)
+        
         organ = genai.upload_file(media / "organ.jpg")
         response = chat.send_message(
             ["What family of intruments does this instrument belong to?", organ], stream=True
