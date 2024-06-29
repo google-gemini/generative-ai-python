@@ -36,12 +36,12 @@ class UnitTests(absltest.TestCase):
 
     def test_files_create_audio(self):
         # [START files_create_audio]
-        myfile = genai.upload_file(media / 'sample.mp3')
+        myfile = genai.upload_file(media / "sample.mp3")
         print(f"{myfile=}")
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         result = model.generate_content([myfile, "Describe this audio clip"])
-        print(f"{result.text=}")     
+        print(f"{result.text=}")
         # [END files_create_audio]
 
     def test_files_create_video(self):
