@@ -14,8 +14,10 @@
 # limitations under the License.
 from __future__ import annotations
 
-
-from typing import  Iterable, Union, Mapping, Optional
+import dataclasses
+from collections.abc import Iterable
+import itertools
+from typing import Any, Iterable, Union, Mapping, Optional
 from typing_extensions import TypedDict
 
 import google.ai.generativelanguage as glm
