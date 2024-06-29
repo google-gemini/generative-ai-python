@@ -51,7 +51,7 @@ def _set_output_sink(text_result: str, sink: llmfn_outputs.LLMFnOutputsSink) -> 
                         llmfn_output_row.LLMFnOutputRow(
                             data={
                                 llmfn_outputs.ColumnNames.RESULT_NUM: 0,
-                                llmfn_outputs.ColumnNames.TEXT_RESULT: (text_result),
+                                llmfn_outputs.ColumnNames.TEXT_RESULT: text_result,
                             },
                             result_type=str,
                         )

@@ -38,7 +38,7 @@ class SheetsSanitizeURLTest(absltest.TestCase):
         """Domain must be docs.google.com."""
         with self.assertRaisesRegex(
             ValueError,
-            ('Domain for Sheets url must be "docs.google.com", got' ' "sheets.google.com"'),
+            'Domain for Sheets url must be "docs.google.com", got' ' "sheets.google.com"',
         ):
             sanitize_sheets_url("https://sheets.google.com")
 
