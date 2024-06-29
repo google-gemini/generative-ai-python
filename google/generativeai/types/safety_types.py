@@ -1,14 +1,29 @@
+# -*- coding: utf-8 -*-
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from __future__ import annotations
 
 from collections.abc import Mapping
 
+import enum
 import typing
 from typing import Dict, Iterable, List, Union
 
 from typing_extensions import TypedDict
 
 
-from google.ai import generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai import string_utils
 
 
@@ -24,105 +39,72 @@ __all__ = [
 ]
 
 # These are basic python enums, it's okay to expose them
-HarmCategory = glm.HarmCategory
-HarmProbability = glm.SafetyRating.HarmProbability
-HarmBlockThreshold = glm.SafetySetting.HarmBlockThreshold
-BlockedReason = glm.ContentFilter.BlockedReason
+HarmProbability = protos.SafetyRating.HarmProbability
+HarmBlockThreshold = protos.SafetySetting.HarmBlockThreshold
+BlockedReason = protos.ContentFilter.BlockedReason
+
+import proto
+
+
+class HarmCategory(proto.Enum):
+    """
+    Harm Categories supported by the gemini-family model
+    """
+
+    HARM_CATEGORY_UNSPECIFIED = protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED.value
+    HARM_CATEGORY_HARASSMENT = protos.HarmCategory.HARM_CATEGORY_HARASSMENT.value
+    HARM_CATEGORY_HATE_SPEECH = protos.HarmCategory.HARM_CATEGORY_HATE_SPEECH.value
+    HARM_CATEGORY_SEXUALLY_EXPLICIT = protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT.value
+    HARM_CATEGORY_DANGEROUS_CONTENT = protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT.value
+
 
 HarmCategoryOptions = Union[str, int, HarmCategory]
 
 # fmt: off
-_OLD_HARM_CATEGORIES: Dict[HarmCategoryOptions, HarmCategory] = {
-    HarmCategory.HARM_CATEGORY_UNSPECIFIED: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    0: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    "harm_category_unspecified": HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-    "unspecified": HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+_HARM_CATEGORIES: Dict[HarmCategoryOptions, protos.HarmCategory] = {
+    protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED: protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    HarmCategory.HARM_CATEGORY_UNSPECIFIED: protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    0: protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    "harm_category_unspecified": protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    "unspecified": protos.HarmCategory.HARM_CATEGORY_UNSPECIFIED,
+    
+    7: protos.HarmCategory.HARM_CATEGORY_HARASSMENT,
+    protos.HarmCategory.HARM_CATEGORY_HARASSMENT: protos.HarmCategory.HARM_CATEGORY_HARASSMENT,
+    HarmCategory.HARM_CATEGORY_HARASSMENT: protos.HarmCategory.HARM_CATEGORY_HARASSMENT,
+    "harm_category_harassment": protos.HarmCategory.HARM_CATEGORY_HARASSMENT,
+    "harassment": protos.HarmCategory.HARM_CATEGORY_HARASSMENT,
 
-    HarmCategory.HARM_CATEGORY_DEROGATORY: HarmCategory.HARM_CATEGORY_DEROGATORY,
-    1: HarmCategory.HARM_CATEGORY_DEROGATORY,
-    "harm_category_derogatory": HarmCategory.HARM_CATEGORY_DEROGATORY,
-    "derogatory": HarmCategory.HARM_CATEGORY_DEROGATORY,
+    8: protos.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    protos.HarmCategory.HARM_CATEGORY_HATE_SPEECH: protos.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    HarmCategory.HARM_CATEGORY_HATE_SPEECH: protos.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    'harm_category_hate_speech': protos.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    'hate_speech': protos.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    'hate': protos.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
 
-    HarmCategory.HARM_CATEGORY_TOXICITY: HarmCategory.HARM_CATEGORY_TOXICITY,
-    2: HarmCategory.HARM_CATEGORY_TOXICITY,
-    "harm_category_toxicity": HarmCategory.HARM_CATEGORY_TOXICITY,
-    "toxicity": HarmCategory.HARM_CATEGORY_TOXICITY,
-    "toxic": HarmCategory.HARM_CATEGORY_TOXICITY,
+    9: protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "harm_category_sexually_explicit": protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "harm_category_sexual": protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "sexually_explicit": protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "sexual": protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    "sex": protos.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
 
-    HarmCategory.HARM_CATEGORY_VIOLENCE: HarmCategory.HARM_CATEGORY_VIOLENCE,
-    3: HarmCategory.HARM_CATEGORY_VIOLENCE,
-    "harm_category_violence": HarmCategory.HARM_CATEGORY_VIOLENCE,
-    "violence": HarmCategory.HARM_CATEGORY_VIOLENCE,
-    "violent": HarmCategory.HARM_CATEGORY_VIOLENCE,
-
-    HarmCategory.HARM_CATEGORY_SEXUAL: HarmCategory.HARM_CATEGORY_SEXUAL,
-    4: HarmCategory.HARM_CATEGORY_SEXUAL,
-    "harm_category_sexual": HarmCategory.HARM_CATEGORY_SEXUAL,
-    "sexual": HarmCategory.HARM_CATEGORY_SEXUAL,
-    "sex": HarmCategory.HARM_CATEGORY_SEXUAL,
-
-    HarmCategory.HARM_CATEGORY_MEDICAL: HarmCategory.HARM_CATEGORY_MEDICAL,
-    5: HarmCategory.HARM_CATEGORY_MEDICAL,
-    "harm_category_medical": HarmCategory.HARM_CATEGORY_MEDICAL,
-    "medical": HarmCategory.HARM_CATEGORY_MEDICAL,
-    "med": HarmCategory.HARM_CATEGORY_MEDICAL,
-
-    HarmCategory.HARM_CATEGORY_DANGEROUS: HarmCategory.HARM_CATEGORY_DANGEROUS,
-    6: HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "harm_category_dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS,
-    "danger": HarmCategory.HARM_CATEGORY_DANGEROUS,
-}
-
-_NEW_HARM_CATEGORIES = {
-    7: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    "harm_category_harassment": HarmCategory.HARM_CATEGORY_HARASSMENT,
-    "harassment": HarmCategory.HARM_CATEGORY_HARASSMENT,
-
-    8: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    'harm_category_hate_speech': HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    'hate_speech': HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    'hate': HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-
-    9: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "harm_category_sexually_explicit": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "harm_category_sexual": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "sexually_explicit": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "sexual": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    "sex": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-
-    10: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    "harm_category_dangerous_content": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    "harm_category_dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    "dangerous": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    "danger": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    10: protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "harm_category_dangerous_content": protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "harm_category_dangerous": protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "dangerous": protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    "danger": protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
 }
 # fmt: on
 
 
-def to_old_harm_category(x: HarmCategoryOptions) -> HarmCategory:
+def to_harm_category(x: HarmCategoryOptions) -> protos.HarmCategory:
     if isinstance(x, str):
         x = x.lower()
-    return _OLD_HARM_CATEGORIES[x]
-
-
-def to_new_harm_category(x: HarmCategoryOptions) -> HarmCategory:
-    if isinstance(x, str):
-        x = x.lower()
-    return _NEW_HARM_CATEGORIES[x]
-
-
-def to_harm_category(x, harm_category_set):
-    if harm_category_set == "old":
-        return to_old_harm_category(x)
-    elif harm_category_set == "new":
-        return to_new_harm_category(x)
-    else:
-        raise ValueError("harm_category_set must be 'new' or 'old'")
+    return _HARM_CATEGORIES[x]
 
 
 HarmBlockThresholdOptions = Union[str, int, HarmBlockThreshold]
@@ -158,7 +140,7 @@ _BLOCK_THRESHOLDS: Dict[HarmBlockThresholdOptions, HarmBlockThreshold] = {
 # fmt: on
 
 
-def to_block_threshold(x: HarmBlockThresholdOptions) -> HarmCategory:
+def to_block_threshold(x: HarmBlockThresholdOptions) -> HarmBlockThreshold:
     if isinstance(x, str):
         x = x.lower()
     return _BLOCK_THRESHOLDS[x]
@@ -168,7 +150,7 @@ class ContentFilterDict(TypedDict):
     reason: BlockedReason
     message: str
 
-    __doc__ = string_utils.strip_oneof(glm.ContentFilter.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.ContentFilter.__doc__)
 
 
 def convert_filters_to_enums(
@@ -184,15 +166,15 @@ def convert_filters_to_enums(
 
 
 class SafetyRatingDict(TypedDict):
-    category: HarmCategory
+    category: protos.HarmCategory
     probability: HarmProbability
 
-    __doc__ = string_utils.strip_oneof(glm.SafetyRating.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.SafetyRating.__doc__)
 
 
 def convert_rating_to_enum(rating: dict) -> SafetyRatingDict:
     return {
-        "category": HarmCategory(rating["category"]),
+        "category": protos.HarmCategory(rating["category"]),
         "probability": HarmProbability(rating["probability"]),
     }
 
@@ -205,10 +187,10 @@ def convert_ratings_to_enum(ratings: Iterable[dict]) -> List[SafetyRatingDict]:
 
 
 class SafetySettingDict(TypedDict):
-    category: HarmCategory
+    category: protos.HarmCategory
     threshold: HarmBlockThreshold
 
-    __doc__ = string_utils.strip_oneof(glm.SafetySetting.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.SafetySetting.__doc__)
 
 
 class LooseSafetySettingDict(TypedDict):
@@ -219,34 +201,56 @@ class LooseSafetySettingDict(TypedDict):
 EasySafetySetting = Mapping[HarmCategoryOptions, HarmBlockThresholdOptions]
 EasySafetySettingDict = dict[HarmCategoryOptions, HarmBlockThresholdOptions]
 
-SafetySettingOptions = Union[EasySafetySetting, Iterable[LooseSafetySettingDict], None]
+SafetySettingOptions = Union[
+    HarmBlockThresholdOptions, EasySafetySetting, Iterable[LooseSafetySettingDict], None
+]
 
 
-def to_easy_safety_dict(settings: SafetySettingOptions, harm_category_set) -> EasySafetySettingDict:
+def _expand_block_threshold(block_threshold: HarmBlockThresholdOptions):
+    block_threshold = to_block_threshold(block_threshold)
+    set(_HARM_CATEGORIES.values())
+    return {category: block_threshold for category in set(_HARM_CATEGORIES.values())}
+
+
+def to_easy_safety_dict(settings: SafetySettingOptions) -> EasySafetySettingDict:
     if settings is None:
         return {}
-    elif isinstance(settings, Mapping):
-        return {
-            to_harm_category(key, harm_category_set): to_block_threshold(value)
-            for key, value in settings.items()
-        }
+
+    if isinstance(settings, (int, str, HarmBlockThreshold)):
+        settings = _expand_block_threshold(settings)
+
+    if isinstance(settings, Mapping):
+        return {to_harm_category(key): to_block_threshold(value) for key, value in settings.items()}
+
     else:  # Iterable
-        return {
-            to_harm_category(d["category"], harm_category_set): to_block_threshold(d["threshold"])
-            for d in settings
-        }
+        result = {}
+        for setting in settings:
+            if isinstance(setting, protos.SafetySetting):
+                result[to_harm_category(setting.category)] = to_block_threshold(setting.threshold)
+            elif isinstance(setting, dict):
+                result[to_harm_category(setting["category"])] = to_block_threshold(
+                    setting["threshold"]
+                )
+            else:
+                raise ValueError(
+                    f"Could not understand safety setting:\n  {type(setting)=}\n  {setting=}"
+                )
+        return result
 
 
 def normalize_safety_settings(
     settings: SafetySettingOptions,
-    harm_category_set,
 ) -> list[SafetySettingDict] | None:
     if settings is None:
         return None
+
+    if isinstance(settings, (int, str, HarmBlockThreshold)):
+        settings = _expand_block_threshold(settings)
+
     if isinstance(settings, Mapping):
         return [
             {
-                "category": to_harm_category(key, harm_category_set),
+                "category": to_harm_category(key),
                 "threshold": to_block_threshold(value),
             }
             for key, value in settings.items()
@@ -254,7 +258,7 @@ def normalize_safety_settings(
     else:
         return [
             {
-                "category": to_harm_category(d["category"], harm_category_set),
+                "category": to_harm_category(d["category"]),
                 "threshold": to_block_threshold(d["threshold"]),
             }
             for d in settings
@@ -263,7 +267,7 @@ def normalize_safety_settings(
 
 def convert_setting_to_enum(setting: dict) -> SafetySettingDict:
     return {
-        "category": HarmCategory(setting["category"]),
+        "category": protos.HarmCategory(setting["category"]),
         "threshold": HarmBlockThreshold(setting["threshold"]),
     }
 
@@ -272,7 +276,7 @@ class SafetyFeedbackDict(TypedDict):
     rating: SafetyRatingDict
     setting: SafetySettingDict
 
-    __doc__ = string_utils.strip_oneof(glm.SafetyFeedback.__doc__)
+    __doc__ = string_utils.strip_oneof(protos.SafetyFeedback.__doc__)
 
 
 def convert_safety_feedback_to_enums(

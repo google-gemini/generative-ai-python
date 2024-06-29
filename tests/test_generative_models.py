@@ -1,17 +1,18 @@
 import collections
 from collections.abc import Iterable
 import copy
+import datetime
 import pathlib
-from typing import Any
 import textwrap
-import unittest.mock
 from absl.testing import absltest
 from absl.testing import parameterized
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai import client as client_lib
 from google.generativeai import generative_models
+from google.generativeai import caching
 from google.generativeai.types import content_types
 from google.generativeai.types import generation_types
+from google.generativeai.types import helper_types
 
 import PIL.Image
 
@@ -21,61 +22,96 @@ TEST_IMAGE_URL = "https://storage.googleapis.com/generativeai-downloads/data/tes
 TEST_IMAGE_DATA = TEST_IMAGE_PATH.read_bytes()
 
 
-def simple_part(text: str) -> glm.Content:
-    return glm.Content({"parts": [{"text": text}]})
+def simple_part(text: str) -> protos.Content:
+    return protos.Content({"parts": [{"text": text}]})
 
 
-def iter_part(texts: Iterable[str]) -> glm.Content:
-    return glm.Content({"parts": [{"text": t} for t in texts]})
+def noop(x: int):
+    return x
 
 
-def simple_response(text: str) -> glm.GenerateContentResponse:
-    return glm.GenerateContentResponse({"candidates": [{"content": simple_part(text)}]})
+def iter_part(texts: Iterable[str]) -> protos.Content:
+    return protos.Content({"parts": [{"text": t} for t in texts]})
+
+
+def simple_response(text: str) -> protos.GenerateContentResponse:
+    return protos.GenerateContentResponse({"candidates": [{"content": simple_part(text)}]})
+
+
+class MockGenerativeServiceClient:
+    def __init__(self, test):
+        self.test = test
+        self.observed_requests = []
+        self.observed_kwargs = []
+        self.responses = collections.defaultdict(list)
+
+    def generate_content(
+        self,
+        request: protos.GenerateContentRequest,
+        **kwargs,
+    ) -> protos.GenerateContentResponse:
+        self.test.assertIsInstance(request, protos.GenerateContentRequest)
+        self.observed_requests.append(request)
+        self.observed_kwargs.append(kwargs)
+        response = self.responses["generate_content"].pop(0)
+        return response
+
+    def stream_generate_content(
+        self,
+        request: protos.GetModelRequest,
+        **kwargs,
+    ) -> Iterable[protos.GenerateContentResponse]:
+        self.observed_requests.append(request)
+        self.observed_kwargs.append(kwargs)
+        response = self.responses["stream_generate_content"].pop(0)
+        return response
+
+    def count_tokens(
+        self,
+        request: protos.CountTokensRequest,
+        **kwargs,
+    ) -> Iterable[protos.GenerateContentResponse]:
+        self.observed_requests.append(request)
+        self.observed_kwargs.append(kwargs)
+        response = self.responses["count_tokens"].pop(0)
+        return response
+
+    def get_cached_content(
+        self,
+        request: protos.GetCachedContentRequest,
+        **kwargs,
+    ) -> protos.CachedContent:
+        self.observed_requests.append(request)
+        return protos.CachedContent(
+            name="cachedContents/test-cached-content",
+            model="models/gemini-1.5-pro",
+            display_name="Cached content for test",
+            usage_metadata={"total_token_count": 1},
+            create_time="2000-01-01T01:01:01.123456Z",
+            update_time="2000-01-01T01:01:01.123456Z",
+            expire_time="2000-01-01T01:01:01.123456Z",
+        )
 
 
 class CUJTests(parameterized.TestCase):
     """Tests are in order with the design doc."""
 
+    @property
+    def observed_requests(self):
+        return self.client.observed_requests
+
+    @property
+    def observed_kwargs(self):
+        return self.client.observed_kwargs
+
+    @property
+    def responses(self):
+        return self.client.responses
+
     def setUp(self):
-        self.client = unittest.mock.MagicMock()
-
+        self.client = MockGenerativeServiceClient(self)
         client_lib._client_manager.clients["generative"] = self.client
-
-        def add_client_method(f):
-            name = f.__name__
-            setattr(self.client, name, f)
-            return f
-
-        self.observed_requests = []
-        self.responses = collections.defaultdict(list)
-
-        @add_client_method
-        def generate_content(
-            request: glm.GenerateContentRequest,
-            **kwargs,
-        ) -> glm.GenerateContentResponse:
-            self.assertIsInstance(request, glm.GenerateContentRequest)
-            self.observed_requests.append(request)
-            response = self.responses["generate_content"].pop(0)
-            return response
-
-        @add_client_method
-        def stream_generate_content(
-            request: glm.GetModelRequest,
-            **kwargs,
-        ) -> Iterable[glm.GenerateContentResponse]:
-            self.observed_requests.append(request)
-            response = self.responses["stream_generate_content"].pop(0)
-            return response
-
-        @add_client_method
-        def count_tokens(
-            request: glm.CountTokensRequest,
-            **kwargs,
-        ) -> Iterable[glm.GenerateContentResponse]:
-            self.observed_requests.append(request)
-            response = self.responses["count_tokens"].pop(0)
-            return response
+        client_lib._client_manager.clients["cache"] = self.client
 
     def test_hello(self):
         # Generate text from text prompt
@@ -129,9 +165,9 @@ class CUJTests(parameterized.TestCase):
             generation_types.GenerationConfig(temperature=0.5),
         ],
         [
-            "glm",
-            glm.GenerationConfig(temperature=0.0),
-            glm.GenerationConfig(temperature=0.5),
+            "protos",
+            protos.GenerationConfig(temperature=0.0),
+            protos.GenerationConfig(temperature=0.5),
         ],
     )
     def test_generation_config_overwrite(self, config1, config2):
@@ -151,12 +187,13 @@ class CUJTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["dict", {"danger": "low"}, {"danger": "high"}],
+        ["quick", "low", "high"],
         [
             "list-dict",
             [
                 dict(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                    category=protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=protos.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
                 ),
             ],
             [
@@ -166,22 +203,22 @@ class CUJTests(parameterized.TestCase):
         [
             "object",
             [
-                glm.SafetySetting(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                protos.SafetySetting(
+                    category=protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=protos.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
                 ),
             ],
             [
-                glm.SafetySetting(
-                    category=glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-                    threshold=glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                protos.SafetySetting(
+                    category=protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    threshold=protos.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
                 ),
             ],
         ],
     )
     def test_safety_overwrite(self, safe1, safe2):
         # Safety
-        model = generative_models.GenerativeModel("gemini-pro", safety_settings={"danger": "low"})
+        model = generative_models.GenerativeModel("gemini-pro", safety_settings=safe1)
 
         self.responses["generate_content"] = [
             simple_response(" world!"),
@@ -189,23 +226,26 @@ class CUJTests(parameterized.TestCase):
         ]
 
         _ = model.generate_content("hello")
+
+        danger = [
+            s
+            for s in self.observed_requests[-1].safety_settings
+            if s.category == protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+        ]
         self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
-            glm.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+            danger[0].threshold,
+            protos.SafetySetting.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
         )
 
-        _ = model.generate_content("hello", safety_settings={"danger": "high"})
+        _ = model.generate_content("hello", safety_settings=safe2)
+        danger = [
+            s
+            for s in self.observed_requests[-1].safety_settings
+            if s.category == protos.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT
+        ]
         self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        )
-        self.assertEqual(
-            self.observed_requests[-1].safety_settings[0].threshold,
-            glm.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
+            danger[0].threshold,
+            protos.SafetySetting.HarmBlockThreshold.BLOCK_ONLY_HIGH,
         )
 
     def test_stream_basic(self):
@@ -239,7 +279,7 @@ class CUJTests(parameterized.TestCase):
 
     def test_stream_prompt_feedback_blocked(self):
         chunks = [
-            glm.GenerateContentResponse(
+            protos.GenerateContentResponse(
                 {
                     "prompt_feedback": {"block_reason": "SAFETY"},
                 }
@@ -252,7 +292,7 @@ class CUJTests(parameterized.TestCase):
 
         self.assertEqual(
             response.prompt_feedback.block_reason,
-            glm.GenerateContentResponse.PromptFeedback.BlockReason.SAFETY,
+            protos.GenerateContentResponse.PromptFeedback.BlockReason.SAFETY,
         )
 
         with self.assertRaises(generation_types.BlockedPromptException):
@@ -261,20 +301,20 @@ class CUJTests(parameterized.TestCase):
 
     def test_stream_prompt_feedback_not_blocked(self):
         chunks = [
-            glm.GenerateContentResponse(
+            protos.GenerateContentResponse(
                 {
                     "prompt_feedback": {
                         "safety_ratings": [
                             {
-                                "category": glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
-                                "probability": glm.SafetyRating.HarmProbability.NEGLIGIBLE,
+                                "category": protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
+                                "probability": protos.SafetyRating.HarmProbability.NEGLIGIBLE,
                             }
                         ]
                     },
                     "candidates": [{"content": {"parts": [{"text": "first"}]}}],
                 }
             ),
-            glm.GenerateContentResponse(
+            protos.GenerateContentResponse(
                 {
                     "candidates": [{"content": {"parts": [{"text": " second"}]}}],
                 }
@@ -287,11 +327,65 @@ class CUJTests(parameterized.TestCase):
 
         self.assertEqual(
             response.prompt_feedback.safety_ratings[0].category,
-            glm.HarmCategory.HARM_CATEGORY_DANGEROUS,
+            protos.HarmCategory.HARM_CATEGORY_DANGEROUS,
         )
 
         text = "".join(chunk.text for chunk in response)
         self.assertEqual(text, "first second")
+
+    @parameterized.named_parameters(
+        [
+            dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
+            dict(
+                testcase_name="test_cached_content_as_CachedContent_object",
+                cached_content=caching.CachedContent._from_obj(
+                    dict(
+                        name="cachedContents/test-cached-content",
+                        model="models/gemini-1.5-pro",
+                        display_name="Cached content for test",
+                        usage_metadata={"total_token_count": 1},
+                        create_time=datetime.datetime.now(),
+                        update_time=datetime.datetime.now(),
+                        expire_time=datetime.datetime.now(),
+                    )
+                ),
+            ),
+        ],
+    )
+    def test_model_with_cached_content_as_context(self, cached_content):
+        model = generative_models.GenerativeModel.from_cached_content(cached_content=cached_content)
+        cc_name = model.cached_content  # pytype: disable=attribute-error
+        model_name = model.model_name
+        self.assertEqual(cc_name, "cachedContents/test-cached-content")
+        self.assertEqual(model_name, "models/gemini-1.5-pro")
+        self.assertEqual(
+            model.cached_content,  # pytype: disable=attribute-error
+            "cachedContents/test-cached-content",
+        )
+
+    def test_content_generation_with_model_having_context(self):
+        self.responses["generate_content"] = [simple_response("world!")]
+        model = generative_models.GenerativeModel.from_cached_content(
+            cached_content="test-cached-content"
+        )
+        response = model.generate_content("Hello")
+
+        self.assertEqual(response.text, "world!")
+        self.assertEqual(
+            model.cached_content,  # pytype: disable=attribute-error
+            "cachedContents/test-cached-content",
+        )
+
+    def test_fail_content_generation_with_model_having_context(self):
+        model = generative_models.GenerativeModel.from_cached_content(
+            cached_content="test-cached-content"
+        )
+
+        def add(a: int, b: int) -> int:
+            return a + b
+
+        with self.assertRaises(ValueError):
+            model.generate_content("Hello", tools=[add])
 
     def test_chat(self):
         # Multi turn chat
@@ -344,7 +438,7 @@ class CUJTests(parameterized.TestCase):
             iter([simple_response("x"), simple_response("y"), simple_response("z")]),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         response = chat.send_message("letters?", stream=True)
@@ -367,7 +461,7 @@ class CUJTests(parameterized.TestCase):
             iter([simple_response("x"), simple_response("y"), simple_response("z")]),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
         response = chat.send_message("letters?", stream=True)
 
@@ -391,7 +485,7 @@ class CUJTests(parameterized.TestCase):
             simple_response("third"),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         response = chat.send_message("hello")
@@ -417,7 +511,7 @@ class CUJTests(parameterized.TestCase):
             simple_response("third"),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
         chat.send_message("hello1")
         chat.send_message("hello2")
@@ -439,11 +533,11 @@ class CUJTests(parameterized.TestCase):
             simple_response("third"),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat1 = model.start_chat()
         chat1.send_message("hello1")
 
-        chat2 = copy.deepcopy(chat1)
+        chat2 = copy.copy(chat1)
         chat2.send_message("hello2")
 
         chat1.send_message("hello3")
@@ -484,7 +578,7 @@ class CUJTests(parameterized.TestCase):
             no_throw(),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         # Send a message, the response is okay..
@@ -520,14 +614,14 @@ class CUJTests(parameterized.TestCase):
 
     def test_chat_prompt_blocked(self):
         self.responses["generate_content"] = [
-            glm.GenerateContentResponse(
+            protos.GenerateContentResponse(
                 {
                     "prompt_feedback": {"block_reason": "SAFETY"},
                 }
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         with self.assertRaises(generation_types.BlockedPromptException):
@@ -538,14 +632,14 @@ class CUJTests(parameterized.TestCase):
     def test_chat_candidate_blocked(self):
         # I feel like chat needs a .last so you can look at the partial results.
         self.responses["generate_content"] = [
-            glm.GenerateContentResponse(
+            protos.GenerateContentResponse(
                 {
                     "candidates": [{"finish_reason": "SAFETY"}],
                 }
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         with self.assertRaises(generation_types.StopCandidateException):
@@ -558,7 +652,7 @@ class CUJTests(parameterized.TestCase):
                     simple_response("a"),
                     simple_response("b"),
                     simple_response("c"),
-                    glm.GenerateContentResponse(
+                    protos.GenerateContentResponse(
                         {
                             "candidates": [{"finish_reason": "SAFETY"}],
                         }
@@ -567,7 +661,7 @@ class CUJTests(parameterized.TestCase):
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         response = chat.send_message("hello", stream=True)
@@ -591,7 +685,7 @@ class CUJTests(parameterized.TestCase):
                 dict(name="datetime", description="Returns the current UTC date and time.")
             ]
         )
-        model = generative_models.GenerativeModel("gemini-pro-vision", tools=tools)
+        model = generative_models.GenerativeModel("gemini-1.5-flash", tools=tools)
 
         self.responses["generate_content"] = [
             simple_response("a"),
@@ -645,9 +739,9 @@ class CUJTests(parameterized.TestCase):
             },
         ),
         dict(
-            testcase_name="test_glm_FunctionCallingConfig",
+            testcase_name="test_protos.FunctionCallingConfig",
             tool_config={
-                "function_calling_config": glm.FunctionCallingConfig(
+                "function_calling_config": protos.FunctionCallingConfig(
                     mode=content_types.FunctionCallingMode.AUTO
                 )
             },
@@ -674,9 +768,9 @@ class CUJTests(parameterized.TestCase):
             },
         ),
         dict(
-            testcase_name="test_glm_ToolConfig",
-            tool_config=glm.ToolConfig(
-                function_calling_config=glm.FunctionCallingConfig(
+            testcase_name="test_protos.ToolConfig",
+            tool_config=protos.ToolConfig(
+                function_calling_config=protos.FunctionCallingConfig(
                     mode=content_types.FunctionCallingMode.NONE
                 )
             ),
@@ -711,9 +805,9 @@ class CUJTests(parameterized.TestCase):
         [
             "part_dict",
             {"parts": [{"text": "talk like a pirate"}]},
-            simple_part("talk like a pirate"),
+            protos.Content(parts=[{"text": "talk like a pirate"}]),
         ],
-        ["part_list", ["talk like:", "a pirate"], iter_part(["talk like:", "a pirate"])],
+        ["part_list", ["talk like", "a pirate"], iter_part(["talk like", "a pirate"])],
     )
     def test_system_instruction(self, instruction, expected_instr):
         self.responses["generate_content"] = [simple_response("echo echo")]
@@ -725,69 +819,37 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(req.system_instruction, expected_instr)
 
     @parameterized.named_parameters(
-        ["basic", "Hello"],
-        ["list", ["Hello"]],
+        ["basic", {"contents": "Hello"}],
+        ["list", {"contents": ["Hello"]}],
         [
             "list2",
-            [{"text": "Hello"}, {"inline_data": {"data": b"PNG!", "mime_type": "image/png"}}],
+            {
+                "contents": [
+                    {"text": "Hello"},
+                    {"inline_data": {"data": b"PNG!", "mime_type": "image/png"}},
+                ]
+            },
         ],
-        ["contents", [{"role": "user", "parts": ["hello"]}]],
+        [
+            "contents",
+            {"contents": [{"role": "user", "parts": ["hello"]}]},
+        ],
+        ["empty", {}],
+        [
+            "system_instruction",
+            {"system_instruction": ["You are a cat"]},
+        ],
+        ["tools", {"tools": [noop]}],
     )
-    def test_count_tokens_smoke(self, contents):
-        self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
-        model = generative_models.GenerativeModel("gemini-pro-vision")
-        response = model.count_tokens(contents)
-        self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
-
-    @parameterized.named_parameters(
-        [
-            "GenerateContentResponse",
-            generation_types.GenerateContentResponse,
-            generation_types.AsyncGenerateContentResponse,
-        ],
-        [
-            "GenerativeModel.generate_response",
-            generative_models.GenerativeModel.generate_content,
-            generative_models.GenerativeModel.generate_content_async,
-        ],
-        [
-            "GenerativeModel.count_tokens",
-            generative_models.GenerativeModel.count_tokens,
-            generative_models.GenerativeModel.count_tokens_async,
-        ],
-        [
-            "ChatSession.send_message",
-            generative_models.ChatSession.send_message,
-            generative_models.ChatSession.send_message_async,
-        ],
-        [
-            "ChatSession._handle_afc",
-            generative_models.ChatSession._handle_afc,
-            generative_models.ChatSession._handle_afc_async,
-        ],
-    )
-    def test_async_code_match(self, obj, aobj):
-        import inspect
-        import re
-
-        source = inspect.getsource(obj)
-        asource = inspect.getsource(aobj)
-
-        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
-        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
-
-        asource = (
-            asource.replace("anext", "next")
-            .replace("aiter", "iter")
-            .replace("_async", "")
-            .replace("async ", "")
-            .replace("await ", "")
-            .replace("Async", "")
-            .replace("ASYNC_", "")
+    def test_count_tokens_smoke(self, kwargs):
+        si = kwargs.pop("system_instruction", None)
+        self.responses["count_tokens"] = [protos.CountTokensResponse(total_tokens=7)]
+        model = generative_models.GenerativeModel("gemini-1.5-flash", system_instruction=si)
+        response = model.count_tokens(**kwargs)
+        self.assertEqual(
+            type(response).to_dict(response, including_default_value_fields=False),
+            {"total_tokens": 7},
         )
-
-        asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource)
 
     def test_repr_for_unary_non_streamed_response(self):
         model = generative_models.GenerativeModel(model_name="gemini-pro")
@@ -801,7 +863,7 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=True,
                 iterator=None,
-                result=glm.GenerateContentResponse({
+                result=protos.GenerateContentResponse({
                   "candidates": [
                     {
                       "content": {
@@ -809,13 +871,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "world!"
                           }
-                        ],
-                        "role": ""
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                        ]
+                      }
                     }
                   ]
                 }),
@@ -839,7 +896,7 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=False,
                 iterator=<generator>,
-                result=glm.GenerateContentResponse({
+                result=protos.GenerateContentResponse({
                   "candidates": [
                     {
                       "content": {
@@ -847,13 +904,8 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first"
                           }
-                        ],
-                        "role": ""
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                        ]
+                      }
                     }
                   ]
                 }),
@@ -869,7 +921,7 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=False,
                 iterator=<generator>,
-                result=glm.GenerateContentResponse({
+                result=protos.GenerateContentResponse({
                   "candidates": [
                     {
                       "content": {
@@ -877,28 +929,14 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             )"""
         )
@@ -912,7 +950,7 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=False,
                 iterator=<generator>,
-                result=glm.GenerateContentResponse({
+                result=protos.GenerateContentResponse({
                   "candidates": [
                     {
                       "content": {
@@ -920,28 +958,14 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "first second third"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             )"""
         )
@@ -950,7 +974,7 @@ class CUJTests(parameterized.TestCase):
     def test_repr_error_info_for_stream_prompt_feedback_blocked(self):
         # response._error => BlockedPromptException
         chunks = [
-            glm.GenerateContentResponse(
+            protos.GenerateContentResponse(
                 {
                     "prompt_feedback": {"block_reason": "SAFETY"},
                 }
@@ -968,12 +992,10 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=False,
                 iterator=<generator>,
-                result=glm.GenerateContentResponse({
+                result=protos.GenerateContentResponse({
                   "prompt_feedback": {
-                    "block_reason": 1,
-                    "safety_ratings": []
-                  },
-                  "candidates": []
+                    "block_reason": "SAFETY"
+                  }
                 }),
             ),
             error=<BlockedPromptException> prompt_feedback {
@@ -1000,7 +1022,7 @@ class CUJTests(parameterized.TestCase):
             no_throw(),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         # Send a message, the response is okay..
@@ -1020,7 +1042,7 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=True,
                 iterator=None,
-                result=glm.GenerateContentResponse({
+                result=protos.GenerateContentResponse({
                   "candidates": [
                     {
                       "content": {
@@ -1028,28 +1050,14 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "123"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "finish_reason": 0,
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             ),
             error=<ValueError> """
@@ -1064,7 +1072,7 @@ class CUJTests(parameterized.TestCase):
                     simple_response("a"),
                     simple_response("b"),
                     simple_response("c"),
-                    glm.GenerateContentResponse(
+                    protos.GenerateContentResponse(
                         {
                             "candidates": [{"finish_reason": "SAFETY"}],
                         }
@@ -1073,7 +1081,7 @@ class CUJTests(parameterized.TestCase):
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         response = chat.send_message("hello", stream=True)
@@ -1093,7 +1101,7 @@ class CUJTests(parameterized.TestCase):
             GenerateContentResponse(
                 done=True,
                 iterator=None,
-                result=glm.GenerateContentResponse({
+                result=protos.GenerateContentResponse({
                   "candidates": [
                     {
                       "content": {
@@ -1101,28 +1109,15 @@ class CUJTests(parameterized.TestCase):
                           {
                             "text": "abc"
                           }
-                        ],
-                        "role": ""
+                        ]
                       },
-                      "finish_reason": 3,
+                      "finish_reason": "SAFETY",
                       "index": 0,
-                      "citation_metadata": {
-                        "citation_sources": []
-                      },
-                      "safety_ratings": [],
-                      "token_count": 0,
-                      "grounding_attributions": []
+                      "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {
-                    "block_reason": 0,
-                    "safety_ratings": []
-                  },
-                  "usage_metadata": {
-                    "prompt_token_count": 0,
-                    "candidates_token_count": 0,
-                    "total_token_count": 0
-                  }
+                  "prompt_feedback": {},
+                  "usage_metadata": {}
                 }),
             ),
             error=<StopCandidateException> index: 0
@@ -1168,8 +1163,9 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
-                history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'first'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), glm.Content({'parts': [{'text': 'second'}], 'role': 'model'}), glm.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), glm.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
+                history=[protos.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), protos.Content({'parts': [{'text': 'first'}], 'role': 'model'}), protos.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), protos.Content({'parts': [{'text': 'second'}], 'role': 'model'}), protos.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), protos.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
             )"""
         )
         self.assertEqual(expected, result)
@@ -1196,8 +1192,9 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
-                history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
+                history=[protos.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
             )"""
         )
         self.assertEqual(expected, result)
@@ -1213,7 +1210,7 @@ class CUJTests(parameterized.TestCase):
                 for chunk in [
                     simple_response("first"),
                     # FinishReason.SAFETY = 3
-                    glm.GenerateContentResponse(
+                    protos.GenerateContentResponse(
                         {
                             "candidates": [
                                 {"finish_reason": 3, "content": {"parts": [{"text": "second"}]}}
@@ -1240,8 +1237,9 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
-                history=[glm.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
+                history=[protos.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
             )"""
         )
         self.assertEqual(expected, result)
@@ -1251,16 +1249,39 @@ class CUJTests(parameterized.TestCase):
         result = repr(model)
         self.assertIn("system_instruction='Be excellent.'", result)
 
+    def test_repr_for_model_created_from_cahced_content(self):
+        model = generative_models.GenerativeModel.from_cached_content(
+            cached_content="test-cached-content"
+        )
+        result = repr(model)
+        self.assertIn("cached_content=cachedContents/test-cached-content", result)
+        self.assertIn("model_name='models/gemini-1.5-pro'", result)
+
     def test_count_tokens_called_with_request_options(self):
-        self.client.count_tokens = unittest.mock.MagicMock()
-        request = unittest.mock.ANY
+        self.responses["count_tokens"].append(protos.CountTokensResponse(total_tokens=7))
         request_options = {"timeout": 120}
 
-        self.responses["count_tokens"] = [glm.CountTokensResponse(total_tokens=7)]
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         model.count_tokens([{"role": "user", "parts": ["hello"]}], request_options=request_options)
 
-        self.client.count_tokens.assert_called_once_with(request, **request_options)
+        self.assertEqual(request_options, self.observed_kwargs[0])
+
+    def test_chat_with_request_options(self):
+        self.responses["generate_content"].append(
+            protos.GenerateContentResponse(
+                {
+                    "candidates": [{"finish_reason": "STOP"}],
+                }
+            )
+        )
+        request_options = {"timeout": 120}
+
+        model = generative_models.GenerativeModel("gemini-pro")
+        chat = model.start_chat()
+        chat.send_message("hello", request_options=helper_types.RequestOptions(**request_options))
+
+        request_options["retry"] = None
+        self.assertEqual(request_options, self.observed_kwargs[0])
 
 
 if __name__ == "__main__":

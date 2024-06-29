@@ -16,7 +16,7 @@
 from contextlib import redirect_stderr
 import io
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 import google.protobuf.any_pb2
 
 import google.generativeai.operations as genai_operation
@@ -41,7 +41,7 @@ class OperationsTests(parameterized.TestCase):
         # `Any` takes a type name and a serialized proto.
         metadata = google.protobuf.any_pb2.Any(
             type_url=self.metadata_type,
-            value=glm.CreateTunedModelMetadata(tuned_model=name)._pb.SerializeToString(),
+            value=protos.CreateTunedModelMetadata(tuned_model=name)._pb.SerializeToString(),
         )
 
         # Initially the `Operation` is not `done`, so it only gives a metadata.
@@ -58,7 +58,7 @@ class OperationsTests(parameterized.TestCase):
             metadata=metadata,
             response=google.protobuf.any_pb2.Any(
                 type_url=self.result_type,
-                value=glm.TunedModel(name=name)._pb.SerializeToString(),
+                value=protos.TunedModel(name=name)._pb.SerializeToString(),
             ),
         )
 
@@ -72,8 +72,8 @@ class OperationsTests(parameterized.TestCase):
             operation=initial_pb,
             refresh=refresh,
             cancel=lambda: print(f"cancel!"),
-            result_type=glm.TunedModel,
-            metadata_type=glm.CreateTunedModelMetadata,
+            result_type=protos.TunedModel,
+            metadata_type=protos.CreateTunedModelMetadata,
         )
 
         # Use our wrapper instead.
@@ -99,7 +99,7 @@ class OperationsTests(parameterized.TestCase):
             def make_metadata(completed_steps):
                 return google.protobuf.any_pb2.Any(
                     type_url=self.metadata_type,
-                    value=glm.CreateTunedModelMetadata(
+                    value=protos.CreateTunedModelMetadata(
                         tuned_model=name,
                         total_steps=total_steps,
                         completed_steps=completed_steps,
@@ -122,7 +122,7 @@ class OperationsTests(parameterized.TestCase):
                 metadata=make_metadata(total_steps),
                 response=google.protobuf.any_pb2.Any(
                     type_url=self.result_type,
-                    value=glm.TunedModel(name=name)._pb.SerializeToString(),
+                    value=protos.TunedModel(name=name)._pb.SerializeToString(),
                 ),
             )
 
@@ -142,8 +142,8 @@ class OperationsTests(parameterized.TestCase):
             operation=initial_pb,
             refresh=refresh,
             cancel=None,
-            result_type=glm.TunedModel,
-            metadata_type=glm.CreateTunedModelMetadata,
+            result_type=protos.TunedModel,
+            metadata_type=protos.CreateTunedModelMetadata,
         )
 
         # Use our wrapper instead.

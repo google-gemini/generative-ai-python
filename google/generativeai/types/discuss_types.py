@@ -19,10 +19,10 @@ import dataclasses
 from typing import Any, Dict, Union, Iterable, Optional, Tuple, List
 from typing_extensions import TypedDict
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai import string_utils
 
-from google.generativeai.types import safety_types
+from google.generativeai.types import palm_safety_types
 from google.generativeai.types import citation_types
 
 
@@ -46,15 +46,15 @@ class TokenCount(TypedDict):
 
 
 class MessageDict(TypedDict):
-    """A dict representation of a `glm.Message`."""
+    """A dict representation of a `protos.Message`."""
 
     author: str
     content: str
     citation_metadata: Optional[citation_types.CitationMetadataDict]
 
 
-MessageOptions = Union[str, MessageDict, glm.Message]
-MESSAGE_OPTIONS = (str, dict, glm.Message)
+MessageOptions = Union[str, MessageDict, protos.Message]
+MESSAGE_OPTIONS = (str, dict, protos.Message)
 
 MessagesOptions = Union[
     MessageOptions,
@@ -64,7 +64,7 @@ MESSAGES_OPTIONS = (MESSAGE_OPTIONS, Iterable)
 
 
 class ExampleDict(TypedDict):
-    """A dict representation of a `glm.Example`."""
+    """A dict representation of a `protos.Example`."""
 
     input: MessageOptions
     output: MessageOptions
@@ -74,14 +74,14 @@ ExampleOptions = Union[
     Tuple[MessageOptions, MessageOptions],
     Iterable[MessageOptions],
     ExampleDict,
-    glm.Example,
+    protos.Example,
 ]
-EXAMPLE_OPTIONS = (glm.Example, dict, Iterable)
+EXAMPLE_OPTIONS = (protos.Example, dict, Iterable)
 ExamplesOptions = Union[ExampleOptions, Iterable[ExampleOptions]]
 
 
 class MessagePromptDict(TypedDict, total=False):
-    """A dict representation of a `glm.MessagePrompt`."""
+    """A dict representation of a `protos.MessagePrompt`."""
 
     context: str
     examples: ExamplesOptions
@@ -90,16 +90,16 @@ class MessagePromptDict(TypedDict, total=False):
 
 MessagePromptOptions = Union[
     str,
-    glm.Message,
-    Iterable[Union[str, glm.Message]],
+    protos.Message,
+    Iterable[Union[str, protos.Message]],
     MessagePromptDict,
-    glm.MessagePrompt,
+    protos.MessagePrompt,
 ]
 MESSAGE_PROMPT_KEYS = {"context", "examples", "messages"}
 
 
 class ResponseDict(TypedDict):
-    """A dict representation of a `glm.GenerateMessageResponse`."""
+    """A dict representation of a `protos.GenerateMessageResponse`."""
 
     messages: List[MessageDict]
     candidates: List[MessageDict]
@@ -169,7 +169,7 @@ class ChatResponse(abc.ABC):
     temperature: Optional[float]
     candidate_count: Optional[int]
     candidates: List[MessageDict]
-    filters: List[safety_types.ContentFilterDict]
+    filters: List[palm_safety_types.ContentFilterDict]
     top_p: Optional[float] = None
     top_k: Optional[float] = None
 

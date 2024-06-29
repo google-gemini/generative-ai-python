@@ -19,7 +19,7 @@ import pathlib
 import mimetypes
 from typing import Iterable
 import logging
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 from itertools import islice
 
 from google.generativeai.types import file_types
@@ -35,7 +35,24 @@ def upload_file(
     mime_type: str | None = None,
     name: str | None = None,
     display_name: str | None = None,
+    resumable: bool = True,
 ) -> file_types.File:
+    """Calls the API to upload a file using a supported file service.
+
+    Args:
+        path: The path to the file to be uploaded.
+        mime_type: The MIME type of the file. If not provided, it will be
+            inferred from the file extension.
+        name: The name of the file in the destination (e.g., 'files/sample-image').
+            If not provided, a system generated ID will be created.
+        display_name: Optional display name of the file.
+        resumable: Whether to use the resumable upload protocol. By default, this is enabled.
+            See details at
+            https://googleapis.github.io/google-api-python-client/docs/epy/googleapiclient.http.MediaFileUpload-class.html#resumable
+
+    Returns:
+        file_types.File: The response of the uploaded file.
+    """
     client = get_default_file_client()
 
     path = pathlib.Path(os.fspath(path))
@@ -50,27 +67,34 @@ def upload_file(
         display_name = path.name
 
     response = client.create_file(
-        path=path, mime_type=mime_type, name=name, display_name=display_name
+        path=path, mime_type=mime_type, name=name, display_name=display_name, resumable=resumable
     )
     return file_types.File(response)
 
 
 def list_files(page_size=100) -> Iterable[file_types.File]:
+    """Calls the API to list files using a supported file service."""
     client = get_default_file_client()
 
-    response = client.list_files(glm.ListFilesRequest(page_size=page_size))
+    response = client.list_files(protos.ListFilesRequest(page_size=page_size))
     for proto in response:
         yield file_types.File(proto)
 
 
-def get_file(name) -> file_types.File:
+def get_file(name: str) -> file_types.File:
+    """Calls the API to retrieve a specified file using a supported file service."""
+    if "/" not in name:
+        name = f"files/{name}"
     client = get_default_file_client()
     return file_types.File(client.get_file(name=name))
 
 
-def delete_file(name):
-    if isinstance(name, (file_types.File, glm.File)):
+def delete_file(name: str | file_types.File | protos.File):
+    """Calls the API to permanently delete a specified file using a supported file service."""
+    if isinstance(name, (file_types.File, protos.File)):
         name = name.name
-    request = glm.DeleteFileRequest(name=name)
+    elif "/" not in name:
+        name = f"files/{name}"
+    request = protos.DeleteFileRequest(name=name)
     client = get_default_file_client()
     client.delete_file(request=request)

@@ -18,7 +18,7 @@ from typing import Any
 import unittest
 import unittest.mock as mock
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import embedding
 
@@ -45,20 +45,20 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def embed_content(
-            request: glm.EmbedContentRequest,
+            request: protos.EmbedContentRequest,
             **kwargs,
-        ) -> glm.EmbedContentResponse:
+        ) -> protos.EmbedContentResponse:
             self.observed_requests.append(request)
-            return glm.EmbedContentResponse(embedding=glm.ContentEmbedding(values=[1, 2, 3]))
+            return protos.EmbedContentResponse(embedding=protos.ContentEmbedding(values=[1, 2, 3]))
 
         @add_client_method
         def batch_embed_contents(
-            request: glm.BatchEmbedContentsRequest,
+            request: protos.BatchEmbedContentsRequest,
             **kwargs,
-        ) -> glm.BatchEmbedContentsResponse:
+        ) -> protos.BatchEmbedContentsResponse:
             self.observed_requests.append(request)
-            return glm.BatchEmbedContentsResponse(
-                embeddings=[glm.ContentEmbedding(values=[1, 2, 3])] * len(request.requests)
+            return protos.BatchEmbedContentsResponse(
+                embeddings=[protos.ContentEmbedding(values=[1, 2, 3])] * len(request.requests)
             )
 
     def test_embed_content(self):
@@ -68,8 +68,9 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(emb, dict)
         self.assertEqual(
             self.observed_requests[-1],
-            glm.EmbedContentRequest(
-                model=DEFAULT_EMB_MODEL, content=glm.Content(parts=[glm.Part(text="What are you?")])
+            protos.EmbedContentRequest(
+                model=DEFAULT_EMB_MODEL,
+                content=protos.Content(parts=[protos.Part(text="What are you?")]),
             ),
         )
         self.assertIsInstance(emb["embedding"][0], float)

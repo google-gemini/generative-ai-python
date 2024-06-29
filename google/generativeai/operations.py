@@ -17,7 +17,7 @@ from __future__ import annotations
 import functools
 from typing import Iterator
 
-from google.ai import generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import client as client_lib
 from google.generativeai.types import model_types
@@ -27,6 +27,8 @@ import tqdm.auto as tqdm
 
 
 def list_operations(*, client=None) -> Iterator[CreateTunedModelOperation]:
+    """Calls the API to list all operations"""
+
     if client is None:
         client = client_lib.get_default_operations_client()
 
@@ -41,6 +43,7 @@ def list_operations(*, client=None) -> Iterator[CreateTunedModelOperation]:
 
 
 def get_operation(name: str, *, client=None) -> CreateTunedModelOperation:
+    """Calls the API to get a specific operation"""
     if client is None:
         client = client_lib.get_default_operations_client()
 
@@ -49,8 +52,9 @@ def get_operation(name: str, *, client=None) -> CreateTunedModelOperation:
 
 
 def delete_operation(name: str, *, client=None):
-    """Raises:
-    google.api_core.exceptions.MethodNotImplemented: Not implemented."""
+    """Calls the API to delete a specific operation"""
+
+    # Raises:google.api_core.exceptions.MethodNotImplemented: Not implemented.
     if client is None:
         client = client_lib.get_default_operations_client()
 
@@ -71,8 +75,8 @@ class CreateTunedModelOperation(operation_lib.Operation):
             cls=CreateTunedModelOperation,
             operation=proto,
             operations_client=client,
-            result_type=glm.TunedModel,
-            metadata_type=glm.CreateTunedModelMetadata,
+            result_type=protos.TunedModel,
+            metadata_type=protos.CreateTunedModelMetadata,
         )
 
     @classmethod
@@ -107,14 +111,14 @@ class CreateTunedModelOperation(operation_lib.Operation):
         """Refresh the current statuses in metadata/result/error"""
         self._refresh_and_update()
 
-    def wait_bar(self, **kwargs) -> Iterator[glm.CreateTunedModelMetadata]:
+    def wait_bar(self, **kwargs) -> Iterator[protos.CreateTunedModelMetadata]:
         """A tqdm wait bar, yields `Operation` statuses until complete.
 
         Args:
             **kwargs: passed through to `tqdm.auto.tqdm(..., **kwargs)`
 
         Yields:
-            Operation statuses as `glm.CreateTunedModelMetadata` objects.
+            Operation statuses as `protos.CreateTunedModelMetadata` objects.
         """
         bar = tqdm.tqdm(total=self.metadata.total_steps, initial=0, **kwargs)
 
@@ -127,7 +131,7 @@ class CreateTunedModelOperation(operation_lib.Operation):
         bar.update(self.metadata.completed_steps - bar.n)
         return self.result()
 
-    def set_result(self, result: glm.TunedModel):
+    def set_result(self, result: protos.TunedModel):
         result = model_types.decode_tuned_model(result)
         super().set_result(result)
 

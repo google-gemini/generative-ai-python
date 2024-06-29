@@ -18,11 +18,11 @@ from typing import Any
 import unittest
 import unittest.mock as mock
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import text as text_service
 from google.generativeai import client
-from google.generativeai.types import safety_types
+from google.generativeai.types import palm_safety_types
 from google.generativeai.types import model_types
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -46,42 +46,42 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def generate_text(
-            request: glm.GenerateTextRequest,
+            request: protos.GenerateTextRequest,
             **kwargs,
-        ) -> glm.GenerateTextResponse:
+        ) -> protos.GenerateTextResponse:
             self.observed_requests.append(request)
             return self.responses["generate_text"]
 
         @add_client_method
         def embed_text(
-            request: glm.EmbedTextRequest,
+            request: protos.EmbedTextRequest,
             **kwargs,
-        ) -> glm.EmbedTextResponse:
+        ) -> protos.EmbedTextResponse:
             self.observed_requests.append(request)
             return self.responses["embed_text"]
 
         @add_client_method
         def batch_embed_text(
-            request: glm.EmbedTextRequest,
+            request: protos.EmbedTextRequest,
             **kwargs,
-        ) -> glm.EmbedTextResponse:
+        ) -> protos.EmbedTextResponse:
             self.observed_requests.append(request)
 
-            return glm.BatchEmbedTextResponse(
-                embeddings=[glm.Embedding(value=[1, 2, 3])] * len(request.texts)
+            return protos.BatchEmbedTextResponse(
+                embeddings=[protos.Embedding(value=[1, 2, 3])] * len(request.texts)
             )
 
         @add_client_method
         def count_text_tokens(
-            request: glm.CountTextTokensRequest,
+            request: protos.CountTextTokensRequest,
             **kwargs,
-        ) -> glm.CountTextTokensResponse:
+        ) -> protos.CountTextTokensResponse:
             self.observed_requests.append(request)
             return self.responses["count_text_tokens"]
 
         @add_client_method
-        def get_tuned_model(name) -> glm.TunedModel:
-            request = glm.GetTunedModelRequest(name=name)
+        def get_tuned_model(name) -> protos.TunedModel:
+            request = protos.GetTunedModelRequest(name=name)
             self.observed_requests.append(request)
             response = copy.copy(self.responses["get_tuned_model"])
             return response
@@ -93,7 +93,7 @@ class UnitTests(parameterized.TestCase):
     )
     def test_make_prompt(self, prompt):
         x = text_service._make_text_prompt(prompt)
-        self.assertIsInstance(x, glm.TextPrompt)
+        self.assertIsInstance(x, protos.TextPrompt)
         self.assertEqual("Hello how are", x.text)
 
     @parameterized.named_parameters(
@@ -104,7 +104,7 @@ class UnitTests(parameterized.TestCase):
     def test_make_generate_text_request(self, prompt):
         x = text_service._make_generate_text_request(model="models/chat-bison-001", prompt=prompt)
         self.assertEqual("models/chat-bison-001", x.model)
-        self.assertIsInstance(x, glm.GenerateTextRequest)
+        self.assertIsInstance(x, protos.GenerateTextRequest)
 
     @parameterized.named_parameters(
         [
@@ -116,14 +116,16 @@ class UnitTests(parameterized.TestCase):
         ]
     )
     def test_generate_embeddings(self, model, text):
-        self.responses["embed_text"] = glm.EmbedTextResponse(
-            embedding=glm.Embedding(value=[1, 2, 3])
+        self.responses["embed_text"] = protos.EmbedTextResponse(
+            embedding=protos.Embedding(value=[1, 2, 3])
         )
 
         emb = text_service.generate_embeddings(model=model, text=text)
 
         self.assertIsInstance(emb, dict)
-        self.assertEqual(self.observed_requests[-1], glm.EmbedTextRequest(model=model, text=text))
+        self.assertEqual(
+            self.observed_requests[-1], protos.EmbedTextRequest(model=model, text=text)
+        )
         self.assertIsInstance(emb["embedding"][0], float)
 
     @parameterized.named_parameters(
@@ -191,11 +193,11 @@ class UnitTests(parameterized.TestCase):
         ]
     )
     def test_generate_response(self, *, prompt, **kwargs):
-        self.responses["generate_text"] = glm.GenerateTextResponse(
+        self.responses["generate_text"] = protos.GenerateTextResponse(
             candidates=[
-                glm.TextCompletion(output=" road?"),
-                glm.TextCompletion(output=" bridge?"),
-                glm.TextCompletion(output=" river?"),
+                protos.TextCompletion(output=" road?"),
+                protos.TextCompletion(output=" bridge?"),
+                protos.TextCompletion(output=" river?"),
             ]
         )
 
@@ -203,8 +205,8 @@ class UnitTests(parameterized.TestCase):
 
         self.assertEqual(
             self.observed_requests[-1],
-            glm.GenerateTextRequest(
-                model="models/text-bison-001", prompt=glm.TextPrompt(text=prompt), **kwargs
+            protos.GenerateTextRequest(
+                model="models/text-bison-001", prompt=protos.TextPrompt(text=prompt), **kwargs
             ),
         )
 
@@ -220,20 +222,20 @@ class UnitTests(parameterized.TestCase):
         )
 
     def test_stop_string(self):
-        self.responses["generate_text"] = glm.GenerateTextResponse(
+        self.responses["generate_text"] = protos.GenerateTextResponse(
             candidates=[
-                glm.TextCompletion(output="Hello world?"),
-                glm.TextCompletion(output="Hell!"),
-                glm.TextCompletion(output="I'm going to stop"),
+                protos.TextCompletion(output="Hello world?"),
+                protos.TextCompletion(output="Hell!"),
+                protos.TextCompletion(output="I'm going to stop"),
             ]
         )
         complete = text_service.generate_text(prompt="Hello", stop_sequences="stop")
 
         self.assertEqual(
             self.observed_requests[-1],
-            glm.GenerateTextRequest(
+            protos.GenerateTextRequest(
                 model="models/text-bison-001",
-                prompt=glm.TextPrompt(text="Hello"),
+                prompt=protos.TextPrompt(text="Hello"),
                 stop_sequences=["stop"],
             ),
         )
@@ -246,12 +248,12 @@ class UnitTests(parameterized.TestCase):
                 testcase_name="basic",
                 safety_settings=[
                     {
-                        "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
-                        "threshold": safety_types.HarmBlockThreshold.BLOCK_NONE,
+                        "category": palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                        "threshold": palm_safety_types.HarmBlockThreshold.BLOCK_NONE,
                     },
                     {
-                        "category": safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
-                        "threshold": safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                        "category": palm_safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
+                        "threshold": palm_safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
                     },
                 ],
             ),
@@ -275,16 +277,16 @@ class UnitTests(parameterized.TestCase):
             dict(
                 testcase_name="mixed",
                 safety_settings={
-                    "medical": safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
-                    safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE: 1,
+                    "medical": palm_safety_types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+                    palm_safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE: 1,
                 },
             ),
         ]
     )
     def test_safety_settings(self, safety_settings):
-        self.responses["generate_text"] = glm.GenerateTextResponse(
+        self.responses["generate_text"] = protos.GenerateTextResponse(
             candidates=[
-                glm.TextCompletion(output="No"),
+                protos.TextCompletion(output="No"),
             ]
         )
         # This test really just checks that the safety_settings get converted to a proto.
@@ -294,36 +296,36 @@ class UnitTests(parameterized.TestCase):
 
         self.assertEqual(
             self.observed_requests[-1].safety_settings[0].category,
-            safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+            palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
         )
 
     def test_filters(self):
-        self.responses["generate_text"] = glm.GenerateTextResponse(
+        self.responses["generate_text"] = protos.GenerateTextResponse(
             candidates=[{"output": "hello"}],
             filters=[
                 {
-                    "reason": safety_types.BlockedReason.SAFETY,
+                    "reason": palm_safety_types.BlockedReason.SAFETY,
                     "message": "not safe",
                 }
             ],
         )
 
         response = text_service.generate_text(prompt="do filters work?")
-        self.assertIsInstance(response.filters[0]["reason"], safety_types.BlockedReason)
-        self.assertEqual(response.filters[0]["reason"], safety_types.BlockedReason.SAFETY)
+        self.assertIsInstance(response.filters[0]["reason"], palm_safety_types.BlockedReason)
+        self.assertEqual(response.filters[0]["reason"], palm_safety_types.BlockedReason.SAFETY)
 
     def test_safety_feedback(self):
-        self.responses["generate_text"] = glm.GenerateTextResponse(
+        self.responses["generate_text"] = protos.GenerateTextResponse(
             candidates=[{"output": "hello"}],
             safety_feedback=[
                 {
                     "rating": {
-                        "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
-                        "probability": safety_types.HarmProbability.HIGH,
+                        "category": palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                        "probability": palm_safety_types.HarmProbability.HIGH,
                     },
                     "setting": {
-                        "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
-                        "threshold": safety_types.HarmBlockThreshold.BLOCK_NONE,
+                        "category": palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                        "threshold": palm_safety_types.HarmBlockThreshold.BLOCK_NONE,
                     },
                 }
             ],
@@ -332,35 +334,35 @@ class UnitTests(parameterized.TestCase):
         response = text_service.generate_text(prompt="does safety feedback work?")
         self.assertIsInstance(
             response.safety_feedback[0]["rating"]["probability"],
-            safety_types.HarmProbability,
+            palm_safety_types.HarmProbability,
         )
         self.assertEqual(
             response.safety_feedback[0]["rating"]["probability"],
-            safety_types.HarmProbability.HIGH,
+            palm_safety_types.HarmProbability.HIGH,
         )
 
         self.assertIsInstance(
             response.safety_feedback[0]["setting"]["category"],
-            safety_types.HarmCategory,
+            protos.HarmCategory,
         )
         self.assertEqual(
             response.safety_feedback[0]["setting"]["category"],
-            safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+            palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
         )
 
     def test_candidate_safety_feedback(self):
-        self.responses["generate_text"] = glm.GenerateTextResponse(
+        self.responses["generate_text"] = protos.GenerateTextResponse(
             candidates=[
                 {
                     "output": "hello",
                     "safety_ratings": [
                         {
-                            "category": safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
-                            "probability": safety_types.HarmProbability.HIGH,
+                            "category": palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                            "probability": palm_safety_types.HarmProbability.HIGH,
                         },
                         {
-                            "category": safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
-                            "probability": safety_types.HarmProbability.LOW,
+                            "category": palm_safety_types.HarmCategory.HARM_CATEGORY_VIOLENCE,
+                            "probability": palm_safety_types.HarmProbability.LOW,
                         },
                     ],
                 }
@@ -370,24 +372,24 @@ class UnitTests(parameterized.TestCase):
         result = text_service.generate_text(prompt="Write a story from the ER.")
         self.assertIsInstance(
             result.candidates[0]["safety_ratings"][0]["category"],
-            safety_types.HarmCategory,
+            protos.HarmCategory,
         )
         self.assertEqual(
             result.candidates[0]["safety_ratings"][0]["category"],
-            safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
+            palm_safety_types.HarmCategory.HARM_CATEGORY_MEDICAL,
         )
 
         self.assertIsInstance(
             result.candidates[0]["safety_ratings"][0]["probability"],
-            safety_types.HarmProbability,
+            palm_safety_types.HarmProbability,
         )
         self.assertEqual(
             result.candidates[0]["safety_ratings"][0]["probability"],
-            safety_types.HarmProbability.HIGH,
+            palm_safety_types.HarmProbability.HIGH,
         )
 
     def test_candidate_citations(self):
-        self.responses["generate_text"] = glm.GenerateTextResponse(
+        self.responses["generate_text"] = protos.GenerateTextResponse(
             candidates=[
                 {
                     "output": "Hello Google!",
@@ -434,21 +436,21 @@ class UnitTests(parameterized.TestCase):
                 ),
             ),
             dict(
-                testcase_name="glm_model",
-                model=glm.Model(
+                testcase_name="protos.model",
+                model=protos.Model(
                     name="models/text-bison-001",
                 ),
             ),
             dict(
-                testcase_name="glm_tuned_model",
-                model=glm.TunedModel(
+                testcase_name="protos.tuned_model",
+                model=protos.TunedModel(
                     name="tunedModels/bipedal-pangolin-001",
                     base_model="models/text-bison-001",
                 ),
             ),
             dict(
-                testcase_name="glm_tuned_model_nested",
-                model=glm.TunedModel(
+                testcase_name="protos.tuned_model_nested",
+                model=protos.TunedModel(
                     name="tunedModels/bipedal-pangolin-002",
                     tuned_model_source={
                         "tuned_model": "tunedModels/bipedal-pangolin-002",
@@ -459,10 +461,10 @@ class UnitTests(parameterized.TestCase):
         ]
     )
     def test_count_message_tokens(self, model):
-        self.responses["get_tuned_model"] = glm.TunedModel(
+        self.responses["get_tuned_model"] = protos.TunedModel(
             name="tunedModels/bipedal-pangolin-001", base_model="models/text-bison-001"
         )
-        self.responses["count_text_tokens"] = glm.CountTextTokensResponse(token_count=7)
+        self.responses["count_text_tokens"] = protos.CountTextTokensResponse(token_count=7)
 
         response = text_service.count_text_tokens(model, "Tell me a story about a magic backpack.")
         self.assertEqual({"token_count": 7}, response)
@@ -472,7 +474,7 @@ class UnitTests(parameterized.TestCase):
             self.assertLen(self.observed_requests, 2)
             self.assertEqual(
                 self.observed_requests[0],
-                glm.GetTunedModelRequest(name="tunedModels/bipedal-pangolin-001"),
+                protos.GetTunedModelRequest(name="tunedModels/bipedal-pangolin-001"),
             )
 
     def test_count_text_tokens_called_with_request_options(self):

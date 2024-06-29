@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 import os
+import contextlib
 import dataclasses
 import pathlib
-import re
 import types
 from typing import Any, cast
 from collections.abc import Sequence
 import httplib2
 
 import google.ai.generativelanguage as glm
+import google.generativeai.protos as protos
 
 from google.auth import credentials as ga_credentials
+from google.auth import exceptions as ga_exceptions
+from google import auth
 from google.api_core import client_options as client_options_lib
 from google.api_core import gapic_v1
 from google.api_core import operations_v1
@@ -30,6 +33,18 @@ USER_AGENT = "genai-py"
 GENAI_API_DISCOVERY_URL = "https://generativelanguage.googleapis.com/$discovery/rest"
 
 
+@contextlib.contextmanager
+def patch_colab_gce_credentials():
+    get_gce = auth._default._get_gce_credentials
+    if "COLAB_RELEASE_TAG" in os.environ:
+        auth._default._get_gce_credentials = lambda *args, **kwargs: (None, None)
+
+    try:
+        yield
+    finally:
+        auth._default._get_gce_credentials = get_gce
+
+
 class FileServiceClient(glm.FileServiceClient):
     def __init__(self, *args, **kwargs):
         self._discovery_api = None
@@ -38,7 +53,9 @@ class FileServiceClient(glm.FileServiceClient):
     def _setup_discovery_api(self):
         api_key = self._client_options.api_key
         if api_key is None:
-            raise ValueError("Uploading to the File API requires an API key.")
+            raise ValueError(
+                "Invalid operation: Uploading to the File API requires an API key. Please provide a valid API key."
+            )
 
         request = googleapiclient.http.HttpRequest(
             http=httplib2.Http(),
@@ -59,7 +76,8 @@ class FileServiceClient(glm.FileServiceClient):
         mime_type: str | None = None,
         name: str | None = None,
         display_name: str | None = None,
-    ) -> glm.File:
+        resumable: bool = True,
+    ) -> protos.File:
         if self._discovery_api is None:
             self._setup_discovery_api()
 
@@ -69,7 +87,9 @@ class FileServiceClient(glm.FileServiceClient):
         if display_name is not None:
             file["displayName"] = display_name
 
-        media = googleapiclient.http.MediaFileUpload(filename=path, mimetype=mime_type)
+        media = googleapiclient.http.MediaFileUpload(
+            filename=path, mimetype=mime_type, resumable=resumable
+        )
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
         result = request.execute()
 
@@ -78,7 +98,9 @@ class FileServiceClient(glm.FileServiceClient):
 
 class FileServiceAsyncClient(glm.FileServiceAsyncClient):
     async def create_file(self, *args, **kwargs):
-        raise NotImplementedError("`create_file` is not yet implemented for the async client.")
+        raise NotImplementedError(
+            "The `create_file` method is currently not supported for the asynchronous client."
+        )
 
 
 @dataclasses.dataclass
@@ -106,7 +128,7 @@ class _ClientManager:
         client_info: gapic_v1.client_info.ClientInfo | None = None,
         default_metadata: Sequence[tuple[str, str]] = (),
     ) -> None:
-        """Captures default client configuration.
+        """Initializes default client configurations using specified parameters or environment variables.
 
         If no API key has been provided (either directly, or on `client_options`) and the
         `GOOGLE_API_KEY` environment variable is set, it will be used as the API key.
@@ -132,7 +154,9 @@ class _ClientManager:
 
         if had_api_key_value:
             if api_key is not None:
-                raise ValueError("You can't set both `api_key` and `client_options['api_key']`.")
+                raise ValueError(
+                    "Invalid configuration: Please set either `api_key` or `client_options['api_key']`, but not both."
+                )
         else:
             if api_key is None:
                 # If no key is provided explicitly, attempt to load one from the
@@ -180,7 +204,17 @@ class _ClientManager:
         if not self.client_config:
             configure()
 
-        client = cls(**self.client_config)
+        try:
+            with patch_colab_gce_credentials():
+                client = cls(**self.client_config)
+        except ga_exceptions.DefaultCredentialsError as e:
+            e.args = (
+                "\n  No API_KEY or ADC found. Please either:\n"
+                "    - Set the `GOOGLE_API_KEY` environment variable.\n"
+                "    - Manually pass the key with `genai.configure(api_key=my_api_key)`.\n"
+                "    - Or set up Application Default Credentials, see https://ai.google.dev/gemini-api/docs/oauth for more information.",
+            )
+            raise e
 
         if not self.default_metadata:
             return client
@@ -281,6 +315,10 @@ _client_manager = _ClientManager()
 _client_manager.configure()
 
 
+def get_default_cache_client() -> glm.CacheServiceClient:
+    return _client_manager.get_default_client("cache")
+
+
 def get_default_discuss_client() -> glm.DiscussServiceClient:
     return _client_manager.get_default_client("discuss")
 
@@ -325,9 +363,9 @@ def get_default_retriever_async_client() -> glm.RetrieverAsyncClient:
     return _client_manager.get_default_client("retriever_async")
 
 
-def get_dafault_permission_client() -> glm.PermissionServiceClient:
+def get_default_permission_client() -> glm.PermissionServiceClient:
     return _client_manager.get_default_client("permission")
 
 
-def get_dafault_permission_async_client() -> glm.PermissionServiceAsyncClient:
+def get_default_permission_async_client() -> glm.PermissionServiceAsyncClient:
     return _client_manager.get_default_client("permission_async")

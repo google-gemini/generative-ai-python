@@ -14,17 +14,16 @@
 # limitations under the License.
 from __future__ import annotations
 
-import dataclasses
-from collections.abc import Iterable, Sequence, Mapping
 import itertools
 from typing import Any, Iterable, overload, TypeVar, Union, Mapping
 
 import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai.client import get_default_generative_client
 from google.generativeai.client import get_default_generative_async_client
 
-from google.generativeai import string_utils
+from google.generativeai.types import helper_types
 from google.generativeai.types import text_types
 from google.generativeai.types import model_types
 from google.generativeai.types import content_types
@@ -32,7 +31,7 @@ from google.generativeai.types import content_types
 DEFAULT_EMB_MODEL = "models/embedding-001"
 EMBEDDING_MAX_BATCH_SIZE = 100
 
-EmbeddingTaskType = glm.TaskType
+EmbeddingTaskType = protos.TaskType
 
 EmbeddingTaskTypeOptions = Union[int, str, EmbeddingTaskType]
 
@@ -84,7 +83,9 @@ except AttributeError:
 
     def _batched(iterable: Iterable[T], n: int) -> Iterable[list[T]]:
         if n < 1:
-            raise ValueError(f"Batch size `n` must be >0, got: {n}")
+            raise ValueError(
+                f"Invalid input: The batch size 'n' must be a positive integer. You entered: {n}. Please enter a number greater than 0."
+            )
         batch = []
         for item in iterable:
             batch.append(item)
@@ -104,7 +105,7 @@ def embed_content(
     title: str | None = None,
     output_dimensionality: int | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict: ...
 
 
@@ -116,7 +117,7 @@ def embed_content(
     title: str | None = None,
     output_dimensionality: int | None = None,
     client: glm.GenerativeServiceClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
 
 
@@ -127,7 +128,7 @@ def embed_content(
     title: str | None = None,
     output_dimensionality: int | None = None,
     client: glm.GenerativeServiceClient = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
     """Calls the API to create embeddings for content passed in.
 
@@ -169,11 +170,13 @@ def embed_content(
 
     if title and to_task_type(task_type) is not EmbeddingTaskType.RETRIEVAL_DOCUMENT:
         raise ValueError(
-            "If a title is specified, the task must be a retrieval document type task."
+            f"Invalid task type: When a title is specified, the task must be of a 'retrieval document' type. Received task type: {task_type} and title: {title}."
         )
 
     if output_dimensionality and output_dimensionality < 0:
-        raise ValueError("`output_dimensionality` must be a non-negative integer.")
+        raise ValueError(
+            f"Invalid value: `output_dimensionality` must be a non-negative integer. Received: {output_dimensionality}."
+        )
 
     if task_type:
         task_type = to_task_type(task_type)
@@ -181,7 +184,7 @@ def embed_content(
     if isinstance(content, Iterable) and not isinstance(content, (str, Mapping)):
         result = {"embedding": []}
         requests = (
-            glm.EmbedContentRequest(
+            protos.EmbedContentRequest(
                 model=model,
                 content=content_types.to_content(c),
                 task_type=task_type,
@@ -191,7 +194,7 @@ def embed_content(
             for c in content
         )
         for batch in _batched(requests, EMBEDDING_MAX_BATCH_SIZE):
-            embedding_request = glm.BatchEmbedContentsRequest(model=model, requests=batch)
+            embedding_request = protos.BatchEmbedContentsRequest(model=model, requests=batch)
             embedding_response = client.batch_embed_contents(
                 embedding_request,
                 **request_options,
@@ -200,7 +203,7 @@ def embed_content(
             result["embedding"].extend(e["values"] for e in embedding_dict["embeddings"])
         return result
     else:
-        embedding_request = glm.EmbedContentRequest(
+        embedding_request = protos.EmbedContentRequest(
             model=model,
             content=content_types.to_content(content),
             task_type=task_type,
@@ -224,7 +227,7 @@ async def embed_content_async(
     title: str | None = None,
     output_dimensionality: int | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict: ...
 
 
@@ -236,7 +239,7 @@ async def embed_content_async(
     title: str | None = None,
     output_dimensionality: int | None = None,
     client: glm.GenerativeServiceAsyncClient | None = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.BatchEmbeddingDict: ...
 
 
@@ -247,9 +250,10 @@ async def embed_content_async(
     title: str | None = None,
     output_dimensionality: int | None = None,
     client: glm.GenerativeServiceAsyncClient = None,
-    request_options: dict[str, Any] | None = None,
+    request_options: helper_types.RequestOptionsType | None = None,
 ) -> text_types.EmbeddingDict | text_types.BatchEmbeddingDict:
-    """The async version of `genai.embed_content`."""
+    """Calls the API to create async embeddings for content passed in."""
+
     model = model_types.make_model_name(model)
 
     if request_options is None:
@@ -260,11 +264,12 @@ async def embed_content_async(
 
     if title and to_task_type(task_type) is not EmbeddingTaskType.RETRIEVAL_DOCUMENT:
         raise ValueError(
-            "If a title is specified, the task must be a retrieval document type task."
+            f"Invalid task type: When a title is specified, the task must be of a 'retrieval document' type. Received task type: {task_type} and title: {title}."
         )
-
     if output_dimensionality and output_dimensionality < 0:
-        raise ValueError("`output_dimensionality` must be a non-negative integer.")
+        raise ValueError(
+            f"Invalid value: `output_dimensionality` must be a non-negative integer. Received: {output_dimensionality}."
+        )
 
     if task_type:
         task_type = to_task_type(task_type)
@@ -272,7 +277,7 @@ async def embed_content_async(
     if isinstance(content, Iterable) and not isinstance(content, (str, Mapping)):
         result = {"embedding": []}
         requests = (
-            glm.EmbedContentRequest(
+            protos.EmbedContentRequest(
                 model=model,
                 content=content_types.to_content(c),
                 task_type=task_type,
@@ -282,7 +287,7 @@ async def embed_content_async(
             for c in content
         )
         for batch in _batched(requests, EMBEDDING_MAX_BATCH_SIZE):
-            embedding_request = glm.BatchEmbedContentsRequest(model=model, requests=batch)
+            embedding_request = protos.BatchEmbedContentsRequest(model=model, requests=batch)
             embedding_response = await client.batch_embed_contents(
                 embedding_request,
                 **request_options,
@@ -291,7 +296,7 @@ async def embed_content_async(
             result["embedding"].extend(e["values"] for e in embedding_dict["embeddings"])
         return result
     else:
-        embedding_request = glm.EmbedContentRequest(
+        embedding_request = protos.EmbedContentRequest(
             model=model,
             content=content_types.to_content(content),
             task_type=task_type,

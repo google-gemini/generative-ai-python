@@ -28,7 +28,7 @@ from typing import Any, Iterable, Union
 import urllib.request
 from typing_extensions import TypedDict
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 from google.generativeai.types import permission_types
 from google.generativeai import string_utils
 
@@ -44,7 +44,7 @@ __all__ = [
     "TunedModelState",
 ]
 
-TunedModelState = glm.TunedModel.State
+TunedModelState = protos.TunedModel.State
 
 TunedModelStateOptions = Union[None, str, int, TunedModelState]
 
@@ -91,7 +91,7 @@ def to_tuned_model_state(x: TunedModelStateOptions) -> TunedModelState:
 @string_utils.prettyprint
 @dataclasses.dataclass
 class Model:
-    """A dataclass representation of a `glm.Model`.
+    """A dataclass representation of a `protos.Model`.
 
     Attributes:
         name: The resource name of the `Model`. Format: `models/{model}` with a `{model}` naming
@@ -140,8 +140,8 @@ def idecode_time(parent: dict["str", Any], name: str):
         parent[name] = dt
 
 
-def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedModel:
-    if isinstance(tuned_model, glm.TunedModel):
+def decode_tuned_model(tuned_model: protos.TunedModel | dict["str", Any]) -> TunedModel:
+    if isinstance(tuned_model, protos.TunedModel):
         tuned_model = type(tuned_model).to_dict(tuned_model)  # pytype: disable=attribute-error
     tuned_model["state"] = to_tuned_model_state(tuned_model.pop("state", None))
 
@@ -180,7 +180,7 @@ def decode_tuned_model(tuned_model: glm.TunedModel | dict["str", Any]) -> TunedM
 @string_utils.prettyprint
 @dataclasses.dataclass
 class TunedModel:
-    """A dataclass representation of a `glm.TunedModel`."""
+    """A dataclass representation of a `protos.TunedModel`."""
 
     name: str | None = None
     source_model: str | None = None
@@ -214,13 +214,13 @@ class TuningExampleDict(TypedDict):
     output: str
 
 
-TuningExampleOptions = Union[TuningExampleDict, glm.TuningExample, tuple[str, str], list[str]]
+TuningExampleOptions = Union[TuningExampleDict, protos.TuningExample, tuple[str, str], list[str]]
 
 # TODO(markdaoust): gs:// URLS? File-type argument for files without extension?
 TuningDataOptions = Union[
     pathlib.Path,
     str,
-    glm.Dataset,
+    protos.Dataset,
     Mapping[str, Iterable[str]],
     Iterable[TuningExampleOptions],
 ]
@@ -228,8 +228,8 @@ TuningDataOptions = Union[
 
 def encode_tuning_data(
     data: TuningDataOptions, input_key="text_input", output_key="output"
-) -> glm.Dataset:
-    if isinstance(data, glm.Dataset):
+) -> protos.Dataset:
+    if isinstance(data, protos.Dataset):
         return data
 
     if isinstance(data, str):
@@ -287,16 +287,22 @@ def _convert_dict(data, input_key, output_key):
     try:
         inputs = data[input_key]
     except KeyError:
-        raise KeyError(f'input_key is "{input_key}", but data has keys: {sorted(data.keys())}')
+        raise KeyError(
+            f"Invalid key: The input key '{input_key}' does not exist in the data. "
+            f"Available keys are: {sorted(data.keys())}."
+        )
 
     try:
         outputs = data[output_key]
     except KeyError:
-        raise KeyError(f'output_key is "{output_key}", but data has keys: {sorted(data.keys())}')
+        raise KeyError(
+            f"Invalid key: The output key '{output_key}' does not exist in the data. "
+            f"Available keys are: {sorted(data.keys())}."
+        )
 
     for i, o in zip(inputs, outputs):
-        new_data.append(glm.TuningExample({"text_input": str(i), "output": str(o)}))
-    return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
+        new_data.append(protos.TuningExample({"text_input": str(i), "output": str(o)}))
+    return protos.Dataset(examples=protos.TuningExamples(examples=new_data))
 
 
 def _convert_iterable(data, input_key, output_key):
@@ -304,17 +310,17 @@ def _convert_iterable(data, input_key, output_key):
     for example in data:
         example = encode_tuning_example(example, input_key, output_key)
         new_data.append(example)
-    return glm.Dataset(examples=glm.TuningExamples(examples=new_data))
+    return protos.Dataset(examples=protos.TuningExamples(examples=new_data))
 
 
 def encode_tuning_example(example: TuningExampleOptions, input_key, output_key):
-    if isinstance(example, glm.TuningExample):
+    if isinstance(example, protos.TuningExample):
         return example
     elif isinstance(example, (tuple, list)):
         a, b = example
-        example = glm.TuningExample(text_input=a, output=b)
+        example = protos.TuningExample(text_input=a, output=b)
     else:  # dict
-        example = glm.TuningExample(text_input=example[input_key], output=example[output_key])
+        example = protos.TuningExample(text_input=example[input_key], output=example[output_key])
     return example
 
 
@@ -335,22 +341,26 @@ class Hyperparameters:
     learning_rate: float = 0.0
 
 
-BaseModelNameOptions = Union[str, Model, glm.Model]
-TunedModelNameOptions = Union[str, TunedModel, glm.TunedModel]
-AnyModelNameOptions = Union[str, Model, glm.Model, TunedModel, glm.TunedModel]
+BaseModelNameOptions = Union[str, Model, protos.Model]
+TunedModelNameOptions = Union[str, TunedModel, protos.TunedModel]
+AnyModelNameOptions = Union[str, Model, protos.Model, TunedModel, protos.TunedModel]
 ModelNameOptions = AnyModelNameOptions
 
 
 def make_model_name(name: AnyModelNameOptions):
-    if isinstance(name, (Model, glm.Model, TunedModel, glm.TunedModel)):
+    if isinstance(name, (Model, protos.Model, TunedModel, protos.TunedModel)):
         name = name.name  # pytype: disable=attribute-error
     elif isinstance(name, str):
         name = name
     else:
-        raise TypeError("Expected: str, Model, or TunedModel")
+        raise TypeError(
+            "Invalid input type. Expected one of the following types: `str`, `Model`, or `TunedModel`."
+        )
 
     if not (name.startswith("models/") or name.startswith("tunedModels/")):
-        raise ValueError(f"Model names should start with `models/` or `tunedModels/`, got: {name}")
+        raise ValueError(
+            f"Invalid model name: '{name}'. Model names should start with 'models/' or 'tunedModels/'."
+        )
 
     return name
 
@@ -362,7 +372,7 @@ TunedModelsIterable = Iterable[TunedModel]
 @string_utils.prettyprint
 @dataclasses.dataclass
 class TokenCount:
-    """A dataclass representation of a `glm.TokenCountResponse`.
+    """A dataclass representation of a `protos.TokenCountResponse`.
 
     Attributes:
         token_count: The number of tokens returned by the model's tokenizer for the `input_text`.

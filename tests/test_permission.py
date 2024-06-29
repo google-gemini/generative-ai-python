@@ -17,7 +17,7 @@ from typing import Any, Optional, Union
 import unittest
 import unittest.mock as mock
 
-import google.ai.generativelanguage as glm
+from google.generativeai import protos
 
 from google.generativeai import retriever
 from google.generativeai import permission
@@ -50,11 +50,11 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def create_corpus(
-            request: glm.CreateCorpusRequest,
+            request: protos.CreateCorpusRequest,
             **kwargs,
-        ) -> glm.Corpus:
+        ) -> protos.Corpus:
             self.observed_requests.append(request)
-            return glm.Corpus(
+            return protos.Corpus(
                 name="corpora/demo-corpus",
                 display_name="demo-corpus",
                 create_time="2000-01-01T01:01:01.123456Z",
@@ -63,24 +63,24 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def get_tuned_model(
-            request: Optional[glm.GetTunedModelRequest] = None,
+            request: Optional[protos.GetTunedModelRequest] = None,
             *,
             name=None,
             **kwargs,
-        ) -> glm.TunedModel:
+        ) -> protos.TunedModel:
             if request is None:
-                request = glm.GetTunedModelRequest(name=name)
-            self.assertIsInstance(request, glm.GetTunedModelRequest)
+                request = protos.GetTunedModelRequest(name=name)
+            self.assertIsInstance(request, protos.GetTunedModelRequest)
             self.observed_requests.append(request)
             response = copy.copy(self.responses["get_tuned_model"])
             return response
 
         @add_client_method
         def create_permission(
-            request: glm.CreatePermissionRequest,
-        ) -> glm.Permission:
+            request: protos.CreatePermissionRequest,
+        ) -> protos.Permission:
             self.observed_requests.append(request)
-            return glm.Permission(
+            return protos.Permission(
                 name="corpora/demo-corpus/permissions/123456789",
                 role=permission_services.to_role("writer"),
                 grantee_type=permission_services.to_grantee_type("everyone"),
@@ -88,17 +88,17 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def delete_permission(
-            request: glm.DeletePermissionRequest,
+            request: protos.DeletePermissionRequest,
         ) -> None:
             self.observed_requests.append(request)
             return None
 
         @add_client_method
         def get_permission(
-            request: glm.GetPermissionRequest,
-        ) -> glm.Permission:
+            request: protos.GetPermissionRequest,
+        ) -> protos.Permission:
             self.observed_requests.append(request)
-            return glm.Permission(
+            return protos.Permission(
                 name="corpora/demo-corpus/permissions/123456789",
                 role=permission_services.to_role("writer"),
                 grantee_type=permission_services.to_grantee_type("everyone"),
@@ -106,16 +106,16 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def list_permissions(
-            request: glm.ListPermissionsRequest,
-        ) -> glm.ListPermissionsResponse:
+            request: protos.ListPermissionsRequest,
+        ) -> protos.ListPermissionsResponse:
             self.observed_requests.append(request)
             return [
-                glm.Permission(
+                protos.Permission(
                     name="corpora/demo-corpus/permissions/123456789",
                     role=permission_services.to_role("writer"),
                     grantee_type=permission_services.to_grantee_type("everyone"),
                 ),
-                glm.Permission(
+                protos.Permission(
                     name="corpora/demo-corpus/permissions/987654321",
                     role=permission_services.to_role("reader"),
                     grantee_type=permission_services.to_grantee_type("everyone"),
@@ -125,10 +125,10 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def update_permission(
-            request: glm.UpdatePermissionRequest,
-        ) -> glm.Permission:
+            request: protos.UpdatePermissionRequest,
+        ) -> protos.Permission:
             self.observed_requests.append(request)
-            return glm.Permission(
+            return protos.Permission(
                 name="corpora/demo-corpus/permissions/123456789",
                 role=permission_services.to_role("reader"),
                 grantee_type=permission_services.to_grantee_type("everyone"),
@@ -136,16 +136,16 @@ class UnitTests(parameterized.TestCase):
 
         @add_client_method
         def transfer_ownership(
-            request: glm.TransferOwnershipRequest,
-        ) -> glm.TransferOwnershipResponse:
+            request: protos.TransferOwnershipRequest,
+        ) -> protos.TransferOwnershipResponse:
             self.observed_requests.append(request)
-            return glm.TransferOwnershipResponse()
+            return protos.TransferOwnershipResponse()
 
     def test_create_permission_success(self):
         x = retriever.create_corpus("demo-corpus")
         perm = x.permissions.create(role="writer", grantee_type="everyone", email_address=None)
         self.assertIsInstance(perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.CreatePermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.CreatePermissionRequest)
 
     def test_create_permission_failure_email_set_when_grantee_type_is_everyone(self):
         x = retriever.create_corpus("demo-corpus")
@@ -161,14 +161,14 @@ class UnitTests(parameterized.TestCase):
         x = retriever.create_corpus("demo-corpus")
         perm = x.permissions.create("writer", "everyone")
         perm.delete()
-        self.assertIsInstance(self.observed_requests[-1], glm.DeletePermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.DeletePermissionRequest)
 
     def test_get_permission_with_full_name(self):
         x = retriever.create_corpus("demo-corpus")
         perm = x.permissions.create("writer", "everyone")
         fetch_perm = permission.get_permission(name=perm.name)
         self.assertIsInstance(fetch_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.GetPermissionRequest)
         self.assertEqual(fetch_perm, perm)
 
     def test_get_permission_with_resource_name_and_id_1(self):
@@ -178,7 +178,7 @@ class UnitTests(parameterized.TestCase):
             resource_name="corpora/demo-corpus", permission_id=123456789
         )
         self.assertIsInstance(fetch_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.GetPermissionRequest)
         self.assertEqual(fetch_perm, perm)
 
     def test_get_permission_with_resource_name_name_and_id_2(self):
@@ -186,14 +186,14 @@ class UnitTests(parameterized.TestCase):
             resource_name="tunedModels/demo-corpus", permission_id=123456789
         )
         self.assertIsInstance(fetch_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.GetPermissionRequest)
 
     def test_get_permission_with_resource_type(self):
         fetch_perm = permission.get_permission(
             resource_name="demo-model", permission_id=123456789, resource_type="tunedModels"
         )
         self.assertIsInstance(fetch_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.GetPermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.GetPermissionRequest)
 
     @parameterized.named_parameters(
         dict(
@@ -257,14 +257,14 @@ class UnitTests(parameterized.TestCase):
         self.assertEqual(perms[1].email_address, "_")
         for perm in perms:
             self.assertIsInstance(perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.ListPermissionsRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.ListPermissionsRequest)
 
     def test_update_permission_success(self):
         x = retriever.create_corpus("demo-corpus")
         perm = x.permissions.create("writer", "everyone")
         updated_perm = perm.update({"role": permission_services.to_role("reader")})
         self.assertIsInstance(updated_perm, permission_services.Permission)
-        self.assertIsInstance(self.observed_requests[-1], glm.UpdatePermissionRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.UpdatePermissionRequest)
 
     def test_update_permission_failure_restricted_update_path(self):
         x = retriever.create_corpus("demo-corpus")
@@ -275,12 +275,12 @@ class UnitTests(parameterized.TestCase):
             )
 
     def test_transfer_ownership(self):
-        self.responses["get_tuned_model"] = glm.TunedModel(
+        self.responses["get_tuned_model"] = protos.TunedModel(
             name="tunedModels/fake-pig-001", base_model="models/dance-monkey-007"
         )
         x = models.get_tuned_model("tunedModels/fake-pig-001")
         response = x.permissions.transfer_ownership(email_address="_")
-        self.assertIsInstance(self.observed_requests[-1], glm.TransferOwnershipRequest)
+        self.assertIsInstance(self.observed_requests[-1], protos.TransferOwnershipRequest)
 
     def test_transfer_ownership_on_corpora(self):
         x = retriever.create_corpus("demo-corpus")

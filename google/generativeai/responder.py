@@ -22,9 +22,9 @@ from typing_extensions import TypedDict
 
 import pydantic
 
-from google.ai import generativelanguage as glm
+from google.generativeai import protos
 
-Type = glm.Type
+Type = protos.Type
 
 TypeOptions = Union[int, str, Type]
 
@@ -186,8 +186,8 @@ def _rename_schema_fields(schema: dict[str, Any]):
 
 class FunctionDeclaration:
     def __init__(self, *, name: str, description: str, parameters: dict[str, Any] | None = None):
-        """A  class wrapping a `glm.FunctionDeclaration`, describes a function for `genai.GenerativeModel`'s `tools`."""
-        self._proto = glm.FunctionDeclaration(
+        """A  class wrapping a `protos.FunctionDeclaration`, describes a function for `genai.GenerativeModel`'s `tools`."""
+        self._proto = protos.FunctionDeclaration(
             name=name, description=description, parameters=_rename_schema_fields(parameters)
         )
 
@@ -200,7 +200,7 @@ class FunctionDeclaration:
         return self._proto.description
 
     @property
-    def parameters(self) -> glm.Schema:
+    def parameters(self) -> protos.Schema:
         return self._proto.parameters
 
     @classmethod
@@ -209,7 +209,7 @@ class FunctionDeclaration:
         self._proto = proto
         return self
 
-    def to_proto(self) -> glm.FunctionDeclaration:
+    def to_proto(self) -> protos.FunctionDeclaration:
         return self._proto
 
     @staticmethod
@@ -255,16 +255,16 @@ class CallableFunctionDeclaration(FunctionDeclaration):
         super().__init__(name=name, description=description, parameters=parameters)
         self.function = function
 
-    def __call__(self, fc: glm.FunctionCall) -> glm.FunctionResponse:
+    def __call__(self, fc: protos.FunctionCall) -> protos.FunctionResponse:
         result = self.function(**fc.args)
         if not isinstance(result, dict):
             result = {"result": result}
-        return glm.FunctionResponse(name=fc.name, response=result)
+        return protos.FunctionResponse(name=fc.name, response=result)
 
 
 FunctionDeclarationType = Union[
     FunctionDeclaration,
-    glm.FunctionDeclaration,
+    protos.FunctionDeclaration,
     dict[str, Any],
     Callable[..., Any],
 ]
@@ -272,8 +272,8 @@ FunctionDeclarationType = Union[
 
 def _make_function_declaration(
     fun: FunctionDeclarationType,
-) -> FunctionDeclaration | glm.FunctionDeclaration:
-    if isinstance(fun, (FunctionDeclaration, glm.FunctionDeclaration)):
+) -> FunctionDeclaration | protos.FunctionDeclaration:
+    if isinstance(fun, (FunctionDeclaration, protos.FunctionDeclaration)):
         return fun
     elif isinstance(fun, dict):
         if "function" in fun:
@@ -284,20 +284,20 @@ def _make_function_declaration(
         return CallableFunctionDeclaration.from_function(fun)
     else:
         raise TypeError(
-            "Expected an instance of `genai.FunctionDeclaraionType`. Got a:\n" f"  {type(fun)=}\n",
+            f"Invalid argument type: Expected an instance of `genai.FunctionDeclarationType`. Received type: {type(fun).__name__}.",
             fun,
         )
 
 
-def _encode_fd(fd: FunctionDeclaration | glm.FunctionDeclaration) -> glm.FunctionDeclaration:
-    if isinstance(fd, glm.FunctionDeclaration):
+def _encode_fd(fd: FunctionDeclaration | protos.FunctionDeclaration) -> protos.FunctionDeclaration:
+    if isinstance(fd, protos.FunctionDeclaration):
         return fd
 
     return fd.to_proto()
 
 
 class Tool:
-    """A wrapper for `glm.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
+    """A wrapper for `protos.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
 
     def __init__(self, function_declarations: Iterable[FunctionDeclarationType]):
         # The main path doesn't use this but is seems useful.
@@ -309,23 +309,23 @@ class Tool:
                 raise ValueError("")
             self._index[fd.name] = fd
 
-        self._proto = glm.Tool(
+        self._proto = protos.Tool(
             function_declarations=[_encode_fd(fd) for fd in self._function_declarations]
         )
 
     @property
-    def function_declarations(self) -> list[FunctionDeclaration | glm.FunctionDeclaration]:
+    def function_declarations(self) -> list[FunctionDeclaration | protos.FunctionDeclaration]:
         return self._function_declarations
 
     def __getitem__(
-        self, name: str | glm.FunctionCall
-    ) -> FunctionDeclaration | glm.FunctionDeclaration:
+        self, name: str | protos.FunctionCall
+    ) -> FunctionDeclaration | protos.FunctionDeclaration:
         if not isinstance(name, str):
             name = name.name
 
         return self._index[name]
 
-    def __call__(self, fc: glm.FunctionCall) -> glm.FunctionResponse | None:
+    def __call__(self, fc: protos.FunctionCall) -> protos.FunctionResponse | None:
         declaration = self[fc]
         if not callable(declaration):
             return None
@@ -341,21 +341,21 @@ class ToolDict(TypedDict):
 
 
 ToolType = Union[
-    Tool, glm.Tool, ToolDict, Iterable[FunctionDeclarationType], FunctionDeclarationType
+    Tool, protos.Tool, ToolDict, Iterable[FunctionDeclarationType], FunctionDeclarationType
 ]
 
 
 def _make_tool(tool: ToolType) -> Tool:
     if isinstance(tool, Tool):
         return tool
-    elif isinstance(tool, glm.Tool):
+    elif isinstance(tool, protos.Tool):
         return Tool(function_declarations=tool.function_declarations)
     elif isinstance(tool, dict):
         if "function_declarations" in tool:
             return Tool(**tool)
         else:
             fd = tool
-            return Tool(function_declarations=[glm.FunctionDeclaration(**fd)])
+            return Tool(function_declarations=[protos.FunctionDeclaration(**fd)])
     elif isinstance(tool, Iterable):
         return Tool(function_declarations=tool)
     else:
@@ -363,7 +363,7 @@ def _make_tool(tool: ToolType) -> Tool:
             return Tool(function_declarations=[tool])
         except Exception as e:
             raise TypeError(
-                "Expected an instance of `genai.ToolType`. Got a:\n" f"  {type(tool)=}",
+                f"Invalid argument type: Expected an instance of `genai.ToolType`. Received type: {type(tool).__name__}.",
                 tool,
             ) from e
 
@@ -380,26 +380,25 @@ class FunctionLibrary:
                 name = declaration.name
                 if name in self._index:
                     raise ValueError(
-                        f"A `FunctionDeclaration` named {name} is already defined. "
-                        "Each `FunctionDeclaration` must be uniquely named."
+                        f"Invalid operation: A `FunctionDeclaration` named '{name}' is already defined. Each `FunctionDeclaration` must have a unique name."
                     )
                 self._index[declaration.name] = declaration
 
     def __getitem__(
-        self, name: str | glm.FunctionCall
-    ) -> FunctionDeclaration | glm.FunctionDeclaration:
+        self, name: str | protos.FunctionCall
+    ) -> FunctionDeclaration | protos.FunctionDeclaration:
         if not isinstance(name, str):
             name = name.name
 
         return self._index[name]
 
-    def __call__(self, fc: glm.FunctionCall) -> glm.Part | None:
+    def __call__(self, fc: protos.FunctionCall) -> protos.Part | None:
         declaration = self[fc]
         if not callable(declaration):
             return None
 
         response = declaration(fc)
-        return glm.Part(function_response=response)
+        return protos.Part(function_response=response)
 
     def to_proto(self):
         return [tool.to_proto() for tool in self._tools]
@@ -432,7 +431,7 @@ def to_function_library(lib: FunctionLibraryType | None) -> FunctionLibrary | No
         return FunctionLibrary(tools=lib)
 
 
-FunctionCallingMode = glm.FunctionCallingConfig.Mode
+FunctionCallingMode = protos.FunctionCallingConfig.Mode
 
 # fmt: off
 _FUNCTION_CALLING_MODE = {
@@ -468,12 +467,12 @@ class FunctionCallingConfigDict(TypedDict):
 
 
 FunctionCallingConfigType = Union[
-    FunctionCallingModeType, FunctionCallingConfigDict, glm.FunctionCallingConfig
+    FunctionCallingModeType, FunctionCallingConfigDict, protos.FunctionCallingConfig
 ]
 
 
-def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCallingConfig:
-    if isinstance(obj, glm.FunctionCallingConfig):
+def to_function_calling_config(obj: FunctionCallingConfigType) -> protos.FunctionCallingConfig:
+    if isinstance(obj, protos.FunctionCallingConfig):
         return obj
     elif isinstance(obj, (FunctionCallingMode, str, int)):
         obj = {"mode": to_function_calling_mode(obj)}
@@ -483,29 +482,31 @@ def to_function_calling_config(obj: FunctionCallingConfigType) -> glm.FunctionCa
         obj["mode"] = to_function_calling_mode(mode)
     else:
         raise TypeError(
-            f"Could not convert input to `glm.FunctionCallingConfig`: \n'" f"  type: {type(obj)}\n",
+            "Invalid argument type: Could not convert input to `protos.FunctionCallingConfig`."
+            f" Received type: {type(obj).__name__}.",
             obj,
         )
 
-    return glm.FunctionCallingConfig(obj)
+    return protos.FunctionCallingConfig(obj)
 
 
 class ToolConfigDict:
     function_calling_config: FunctionCallingConfigType
 
 
-ToolConfigType = Union[ToolConfigDict, glm.ToolConfig]
+ToolConfigType = Union[ToolConfigDict, protos.ToolConfig]
 
 
-def to_tool_config(obj: ToolConfigType) -> glm.ToolConfig:
-    if isinstance(obj, glm.ToolConfig):
+def to_tool_config(obj: ToolConfigType) -> protos.ToolConfig:
+    if isinstance(obj, protos.ToolConfig):
         return obj
     elif isinstance(obj, dict):
         fcc = obj.pop("function_calling_config")
         fcc = to_function_calling_config(fcc)
         obj["function_calling_config"] = fcc
-        return glm.ToolConfig(**obj)
+        return protos.ToolConfig(**obj)
     else:
         raise TypeError(
-            f"Could not convert input to `glm.ToolConfig`: \n'" f"  type: {type(obj)}\n", obj
+            "Invalid argument type: Could not convert input to `protos.ToolConfig`. "
+            f"Received type: {type(obj).__name__}.",
         )
