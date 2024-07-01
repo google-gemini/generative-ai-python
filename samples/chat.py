@@ -31,7 +31,7 @@ class UnitTests(absltest.TestCase):
             ]
         )
         response = chat.send_message("I have 2 dogs in my house.")
-        print(response.text) 
+        print(response.text)
         response = chat.send_message("How many paws are in my house?")
         print(response.text)
         # [END chat]
@@ -62,11 +62,14 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
-        response = chat.send_message("Hello, I'm interested in learning about musical instruments. Can I show you one?", stream=True)
+        response = chat.send_message(
+            "Hello, I'm interested in learning about musical instruments. Can I show you one?",
+            stream=True,
+        )
         for chunk in response:
             print(chunk.text)  # Yes.
             print("_" * 80)
-        
+
         organ = genai.upload_file(media / "organ.jpg")
         response = chat.send_message(
             ["What family of intruments does this instrument belong to?", organ], stream=True

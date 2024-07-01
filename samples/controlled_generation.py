@@ -16,8 +16,8 @@ import google.generativeai as genai
 
 
 class UnitTests(absltest.TestCase):
-    def test_controlled_generation(self):
-        # [START controlled_generation]
+    def test_json_controlled_generation(self):
+        # [START json_controlled_generation]
         import typing_extensions as typing
 
         class Recipe(typing.TypedDict):
@@ -31,7 +31,18 @@ class UnitTests(absltest.TestCase):
             ),
         )
         print(result)
-        # [END controlled_generation]
+        # [END json_controlled_generation]
+
+    def test_json_no_schema(self):
+        # [START json_no_schema]
+        model = genai.GenerativeModel("gemini-1.5-pro-latest")
+        prompt = """List a few popular cookie recipes using this JSON schema:
+
+        Recipe = {'recipe_name': str}
+        Return: list[Recipe]"""
+        result = model.generate_content(prompt)
+        print(result)
+        # [END json_no_schema]
 
 
 if __name__ == "__main__":
