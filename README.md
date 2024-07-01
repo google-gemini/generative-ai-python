@@ -9,7 +9,7 @@ The Google AI Python SDK is the easiest way for Python developers to build with 
 ## Get started with the Gemini API
 1. Go to [Google AI Studio](https://aistudio.google.com/).
 2. Login with your Google account.
-3. [Create](https://aistudio.google.com/app/apikey) an API key.
+3. [Create](https://aistudio.google.com/app/apikey) an API key. Note that in Europe the free tier is not available.
 4. Try a Python SDK [quickstart](https://github.com/google-gemini/gemini-api-cookbook/blob/main/quickstarts/Prompting.ipynb) in the [Gemini API Cookbook](https://github.com/google-gemini/gemini-api-cookbook/).
 5. For detailed instructions, try the 
 [Python SDK tutorial](https://ai.google.dev/tutorials/python_quickstart) on [ai.google.dev](https://ai.google.dev).
@@ -17,11 +17,11 @@ The Google AI Python SDK is the easiest way for Python developers to build with 
 ## Usage example
 See the [Gemini API Cookbook](https://github.com/google-gemini/gemini-api-cookbook/) or [ai.google.dev](https://ai.google.dev) for complete code.
 
-Install from [PyPI](https://pypi.org/project/google-generativeai).
+1. Install from [PyPI](https://pypi.org/project/google-generativeai).
 
 `pip install -U google-generativeai`
 
-Import the SDK and configure your API key.
+2. Import the SDK and configure your API key.
 
 ```python
 import google.generativeai as genai
@@ -30,7 +30,7 @@ import os
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 ```
 
-Create a model and run a prompt.
+3. Create a model and run a prompt.
 
 ```python
 model = genai.GenerativeModel('gemini-1.0-pro-latest')
