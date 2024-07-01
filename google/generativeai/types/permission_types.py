@@ -28,6 +28,7 @@ from google.generativeai.client import get_default_permission_async_client
 from google.generativeai.utils import flatten_update_paths
 from google.generativeai import string_utils
 
+__all__ = ["Permission", "Permissions"]
 
 GranteeType = protos.Permission.GranteeType
 Role = protos.Permission.Role
@@ -89,7 +90,7 @@ def valid_id(name: str) -> bool:
 
 
 @string_utils.prettyprint
-@dataclasses.dataclass
+@dataclasses.dataclass(init=False)
 class Permission:
     """
     A permission to access a resource.
@@ -99,6 +100,24 @@ class Permission:
     role: Role
     grantee_type: Optional[GranteeType]
     email_address: Optional[str] = None
+
+    def __init__(
+        self,
+        name: str,
+        role: RoleOptions,
+        grantee_type: Optional[GranteeTypeOptions] = None,
+        email_address: Optional[str] = None,
+    ):
+        self.name = name
+        if role is None:
+            self.role = None
+        else:
+            self.role = to_role(role)
+        if grantee_type is None:
+            self.grantee_type = None
+        else:
+            self.grantee_type = to_grantee_type(grantee_type)
+        self.email_address = email_address
 
     def delete(
         self,
@@ -279,6 +298,12 @@ class Permissions:
                 f"Invalid operation: An 'email_address' must be provided when 'grantee_type' is not set to 'EVERYONE'. Currently, 'grantee_type' is set to '{grantee_type}' and 'email_address' is '{email_address if email_address else 'not provided'}'."
             )
 
+        if email_address and grantee_type is None:
+            if email_address.endswith("googlegroups.com"):
+                grantee_type = GranteeType.GROUP
+            else:
+                grantee_type = GranteeType.USER
+
         permission = protos.Permission(
             role=role,
             grantee_type=grantee_type,
@@ -367,6 +392,9 @@ class Permissions:
             permission = type(permission).to_dict(permission)
             yield Permission(**permission)
 
+    def __iter__(self):
+        return self.list()
+
     async def list_async(
         self,
         page_size: Optional[int] = None,
@@ -384,6 +412,35 @@ class Permissions:
         async for permission in await client.list_permissions(request):
             permission = type(permission).to_dict(permission)
             yield Permission(**permission)
+
+    async def __aiter__(self):
+        return self.list_async()
+
+    @classmethod
+    def get(cls, name: str) -> Permission:
+        """
+        Get information about a specific permission.
+
+        Args:
+            name: The name of the permission to get.
+
+        Returns:
+            Requested permission as an instance of `Permission`.
+        """
+        return Permission.get(name)
+
+    @classmethod
+    async def get_async(cls, name: str) -> Permission:
+        """
+        Get information about a specific permission.
+
+        Args:
+            name: The name of the permission to get.
+
+        Returns:
+            Requested permission as an instance of `Permission`.
+        """
+        return await Permission.get_async(name)
 
     def transfer_ownership(
         self,
