@@ -163,9 +163,9 @@ class _ClientManager:
                 # If no key is provided explicitly, attempt to load one from the
                 # environment.
                 api_key = os.getenv("GEMINI_API_KEY")
-            
+
             if api_key is None:
-                # If the GEMINI_API_KEY doesn't exist, attempt to load the 
+                # If the GEMINI_API_KEY doesn't exist, attempt to load the
                 # GOOGLE_API_KEY from the environment.
                 api_key = os.getenv("GOOGLE_API_KEY")
 
