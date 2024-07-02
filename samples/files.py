@@ -22,7 +22,7 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 
 
 class UnitTests(absltest.TestCase):
-    def test_files_create(self):
+    def test_files_create_text(self):
         # [START files_create_text]
         myfile = genai.upload_file(media / "poem.txt")
         print(f"{myfile=}")
@@ -33,6 +33,18 @@ class UnitTests(absltest.TestCase):
         )
         print(f"{result.text=}")
         # [END files_create_text]
+
+    def test_files_create_image(self):
+        # [START files_create_image]
+        myfile = genai.upload_file(media / "Cajun_instruments.jpg")
+        print(f"{myfile=}")
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        result = model.generate_content(
+            [myfile, "\n\n", "Can you tell me about the instruments in this photo?"]
+        )
+        print(f"{result.text=}")
+        # [END files_create_image]
 
     def test_files_create_audio(self):
         # [START files_create_audio]
