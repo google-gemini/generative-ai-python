@@ -25,14 +25,14 @@ class UnitTests(absltest.TestCase):
     def test_text_gen_text_only_prompt(self):
         # [START text_gen_text_only_prompt]
         model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content("Give me python code to sort a list")
+        response = model.generate_content("Write a story about a magic backpack.")
         print(response.text)
         # [END text_gen_text_only_prompt]
 
     def test_text_gen_text_only_prompt_streaming(self):
         # [START text_gen_text_only_prompt_streaming]
         model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content("Give me python code to sort a list", stream=True)
+        response = model.generate_content("Write a story about a magic backpack.", stream=True)
         for chunk in response:
             print(chunk.text)
             print("_" * 80)
