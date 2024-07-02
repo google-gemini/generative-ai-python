@@ -116,7 +116,7 @@ class UnitTests(parameterized.TestCase):
         result = generation_types._join_contents(contents)
         expected = {
             "parts": [
-                {"text": ("Tell me a story about a magic backpack that looks like" " this: ")},
+                {"text": "Tell me a story about a magic backpack that looks like" " this: "},
                 {"inline_data": {"mime_type": "image/png", "data": "REFUQSE="}},
             ],
             "role": "assistant",
@@ -254,7 +254,7 @@ class UnitTests(parameterized.TestCase):
         expected = {
             "content": {
                 "parts": [
-                    {"text": ("Tell me a story about a magic backpack that looks like" " this: ")},
+                    {"text": "Tell me a story about a magic backpack that looks like" " this: "},
                     {"text": ""},
                 ],
                 "role": "assistant",
@@ -438,7 +438,7 @@ class UnitTests(parameterized.TestCase):
         {
             "content": {
                 "parts": [
-                    {"text": ("Tell me a story about a magic backpack" " that looks like this: ")},
+                    {"text": "Tell me a story about a magic backpack" " that looks like this: "},
                     {
                         "inline_data": {
                             "mime_type": "image/png",
