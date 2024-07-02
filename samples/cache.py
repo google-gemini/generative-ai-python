@@ -96,7 +96,7 @@ class UnitTests(absltest.TestCase):
         print(f"After update:\n {cache}")
 
         # Or you can update the expire_time
-        cache.update(expire_time=datetime.now() + datetime.timedelta(minutes=15))
+        cache.update(expire_time=datetime.datetime.now() + datetime.timedelta(minutes=15))
         # [END cache_update]
         cache.delete()
 
@@ -113,7 +113,7 @@ class UnitTests(absltest.TestCase):
 
         # Later
         cache = genai.caching.CachedContent.get(cache_name)
-        apollo_model = genai.caching.CachedContent.from_cached_content(cache)
+        apollo_model = genai.GenerativeModel.from_cached_content(cache)
         response = apollo_model.generate_content("Find a lighthearted moment from this transcript")
         print(response.text)
         # [END cache_create_from_name]
@@ -121,16 +121,18 @@ class UnitTests(absltest.TestCase):
 
     def test_cache_chat(self):
         # [START cache_chat]
-        model_name='gemini-1.5-flash'
+        model_name = "gemini-1.5-flash-001"
         system_instruction = "You are an expert analyzing transcripts."
 
         model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
         chat = model.start_chat()
         document = genai.upload_file(path=media / "a11.txt")
         response = chat.send_message(["Hi, could you summarize this transcript?", document])
-        print('\n\nmodel:  ', response.text)
-        response = chat.send_message(['Okay, could you tell me more about the trans-lunar injection'])
-        print('\n\nmodel:  ', response.text)
+        print("\n\nmodel:  ", response.text)
+        response = chat.send_message(
+            ["Okay, could you tell me more about the trans-lunar injection"]
+        )
+        print("\n\nmodel:  ", response.text)
 
         # To cache the conversation so far, pass the chat history as the list of "contents".
         cache = genai.caching.CachedContent.create(
@@ -145,7 +147,7 @@ class UnitTests(absltest.TestCase):
         response = chat.send_message(
             "I didn't understand that last part, could you explain it in simpler language?"
         )
-        print('\n\nmodel:  ', response.text)
+        print("\n\nmodel:  ", response.text)
         # [END cache_chat]
         cache.delete()
 
