@@ -24,7 +24,7 @@ class UnitTests(absltest.TestCase):
         unsafe_prompt = "I support Martians Soccer Club and I think Jupiterians Football Club sucks! Write a ironic phrase about them."
         response = model.generate_content(unsafe_prompt,
                                           safety_settings={
-                                              "HARASSMENT": "ONLY_HIGH"
+                                              "HARASSMENT": "BLOCK_ONLY_HIGH"
                                           })
         print(response.candidates[0].finish_reason)
         print(response.candidates[0].safety_ratings)
@@ -38,9 +38,10 @@ class UnitTests(absltest.TestCase):
             unsafe_prompt,
             safety_settings={
                 "HATE": "MEDIUM",
-                "HARASSMENT": "BLOCK_HIGH",
+                "HARASSMENT": "BLOCK_ONLY_HIGH",
             },
         )
+
         try:
             print(response.text)
         except:
