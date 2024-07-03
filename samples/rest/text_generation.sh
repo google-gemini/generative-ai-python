@@ -35,3 +35,18 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generat
         }]
        }' 2> /dev/null
 # [END text_gen_multimodal_one_image_prompt]
+
+echo "[START text_gen_multimodal_one_image_prompt_streaming]"
+# [START text_gen_multimodal_one_image_prompt_streaming]
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent?key=$GOOGLE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d '{
+      "contents": [{
+        "parts":[
+            {"text": "Tell me about this instrument"},
+            {"inline_data": "../third_party/organ.jpg}
+        ]
+        }]
+       }' 2> /dev/null
+# [END text_gen_multimodal_one_image_prompt_streaming]
