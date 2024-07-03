@@ -59,8 +59,8 @@ class UnitTests(absltest.TestCase):
         print(model.count_tokens(["Tell me about this instrument", organ_upload]))
         # [END tokens_multimodal_image_file_api]
 
-    def test_tokens_video_audio_file_api(self):
-        # [START tokens_video_audio_file_api]
+    def test_tokens_multimodal_video_audio_file_api(self):
+        # [START tokens_multimodal_video_audio_file_api]
         model = genai.GenerativeModel("models/gemini-1.5-flash")
         audio_upload = genai.upload_file(media / "sample.mp3")
         print(model.count_tokens(audio_upload))
