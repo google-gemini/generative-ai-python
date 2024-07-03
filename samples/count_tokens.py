@@ -64,7 +64,7 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("models/gemini-1.5-flash")
         audio_upload = genai.upload_file(media / "sample.mp3")
         print(model.count_tokens(audio_upload))
-        # [END tokens_video_audio_file_api]
+        # [END tokens_multimodal_video_audio_file_api]
 
     def test_tokens_cached_content(self):
         # [START tokens_cached_content]
