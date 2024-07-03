@@ -32,9 +32,6 @@ class UnitTests(absltest.TestCase):
             [myfile, "\n\n", "Can you add a few more lines to this poem?"]
         )
         print(f"{result.text=}")
-<<<<<<< MarkDaoust-patch-24
-        # [END files_create]
-=======
         # [END files_create_text]
 
     def test_files_create_image(self):
