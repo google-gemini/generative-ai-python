@@ -27,7 +27,6 @@ class UnitTests(absltest.TestCase):
             model="models/text-embedding-004", content=text, output_dimensionality=10
         )
         print(result["embedding"])
-        print()
         # [END embed_content]
 
     def batch_embed_content(self):
@@ -41,7 +40,6 @@ class UnitTests(absltest.TestCase):
             model="models/text-embedding-004", content=texts, output_dimensionality=10
         )
         print(result)
-        print()
         # [END batch_embed_content]
 
 

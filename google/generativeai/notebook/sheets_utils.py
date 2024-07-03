@@ -102,8 +102,7 @@ class SheetsOutputs(llmfn_outputs.LLMFnOutputsSink):
     def write_outputs(self, outputs: llmfn_outputs.LLMFnOutputsBase) -> None:
         # Transpose `outputs` into a list of rows.
         outputs_dict = outputs.as_dict()
-        outputs_rows: list[Sequence[Any]] = []
-        outputs_rows.append(list(outputs_dict.keys()))
+        outputs_rows: list[Sequence[Any]] = [list(outputs_dict.keys())]
         outputs_rows.extend([list(x) for x in zip(*outputs_dict.values())])
 
         gspread_client.get_client().write_records(
