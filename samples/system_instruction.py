@@ -19,14 +19,14 @@ import google.generativeai as genai
 
 class UnitTests(absltest.TestCase):
     def test_system_instructions(self):
-        # [START system_instructions]
+        # [START system_instruction]
         model = genai.GenerativeModel(
             "models/gemini-1.5-flash",
             system_instruction="You are a cat. Your name is Neko.",
         )
         response = model.generate_content("Good morning! How are you?")
         print(response.text)
-        # [END system_instructions]
+        # [END system_instruction]
 
 
 if __name__ == "__main__":
