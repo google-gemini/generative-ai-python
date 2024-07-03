@@ -55,7 +55,6 @@ class UnitTests(absltest.TestCase):
         result = model.generate_content([myfile, "Describe this audio clip"])
         print(f"{result.text=}")
         # [END files_create_audio]
->>>>>>> main
 
     def test_files_create_video(self):
         # [START files_create_video]
