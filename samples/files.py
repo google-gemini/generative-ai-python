@@ -32,9 +32,6 @@ class UnitTests(absltest.TestCase):
             [myfile, "\n\n", "Can you add a few more lines to this poem?"]
         )
         print(f"{result.text=}")
-<<<<<<< MarkDaoust-patch-24
-        # [END files_create]
-=======
         # [END files_create_text]
 
     def test_files_create_image(self):
@@ -58,7 +55,6 @@ class UnitTests(absltest.TestCase):
         result = model.generate_content([myfile, "Describe this audio clip"])
         print(f"{result.text=}")
         # [END files_create_audio]
->>>>>>> main
 
     def test_files_create_video(self):
         # [START files_create_video]
@@ -109,7 +105,6 @@ class UnitTests(absltest.TestCase):
         except google.api_core.exceptions.PermissionDenied:
             pass
         # [END files_delete]
-
 
 
 if __name__ == "__main__":

@@ -22,10 +22,11 @@ class UnitTests(absltest.TestCase):
         # [START safety_settings]
         model = genai.GenerativeModel("gemini-1.5-flash")
         unsafe_prompt = "I support Martians Soccer Club and I think Jupiterians Football Club sucks! Write a ironic phrase about them."
-        response = model.generate_content(unsafe_prompt,
-                                          safety_settings={
-                                              "HARASSMENT": "BLOCK_ONLY_HIGH"
-                                          })
+        response = model.generate_content(
+            unsafe_prompt, safety_settings={"HARASSMENT": "BLOCK_ONLY_HIGH"}
+        )
+        # If you want to set all the safety_settings to the same value you can just pass that value:
+        response = model.generate_content(unsafe_prompt, safety_settings="BLOCK_ONLY_HIGH")
         print(response.candidates[0].finish_reason)
         print(response.candidates[0].safety_ratings)
         # [END safety_settings]
@@ -41,7 +42,8 @@ class UnitTests(absltest.TestCase):
                 "HARASSMENT": "BLOCK_ONLY_HIGH",
             },
         )
-
+        # If you want to set all the safety_settings to the same value you can just pass that value:
+        response = model.generate_content(unsafe_prompt, safety_settings="MEDIUM")
         try:
             print(response.text)
         except:
