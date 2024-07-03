@@ -19,7 +19,7 @@ See the [Gemini API Cookbook](https://github.com/google-gemini/gemini-api-cookbo
 
 1. Install from [PyPI](https://pypi.org/project/google-generativeai).
 
-`pip install -U google-generativeai`
+`pip install --upgrade google-generativeai --quiet`
 
 2. Import the SDK and configure your API key.
 
