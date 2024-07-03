@@ -32,6 +32,9 @@ class UnitTests(absltest.TestCase):
             [myfile, "\n\n", "Can you add a few more lines to this poem?"]
         )
         print(f"{result.text=}")
+<<<<<<< MarkDaoust-patch-24
+        # [END files_create]
+=======
         # [END files_create_text]
 
     def test_files_create_image(self):
@@ -55,6 +58,7 @@ class UnitTests(absltest.TestCase):
         result = model.generate_content([myfile, "Describe this audio clip"])
         print(f"{result.text=}")
         # [END files_create_audio]
+>>>>>>> main
 
     def test_files_create_video(self):
         # [START files_create_video]
@@ -82,6 +86,16 @@ class UnitTests(absltest.TestCase):
             print("  ", f.name)
         # [END files_list]
 
+    def test_files_get(self):
+        # [START files_get]
+        myfile = genai.upload_file(media / "poem.txt")
+        file_name = myfile.name
+        print(file_name)  # "files/*"
+
+        myfile = genai.get_file(file_name)
+        print(myfile)
+        # [END files_get]
+
     def test_files_delete(self):
         # [START files_delete]
         myfile = genai.upload_file(media / "poem.txt")
@@ -96,15 +110,6 @@ class UnitTests(absltest.TestCase):
             pass
         # [END files_delete]
 
-    def test_files_get(self):
-        # [START files_get]
-        myfile = genai.upload_file(media / "poem.txt")
-        file_name = myfile.name
-        print(file_name)  # "files/*"
-
-        myfile = genai.get_file(file_name)
-        print(myfile)
-        # [END files_get]
 
 
 if __name__ == "__main__":
