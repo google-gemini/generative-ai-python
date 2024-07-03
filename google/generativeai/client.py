@@ -63,6 +63,7 @@ class FileServiceClient(glm.FileServiceClient):
             uri=f"{GENAI_API_DISCOVERY_URL}?version=v1beta&key={api_key}",
         )
         response, content = request.execute()
+        request.http.close()
 
         discovery_doc = content.decode("utf-8")
         self._discovery_api = googleapiclient.discovery.build_from_document(
