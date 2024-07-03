@@ -29,8 +29,8 @@ class UnitTests(absltest.TestCase):
         print(result["embedding"])
         # [END embed_content]
 
-    def batch_embed_content(self):
-        # [START batch_embed_content]
+    def batch_embed_contents(self):
+        # [START batch_embed_contents]
         texts = [
             "What is the meaning of life?",
             "How much wood would a woodchuck chuck?",
@@ -40,7 +40,7 @@ class UnitTests(absltest.TestCase):
             model="models/text-embedding-004", content=texts, output_dimensionality=10
         )
         print(result)
-        # [END batch_embed_content]
+        # [END batch_embed_contents]
 
 
 if __name__ == "__main__":
