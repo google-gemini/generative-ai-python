@@ -30,6 +30,7 @@ from google.generativeai import protos
 
 if typing.TYPE_CHECKING:
     import PIL.Image
+    import PIL.PngImagePlugin
     import IPython.display
 
     IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
@@ -37,6 +38,7 @@ else:
     IMAGE_TYPES = ()
     try:
         import PIL.Image
+        import PIL.PngImagePlugin
 
         IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
     except ImportError:
