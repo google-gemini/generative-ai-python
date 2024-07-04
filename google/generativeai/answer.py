@@ -82,7 +82,7 @@ GroundingPassagesOptions = Union[
 def _make_grounding_passages(source: GroundingPassagesOptions) -> protos.GroundingPassages:
     """
     Converts the `source` into a `protos.GroundingPassage`. A `GroundingPassages` contains a list of
-    `protos.GroundingPassage` objects, which each contain a `protos.Contant` and a string `id`.
+    `protos.GroundingPassage` objects, which each contain a `protos.Content` and a string `id`.
 
     Args:
         source: `Content` or a `GroundingPassagesOptions` that will be converted to protos.GroundingPassages.
@@ -191,7 +191,7 @@ def _make_generate_answer_request(
             single question to answer. For multi-turn queries, this is a repeated field that contains
             conversation history and the last `Content` in the list containing the question.
         inline_passages: Grounding passages (a list of `Content`-like objects or `(id, content)` pairs,
-            or a `protos.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
+            or a `protos.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retriever`,
             one must be set, but not both.
         semantic_retriever: A Corpus, Document, or `protos.SemanticRetrieverConfig` to use for grounding. Exclusive with
              `inline_passages`, one must be set, but not both.
@@ -267,7 +267,7 @@ def generate_answer(
     >>> my_corpus = retriever.get_corpus('my_corpus')
     >>> genai.generate_answer(
     ...     content=question,
-    ...     semantic_retreiver=my_corpus
+    ...     semantic_retriever=my_corpus
     ... )
 
 
@@ -276,7 +276,7 @@ def generate_answer(
         contents: The question to be answered by the model, grounded in the
                 provided source.
         inline_passages: Grounding passages (a list of `Content`-like objects or (id, content) pairs,
-            or a `protos.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
+            or a `protos.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retriever`,
             one must be set, but not both.
         semantic_retriever: A Corpus, Document, or `protos.SemanticRetrieverConfig` to use for grounding. Exclusive with
              `inline_passages`, one must be set, but not both.
@@ -330,7 +330,7 @@ async def generate_answer_async(
         contents: The question to be answered by the model, grounded in the
                 provided source.
         inline_passages: Grounding passages (a list of `Content`-like objects or (id, content) pairs,
-            or a `protos.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retreiver`,
+            or a `protos.GroundingPassages`) to send inline with the request. Exclusive with `semantic_retriever`,
             one must be set, but not both.
         semantic_retriever: A Corpus, Document, or `protos.SemanticRetrieverConfig` to use for grounding. Exclusive with
              `inline_passages`, one must be set, but not both.

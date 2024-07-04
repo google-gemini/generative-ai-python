@@ -397,7 +397,7 @@ def update_tuned_model(
     client: glm.ModelServiceClient | None = None,
     request_options: helper_types.RequestOptionsType | None = None,
 ) -> model_types.TunedModel:
-    """Calls the API to puch updates to a specified tuned model where only certain attributes are updatable."""
+    """Calls the API to push updates to a specified tuned model where only certain attributes are updatable."""
 
     if request_options is None:
         request_options = {}

@@ -1235,7 +1235,7 @@ class Document(abc.ABC):
         Update multiple chunks within the same document.
 
         Args:
-            chunks: Data structure specifying which `Chunk`s to update and what the required updats are.
+            chunks: Data structure specifying which `Chunk`s to update and what the required updates are.
             request_options: Options for the request.
 
         Return:
