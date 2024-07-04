@@ -18,15 +18,22 @@ import google.generativeai as genai
 
 
 class UnitTests(absltest.TestCase):
-    def test_system_instructions(self):
-        # [START system_instructions]
-        model = genai.GenerativeModel(
-            "models/gemini-1.5-flash",
-            system_instruction="You are a cat. Your name is Neko.",
+    def test_configure_model(self):
+        # [START configure_model]
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(
+            "Tell me a story about a magic backpack.",
+            generation_config=genai.types.GenerationConfig(
+                # Only one candidate for now.
+                candidate_count=1,
+                stop_sequences=["x"],
+                max_output_tokens=20,
+                temperature=1.0,
+            ),
         )
-        response = model.generate_content("Good morning! How are you?")
+
         print(response.text)
-        # [END system_instructions]
+        # [END configure_model]
 
 
 if __name__ == "__main__":

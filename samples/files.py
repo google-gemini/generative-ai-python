@@ -22,8 +22,8 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 
 
 class UnitTests(absltest.TestCase):
-    def test_files_create(self):
-        # [START files_create]
+    def test_files_create_text(self):
+        # [START files_create_text]
         myfile = genai.upload_file(media / "poem.txt")
         print(f"{myfile=}")
 
@@ -32,7 +32,29 @@ class UnitTests(absltest.TestCase):
             [myfile, "\n\n", "Can you add a few more lines to this poem?"]
         )
         print(f"{result.text=}")
-        # [END files_create]
+        # [END files_create_text]
+
+    def test_files_create_image(self):
+        # [START files_create_image]
+        myfile = genai.upload_file(media / "Cajun_instruments.jpg")
+        print(f"{myfile=}")
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        result = model.generate_content(
+            [myfile, "\n\n", "Can you tell me about the instruments in this photo?"]
+        )
+        print(f"{result.text=}")
+        # [END files_create_image]
+
+    def test_files_create_audio(self):
+        # [START files_create_audio]
+        myfile = genai.upload_file(media / "sample.mp3")
+        print(f"{myfile=}")
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        result = model.generate_content([myfile, "Describe this audio clip"])
+        print(f"{result.text=}")
+        # [END files_create_audio]
 
     def test_files_create_video(self):
         # [START files_create_video]
@@ -60,6 +82,16 @@ class UnitTests(absltest.TestCase):
             print("  ", f.name)
         # [END files_list]
 
+    def test_files_get(self):
+        # [START files_get]
+        myfile = genai.upload_file(media / "poem.txt")
+        file_name = myfile.name
+        print(file_name)  # "files/*"
+
+        myfile = genai.get_file(file_name)
+        print(myfile)
+        # [END files_get]
+
     def test_files_delete(self):
         # [START files_delete]
         myfile = genai.upload_file(media / "poem.txt")
@@ -73,16 +105,6 @@ class UnitTests(absltest.TestCase):
         except google.api_core.exceptions.PermissionDenied:
             pass
         # [END files_delete]
-
-    def test_files_get(self):
-        # [START files_get]
-        myfile = genai.upload_file(media / "poem.txt")
-        file_name = myfile.name
-        print(file_name)  # "files/*"
-
-        myfile = genai.get_file(file_name)
-        print(myfile)
-        # [END files_get]
 
 
 if __name__ == "__main__":

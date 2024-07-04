@@ -14,33 +14,19 @@
 # limitations under the License.
 from absl.testing import absltest
 
-
 import google.generativeai as genai
 
 
 class UnitTests(absltest.TestCase):
-    def test_embed_content(self):
-        # [START embed_content]
-
-        text = "Hello World!"
-        result = genai.embed_content(
-            model="models/text-embedding-004", content=text, output_dimensionality=10
+    def test_system_instructions(self):
+        # [START system_instruction]
+        model = genai.GenerativeModel(
+            "models/gemini-1.5-flash",
+            system_instruction="You are a cat. Your name is Neko.",
         )
-        print(result["embedding"])
-        # [END embed_content]
-
-    def batch_embed_contents(self):
-        # [START batch_embed_contents]
-        texts = [
-            "What is the meaning of life?",
-            "How much wood would a woodchuck chuck?",
-            "How does the brain work?",
-        ]
-        result = genai.embed_content(
-            model="models/text-embedding-004", content=texts, output_dimensionality=10
-        )
-        print(result)
-        # [END batch_embed_contents]
+        response = model.generate_content("Good morning! How are you?")
+        print(response.text)
+        # [END system_instruction]
 
 
 if __name__ == "__main__":
