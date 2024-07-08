@@ -215,7 +215,7 @@ class UnitTests(absltest.TestCase):
         # [END tuned_models_permissions_get]
 
     def test_tuned_models_permission_delete(self):
-        # [START tuned_models_permissions_create]
+        # [START tuned_models_permissions_delete]
         model_info = genai.get_model("tunedModels/my-increment-model")
         # [START_EXCLUDE]
         for p in model_info.permissions.list():
@@ -229,7 +229,7 @@ class UnitTests(absltest.TestCase):
         )
 
         public_permission.delete()
-        # [END tuned_models_permissions_create]
+        # [END tuned_models_permissions_delete]
 
 
 if __name__ == "__main__":
