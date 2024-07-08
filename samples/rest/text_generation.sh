@@ -1,5 +1,9 @@
 set -eu
 
+IMG_PATH=$(realpath ~/generative-ai-python/third_party/organ.jpg)
+AUDIO_PATH=$(realpath ~/generative-ai-python/third_party/sample.mp3)
+VIDEO_PATH=$(realpath ~/generative-ai-python/third_party/Big_Buck_Bunny.mp4)
+
 echo "[START text_gen_text_only_prompt]"
 # [START text_gen_text_only_prompt]
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
@@ -29,7 +33,13 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:g
       "contents": [{
         "parts":[
             {"text": "Tell me about this instrument"},
-            {"inline_data": "../../third_party/organ.jpg"}
+            {
+              "inline_data": {
+                "mime_type":"image/jpeg",
+                "data": "'$(base64 -w0 $IMG_PATH)'"
+              }
+            }
+          }
         ]
         }]
        }' 2> /dev/null
@@ -44,7 +54,12 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:s
       "contents": [{
         "parts":[
             {"text": "Tell me about this instrument"},
-            {"inline_data": "../../third_party/organ.jpg"}
+            {
+              "inline_data": {
+                "mime_type":"image/jpeg",
+                "data": "'$(base64 -w0 $IMG_PATH)'"
+              }
+            }
         ]
         }]
        }' 2> /dev/null
@@ -58,7 +73,12 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:g
       "contents": [{
         "parts":[
             {"text": "Give me a summary of this audio file."},
-            {"inline_data": "../../third_party/sample.mp3"}
+            {
+              "inline_data": {
+                "mime_type":"audio/mp3",,
+                "data": "'$(base64 -w0 $AUDIO_PATH)'"
+              }
+            }
         ]
         }]
        }' 2> /dev/null
@@ -72,7 +92,12 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:g
       "contents": [{
         "parts":[
             {"text": "Describe this video clip."},
-            {"inline_data": "../../third_party/Big_Buck_Bunny.mp4"}
+            {
+              "inline_data": {
+                "mime_type":"video/mp4",
+                "data": "'$(base64 -w0 $VIDEO_PATH)'"
+              }
+            }
         ]
         }]
        }' 2> /dev/null
@@ -86,7 +111,12 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:s
       "contents": [{
         "parts":[
             {"text": "Describe this video clip."},
-            {"inline_data": "../../third_party/Big_Buck_Bunny.mp4"}
+            {
+              "inline_data": {
+                "mime_type":"video/mp4",,
+                "data": "'$(base64 -w0 $VIDEO_PATH)'"
+              }
+            }
         ]
         }]
        }' 2> /dev/null
