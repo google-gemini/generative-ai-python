@@ -156,7 +156,7 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("models/gemini-1.5-flash")
 
         prompt = "Tell me about this video"
-        your_file = genai.upload_file(path=media / "VideoTrim.mp4")
+        your_file = genai.upload_file(path=media / "Big_Buck_Bunny.mp4")
 
         # Videos need to be processed before you can use them.
         while your_file.state.name == "PROCESSING":
@@ -179,11 +179,11 @@ class UnitTests(absltest.TestCase):
 
         # [START tokens_multimodal_video_audio_file_api_return]
         # processing video...
-        # total_tokens: 3840
+        # total_tokens: 300
         #
-        # prompt_token_count: 3841
-        # candidates_token_count: 33
-        # total_token_count: 3874
+        # prompt_token_count: 301
+        # candidates_token_count: 60
+        # total_token_count: 361
         # [END tokens_multimodal_video_audio_file_api_return]
 
     def test_tokens_cached_content(self):
