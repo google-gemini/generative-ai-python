@@ -166,7 +166,7 @@ class UnitTests(parameterized.TestCase):
         self.responses = {
             "get_model": protos.Model(name=name, max_temperature=max_temperature),
         }
-        model = models.get_model(name)
+        model = models.get_base_model(name)
         self.assertEqual(max_temperature, model.max_temperature)
 
     @parameterized.named_parameters(
