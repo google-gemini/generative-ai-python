@@ -44,7 +44,7 @@ class UnitTests(parameterized.TestCase):
 
         client._client_manager.clients["model"] = self.client
 
-        # TODO(markdaoust): Check if typechecking works better if wee define this as a
+        # TODO(markdaoust): Check if typechecking works better if we define this as a
         #                   subclass of `glm.ModelServiceClient`, would pyi files for `glm`. help?
         def add_client_method(f):
             name = f.__name__
@@ -159,6 +159,15 @@ class UnitTests(parameterized.TestCase):
             self.assertIsInstance(model, model_types.Model)
         else:
             self.assertIsInstance(model, model_types.TunedModel)
+
+    def test_max_temperature(self):
+        name = "models/fake-bison-001"
+        max_temperature = 3.0
+        self.responses = {
+            "get_model": protos.Model(name=name, max_temperature=max_temperature),
+        }
+        model = models.get_model(name)
+        self.assertEqual(max_temperature, model.max_temperature)
 
     @parameterized.named_parameters(
         ["simple", "mystery-bison-001"],
