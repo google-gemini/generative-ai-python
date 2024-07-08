@@ -1,5 +1,3 @@
-GOOGLE_API_KEY="AIzaSyA3Gw4E_RoF_wfergxCQ2Y7BhtkSHALxfM"
-
 set -eu
 
 echo "[START text_gen_text_only_prompt]"
