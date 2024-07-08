@@ -99,10 +99,21 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_video_prompt(self):
         # [START text_gen_multimodal_video_prompt]
+        import time
+
+        # Video clip (CC BY 3.0) from https://peach.blender.org/download/
+        myfile = genai.upload_file(media / "Big_Buck_Bunny.mp4")
+        print(f"{myfile=}")
+
+        # Videos need to be processed before you can use them.
+        while myfile.state.name == "PROCESSING":
+            print("processing video...")
+            time.sleep(5)
+            myfile = genai.get_file(myfile.name)
+
         model = genai.GenerativeModel("gemini-1.5-flash")
-        video = genai.upload_file(media / "Big_Buck_Bunny.mp4")
-        response = model.generate_content(["Describe this video clip.", video])
-        print(response.text)
+        result = model.generate_content([myfile, "Describe this video clip"])
+        print(f"{result.text=}")
         # [END text_gen_multimodal_video_prompt]
 
     def test_text_gen_multimodal_video_prompt_streaming(self):
