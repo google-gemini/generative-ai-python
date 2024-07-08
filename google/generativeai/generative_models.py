@@ -139,7 +139,7 @@ class GenerativeModel:
         """Creates a `protos.GenerateContentRequest` from raw inputs."""
         if hasattr(self, "_cached_content") and any([self._system_instruction, tools, tool_config]):
             raise ValueError(
-                "`tools`, `tool_config`, `system_instruction` cannot be set on a model instantinated with `cached_content` as its context."
+                "`tools`, `tool_config`, `system_instruction` cannot be set on a model instantiated with `cached_content` as its context."
             )
 
         tools_lib = self._get_tools_lib(tools)

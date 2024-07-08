@@ -160,7 +160,7 @@ def _has_non_default_value(
 
     Args:
       namespace: The Namespace that is populated by ArgumentParser.
-      dest: The attribute in the Namespacde to be populated.
+      dest: The attribute in the Namespace to be populated.
       has_default: "None" is a valid default value so we use an additional
         `has_default` boolean to indicate that `default_value` is present.
       default_value: The default value to use when `has_default` is True.
