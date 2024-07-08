@@ -28,6 +28,8 @@ from google.generativeai.client import get_default_file_client
 
 __all__ = ["upload_file", "get_file", "list_files", "delete_file"]
 
+mimetypes.add_type("image/webp", ".webp")
+
 
 def upload_file(
     path: str | pathlib.Path | os.PathLike,
