@@ -8,7 +8,7 @@ curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:co
     -d '{
       "contents": [{
         "parts":[{
-          "text": "Write a story about a magic backpack."}]}]}' > response.json
+          "text": "The quick brown fox jumps over the lazy dog."}]}]}' > response.json
 # [END tokens_text_only]
 
 echo "[START tokens_chat]"
