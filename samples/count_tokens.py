@@ -21,75 +21,247 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 
 
 class UnitTests(absltest.TestCase):
+    def test_tokens_context_window(self):
+        # [START tokens_context_window]
+        model_info = genai.get_model("models/gemini-1.0-pro-001")
+        # Returns the "context window" for the model (the combined input and output token limits)
+        print(f"{model_info.input_token_limit=}")
+        print(f"{model_info.output_token_limit=}")
+        # [END tokens_context_window]
+
+        # [START tokens_context_window_return]
+        # input_token_limit=30720
+        # output_token_limit=2048
+        # [END tokens_context_window_return]
+
     def test_tokens_text_only(self):
         # [START tokens_text_only]
         model = genai.GenerativeModel("models/gemini-1.5-flash")
-        print(model.count_tokens("The quick brown fox jumps over the lazy dog."))
+
+        prompt = "The quick brown fox jumps over the lazy dog."
+
+        # Call `count_tokens` to get the input token count (`total_tokens`).
+        print("total_tokens: ", model.count_tokens(prompt))
+
+        response = model.generate_content(prompt)
+
+        # Use `usage_metadata` to get both input and output token counts
+        # (`prompt_token_count` and `candidates_token_count`, respectively).
+        print(response.usage_metadata)
         # [END tokens_text_only]
+
+        # [START tokens_text_only_return]
+        # total_tokens: total_tokens: 10
+        #
+        # prompt_token_count: 11
+        # candidates_token_count: 73
+        # total_token_count: 84
+        # [END tokens_text_only_return]
 
     def test_tokens_chat(self):
         # [START tokens_chat]
         model = genai.GenerativeModel("models/gemini-1.5-flash")
+
         chat = model.start_chat(
             history=[
-                {"role": "user", "parts": "Hi, my name is Bob."},
+                {"role": "user", "parts": "Hi my name is Bob"},
                 {"role": "model", "parts": "Hi Bob!"},
             ]
         )
-        model.count_tokens(chat.history)
+        # Call `count_tokens` to get the input token count (`total_tokens`).
+        print(model.count_tokens(chat.history))
 
+        response = chat.send_message(
+            "In one sentence, explain how a computer works to a young child."
+        )
+        # Use `usage_metadata` to get both input and output token counts
+        # (`prompt_token_count` and `candidates_token_count`, respectively).
+        print(response.usage_metadata)
+
+        # TODO add comment...
         from google.generativeai.types.content_types import to_contents
 
-        model.count_tokens(chat.history + to_contents("What is the meaning of life?"))
+        print(model.count_tokens(chat.history + to_contents("What is the meaning of life?")))
         # [END tokens_chat]
+
+        # [START tokens_chat_return]
+        # total_tokens: 10
+        #
+        # prompt_token_count: 25
+        # candidates_token_count: 21
+        # total_token_count: 46
+        #
+        # total_tokens: 56
+        # [END tokens_chat_return]
 
     def test_tokens_multimodal_image_inline(self):
         # [START tokens_multimodal_image_inline]
-        model = genai.GenerativeModel("models/gemini-1.5-flash")
-        import PIL
+        import PIL.Image
 
-        organ = PIL.Image.open(media / "organ.jpg")
-        print(model.count_tokens(["Tell me about this instrument", organ]))
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
+
+        prompt = "Tell me about this image"
+        your_image_file = PIL.Image.open("image.jpg")
+
+        # Call `count_tokens` to get input token count of the combined text and file (`total_tokens`).
+        # An image's display size does not affect its token count.
+        # Optionally, you can call `count_tokens` for the prompt and file separately.
+        print(model.count_tokens([prompt, your_image_file]))
+
+        response = model.generate_content([prompt, your_image_file])
+        # Use `usage_metadata` to get both input and output token counts
+        # (`prompt_token_count` and `candidates_token_count`, respectively).
+        print(response.usage_metadata)
         # [END tokens_multimodal_image_inline]
+
+        # [START tokens_multimodal_image_inline_return]
+        # total_tokens: 263
+        #
+        # prompt_token_count: 264
+        # candidates_token_count: 81
+        # total_token_count: 345
+        # [END tokens_multimodal_image_inline_return]
 
     def test_tokens_multimodal_image_file_api(self):
         # [START tokens_multimodal_image_file_api]
         model = genai.GenerativeModel("models/gemini-1.5-flash")
-        organ_upload = genai.upload_file(media / "organ.jpg")
-        print(model.count_tokens(["Tell me about this instrument", organ_upload]))
+
+        prompt = "Tell me about this image"
+        your_image_file = genai.upload_file(path="image.jpg")
+
+        # Call `count_tokens` to get input token count of the combined text and file (`total_tokens`).
+        # An image's display size does not affect its token count.
+        # Optionally, you can call `count_tokens` for the prompt and file separately.
+        print(model.count_tokens([prompt, your_image_file]))
+
+        response = model.generate_content([prompt, your_image_file])
+        response.text
+        # Use `usage_metadata` to get both input and output token counts
+        # (`prompt_token_count` and `candidates_token_count`, respectively).
+        print(response.usage_metadata)
         # [END tokens_multimodal_image_file_api]
+
+        # [START tokens_multimodal_image_file_api_return]
+        # total_tokens: 263
+        #
+        # prompt_token_count: 264
+        # candidates_token_count: 80
+        # total_token_count: 344
+        # [END tokens_multimodal_image_file_api_return]
 
     def test_tokens_multimodal_video_audio_file_api(self):
         # [START tokens_multimodal_video_audio_file_api]
+        import time
+
         model = genai.GenerativeModel("models/gemini-1.5-flash")
-        audio_upload = genai.upload_file(media / "sample.mp3")
-        print(model.count_tokens(audio_upload))
+
+        prompt = "Tell me about this video"
+        your_file = genai.upload_file(path=media / "Big_Buck_Bunny.mp4")
+
+        # Videos need to be processed before you can use them.
+        while your_file.state.name == "PROCESSING":
+            print("processing video...")
+            time.sleep(5)
+            your_file = genai.get_file(your_file.name)
+
+        # Call `count_tokens` to get input token count of the combined text and file (`total_tokens`).
+        # A video or audio file is converted to tokens at a fixed rate of tokens per second.
+        # Optionally, you can call `count_tokens` for the prompt and file separately.
+        print(model.count_tokens([prompt, your_file]))
+
+        response = model.generate_content([prompt, your_file])
+
+        # Use `usage_metadata` to get both input and output token counts
+        # (`prompt_token_count` and `candidates_token_count`, respectively).
+        print(response.usage_metadata)
+
         # [END tokens_multimodal_video_audio_file_api]
+
+        # [START tokens_multimodal_video_audio_file_api_return]
+        # processing video...
+        # total_tokens: 300
+        #
+        # prompt_token_count: 301
+        # candidates_token_count: 60
+        # total_token_count: 361
+        # [END tokens_multimodal_video_audio_file_api_return]
 
     def test_tokens_cached_content(self):
         # [START tokens_cached_content]
-        document = genai.upload_file(path=media / "a11.txt")
-        model_name = "gemini-1.5-flash-001"
+        import time
+
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
+
+        your_file = genai.upload_file(path=media / "a11.txt")
+
         cache = genai.caching.CachedContent.create(
-            model=model_name,
-            contents=[document],
+            model="models/gemini-1.5-flash-001",
+            # You could set the system_instruction and tools
+            system_instruction=None,
+            tools=None,
+            contents=["Here the Apollo 11 transcript:", your_file],
         )
-        print(genai.GenerativeModel().count_tokens(cache))
+
+        model = genai.GenerativeModel.from_cached_content(cache)
+
+        # Call `count_tokens` to get input token count of the combined text and file (`total_tokens`).
+        # A video or audio file is converted to tokens at a fixed rate of tokens per second.
+        # Optionally, you can call `count_tokens` for the prompt and file separately.
+        prompt = "Please give a short summary of this file."
+        print(model.count_tokens(prompt))
+
+        response = model.generate_content(prompt)
+        # Use `usage_metadata` to get both input and output token counts
+        # (`prompt_token_count` and `candidates_token_count`, respectively).
+        print(response.usage_metadata)
+
+        cache.delete()
         # [END tokens_cached_content]
-        cache.delete()  # Clear
+
+        # [START tokens_cached_content_return]
+        # total_tokens: 9
+        #
+        # prompt_token_count: 323393
+        # cached_content_token_count: 323383
+        # candidates_token_count: 64
+        # total_token_count: 323457
+        # [END tokens_cached_content_return]
 
     def test_tokens_system_instruction(self):
         # [START tokens_system_instruction]
-        document = genai.upload_file(path=media / "a11.txt")
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+
+        # The total token count includes everything sent to the generate_content request.
+        print(model.count_tokens("The quick brown fox jumps over the lazy dog."))
+        # total_tokens: 10
+
         model = genai.GenerativeModel(
-            "models/gemini-1.5-flash-001",
-            system_instruction="You are an expert analyzing transcripts. Give a summary of this document.",
+            model_name="gemini-1.5-flash", system_instruction="You are a cat. Your name is Neko."
         )
-        print(model.count_tokens(document))
+
+        # The total token count includes everything sent to the generate_content request.
+        # When you use system instructions, the total token count increases.
+        print(model.count_tokens("The quick brown fox jumps over the lazy dog."))
         # [END tokens_system_instruction]
+
+        # [START tokens_system_instruction_return]
+        # total_tokens: 10
+        #
+        # total_tokens: 21
+        # [END tokens_system_instruction_return]
 
     def test_tokens_tools(self):
         # [START tokens_tools]
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+
+        # The total token count includes everything sent to the generate_content request.
+        print(
+            model.count_tokens(
+                "I have 57 cats, each owns 44 mittens, how many mittens is that in total?"
+            )
+        )
+        # total_tokens: 10
+
         def add(a: float, b: float):
             """returns a + b."""
             return a + b
@@ -116,6 +288,12 @@ class UnitTests(absltest.TestCase):
             )
         )
         # [END tokens_tools]
+
+        # [START tokens_tools_return]
+        # total_tokens: 22
+        #
+        # total_tokens: 206
+        # [END tokens_tools_return]
 
 
 if __name__ == "__main__":
