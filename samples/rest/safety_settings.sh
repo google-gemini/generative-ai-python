@@ -4,7 +4,7 @@ echo "[START safety_settings]"
 # [START safety_settings]
 echo '{
     "safetySettings": [
-        {'category': 7, 'threshold': 3}
+        {'category': HARM_CATEGORY_HARASSMENT, 'threshold': BLOCK_ONLY_HIGH}
     ],
     "contents": [{
         "parts":[{
@@ -13,17 +13,17 @@ echo '{
     curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$GOOGLE_API_KEY" \
         -H 'Content-Type: application/json' \
         -X POST \
-        -d @request.json  2> /dev/null > response.json
+        -d @request.json  2> /dev/null > tee response.json
 
-    jq .promptFeedback < response.json
+    jq .promptFeedback > response.json
 # [END safety_settings]
 
 echo "[START safety_settings_multi]"
 # [START safety_settings_multi]
 echo '{
     "safetySettings": [
-        {'category': 7, 'threshold': 3},
-        {'category': 8, 'threshold': 2}
+        {'category': HARM_CATEGORY_HARASSMENT, 'threshold': BLOCK_ONLY_HIGH},
+        {'category': HARM_CATEGORY_HATE_SPEECH, 'threshold': BLOCK_MEDIUM_AND_ABOVE}
     ],
     "contents": [{
         "parts":[{
@@ -34,5 +34,5 @@ echo '{
         -X POST \
         -d @request.json  2> /dev/null > response.json
 
-    jq .promptFeedback < response.json
+    jq .promptFeedback > response.json
 # [END safety_settings_multi]
