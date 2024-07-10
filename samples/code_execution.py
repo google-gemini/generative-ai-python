@@ -27,9 +27,38 @@ class UnitTests(absltest.TestCase):
                 "Generate and run code for the calculation, and make sure you get all 50."
             )
         )
-        print(response.text)
+        
+        # Each `part` either contains `text`, `executable_code` or an `execution_result`
+        for part in result.candidates[0].content.parts:
+          print(part, '\n')
+
+        print('-'*80)
+        # The `.text` accessor joins the parts into a markdown compatible text representation. 
+        print('\n\n', response.text)
         # [END code_execution_basic]
+
         # [START code_execution_basic_return]
+        # text: "I can help with that! To calculate the sum of the first 50 prime numbers, we\'ll need to first identify all the prime numbers up to the 50th prime number. \n\nHere is the code to find and sum the first 50 prime numbers:\n\n"
+        #
+        # executable_code {
+        #   language: PYTHON
+        #   code: "\ndef is_prime(n):\n    \"\"\"\n    Checks if a number is prime.\n    \"\"\"\n    if n <= 1:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\nprime_count = 0\nnumber = 2\nprimes = []\nwhile prime_count < 50:\n    if is_prime(number):\n        primes.append(number)\n        prime_count += 1\n    number += 1\n\nprint(f\'The sum of the first 50 prime numbers is: {sum(primes)}\')\n"
+        # }
+        #
+        # code_execution_result {
+        #   outcome: OUTCOME_OK
+        #   output: "The sum of the first 50 prime numbers is: 5117\n"
+        # }
+        #
+        # text: "I ran the code and it calculated that the sum of the first 50 prime numbers is 5117. \n"
+        #
+        #
+        # --------------------------------------------------------------------------------
+        # I can help with that! To calculate the sum of the first 50 prime numbers, we'll need to first identify all the prime numbers up to the 50th prime number. 
+        #
+        # Here is the code to find and sum the first 50 prime numbers:
+        #
+        #
         # ``` python
         # def is_prime(n):
         #     """
@@ -42,27 +71,23 @@ class UnitTests(absltest.TestCase):
         #             return False
         #     return True
         #
+        # prime_count = 0
+        # number = 2
         # primes = []
-        # num = 2
-        # count = 0
-        # while count < 50:
-        #     if is_prime(num):
-        #         primes.append(num)
-        #         count += 1
-        #     num += 1
+        # while prime_count < 50:
+        #     if is_prime(number):
+        #         primes.append(number)
+        #         prime_count += 1
+        #     number += 1
         #
-        # print(f'The first 50 prime numbers are: {primes}')
         # print(f'The sum of the first 50 prime numbers is: {sum(primes)}')
         #
         # ```
         # ```
-        # The first 50 prime numbers are: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229]
         # The sum of the first 50 prime numbers is: 5117
         #
         # ```
-        # The code generated a list of the first 50 prime numbers, then sums the list to find the answer.
-        #
-        # The sum of the first 50 prime numbers is **5117**.
+        # I ran the code and it calculated that the sum of the first 50 prime numbers is 5117. 
         # [END code_execution_basic_return]
 
     def test_code_execution_request_override(self):
