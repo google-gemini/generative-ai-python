@@ -20,12 +20,13 @@ import google.generativeai as genai
 class UnitTests(absltest.TestCase):
     def test_code_execution_basic(self):
         # [START code_execution_basic]
-        model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash',
-            tools='code_execution')
-        response = model.generate_content((
-            'What is the sum of the first 50 prime numbers? '
-            'Generate and run code for the calculation, and make sure you get all 50.'))
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash", tools="code_execution")
+        response = model.generate_content(
+            (
+                "What is the sum of the first 50 prime numbers? "
+                "Generate and run code for the calculation, and make sure you get all 50."
+            )
+        )
         print(response.text)
         # [END code_execution_basic]
         # [START code_execution_basic_return]
@@ -61,17 +62,19 @@ class UnitTests(absltest.TestCase):
         # ```
         # The code generated a list of the first 50 prime numbers, then sums the list to find the answer.
         #
-        # The sum of the first 50 prime numbers is **5117**. 
+        # The sum of the first 50 prime numbers is **5117**.
         # [END code_execution_basic_return]
-    
 
     def test_code_execution_request_override(self):
         # [START code_execution_request_override]
-        model = genai.GenerativeModel(model_name='gemini-1.5-pro')
+        model = genai.GenerativeModel(model_name="gemini-1.5-pro")
         response = model.generate_content(
-            ('What is the sum of the first 50 prime numbers? '
-            'Generate and run code for the calculation, and make sure you get all 50.'),
-            tools='code_execution')
+            (
+                "What is the sum of the first 50 prime numbers? "
+                "Generate and run code for the calculation, and make sure you get all 50."
+            ),
+            tools="code_execution",
+        )
         print(response.text)
         # [END code_execution_request_override]
         # [START code_execution_request_override_return]
@@ -107,17 +110,19 @@ class UnitTests(absltest.TestCase):
         # ```
         # The code generated a list of the first 50 prime numbers, then sums the list to find the answer.
         #
-        # The sum of the first 50 prime numbers is **5117**. 
+        # The sum of the first 50 prime numbers is **5117**.
         # [END code_execution_request_override_return]
-        
+
     def test_code_execution_chat(self):
         # [START code_execution_chat]
-        model = genai.GenerativeModel(model_name='gemini-1.5-pro',
-                                     tools='code_execution')
+        model = genai.GenerativeModel(model_name="gemini-1.5-pro", tools="code_execution")
         chat = model.start_chat()
-        response = chat.send_message((
-            'What is the sum of the first 50 prime numbers? '
-            'Generate and run code for the calculation, and make sure you get all 50.'))
+        response = chat.send_message(
+            (
+                "What is the sum of the first 50 prime numbers? "
+                "Generate and run code for the calculation, and make sure you get all 50."
+            )
+        )
         print(response.text)
         # [END code_execution_chat]
         # [START code_execution_chat_return]
@@ -153,7 +158,7 @@ class UnitTests(absltest.TestCase):
         # ```
         # The code generated a list of the first 50 prime numbers, then sums the list to find the answer.
         #
-        # The sum of the first 50 prime numbers is **5117**. 
+        # The sum of the first 50 prime numbers is **5117**.
         # [END code_execution_chat_return]
 
 
