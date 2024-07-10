@@ -20,31 +20,141 @@ import google.generativeai as genai
 class UnitTests(absltest.TestCase):
     def test_code_execution_basic(self):
         # [START code_execution_basic]
-        model = genai.GenerativeModel(model_name="gemini-1.5-flash", tools="code_execution")
-        result = model.generate_content(
-            "What's the sum of the sum of first 200 prime numbers? Make sure you get all 200."
-        )
-        print(result.text)
+        model = genai.GenerativeModel(
+            model_name='gemini-1.5-flash',
+            tools='code_execution')
+        response = model.generate_content((
+            'What is the sum of the first 50 prime numbers? '
+            'Generate and run code for the calculation, and make sure you get all 50.'))
+        print(response.text)
         # [END code_execution_basic]
+        # [START code_execution_basic_return]
+        # ``` python
+        # def is_prime(n):
+        #     """
+        #     Checks if a number is prime.
+        #     """
+        #     if n <= 1:
+        #         return False
+        #     for i in range(2, int(n**0.5) + 1):
+        #         if n % i == 0:
+        #             return False
+        #     return True
+        #
+        # primes = []
+        # num = 2
+        # count = 0
+        # while count < 50:
+        #     if is_prime(num):
+        #         primes.append(num)
+        #         count += 1
+        #     num += 1
+        #
+        # print(f'The first 50 prime numbers are: {primes}')
+        # print(f'The sum of the first 50 prime numbers is: {sum(primes)}')
+        #
+        # ```
+        # ```
+        # The first 50 prime numbers are: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229]
+        # The sum of the first 50 prime numbers is: 5117
+        #
+        # ```
+        # The code generated a list of the first 50 prime numbers, then sums the list to find the answer.
+        #
+        # The sum of the first 50 prime numbers is **5117**. 
+        # [END code_execution_basic_return]
+    
 
     def test_code_execution_request_override(self):
         # [START code_execution_request_override]
-        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
-        result = model.generate_content(
-            "Write code to count how many letter r in the word strawberry", tools="code_execution"
-        )
-        print(result.text)
+        model = genai.GenerativeModel(model_name='gemini-1.5-pro')
+        response = model.generate_content(
+            ('What is the sum of the first 50 prime numbers? '
+            'Generate and run code for the calculation, and make sure you get all 50.'),
+            tools='code_execution')
+        print(response.text)
         # [END code_execution_request_override]
-
+        # [START code_execution_request_override_return]
+        # ``` python
+        # def is_prime(n):
+        #     """
+        #     Checks if a number is prime.
+        #     """
+        #     if n <= 1:
+        #         return False
+        #     for i in range(2, int(n**0.5) + 1):
+        #         if n % i == 0:
+        #             return False
+        #     return True
+        #
+        # primes = []
+        # num = 2
+        # count = 0
+        # while count < 50:
+        #     if is_prime(num):
+        #         primes.append(num)
+        #         count += 1
+        #     num += 1
+        #
+        # print(f'The first 50 prime numbers are: {primes}')
+        # print(f'The sum of the first 50 prime numbers is: {sum(primes)}')
+        #
+        # ```
+        # ```
+        # The first 50 prime numbers are: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229]
+        # The sum of the first 50 prime numbers is: 5117
+        #
+        # ```
+        # The code generated a list of the first 50 prime numbers, then sums the list to find the answer.
+        #
+        # The sum of the first 50 prime numbers is **5117**. 
+        # [END code_execution_request_override_return]
+        
     def test_code_execution_chat(self):
         # [START code_execution_chat]
-        model = genai.GenerativeModel(model_name="gemini-1.5-flash", tools="code_execution")
+        model = genai.GenerativeModel(model_name='gemini-1.5-pro',
+                                     tools='code_execution')
         chat = model.start_chat()
-        result = chat.send_message(
-            "Can you run some code to bogo-sort this list of numbers?: [2,34,1,65,4]"
-        )
-        print(result.text)
+        response = chat.send_message((
+            'What is the sum of the first 50 prime numbers? '
+            'Generate and run code for the calculation, and make sure you get all 50.'))
+        print(response.text)
         # [END code_execution_chat]
+        # [START code_execution_chat_return]
+        # ``` python
+        # def is_prime(n):
+        #     """
+        #     Checks if a number is prime.
+        #     """
+        #     if n <= 1:
+        #         return False
+        #     for i in range(2, int(n**0.5) + 1):
+        #         if n % i == 0:
+        #             return False
+        #     return True
+        #
+        # primes = []
+        # num = 2
+        # count = 0
+        # while count < 50:
+        #     if is_prime(num):
+        #         primes.append(num)
+        #         count += 1
+        #     num += 1
+        #
+        # print(f'The first 50 prime numbers are: {primes}')
+        # print(f'The sum of the first 50 prime numbers is: {sum(primes)}')
+        #
+        # ```
+        # ```
+        # The first 50 prime numbers are: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229]
+        # The sum of the first 50 prime numbers is: 5117
+        #
+        # ```
+        # The code generated a list of the first 50 prime numbers, then sums the list to find the answer.
+        #
+        # The sum of the first 50 prime numbers is **5117**. 
+        # [END code_execution_chat_return]
 
 
 if __name__ == "__main__":
