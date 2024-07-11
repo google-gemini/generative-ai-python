@@ -1,7 +1,7 @@
 set -eu
 
-echo "[START configure_model]"
-# [START configure_model]
+echo "[START configure_model_parameters]"
+# [START configure_model_parameters]
 curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY \
     -H 'Content-Type: application/json' \
     -X POST \
@@ -27,4 +27,4 @@ curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:ge
             "topK": 10
         }
     }'  2> /dev/null | grep "text"
-# [END configure_model]
+# [END configure_model_parameters]

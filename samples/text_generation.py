@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import PIL.Image
 from absl.testing import absltest
 
 import google.generativeai as genai
@@ -40,7 +39,7 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_one_image_prompt(self):
         # [START text_gen_multimodal_one_image_prompt]
-        import PIL
+        import PIL.Image
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
@@ -50,7 +49,7 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_one_image_prompt_streaming(self):
         # [START text_gen_multimodal_one_image_prompt_streaming]
-        import PIL
+        import PIL.Image
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
@@ -62,7 +61,7 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_multi_image_prompt(self):
         # [START text_gen_multimodal_multi_image_prompt]
-        import PIL
+        import PIL.Image
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
@@ -75,7 +74,7 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_multi_image_prompt_streaming(self):
         # [START text_gen_multimodal_multi_image_prompt_streaming]
-        import PIL
+        import PIL.Image
 
         model = genai.GenerativeModel("gemini-1.5-flash")
         organ = PIL.Image.open(media / "organ.jpg")
