@@ -19,7 +19,7 @@ import google.generativeai as genai
 
 class UnitTests(absltest.TestCase):
     def test_configure_model(self):
-        # [START configure_model]
+        # [START configure_model_parameters]
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(
             "Tell me a story about a magic backpack.",
@@ -33,7 +33,7 @@ class UnitTests(absltest.TestCase):
         )
 
         print(response.text)
-        # [END configure_model]
+        # [END configure_model_parameters]
 
 
 if __name__ == "__main__":
