@@ -77,7 +77,7 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel(model_name="tunedModels/my-increment-model")
         result = model.generate_content("III")
         print(result.text)  # "IV"
-        # [END tuned_models_create]
+        # [END tuned_models_generate_content]
 
     def test_tuned_models_get(self):
         # [START tuned_models_get]
