@@ -1,7 +1,7 @@
 set -eu
 
-echo "[START caching]"
-# [START caching]
+echo "[START cache_create]"
+# [START cache_create]
 wget https://storage.googleapis.com/generativeai-downloads/data/a11.txt
 echo '{
   "model": "models/gemini-1.5-flash-001",
@@ -33,25 +33,25 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/cachedContents?ke
  -d @request.json
 
 rm a11.txt request.json
-# [END caching]
+# [END cache_create]
 
-echo "[START list_caches]"
-# [START list_caches]
+echo "[START cache_list]"
+# [START cache_list]
 ALL_CACHES=$(curl "https://generativelanguage.googleapis.com/v1beta/cachedContents?key=$GOOGLE_API_KEY")
 CACHE_NAME=$(echo "$ALL_CACHES" | grep '"name":' | cut -d '"' -f 4 | head -n 1)
-# [END list_caches]
+# [END cache_list]
 
-echo "[START get_cache]"
-# [START get_cache]
+echo "[START cache_get]"
+# [START cache_get]
 curl "https://generativelanguage.googleapis.com/v1beta/$CACHE_NAME?key=$GOOGLE_API_KEY"
-# [END get_cache]
+# [END cache_get]
 
-echo "[START update_cache]"
-# [START update_cache]
+echo "[START cache_update]"
+# [START cache_update]
 curl -X PATCH "https://generativelanguage.googleapis.com/v1beta/$CACHE_NAME?key=$GOOGLE_API_KEY" \
  -H 'Content-Type: application/json' \
  -d '{"ttl": "600s"}'
-# [END update_cache]
+# [END cache_update]
 
 echo "[START use_cache]"
 # [START use_cache]
@@ -70,7 +70,7 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5
     }'
 # [END use_cache]
 
-echo "[START delete_cache]"
-# [START delete_cache]
+echo "[START cache_delete]"
+# [START cache_delete]
 curl -X DELETE "https://generativelanguage.googleapis.com/v1beta/$CACHE_NAME?key=$GOOGLE_API_KEY"
-# [END delete_cache]
+# [END cache_delete]
