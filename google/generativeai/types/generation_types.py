@@ -440,10 +440,10 @@ class BaseGenerateContentResponse:
 
         texts = []
         for part in parts:
-            if "text" in dir(part):
+            if hasattr(part, "text"):
                 texts.append(part.text)
                 continue
-            if "executable_code" in dir(part):
+            if hasattr(part, "executable_code"):
                 language = part.executable_code.language.name.lower()
                 if language == "language_unspecified":
                     language = ""
@@ -451,7 +451,7 @@ class BaseGenerateContentResponse:
                     language = f" {language}"
                 texts.extend([f"```{language}", part.executable_code.code.lstrip("\n"), "```"])
                 continue
-            if "code_execution_result" in dir(part):
+            if hasattr(part, "code_execution_result"):
                 outcome_result = part.code_execution_result.outcome.name.lower().replace(
                     "outcome_", ""
                 )
