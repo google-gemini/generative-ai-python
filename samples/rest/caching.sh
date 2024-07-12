@@ -53,8 +53,8 @@ curl -X PATCH "https://generativelanguage.googleapis.com/v1beta/$CACHE_NAME?key=
  -d '{"ttl": "600s"}'
 # [END cache_update]
 
-echo "[START use_cache]"
-# [START use_cache]
+echo "[START cache_generate_content]"
+# [START cache_generate_content]
 curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=$GOOGLE_API_KEY" \
 -H 'Content-Type: application/json' \
 -d '{
@@ -68,7 +68,7 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5
       ],
       "cachedContent": "'$CACHE_NAME'"
     }'
-# [END use_cache]
+# [END cache_generate_content]
 
 echo "[START cache_delete]"
 # [START cache_delete]
