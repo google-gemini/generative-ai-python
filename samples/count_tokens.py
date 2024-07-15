@@ -69,7 +69,7 @@ class UnitTests(absltest.TestCase):
         response = chat.send_message(
             "In one sentence, explain how a computer works to a young child."
         )
-    
+
         # On the response for `send_message`, use `usage_metadata`
         # to get separate input and output token counts
         # (`prompt_token_count` and `candidates_token_count`, respectively),
@@ -195,7 +195,7 @@ class UnitTests(absltest.TestCase):
         # ( total_tokens: 9 )
 
         response = model.generate_content(prompt)
-    
+
         # On the response for `generate_content`, use `usage_metadata`
         # to get separate input and output token counts
         # (`prompt_token_count` and `candidates_token_count`, respectively),
@@ -211,7 +211,7 @@ class UnitTests(absltest.TestCase):
         # [START tokens_system_instruction]
         model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
-        prompt="The quick brown fox jumps over the lazy dog."
+        prompt = "The quick brown fox jumps over the lazy dog."
 
         print(model.count_tokens(prompt))
         # total_tokens: 10
@@ -230,7 +230,7 @@ class UnitTests(absltest.TestCase):
         # [START tokens_tools]
         model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
-        prompt="I have 57 cats, each owns 44 mittens, how many mittens is that in total?"
+        prompt = "I have 57 cats, each owns 44 mittens, how many mittens is that in total?"
 
         print(model.count_tokens(prompt))
         # ( total_tokens: 22 )
