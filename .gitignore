@@ -3,7 +3,6 @@
 /.idea/
 /.pytype/
 /build/
-/docs/api
 *.egg-info
 .DS_Store
 __pycache__

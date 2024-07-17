@@ -1,0 +1,13 @@
+redirects:
+- from: /api/python/google/generativeai/GenerationConfig
+  to: /api/python/google/generativeai/types/GenerationConfig
+- from: /api/python/google/generativeai/protos/ContentFilter/BlockedReason
+  to: /api/python/google/generativeai/types/BlockedReason
+- from: /api/python/google/generativeai/protos/SafetyRating/HarmProbability
+  to: /api/python/google/generativeai/types/HarmProbability
+- from: /api/python/google/generativeai/protos/SafetySetting/HarmBlockThreshold
+  to: /api/python/google/generativeai/types/HarmBlockThreshold
+- from: /api/python/google/generativeai/protos/TunedModel/State
+  to: /api/python/google/generativeai/types/TunedModelState
+- from: /api/python/google/generativeai/types/ModelNameOptions
+  to: /api/python/google/generativeai/types/AnyModelNameOptions
