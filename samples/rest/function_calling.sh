@@ -1,3 +1,36 @@
+cat > tools.json << EOF
+{
+  "function_declarations": [
+    {
+      "name": "enable_lights",
+      "description": "Turn on the lighting system.",
+      "parameters": { "type": "object" }
+    },
+    {
+      "name": "set_light_color",
+      "description": "Set the light color. Lights must be enabled for this to work.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "rgb_hex": {
+            "type": "string",
+            "description": "The light color as a 6-digit hex string, e.g. ff0000 for red."
+          }
+        },
+        "required": [
+          "rgb_hex"
+        ]
+      }
+    },
+    {
+      "name": "stop_lights",
+      "description": "Turn off the lighting system.",
+      "parameters": { "type": "object" }
+    }
+  ]
+} 
+EOF
+
 set -eu
 
 echo "[START function_calling]"
@@ -11,7 +44,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-lat
         "text": "You are a helpful lighting system bot. You can turn lights on and off, and you can set the color. Do not perform any other tasks."
       }
     },
-    "tools": [' $(cat tools.json) '],
+    "tools": ['$(source "$tools")'],
 
     "tool_config": {
       "function_calling_config": {"mode": "none"}
