@@ -1,5 +1,7 @@
 set -eu
 
+GOOGLE_API_KEY=AIzaSyA3Gw4E_RoF_wfergxCQ2Y7BhtkSHALxfM
+
 SCRIPT_DIR=$(dirname "$0")
 MEDIA_DIR=$(realpath ${SCRIPT_DIR}/../../third_party)
 
@@ -115,7 +117,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:g
       "contents": [{
         "parts":[
           {"text": "Please describe this file."},
-          {"file_data":{"mime_type": "image/png", "file_uri": '$file_uri'}}]
+          {"file_data":{"mime_type": "audio/mpeg", "file_uri": '$file_uri'}}]
         }]
        }' 2> /dev/null > response.json
 
