@@ -1,7 +1,5 @@
 set -eu
 
-GOOGLE_API_KEY=AIzaSyA3Gw4E_RoF_wfergxCQ2Y7BhtkSHALxfM
-
 SCRIPT_DIR=$(dirname "$0")
 MEDIA_DIR=$(realpath ${SCRIPT_DIR}/../../third_party)
 
@@ -132,7 +130,7 @@ echo "[START text_gen_multimodal_video_prompt]"
 # Use File API to upload audio data to API request.
 MIME_TYPE=$(file -b --mime-type "${VIDEO_PATH}")
 NUM_BYTES=$(wc -c < "${VIDEO_PATH}")
-DISPLAY_NAME=VIDEO_PATH
+DISPLAY_NAME=VIDEO
 
 # Initial resumable request defining metadata.
 # The upload url is in the response headers dump them to a file.
@@ -153,10 +151,25 @@ curl "${upload_url}" \
   -H "Content-Length: ${NUM_BYTES}" \
   -H "X-Goog-Upload-Offset: 0" \
   -H "X-Goog-Upload-Command: upload, finalize" \
-  --data-binary "@${AUDIO_PATH}" 2> /dev/null > file_info.json
+  --data-binary "@${VIDEO_PATH}" 2> /dev/null > file_info.json
 
 file_uri=$(jq ".file.uri" file_info.json)
 echo file_uri=$file_uri
+
+state=$(jq ".file.state" file_info.json)
+echo state=$state
+
+name=$(jq ".file.name" file_info.json)
+echo name=$name
+
+while [[ "($state)" = *"PROCESSING"* ]];
+do
+  echo "Processing video..."
+  sleep 5
+  # Get the file of interest to check state
+  curl https://generativelanguage.googleapis.com/v1beta/files/$name > file_info.json
+  state=$(jq ".file.state" file_info.json)
+done
 
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
     -H 'Content-Type: application/json' \
@@ -202,10 +215,22 @@ curl "${upload_url}" \
   -H "Content-Length: ${NUM_BYTES}" \
   -H "X-Goog-Upload-Offset: 0" \
   -H "X-Goog-Upload-Command: upload, finalize" \
-  --data-binary "@${AUDIO_PATH}" 2> /dev/null > file_info.json
+  --data-binary "@${VIDEO_PATH}" 2> /dev/null > file_info.json
 
 file_uri=$(jq ".file.uri" file_info.json)
 echo file_uri=$file_uri
+
+state=$(jq ".file.state" file_info.json)
+echo state=$state
+
+while [[ "($state)" = *"PROCESSING"* ]];
+do
+  echo "Processing video..."
+  sleep 5
+  # Get the file of interest to check state
+  curl https://generativelanguage.googleapis.com/v1beta/files/$name > file_info.json
+  state=$(jq ".file.state" file_info.json)
+done
 
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=$GOOGLE_API_KEY" \
     -H 'Content-Type: application/json' \
@@ -220,6 +245,4 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:s
 
 cat response.json
 echo
-
-jq ".candidates[].content.parts[].text" response.json
 # [END text_gen_multimodal_video_prompt_streaming]
