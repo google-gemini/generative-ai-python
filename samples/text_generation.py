@@ -167,5 +167,6 @@ class UnitTests(absltest.TestCase):
             print("_" * 80)
         # [END text_gen_multimodal_pdf_streaming]
 
+
 if __name__ == "__main__":
     absltest.main()
