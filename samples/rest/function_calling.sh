@@ -1,3 +1,8 @@
+set -eu
+
+echo "[START function_calling]"
+# [START function_calling]
+
 cat > tools.json << EOF
 {
   "function_declarations": [
@@ -31,10 +36,6 @@ cat > tools.json << EOF
 } 
 EOF
 
-set -eu
-
-echo "[START function_calling]"
-# [START function_calling]
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=$GOOGLE_API_KEY" \
   -H 'Content-Type: application/json' \
   -d @<(echo '
