@@ -190,7 +190,6 @@ jq ".candidates[].content.parts[].text" response.json
 
 echo "[START text_gen_multimodal_video_prompt_streaming]"
 # [START text_gen_multimodal_video_prompt_streaming]
-# [START text_gen_multimodal_video_prompt]
 # Use File API to upload audio data to API request.
 MIME_TYPE=$(file -b --mime-type "${VIDEO_PATH}")
 NUM_BYTES=$(wc -c < "${VIDEO_PATH}")
