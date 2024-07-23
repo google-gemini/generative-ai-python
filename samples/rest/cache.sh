@@ -1,5 +1,11 @@
 set -eu
 
+if [[ "$(base64 --version 2>&1)" = *"FreeBSD"* ]]; then
+  B64FLAGS="--input"
+else
+  B64FLAGS="-w0"
+fi
+
 echo "[START cache_create]"
 # [START cache_create]
 wget https://storage.googleapis.com/generativeai-downloads/data/a11.txt
@@ -11,7 +17,7 @@ echo '{
         {
           "inline_data": {
             "mime_type":"text/plain",
-            "data": "'$(base64 -w0 a11.txt)'"
+            "data": "'$(base64 $B64FLAGS a11.txt)'"
           }
         }
       ],
@@ -56,8 +62,7 @@ rm a11.txt request.json
 
 echo "[START cache_list]"
 # [START cache_list]
-ALL_CACHES=$(curl "https://generativelanguage.googleapis.com/v1beta/cachedContents?key=$GOOGLE_API_KEY")
-CACHE_NAME=$(echo "$ALL_CACHES" | grep '"name":' | cut -d '"' -f 4 | head -n 1)
+curl "https://generativelanguage.googleapis.com/v1beta/cachedContents?key=$GOOGLE_API_KEY"
 # [END cache_list]
 
 echo "[START cache_get]"
