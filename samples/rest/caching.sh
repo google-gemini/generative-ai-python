@@ -30,10 +30,29 @@ echo '{
 
 curl -X POST "https://generativelanguage.googleapis.com/v1beta/cachedContents?key=$GOOGLE_API_KEY" \
  -H 'Content-Type: application/json' \
- -d @request.json
+ -d @request.json \
+ > cache.json
 
-rm a11.txt request.json
+CACHE_NAME=$(cat cache.json | grep '"name":' | cut -d '"' -f 4 | head -n 1)
+
+echo "[START cache_generate_content]"
+# [START cache_generate_content]
+curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=$GOOGLE_API_KEY" \
+-H 'Content-Type: application/json' \
+-d '{
+      "contents": [
+        {
+          "parts":[{
+            "text": "Please summarize this transcript"
+          }],
+          "role": "user"
+        },
+      ],
+      "cachedContent": "'$CACHE_NAME'"
+    }'
+# [END cache_generate_content]
 # [END cache_create]
+rm a11.txt request.json
 
 echo "[START cache_list]"
 # [START cache_list]
@@ -52,23 +71,6 @@ curl -X PATCH "https://generativelanguage.googleapis.com/v1beta/$CACHE_NAME?key=
  -H 'Content-Type: application/json' \
  -d '{"ttl": "600s"}'
 # [END cache_update]
-
-echo "[START cache_generate_content]"
-# [START cache_generate_content]
-curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=$GOOGLE_API_KEY" \
--H 'Content-Type: application/json' \
--d '{
-      "contents": [
-        {
-          "parts":[{
-            "text": "Please summarize this transcript"
-          }],
-          "role": "user"
-        },
-      ],
-      "cachedContent": "'$CACHE_NAME'"
-    }'
-# [END cache_generate_content]
 
 echo "[START cache_delete]"
 # [START cache_delete]
