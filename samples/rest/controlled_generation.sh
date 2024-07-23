@@ -34,10 +34,11 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-lat
       "parts":[
         {"text": "List a few popular cookie recipes using this JSON schema:
 
-        Recipe = {\"recipe_name\": str}
-        Return: list[Recipe]"
-      }
-    ],
-  }]
+            Recipe = {\"recipe_name\": str}
+            Return: list[Recipe]"
+        }
+      ]
+    }],
+    "generationConfig": { "response_mime_type": "application/json" }
 }' 2> /dev/null | head
 # [END json_no_schema]
