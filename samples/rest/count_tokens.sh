@@ -1,7 +1,5 @@
 set -eu 
 
-GOOGLE_API_KEY=AIzaSyA3Gw4E_RoF_wfergxCQ2Y7BhtkSHALxfM
-
 SCRIPT_DIR=$(dirname "$0")
 MEDIA_DIR=$(realpath ${SCRIPT_DIR}/../../third_party)
 
@@ -108,7 +106,10 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:c
       "contents": [{
         "parts":[
           {"text": "Can you tell me about the instruments in this photo?"},
-          {"file_data":{"mime_type": ""image/jpeg"", "file_uri": '$file_uri'}}]
+          {"file_data":
+            {"mime_type": "image/jpeg", 
+            "file_uri": '$file_uri'}
+          }]
         }]
        }' 
 # [END tokens_multimodal_image_file_api]
@@ -143,6 +144,21 @@ curl "${upload_url}" \
 
 file_uri=$(jq ".file.uri" file_info.json)
 echo file_uri=$file_uri
+
+state=$(jq ".file.state" file_info.json)
+echo state=$state
+
+name=$(jq ".file.name" file_info.json)
+echo name=$name
+
+while [[ "($state)" = *"PROCESSING"* ]];
+do
+  echo "Processing video..."
+  sleep 5
+  # Get the file of interest to check state
+  curl https://generativelanguage.googleapis.com/v1beta/files/$name > file_info.json
+  state=$(jq ".file.state" file_info.json)
+done
 
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens?key=$GOOGLE_API_KEY" \
     -H 'Content-Type: application/json' \
