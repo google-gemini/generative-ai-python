@@ -27,14 +27,14 @@ class UnitTests(absltest.TestCase):
                 "Generate and run code for the calculation, and make sure you get all 50."
             )
         )
-        
+
         # Each `part` either contains `text`, `executable_code` or an `execution_result`
         for part in result.candidates[0].content.parts:
-          print(part, '\n')
+            print(part, "\n")
 
-        print('-'*80)
-        # The `.text` accessor joins the parts into a markdown compatible text representation. 
-        print('\n\n', response.text)
+        print("-" * 80)
+        # The `.text` accessor joins the parts into a markdown compatible text representation.
+        print("\n\n", response.text)
         # [END code_execution_basic]
 
         # [START code_execution_basic_return]
@@ -54,7 +54,7 @@ class UnitTests(absltest.TestCase):
         #
         #
         # --------------------------------------------------------------------------------
-        # I can help with that! To calculate the sum of the first 50 prime numbers, we'll need to first identify all the prime numbers up to the 50th prime number. 
+        # I can help with that! To calculate the sum of the first 50 prime numbers, we'll need to first identify all the prime numbers up to the 50th prime number.
         #
         # Here is the code to find and sum the first 50 prime numbers:
         #
@@ -87,7 +87,7 @@ class UnitTests(absltest.TestCase):
         # The sum of the first 50 prime numbers is: 5117
         #
         # ```
-        # I ran the code and it calculated that the sum of the first 50 prime numbers is 5117. 
+        # I ran the code and it calculated that the sum of the first 50 prime numbers is 5117.
         # [END code_execution_basic_return]
 
     def test_code_execution_request_override(self):

@@ -96,6 +96,17 @@ class UnitTests(absltest.TestCase):
         print(response.text)
         # [END text_gen_multimodal_audio]
 
+    def test_text_gen_multimodal_audio_streaming(self):
+        # [START text_gen_multimodal_audio_streaming]
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        sample_audio = genai.upload_file(media / "sample.mp3")
+        response = model.generate_content(["Give me a summary of this audio file.", sample_audio])
+
+        for chunk in response:
+            print(chunk.text)
+            print("_" * 80)
+        # [END text_gen_multimodal_audio_streaming]
+
     def test_text_gen_multimodal_video_prompt(self):
         # [START text_gen_multimodal_video_prompt]
         import time
@@ -111,19 +122,50 @@ class UnitTests(absltest.TestCase):
             myfile = genai.get_file(myfile.name)
 
         model = genai.GenerativeModel("gemini-1.5-flash")
-        result = model.generate_content([myfile, "Describe this video clip"])
-        print(f"{result.text=}")
+        response = model.generate_content([myfile, "Describe this video clip"])
+        print(f"{response.text=}")
         # [END text_gen_multimodal_video_prompt]
 
     def test_text_gen_multimodal_video_prompt_streaming(self):
         # [START text_gen_multimodal_video_prompt_streaming]
+        import time
+
+        # Video clip (CC BY 3.0) from https://peach.blender.org/download/
+        myfile = genai.upload_file(media / "Big_Buck_Bunny.mp4")
+        print(f"{myfile=}")
+
+        # Videos need to be processed before you can use them.
+        while myfile.state.name == "PROCESSING":
+            print("processing video...")
+            time.sleep(5)
+            myfile = genai.get_file(myfile.name)
+
         model = genai.GenerativeModel("gemini-1.5-flash")
-        video = genai.upload_file(media / "Big_Buck_Bunny.mp4")
-        response = model.generate_content(["Describe this video clip.", video], stream=True)
+
+        response = model.generate_content([myfile, "Describe this video clip"])
         for chunk in response:
             print(chunk.text)
             print("_" * 80)
         # [END text_gen_multimodal_video_prompt_streaming]
+
+    def test_text_gen_multimodal_pdf(self):
+        # [START text_gen_multimodal_pdf]
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        sample_pdf = genai.upload_file(media / "test.pdf")
+        response = model.generate_content(["Give me a summary of this document:", sample_pdf])
+        print(f"{response.text=}")
+        # [END text_gen_multimodal_pdf]
+
+    def test_text_gen_multimodal_pdf_streaming(self):
+        # [START text_gen_multimodal_pdf_streaming]
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        sample_pdf = genai.upload_file(media / "test.pdf")
+        response = model.generate_content(["Give me a summary of this document:", sample_pdf])
+
+        for chunk in response:
+            print(chunk.text)
+            print("_" * 80)
+        # [END text_gen_multimodal_pdf_streaming]
 
 
 if __name__ == "__main__":

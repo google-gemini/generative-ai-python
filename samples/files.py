@@ -75,6 +75,14 @@ class UnitTests(absltest.TestCase):
         print(f"{result.text=}")
         # [END files_create_video]
 
+    def test_files_create_pdf(self):
+        # [START files_create_pdf]
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        sample_pdf = genai.upload_file(media / "test.pdf")
+        response = model.generate_content(["Give me a summary of this pdf file.", sample_pdf])
+        print(response.text)
+        # [END files_create_pdf]
+
     def test_files_list(self):
         # [START files_list]
         print("My files:")
