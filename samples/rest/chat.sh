@@ -25,7 +25,7 @@ curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:ge
 
 echo "[START chat_streaming]"
 # [START chat_streaming]
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=$GOOGLE_API_KEY \
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=$GOOGLE_API_KEY \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -53,7 +53,7 @@ else
   B64FLAGS="-w0"
 fi
 
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=$GOOGLE_API_KEY \
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=$GOOGLE_API_KEY \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{

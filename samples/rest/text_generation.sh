@@ -58,7 +58,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:g
 
 echo "[START text_gen_multimodal_one_image_prompt_streaming]"
 # [START text_gen_multimodal_one_image_prompt_streaming]
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=$GOOGLE_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -280,7 +280,7 @@ do
   state=$(jq ".file.state" file_info.json)
 done
 
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=$GOOGLE_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -382,7 +382,7 @@ file_uri=$(jq ".file.uri" file_info.json)
 echo file_uri=$file_uri
 
 # Now generate content using that file
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=$GOOGLE_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
