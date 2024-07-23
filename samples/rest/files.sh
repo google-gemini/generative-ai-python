@@ -246,5 +246,6 @@ jq ".candidates[].content.parts[].text" response.json
 echo "[START files_list]"
 # [START files_list]
 echo "My files: "
+
 curl "https://generativelanguage.googleapis.com/v1beta/files?key=$GOOGLE_API_KEY"
 # [END files_list]
