@@ -167,6 +167,17 @@ class UnitTests(absltest.TestCase):
 
         # [END tokens_multimodal_video_audio_file_api]
 
+    def test_tokens_multimodal_pdf_file_api(self):
+        # [START tokens_multimodal_pdf_file_api]
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        sample_pdf = genai.upload_file(media / "test.pdf")
+        token_count = model.count_tokens(["Give me a summary of this document.", sample_pdf])
+        print(f"{token_count=}")
+
+        response = model.generate_content(["Give me a summary of this document.", sample_pdf])
+        print(response.usage_metadata)
+        # [END tokens_multimodal_pdf_file_api]
+
     def test_tokens_cached_content(self):
         # [START tokens_cached_content]
         import time
