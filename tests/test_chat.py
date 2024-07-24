@@ -610,6 +610,7 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
                 history=[protos.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), protos.Content({'parts': [{'text': 'first'}], 'role': 'model'}), protos.Content({'parts': [{'text': 'I also like this image.'}, {'inline_data': {'data': 'iVBORw0KGgoA...AAElFTkSuQmCC', 'mime_type': 'image/png'}}], 'role': 'user'}), protos.Content({'parts': [{'text': 'second'}], 'role': 'model'}), protos.Content({'parts': [{'text': 'What things do I like?.'}], 'role': 'user'}), protos.Content({'parts': [{'text': 'third'}], 'role': 'model'})]
             )"""
@@ -638,6 +639,7 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
                 history=[protos.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING IN PROGRESS>]
             )"""
@@ -682,6 +684,7 @@ class CUJTests(parameterized.TestCase):
                     safety_settings={},
                     tools=None,
                     system_instruction=None,
+                    cached_content=None
                 ),
                 history=[protos.Content({'parts': [{'text': 'I really like fantasy books.'}], 'role': 'user'}), <STREAMING ERROR>]
             )"""
