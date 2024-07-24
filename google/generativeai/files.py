@@ -28,6 +28,8 @@ from google.generativeai.client import get_default_file_client
 
 __all__ = ["upload_file", "get_file", "list_files", "delete_file"]
 
+mimetypes.add_type("image/webp", ".webp")
+
 
 def upload_file(
     path: str | pathlib.Path | os.PathLike,
@@ -81,16 +83,20 @@ def list_files(page_size=100) -> Iterable[file_types.File]:
         yield file_types.File(proto)
 
 
-def get_file(name) -> file_types.File:
+def get_file(name: str) -> file_types.File:
     """Calls the API to retrieve a specified file using a supported file service."""
+    if "/" not in name:
+        name = f"files/{name}"
     client = get_default_file_client()
     return file_types.File(client.get_file(name=name))
 
 
-def delete_file(name):
+def delete_file(name: str | file_types.File | protos.File):
     """Calls the API to permanently delete a specified file using a supported file service."""
     if isinstance(name, (file_types.File, protos.File)):
         name = name.name
+    elif "/" not in name:
+        name = f"files/{name}"
     request = protos.DeleteFileRequest(name=name)
     client = get_default_file_client()
     client.delete_file(request=request)

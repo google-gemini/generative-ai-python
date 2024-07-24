@@ -139,3 +139,10 @@ class UnitTests(parameterized.TestCase):
     def test_to_file_data(self, file_data):
         file_data = file_types.to_file_data(file_data)
         self.assertEqual(protos.FileData(file_uri="https://test_uri"), file_data)
+
+    def test_webp_mimetype(self):
+        self.responses["create_file"].append(protos.File())
+
+        response = genai.upload_file("test.webp")
+
+        self.assertEqual("image/webp", self.observed_requests[0]["mime_type"])

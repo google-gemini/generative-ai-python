@@ -63,6 +63,7 @@ class FileServiceClient(glm.FileServiceClient):
             uri=f"{GENAI_API_DISCOVERY_URL}?version=v1beta&key={api_key}",
         )
         response, content = request.execute()
+        request.http.close()
 
         discovery_doc = content.decode("utf-8")
         self._discovery_api = googleapiclient.discovery.build_from_document(
@@ -131,7 +132,8 @@ class _ClientManager:
         """Initializes default client configurations using specified parameters or environment variables.
 
         If no API key has been provided (either directly, or on `client_options`) and the
-        `GOOGLE_API_KEY` environment variable is set, it will be used as the API key.
+        `GEMINI_API_KEY` environment variable is set, it will be used as the API key. If not,
+        if the `GOOGLE_API_KEY` environement variable is set, it will be used as the API key.
 
         Note: Not all arguments are detailed below. Refer to the `*ServiceClient` classes in
         `google.ai.generativelanguage` for details on the other arguments.
@@ -140,8 +142,8 @@ class _ClientManager:
             transport: A string, one of: [`rest`, `grpc`, `grpc_asyncio`].
             api_key: The API-Key to use when creating the default clients (each service uses
                 a separate client). This is a shortcut for `client_options={"api_key": api_key}`.
-                If omitted, and the `GOOGLE_API_KEY` environment variable is set, it will be
-                used.
+                If omitted, and the `GEMINI_API_KEY` or the `GOOGLE_API_KEY` environment variable
+                are set, they will be used in this order of priority.
             default_metadata: Default (key, value) metadata pairs to send with every request.
                 when using `transport="rest"` these are sent as HTTP headers.
         """
@@ -161,6 +163,11 @@ class _ClientManager:
             if api_key is None:
                 # If no key is provided explicitly, attempt to load one from the
                 # environment.
+                api_key = os.getenv("GEMINI_API_KEY")
+
+            if api_key is None:
+                # If the GEMINI_API_KEY doesn't exist, attempt to load the
+                # GOOGLE_API_KEY from the environment.
                 api_key = os.getenv("GOOGLE_API_KEY")
 
             client_options.api_key = api_key
@@ -313,6 +320,10 @@ def configure(
 
 _client_manager = _ClientManager()
 _client_manager.configure()
+
+
+def get_default_cache_client() -> glm.CacheServiceClient:
+    return _client_manager.get_default_client("cache")
 
 
 def get_default_discuss_client() -> glm.DiscussServiceClient:

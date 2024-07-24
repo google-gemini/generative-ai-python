@@ -1,0 +1,507 @@
+toc:
+- title: google.generativeai
+  section:
+  - title: Overview
+    path: /api/python/google/generativeai
+  - title: ChatSession
+    path: /api/python/google/generativeai/ChatSession
+  - title: GenerativeModel
+    path: /api/python/google/generativeai/GenerativeModel
+  - title: chat
+    path: /api/python/google/generativeai/chat
+  - title: chat_async
+    path: /api/python/google/generativeai/chat_async
+  - title: configure
+    path: /api/python/google/generativeai/configure
+  - title: count_message_tokens
+    path: /api/python/google/generativeai/count_message_tokens
+  - title: count_text_tokens
+    path: /api/python/google/generativeai/count_text_tokens
+  - title: create_tuned_model
+    path: /api/python/google/generativeai/create_tuned_model
+  - title: delete_file
+    path: /api/python/google/generativeai/delete_file
+  - title: delete_tuned_model
+    path: /api/python/google/generativeai/delete_tuned_model
+  - title: embed_content
+    path: /api/python/google/generativeai/embed_content
+  - title: embed_content_async
+    path: /api/python/google/generativeai/embed_content_async
+  - title: generate_embeddings
+    path: /api/python/google/generativeai/generate_embeddings
+  - title: generate_text
+    path: /api/python/google/generativeai/generate_text
+  - title: get_base_model
+    path: /api/python/google/generativeai/get_base_model
+  - title: get_file
+    path: /api/python/google/generativeai/get_file
+  - title: get_model
+    path: /api/python/google/generativeai/get_model
+  - title: get_operation
+    path: /api/python/google/generativeai/get_operation
+  - title: get_tuned_model
+    path: /api/python/google/generativeai/get_tuned_model
+  - title: list_files
+    path: /api/python/google/generativeai/list_files
+  - title: list_models
+    path: /api/python/google/generativeai/list_models
+  - title: list_operations
+    path: /api/python/google/generativeai/list_operations
+  - title: list_tuned_models
+    path: /api/python/google/generativeai/list_tuned_models
+  - title: update_tuned_model
+    path: /api/python/google/generativeai/update_tuned_model
+  - title: upload_file
+    path: /api/python/google/generativeai/upload_file
+  - title: protos
+    section:
+    - title: Overview
+      path: /api/python/google/generativeai/protos
+    - title: AttributionSourceId
+      path: /api/python/google/generativeai/protos/AttributionSourceId
+    - title: AttributionSourceId.GroundingPassageId
+      path: /api/python/google/generativeai/protos/AttributionSourceId/GroundingPassageId
+    - title: AttributionSourceId.SemanticRetrieverChunk
+      path: /api/python/google/generativeai/protos/AttributionSourceId/SemanticRetrieverChunk
+    - title: BatchCreateChunksRequest
+      path: /api/python/google/generativeai/protos/BatchCreateChunksRequest
+    - title: BatchCreateChunksResponse
+      path: /api/python/google/generativeai/protos/BatchCreateChunksResponse
+    - title: BatchDeleteChunksRequest
+      path: /api/python/google/generativeai/protos/BatchDeleteChunksRequest
+    - title: BatchEmbedContentsRequest
+      path: /api/python/google/generativeai/protos/BatchEmbedContentsRequest
+    - title: BatchEmbedContentsResponse
+      path: /api/python/google/generativeai/protos/BatchEmbedContentsResponse
+    - title: BatchEmbedTextRequest
+      path: /api/python/google/generativeai/protos/BatchEmbedTextRequest
+    - title: BatchEmbedTextResponse
+      path: /api/python/google/generativeai/protos/BatchEmbedTextResponse
+    - title: BatchUpdateChunksRequest
+      path: /api/python/google/generativeai/protos/BatchUpdateChunksRequest
+    - title: BatchUpdateChunksResponse
+      path: /api/python/google/generativeai/protos/BatchUpdateChunksResponse
+    - title: Blob
+      path: /api/python/google/generativeai/protos/Blob
+    - title: CachedContent
+      path: /api/python/google/generativeai/protos/CachedContent
+    - title: CachedContent.UsageMetadata
+      path: /api/python/google/generativeai/protos/CachedContent/UsageMetadata
+    - title: Candidate
+      path: /api/python/google/generativeai/protos/Candidate
+    - title: Candidate.FinishReason
+      path: /api/python/google/generativeai/protos/Candidate/FinishReason
+    - title: Chunk
+      path: /api/python/google/generativeai/protos/Chunk
+    - title: Chunk.State
+      path: /api/python/google/generativeai/protos/Chunk/State
+    - title: ChunkData
+      path: /api/python/google/generativeai/protos/ChunkData
+    - title: CitationMetadata
+      path: /api/python/google/generativeai/protos/CitationMetadata
+    - title: CitationSource
+      path: /api/python/google/generativeai/protos/CitationSource
+    - title: CodeExecution
+      path: /api/python/google/generativeai/protos/CodeExecution
+    - title: CodeExecutionResult
+      path: /api/python/google/generativeai/protos/CodeExecutionResult
+    - title: CodeExecutionResult.Outcome
+      path: /api/python/google/generativeai/protos/CodeExecutionResult/Outcome
+    - title: Condition
+      path: /api/python/google/generativeai/protos/Condition
+    - title: Condition.Operator
+      path: /api/python/google/generativeai/protos/Condition/Operator
+    - title: Content
+      path: /api/python/google/generativeai/protos/Content
+    - title: ContentEmbedding
+      path: /api/python/google/generativeai/protos/ContentEmbedding
+    - title: ContentFilter
+      path: /api/python/google/generativeai/protos/ContentFilter
+    - title: Corpus
+      path: /api/python/google/generativeai/protos/Corpus
+    - title: CountMessageTokensRequest
+      path: /api/python/google/generativeai/protos/CountMessageTokensRequest
+    - title: CountMessageTokensResponse
+      path: /api/python/google/generativeai/protos/CountMessageTokensResponse
+    - title: CountTextTokensRequest
+      path: /api/python/google/generativeai/protos/CountTextTokensRequest
+    - title: CountTextTokensResponse
+      path: /api/python/google/generativeai/protos/CountTextTokensResponse
+    - title: CountTokensRequest
+      path: /api/python/google/generativeai/protos/CountTokensRequest
+    - title: CountTokensResponse
+      path: /api/python/google/generativeai/protos/CountTokensResponse
+    - title: CreateCachedContentRequest
+      path: /api/python/google/generativeai/protos/CreateCachedContentRequest
+    - title: CreateChunkRequest
+      path: /api/python/google/generativeai/protos/CreateChunkRequest
+    - title: CreateCorpusRequest
+      path: /api/python/google/generativeai/protos/CreateCorpusRequest
+    - title: CreateDocumentRequest
+      path: /api/python/google/generativeai/protos/CreateDocumentRequest
+    - title: CreateFileRequest
+      path: /api/python/google/generativeai/protos/CreateFileRequest
+    - title: CreateFileResponse
+      path: /api/python/google/generativeai/protos/CreateFileResponse
+    - title: CreatePermissionRequest
+      path: /api/python/google/generativeai/protos/CreatePermissionRequest
+    - title: CreateTunedModelMetadata
+      path: /api/python/google/generativeai/protos/CreateTunedModelMetadata
+    - title: CreateTunedModelRequest
+      path: /api/python/google/generativeai/protos/CreateTunedModelRequest
+    - title: CustomMetadata
+      path: /api/python/google/generativeai/protos/CustomMetadata
+    - title: Dataset
+      path: /api/python/google/generativeai/protos/Dataset
+    - title: DeleteCachedContentRequest
+      path: /api/python/google/generativeai/protos/DeleteCachedContentRequest
+    - title: DeleteChunkRequest
+      path: /api/python/google/generativeai/protos/DeleteChunkRequest
+    - title: DeleteCorpusRequest
+      path: /api/python/google/generativeai/protos/DeleteCorpusRequest
+    - title: DeleteDocumentRequest
+      path: /api/python/google/generativeai/protos/DeleteDocumentRequest
+    - title: DeleteFileRequest
+      path: /api/python/google/generativeai/protos/DeleteFileRequest
+    - title: DeletePermissionRequest
+      path: /api/python/google/generativeai/protos/DeletePermissionRequest
+    - title: DeleteTunedModelRequest
+      path: /api/python/google/generativeai/protos/DeleteTunedModelRequest
+    - title: Document
+      path: /api/python/google/generativeai/protos/Document
+    - title: EmbedContentRequest
+      path: /api/python/google/generativeai/protos/EmbedContentRequest
+    - title: EmbedContentResponse
+      path: /api/python/google/generativeai/protos/EmbedContentResponse
+    - title: EmbedTextRequest
+      path: /api/python/google/generativeai/protos/EmbedTextRequest
+    - title: EmbedTextResponse
+      path: /api/python/google/generativeai/protos/EmbedTextResponse
+    - title: Embedding
+      path: /api/python/google/generativeai/protos/Embedding
+    - title: Example
+      path: /api/python/google/generativeai/protos/Example
+    - title: ExecutableCode
+      path: /api/python/google/generativeai/protos/ExecutableCode
+    - title: ExecutableCode.Language
+      path: /api/python/google/generativeai/protos/ExecutableCode/Language
+    - title: File
+      path: /api/python/google/generativeai/protos/File
+    - title: File.State
+      path: /api/python/google/generativeai/protos/File/State
+    - title: FileData
+      path: /api/python/google/generativeai/protos/FileData
+    - title: FunctionCall
+      path: /api/python/google/generativeai/protos/FunctionCall
+    - title: FunctionCallingConfig
+      path: /api/python/google/generativeai/protos/FunctionCallingConfig
+    - title: FunctionCallingConfig.Mode
+      path: /api/python/google/generativeai/protos/FunctionCallingConfig/Mode
+    - title: FunctionDeclaration
+      path: /api/python/google/generativeai/protos/FunctionDeclaration
+    - title: FunctionResponse
+      path: /api/python/google/generativeai/protos/FunctionResponse
+    - title: GenerateAnswerRequest
+      path: /api/python/google/generativeai/protos/GenerateAnswerRequest
+    - title: GenerateAnswerRequest.AnswerStyle
+      path: /api/python/google/generativeai/protos/GenerateAnswerRequest/AnswerStyle
+    - title: GenerateAnswerResponse
+      path: /api/python/google/generativeai/protos/GenerateAnswerResponse
+    - title: GenerateAnswerResponse.InputFeedback
+      path: /api/python/google/generativeai/protos/GenerateAnswerResponse/InputFeedback
+    - title: GenerateAnswerResponse.InputFeedback.BlockReason
+      path: /api/python/google/generativeai/protos/GenerateAnswerResponse/InputFeedback/BlockReason
+    - title: GenerateContentRequest
+      path: /api/python/google/generativeai/protos/GenerateContentRequest
+    - title: GenerateContentResponse
+      path: /api/python/google/generativeai/protos/GenerateContentResponse
+    - title: GenerateContentResponse.PromptFeedback
+      path: /api/python/google/generativeai/protos/GenerateContentResponse/PromptFeedback
+    - title: GenerateContentResponse.PromptFeedback.BlockReason
+      path: /api/python/google/generativeai/protos/GenerateContentResponse/PromptFeedback/BlockReason
+    - title: GenerateContentResponse.UsageMetadata
+      path: /api/python/google/generativeai/protos/GenerateContentResponse/UsageMetadata
+    - title: GenerateMessageRequest
+      path: /api/python/google/generativeai/protos/GenerateMessageRequest
+    - title: GenerateMessageResponse
+      path: /api/python/google/generativeai/protos/GenerateMessageResponse
+    - title: GenerateTextRequest
+      path: /api/python/google/generativeai/protos/GenerateTextRequest
+    - title: GenerateTextResponse
+      path: /api/python/google/generativeai/protos/GenerateTextResponse
+    - title: GenerationConfig
+      path: /api/python/google/generativeai/protos/GenerationConfig
+    - title: GetCachedContentRequest
+      path: /api/python/google/generativeai/protos/GetCachedContentRequest
+    - title: GetChunkRequest
+      path: /api/python/google/generativeai/protos/GetChunkRequest
+    - title: GetCorpusRequest
+      path: /api/python/google/generativeai/protos/GetCorpusRequest
+    - title: GetDocumentRequest
+      path: /api/python/google/generativeai/protos/GetDocumentRequest
+    - title: GetFileRequest
+      path: /api/python/google/generativeai/protos/GetFileRequest
+    - title: GetModelRequest
+      path: /api/python/google/generativeai/protos/GetModelRequest
+    - title: GetPermissionRequest
+      path: /api/python/google/generativeai/protos/GetPermissionRequest
+    - title: GetTunedModelRequest
+      path: /api/python/google/generativeai/protos/GetTunedModelRequest
+    - title: GroundingAttribution
+      path: /api/python/google/generativeai/protos/GroundingAttribution
+    - title: GroundingPassage
+      path: /api/python/google/generativeai/protos/GroundingPassage
+    - title: GroundingPassages
+      path: /api/python/google/generativeai/protos/GroundingPassages
+    - title: HarmCategory
+      path: /api/python/google/generativeai/protos/HarmCategory
+    - title: Hyperparameters
+      path: /api/python/google/generativeai/protos/Hyperparameters
+    - title: ListCachedContentsRequest
+      path: /api/python/google/generativeai/protos/ListCachedContentsRequest
+    - title: ListCachedContentsResponse
+      path: /api/python/google/generativeai/protos/ListCachedContentsResponse
+    - title: ListChunksRequest
+      path: /api/python/google/generativeai/protos/ListChunksRequest
+    - title: ListChunksResponse
+      path: /api/python/google/generativeai/protos/ListChunksResponse
+    - title: ListCorporaRequest
+      path: /api/python/google/generativeai/protos/ListCorporaRequest
+    - title: ListCorporaResponse
+      path: /api/python/google/generativeai/protos/ListCorporaResponse
+    - title: ListDocumentsRequest
+      path: /api/python/google/generativeai/protos/ListDocumentsRequest
+    - title: ListDocumentsResponse
+      path: /api/python/google/generativeai/protos/ListDocumentsResponse
+    - title: ListFilesRequest
+      path: /api/python/google/generativeai/protos/ListFilesRequest
+    - title: ListFilesResponse
+      path: /api/python/google/generativeai/protos/ListFilesResponse
+    - title: ListModelsRequest
+      path: /api/python/google/generativeai/protos/ListModelsRequest
+    - title: ListModelsResponse
+      path: /api/python/google/generativeai/protos/ListModelsResponse
+    - title: ListPermissionsRequest
+      path: /api/python/google/generativeai/protos/ListPermissionsRequest
+    - title: ListPermissionsResponse
+      path: /api/python/google/generativeai/protos/ListPermissionsResponse
+    - title: ListTunedModelsRequest
+      path: /api/python/google/generativeai/protos/ListTunedModelsRequest
+    - title: ListTunedModelsResponse
+      path: /api/python/google/generativeai/protos/ListTunedModelsResponse
+    - title: Message
+      path: /api/python/google/generativeai/protos/Message
+    - title: MessagePrompt
+      path: /api/python/google/generativeai/protos/MessagePrompt
+    - title: MetadataFilter
+      path: /api/python/google/generativeai/protos/MetadataFilter
+    - title: Model
+      path: /api/python/google/generativeai/protos/Model
+    - title: Part
+      path: /api/python/google/generativeai/protos/Part
+    - title: Permission
+      path: /api/python/google/generativeai/protos/Permission
+    - title: Permission.GranteeType
+      path: /api/python/google/generativeai/protos/Permission/GranteeType
+    - title: Permission.Role
+      path: /api/python/google/generativeai/protos/Permission/Role
+    - title: QueryCorpusRequest
+      path: /api/python/google/generativeai/protos/QueryCorpusRequest
+    - title: QueryCorpusResponse
+      path: /api/python/google/generativeai/protos/QueryCorpusResponse
+    - title: QueryDocumentRequest
+      path: /api/python/google/generativeai/protos/QueryDocumentRequest
+    - title: QueryDocumentResponse
+      path: /api/python/google/generativeai/protos/QueryDocumentResponse
+    - title: RelevantChunk
+      path: /api/python/google/generativeai/protos/RelevantChunk
+    - title: SafetyFeedback
+      path: /api/python/google/generativeai/protos/SafetyFeedback
+    - title: SafetyRating
+      path: /api/python/google/generativeai/protos/SafetyRating
+    - title: SafetySetting
+      path: /api/python/google/generativeai/protos/SafetySetting
+    - title: Schema
+      path: /api/python/google/generativeai/protos/Schema
+    - title: Schema.PropertiesEntry
+      path: /api/python/google/generativeai/protos/Schema/PropertiesEntry
+    - title: SemanticRetrieverConfig
+      path: /api/python/google/generativeai/protos/SemanticRetrieverConfig
+    - title: StringList
+      path: /api/python/google/generativeai/protos/StringList
+    - title: TaskType
+      path: /api/python/google/generativeai/protos/TaskType
+    - title: TextCompletion
+      path: /api/python/google/generativeai/protos/TextCompletion
+    - title: TextPrompt
+      path: /api/python/google/generativeai/protos/TextPrompt
+    - title: Tool
+      path: /api/python/google/generativeai/protos/Tool
+    - title: ToolConfig
+      path: /api/python/google/generativeai/protos/ToolConfig
+    - title: TransferOwnershipRequest
+      path: /api/python/google/generativeai/protos/TransferOwnershipRequest
+    - title: TransferOwnershipResponse
+      path: /api/python/google/generativeai/protos/TransferOwnershipResponse
+    - title: TunedModel
+      path: /api/python/google/generativeai/protos/TunedModel
+    - title: TunedModelSource
+      path: /api/python/google/generativeai/protos/TunedModelSource
+    - title: TuningExample
+      path: /api/python/google/generativeai/protos/TuningExample
+    - title: TuningExamples
+      path: /api/python/google/generativeai/protos/TuningExamples
+    - title: TuningSnapshot
+      path: /api/python/google/generativeai/protos/TuningSnapshot
+    - title: TuningTask
+      path: /api/python/google/generativeai/protos/TuningTask
+    - title: Type
+      path: /api/python/google/generativeai/protos/Type
+    - title: UpdateCachedContentRequest
+      path: /api/python/google/generativeai/protos/UpdateCachedContentRequest
+    - title: UpdateChunkRequest
+      path: /api/python/google/generativeai/protos/UpdateChunkRequest
+    - title: UpdateCorpusRequest
+      path: /api/python/google/generativeai/protos/UpdateCorpusRequest
+    - title: UpdateDocumentRequest
+      path: /api/python/google/generativeai/protos/UpdateDocumentRequest
+    - title: UpdatePermissionRequest
+      path: /api/python/google/generativeai/protos/UpdatePermissionRequest
+    - title: UpdateTunedModelRequest
+      path: /api/python/google/generativeai/protos/UpdateTunedModelRequest
+    - title: VideoMetadata
+      path: /api/python/google/generativeai/protos/VideoMetadata
+  - title: types
+    section:
+    - title: Overview
+      path: /api/python/google/generativeai/types
+    - title: AnyModelNameOptions
+      path: /api/python/google/generativeai/types/AnyModelNameOptions
+    - title: AsyncGenerateContentResponse
+      path: /api/python/google/generativeai/types/AsyncGenerateContentResponse
+    - title: AuthorError
+      path: /api/python/google/generativeai/types/AuthorError
+    - title: BaseModelNameOptions
+      path: /api/python/google/generativeai/types/BaseModelNameOptions
+    - title: BlobDict
+      path: /api/python/google/generativeai/types/BlobDict
+    - title: BlobType
+      path: /api/python/google/generativeai/types/BlobType
+    - title: BlockedPromptException
+      path: /api/python/google/generativeai/types/BlockedPromptException
+    - title: BlockedReason
+      path: /api/python/google/generativeai/types/BlockedReason
+    - title: BrokenResponseError
+      path: /api/python/google/generativeai/types/BrokenResponseError
+    - title: CallableFunctionDeclaration
+      path: /api/python/google/generativeai/types/CallableFunctionDeclaration
+    - title: ChatResponse
+      path: /api/python/google/generativeai/types/ChatResponse
+    - title: CitationMetadataDict
+      path: /api/python/google/generativeai/types/CitationMetadataDict
+    - title: CitationSourceDict
+      path: /api/python/google/generativeai/types/CitationSourceDict
+    - title: Completion
+      path: /api/python/google/generativeai/types/Completion
+    - title: ContentDict
+      path: /api/python/google/generativeai/types/ContentDict
+    - title: ContentFilterDict
+      path: /api/python/google/generativeai/types/ContentFilterDict
+    - title: ContentType
+      path: /api/python/google/generativeai/types/ContentType
+    - title: ContentsType
+      path: /api/python/google/generativeai/types/ContentsType
+    - title: ExampleDict
+      path: /api/python/google/generativeai/types/ExampleDict
+    - title: ExampleOptions
+      path: /api/python/google/generativeai/types/ExampleOptions
+    - title: ExamplesOptions
+      path: /api/python/google/generativeai/types/ExamplesOptions
+    - title: File
+      path: /api/python/google/generativeai/types/File
+    - title: FileDataDict
+      path: /api/python/google/generativeai/types/FileDataDict
+    - title: FileDataType
+      path: /api/python/google/generativeai/types/FileDataType
+    - title: FunctionDeclaration
+      path: /api/python/google/generativeai/types/FunctionDeclaration
+    - title: FunctionDeclarationType
+      path: /api/python/google/generativeai/types/FunctionDeclarationType
+    - title: FunctionLibrary
+      path: /api/python/google/generativeai/types/FunctionLibrary
+    - title: FunctionLibraryType
+      path: /api/python/google/generativeai/types/FunctionLibraryType
+    - title: GenerateContentResponse
+      path: /api/python/google/generativeai/types/GenerateContentResponse
+    - title: GenerationConfig
+      path: /api/python/google/generativeai/types/GenerationConfig
+    - title: GenerationConfigDict
+      path: /api/python/google/generativeai/types/GenerationConfigDict
+    - title: GenerationConfigType
+      path: /api/python/google/generativeai/types/GenerationConfigType
+    - title: HarmBlockThreshold
+      path: /api/python/google/generativeai/types/HarmBlockThreshold
+    - title: HarmCategory
+      path: /api/python/google/generativeai/types/HarmCategory
+    - title: HarmProbability
+      path: /api/python/google/generativeai/types/HarmProbability
+    - title: IncompleteIterationError
+      path: /api/python/google/generativeai/types/IncompleteIterationError
+    - title: MessageDict
+      path: /api/python/google/generativeai/types/MessageDict
+    - title: MessageOptions
+      path: /api/python/google/generativeai/types/MessageOptions
+    - title: MessagePromptDict
+      path: /api/python/google/generativeai/types/MessagePromptDict
+    - title: MessagePromptOptions
+      path: /api/python/google/generativeai/types/MessagePromptOptions
+    - title: MessagesOptions
+      path: /api/python/google/generativeai/types/MessagesOptions
+    - title: Model
+      path: /api/python/google/generativeai/types/Model
+    - title: ModelsIterable
+      path: /api/python/google/generativeai/types/ModelsIterable
+    - title: PartDict
+      path: /api/python/google/generativeai/types/PartDict
+    - title: PartType
+      path: /api/python/google/generativeai/types/PartType
+    - title: Permission
+      path: /api/python/google/generativeai/types/Permission
+    - title: Permissions
+      path: /api/python/google/generativeai/types/Permissions
+    - title: RequestOptions
+      path: /api/python/google/generativeai/types/RequestOptions
+    - title: RequestOptionsType
+      path: /api/python/google/generativeai/types/RequestOptionsType
+    - title: ResponseDict
+      path: /api/python/google/generativeai/types/ResponseDict
+    - title: SafetyFeedbackDict
+      path: /api/python/google/generativeai/types/SafetyFeedbackDict
+    - title: SafetyRatingDict
+      path: /api/python/google/generativeai/types/SafetyRatingDict
+    - title: SafetySettingDict
+      path: /api/python/google/generativeai/types/SafetySettingDict
+    - title: Status
+      path: /api/python/google/generativeai/types/Status
+    - title: StopCandidateException
+      path: /api/python/google/generativeai/types/StopCandidateException
+    - title: StrictContentType
+      path: /api/python/google/generativeai/types/StrictContentType
+    - title: Tool
+      path: /api/python/google/generativeai/types/Tool
+    - title: ToolDict
+      path: /api/python/google/generativeai/types/ToolDict
+    - title: ToolsType
+      path: /api/python/google/generativeai/types/ToolsType
+    - title: TunedModel
+      path: /api/python/google/generativeai/types/TunedModel
+    - title: TunedModelNameOptions
+      path: /api/python/google/generativeai/types/TunedModelNameOptions
+    - title: TunedModelState
+      path: /api/python/google/generativeai/types/TunedModelState
+    - title: TypedDict
+      path: /api/python/google/generativeai/types/TypedDict
+    - title: get_default_file_client
+      path: /api/python/google/generativeai/types/get_default_file_client
+    - title: to_file_data
+      path: /api/python/google/generativeai/types/to_file_data

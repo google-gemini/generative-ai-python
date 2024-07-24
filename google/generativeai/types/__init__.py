@@ -21,6 +21,7 @@ from google.generativeai.types.file_types import *
 from google.generativeai.types.generation_types import *
 from google.generativeai.types.helper_types import *
 from google.generativeai.types.model_types import *
+from google.generativeai.types.permission_types import *
 from google.generativeai.types.safety_types import *
 from google.generativeai.types.text_types import *
 
