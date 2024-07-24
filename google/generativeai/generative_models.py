@@ -529,7 +529,7 @@ class ChatSession:
             request_options=request_options,
         )
 
-    def count_tokens_async(
+    async def count_tokens_async(
         self,
         content: content_types.ContentType | None = None,
         *,
