@@ -117,6 +117,7 @@ class Model:
     output_token_limit: int
     supported_generation_methods: list[str]
     temperature: float | None = None
+    max_temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
 

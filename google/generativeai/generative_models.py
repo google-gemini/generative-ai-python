@@ -17,6 +17,9 @@ from google.generativeai.types import generation_types
 from google.generativeai.types import helper_types
 from google.generativeai.types import safety_types
 
+_USER_ROLE = "user"
+_MODEL_ROLE = "model"
+
 
 class GenerativeModel:
     """
@@ -93,14 +96,9 @@ class GenerativeModel:
         self._client = None
         self._async_client = None
 
-    def __new__(cls, *args, **kwargs) -> GenerativeModel:
-        self = super().__new__(cls)
-
-        if cached_instance := kwargs.pop("cached_content", None):
-            setattr(self, "_cached_content", cached_instance.name)
-            setattr(cls, "cached_content", property(fget=lambda self: self._cached_content))
-
-        return self
+    @property
+    def cached_content(self) -> str:
+        return getattr(self, "_cached_content", None)
 
     @property
     def model_name(self):
@@ -120,7 +118,7 @@ class GenerativeModel:
                 safety_settings={self._safety_settings},
                 tools={self._tools},
                 system_instruction={maybe_text(self._system_instruction)},
-                cached_content={getattr(self, "cached_content", None)}
+                cached_content={self.cached_content}
             )"""
         )
 
@@ -136,12 +134,10 @@ class GenerativeModel:
         tool_config: content_types.ToolConfigType | None,
     ) -> protos.GenerateContentRequest:
         """Creates a `protos.GenerateContentRequest` from raw inputs."""
-        if hasattr(self, "cached_content") and any([self._system_instruction, tools, tool_config]):
+        if hasattr(self, "_cached_content") and any([self._system_instruction, tools, tool_config]):
             raise ValueError(
-                "`tools`, `tool_config`, `system_instruction` cannot be set on a model instantinated with `cached_content` as its context."
+                "`tools`, `tool_config`, `system_instruction` cannot be set on a model instantiated with `cached_content` as its context."
             )
-
-        cached_content = getattr(self, "cached_content", None)
 
         tools_lib = self._get_tools_lib(tools)
         if tools_lib is not None:
@@ -171,7 +167,7 @@ class GenerativeModel:
             tools=tools_lib,
             tool_config=tool_config,
             system_instruction=self._system_instruction,
-            cached_content=cached_content,
+            cached_content=self.cached_content,
         )
 
     def _get_tools_lib(
@@ -187,6 +183,7 @@ class GenerativeModel:
     def from_cached_content(
         cls,
         cached_content: str,
+        *,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
     ) -> GenerativeModel: ...
@@ -196,6 +193,7 @@ class GenerativeModel:
     def from_cached_content(
         cls,
         cached_content: caching.CachedContent,
+        *,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
     ) -> GenerativeModel: ...
@@ -204,6 +202,7 @@ class GenerativeModel:
     def from_cached_content(
         cls,
         cached_content: str | caching.CachedContent,
+        *,
         generation_config: generation_types.GenerationConfigType | None = None,
         safety_settings: safety_types.SafetySettingOptions | None = None,
     ) -> GenerativeModel:
@@ -211,6 +210,8 @@ class GenerativeModel:
 
         Args:
             cached_content: context for the model.
+            generation_config: Overrides for the model's generation config.
+            safety_settings: Overrides for the model's safety settings.
 
         Returns:
             `GenerativeModel` object with `cached_content` as its context.
@@ -218,17 +219,16 @@ class GenerativeModel:
         if isinstance(cached_content, str):
             cached_content = caching.CachedContent.get(name=cached_content)
 
-        # call __new__ with the cached_content to set the model's context. This is done to avoid
-        # the exposing `cached_content` as a public attribute.
-        self = cls.__new__(cls, cached_content=cached_content)
-
         # call __init__ to set the model's `generation_config`, `safety_settings`.
         # `model_name` will be the name of the model for which the `cached_content` was created.
-        self.__init__(
+        self = cls(
             model_name=cached_content.model,
             generation_config=generation_config,
             safety_settings=safety_settings,
         )
+
+        # set the model's context.
+        setattr(self, "_cached_content", cached_content.name)
         return self
 
     def generate_content(
@@ -306,6 +306,10 @@ class GenerativeModel:
             tools=tools,
             tool_config=tool_config,
         )
+
+        if request.contents and not request.contents[-1].role:
+            request.contents[-1].role = _USER_ROLE
+
         if self._client is None:
             self._client = client.get_default_generative_client()
 
@@ -356,6 +360,10 @@ class GenerativeModel:
             tools=tools,
             tool_config=tool_config,
         )
+
+        if request.contents and not request.contents[-1].role:
+            request.contents[-1].role = _USER_ROLE
+
         if self._async_client is None:
             self._async_client = client.get_default_generative_async_client()
 
@@ -486,9 +494,6 @@ class ChatSession:
         history: A chat history to initialize the object with.
     """
 
-    _USER_ROLE = "user"
-    _MODEL_ROLE = "model"
-
     def __init__(
         self,
         model: GenerativeModel,
@@ -602,7 +607,7 @@ class ChatSession:
         content = content_types.to_content(content)
 
         if not content.role:
-            content.role = self._USER_ROLE
+            content.role = _USER_ROLE
 
         history = self.history[:]
         history.append(content)
@@ -689,7 +694,7 @@ class ChatSession:
                 )
                 function_response_parts.append(fr)
 
-            send = protos.Content(role=self._USER_ROLE, parts=function_response_parts)
+            send = protos.Content(role=_USER_ROLE, parts=function_response_parts)
             history.append(send)
 
             response = self.model.generate_content(
@@ -731,7 +736,7 @@ class ChatSession:
         content = content_types.to_content(content)
 
         if not content.role:
-            content.role = self._USER_ROLE
+            content.role = _USER_ROLE
 
         history = self.history[:]
         history.append(content)
@@ -796,7 +801,7 @@ class ChatSession:
                 )
                 function_response_parts.append(fr)
 
-            send = protos.Content(role=self._USER_ROLE, parts=function_response_parts)
+            send = protos.Content(role=_USER_ROLE, parts=function_response_parts)
             history.append(send)
 
             response = await self.model.generate_content_async(
@@ -863,7 +868,7 @@ class ChatSession:
         sent = self._last_sent
         received = last.candidates[0].content
         if not received.role:
-            received.role = self._MODEL_ROLE
+            received.role = _MODEL_ROLE
         self._history.extend([sent, received])
 
         self._last_sent = None

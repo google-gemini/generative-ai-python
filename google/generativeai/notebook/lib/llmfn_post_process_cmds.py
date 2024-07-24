@@ -29,7 +29,7 @@ from google.generativeai.notebook.lib import llmfn_post_process
 def _convert_view_to_output_row(
     row: llmfn_output_row.LLMFnOutputRowView,
 ) -> llmfn_output_row.LLMFnOutputRow:
-    """Convenience method to conert a LLMFnOutputRowView to LLMFnOutputRow.
+    """Convenience method to convert a LLMFnOutputRowView to LLMFnOutputRow.
 
     If `row` is already a LLMFnOutputRow, return as-is for efficiency.
     This could potentially break encapsulation as it could let code to modify

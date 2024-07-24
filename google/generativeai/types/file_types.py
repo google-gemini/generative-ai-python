@@ -15,13 +15,15 @@
 from __future__ import annotations
 
 import datetime
-from typing import Union
+from typing import Any, Union
 from typing_extensions import TypedDict
 
 from google.rpc.status_pb2 import Status
 from google.generativeai.client import get_default_file_client
 
 from google.generativeai import protos
+
+import pprint
 
 
 class File:
@@ -32,6 +34,27 @@ class File:
 
     def to_proto(self) -> protos.File:
         return self._proto
+
+    def to_dict(self) -> dict[str, Any]:
+        return type(self._proto).to_dict(self._proto, use_integers_for_enums=False)
+
+    def __str__(self):
+        def sort_key(pair):
+            name, value = pair
+            if name == "name":
+                return ""
+            elif "time" in name:
+                return "zz_" + name
+            else:
+                return name
+
+        dict_format = dict(sorted(self.to_dict().items(), key=sort_key))
+        dict_format = pprint.pformat(dict_format, sort_dicts=False)
+        dict_format = "{\n " + dict_format[1:]
+        dict_format = "\n   ".join(dict_format.splitlines())
+        return dict_format.join(["genai.File(", ")"])
+
+    __repr__ = __str__
 
     @property
     def name(self) -> str:

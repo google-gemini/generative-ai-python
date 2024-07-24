@@ -1,0 +1,13 @@
+* a11.txt
+  * This is an apollo 11 transcript.
+  * This file is in the public domain in the United States because it was solely created by NASA
+* Big_Buck_Bunny.mp4:
+  * This is a clip from https://peach.blender.org/download/
+  * License CC-BY 3.0 (Attribution)
+* poem.txt:
+  * This is the first paragraph from Shakespeare's "spring", public domain.
+* Cajun_instruments.jpg
+  * This image is from Wikimedia Commons, a public domain (https://commons.wikimedia.org/wiki/Category:Musical_instruments#/media/File:Cajun_instruments.jpg).
+* test.pdf 
+  * This is the first 2 pages of https://arxiv.org/abs/2403.05530 by Google Gemini Team.
+  * License: CC-BY 4.0

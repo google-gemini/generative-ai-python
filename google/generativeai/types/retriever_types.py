@@ -96,17 +96,22 @@ _OPERATOR: dict[OperatorOptions, Operator] = {
     4: Operator.GREATER_EQUAL,
     "operator_greater_equal": Operator.GREATER_EQUAL,
     "greater_equal": Operator.GREATER_EQUAL,
+    Operator.EQUAL: Operator.EQUAL,
+    5: Operator.EQUAL,
+    "operator_equal": Operator.EQUAL,
+    "equal": Operator.EQUAL,
+    "==": Operator.EQUAL,
     Operator.NOT_EQUAL: Operator.NOT_EQUAL,
-    5: Operator.NOT_EQUAL,
+    6: Operator.NOT_EQUAL,
     "operator_not_equal": Operator.NOT_EQUAL,
     "not_equal": Operator.NOT_EQUAL,
     "!=": Operator.NOT_EQUAL,
     Operator.INCLUDES: Operator.INCLUDES,
-    6: Operator.INCLUDES,
+    7: Operator.INCLUDES,
     "operator_includes": Operator.INCLUDES,
     "includes": Operator.INCLUDES,
     Operator.EXCLUDES: Operator.EXCLUDES,
-    6: Operator.EXCLUDES,
+    8: Operator.EXCLUDES,
     "operator_excludes": Operator.EXCLUDES,
     "excludes": Operator.EXCLUDES,
     "not in": Operator.EXCLUDES,
@@ -1230,7 +1235,7 @@ class Document(abc.ABC):
         Update multiple chunks within the same document.
 
         Args:
-            chunks: Data structure specifying which `Chunk`s to update and what the required updats are.
+            chunks: Data structure specifying which `Chunk`s to update and what the required updates are.
             request_options: Options for the request.
 
         Return:

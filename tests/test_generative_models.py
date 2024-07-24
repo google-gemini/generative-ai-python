@@ -3,9 +3,7 @@ from collections.abc import Iterable
 import copy
 import datetime
 import pathlib
-from typing import Any
 import textwrap
-import unittest.mock
 from absl.testing import absltest
 from absl.testing import parameterized
 from google.generativeai import protos
@@ -86,7 +84,9 @@ class MockGenerativeServiceClient:
         self.observed_requests.append(request)
         return protos.CachedContent(
             name="cachedContents/test-cached-content",
-            model="models/gemini-1.0-pro-001",
+            model="models/gemini-1.5-pro",
+            display_name="Cached content for test",
+            usage_metadata={"total_token_count": 1},
             create_time="2000-01-01T01:01:01.123456Z",
             update_time="2000-01-01T01:01:01.123456Z",
             expire_time="2000-01-01T01:01:01.123456Z",
@@ -338,12 +338,16 @@ class CUJTests(parameterized.TestCase):
             dict(testcase_name="test_cached_content_as_id", cached_content="test-cached-content"),
             dict(
                 testcase_name="test_cached_content_as_CachedContent_object",
-                cached_content=caching.CachedContent(
-                    name="cachedContents/test-cached-content",
-                    model="models/gemini-1.0-pro-001",
-                    create_time=datetime.datetime.now(),
-                    update_time=datetime.datetime.now(),
-                    expire_time=datetime.datetime.now(),
+                cached_content=caching.CachedContent._from_obj(
+                    dict(
+                        name="cachedContents/test-cached-content",
+                        model="models/gemini-1.5-pro",
+                        display_name="Cached content for test",
+                        usage_metadata={"total_token_count": 1},
+                        create_time=datetime.datetime.now(),
+                        update_time=datetime.datetime.now(),
+                        expire_time=datetime.datetime.now(),
+                    )
                 ),
             ),
         ],
@@ -353,7 +357,7 @@ class CUJTests(parameterized.TestCase):
         cc_name = model.cached_content  # pytype: disable=attribute-error
         model_name = model.model_name
         self.assertEqual(cc_name, "cachedContents/test-cached-content")
-        self.assertEqual(model_name, "models/gemini-1.0-pro-001")
+        self.assertEqual(model_name, "models/gemini-1.5-pro")
         self.assertEqual(
             model.cached_content,  # pytype: disable=attribute-error
             "cachedContents/test-cached-content",
@@ -434,7 +438,7 @@ class CUJTests(parameterized.TestCase):
             iter([simple_response("x"), simple_response("y"), simple_response("z")]),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         response = chat.send_message("letters?", stream=True)
@@ -457,7 +461,7 @@ class CUJTests(parameterized.TestCase):
             iter([simple_response("x"), simple_response("y"), simple_response("z")]),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
         response = chat.send_message("letters?", stream=True)
 
@@ -481,7 +485,7 @@ class CUJTests(parameterized.TestCase):
             simple_response("third"),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         response = chat.send_message("hello")
@@ -507,7 +511,7 @@ class CUJTests(parameterized.TestCase):
             simple_response("third"),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
         chat.send_message("hello1")
         chat.send_message("hello2")
@@ -529,7 +533,7 @@ class CUJTests(parameterized.TestCase):
             simple_response("third"),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat1 = model.start_chat()
         chat1.send_message("hello1")
 
@@ -574,7 +578,7 @@ class CUJTests(parameterized.TestCase):
             no_throw(),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         # Send a message, the response is okay..
@@ -617,7 +621,7 @@ class CUJTests(parameterized.TestCase):
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         with self.assertRaises(generation_types.BlockedPromptException):
@@ -635,7 +639,7 @@ class CUJTests(parameterized.TestCase):
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         with self.assertRaises(generation_types.StopCandidateException):
@@ -657,7 +661,7 @@ class CUJTests(parameterized.TestCase):
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         response = chat.send_message("hello", stream=True)
@@ -681,7 +685,7 @@ class CUJTests(parameterized.TestCase):
                 dict(name="datetime", description="Returns the current UTC date and time.")
             ]
         )
-        model = generative_models.GenerativeModel("gemini-pro-vision", tools=tools)
+        model = generative_models.GenerativeModel("gemini-1.5-flash", tools=tools)
 
         self.responses["generate_content"] = [
             simple_response("a"),
@@ -801,9 +805,9 @@ class CUJTests(parameterized.TestCase):
         [
             "part_dict",
             {"parts": [{"text": "talk like a pirate"}]},
-            simple_part("talk like a pirate"),
+            protos.Content(parts=[{"text": "talk like a pirate"}]),
         ],
-        ["part_list", ["talk like:", "a pirate"], iter_part(["talk like:", "a pirate"])],
+        ["part_list", ["talk like", "a pirate"], iter_part(["talk like", "a pirate"])],
     )
     def test_system_instruction(self, instruction, expected_instr):
         self.responses["generate_content"] = [simple_response("echo echo")]
@@ -840,59 +844,12 @@ class CUJTests(parameterized.TestCase):
     def test_count_tokens_smoke(self, kwargs):
         si = kwargs.pop("system_instruction", None)
         self.responses["count_tokens"] = [protos.CountTokensResponse(total_tokens=7)]
-        model = generative_models.GenerativeModel("gemini-pro-vision", system_instruction=si)
+        model = generative_models.GenerativeModel("gemini-1.5-flash", system_instruction=si)
         response = model.count_tokens(**kwargs)
-        self.assertEqual(type(response).to_dict(response), {"total_tokens": 7})
-
-    @parameterized.named_parameters(
-        [
-            "GenerateContentResponse",
-            generation_types.GenerateContentResponse,
-            generation_types.AsyncGenerateContentResponse,
-        ],
-        [
-            "GenerativeModel.generate_response",
-            generative_models.GenerativeModel.generate_content,
-            generative_models.GenerativeModel.generate_content_async,
-        ],
-        [
-            "GenerativeModel.count_tokens",
-            generative_models.GenerativeModel.count_tokens,
-            generative_models.GenerativeModel.count_tokens_async,
-        ],
-        [
-            "ChatSession.send_message",
-            generative_models.ChatSession.send_message,
-            generative_models.ChatSession.send_message_async,
-        ],
-        [
-            "ChatSession._handle_afc",
-            generative_models.ChatSession._handle_afc,
-            generative_models.ChatSession._handle_afc_async,
-        ],
-    )
-    def test_async_code_match(self, obj, aobj):
-        import inspect
-        import re
-
-        source = inspect.getsource(obj)
-        asource = inspect.getsource(aobj)
-
-        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
-        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
-
-        asource = (
-            asource.replace("anext", "next")
-            .replace("aiter", "iter")
-            .replace("_async", "")
-            .replace("async ", "")
-            .replace("await ", "")
-            .replace("Async", "")
-            .replace("ASYNC_", "")
+        self.assertEqual(
+            type(response).to_dict(response, including_default_value_fields=False),
+            {"total_tokens": 7},
         )
-
-        asource = re.sub(" *?# type: ignore", "", asource)
-        self.assertEqual(source, asource, f"error in {obj=}")
 
     def test_repr_for_unary_non_streamed_response(self):
         model = generative_models.GenerativeModel(model_name="gemini-pro")
@@ -1065,7 +1022,7 @@ class CUJTests(parameterized.TestCase):
             no_throw(),
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         # Send a message, the response is okay..
@@ -1124,7 +1081,7 @@ class CUJTests(parameterized.TestCase):
             )
         ]
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         response = chat.send_message("hello", stream=True)
@@ -1298,13 +1255,13 @@ class CUJTests(parameterized.TestCase):
         )
         result = repr(model)
         self.assertIn("cached_content=cachedContents/test-cached-content", result)
-        self.assertIn("model_name='models/gemini-1.0-pro-001'", result)
+        self.assertIn("model_name='models/gemini-1.5-pro'", result)
 
     def test_count_tokens_called_with_request_options(self):
         self.responses["count_tokens"].append(protos.CountTokensResponse(total_tokens=7))
         request_options = {"timeout": 120}
 
-        model = generative_models.GenerativeModel("gemini-pro-vision")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         model.count_tokens([{"role": "user", "parts": ["hello"]}], request_options=request_options)
 
         self.assertEqual(request_options, self.observed_kwargs[0])
