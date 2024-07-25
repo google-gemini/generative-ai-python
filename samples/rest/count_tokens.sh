@@ -171,3 +171,125 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:c
         }]
        }'
 # [END tokens_multimodal_video_audio_file_api]
+
+echo "[START tokens_cached_content]"
+# [START tokens_cached_content]
+wget https://storage.googleapis.com/generativeai-downloads/data/a11.txt
+echo '{
+  "model": "models/gemini-1.5-flash-001",
+  "contents":[
+    {
+      "parts":[
+        {
+          "inline_data": {
+            "mime_type":"text/plain",
+            "data": "'$(base64 $B64FLAGS a11.txt)'"
+          }
+        }
+      ],
+    "role": "user"
+    }
+  ],
+  "systemInstruction": {
+    "parts": [
+      {
+        "text": "You are an expert at analyzing transcripts."
+      }
+    ]
+  },
+  "ttl": "300s"
+}' > request.json
+
+curl -X POST "https://generativelanguage.googleapis.com/v1beta/cachedContents?key=$GOOGLE_API_KEY" \
+ -H 'Content-Type: application/json' \
+ -d @request.json \
+ > cache.json
+
+CACHE_NAME=$(cat cache.json | grep '"name":' | cut -d '"' -f 4 | head -n 1)
+
+curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens?key=$GOOGLE_API_KEY" \
+-H 'Content-Type: application/json' \
+-d '{
+      "contents": [
+        {
+          "parts":[{
+            "text": "Please summarize this transcript"
+          }],
+          "role": "user"
+        },
+      ],
+      "cachedContent": "'$CACHE_NAME'"
+    }'
+# [END tokens_cached_content]
+
+echo "[START tokens_system_instruction]"
+# [START tokens_system_instruction]
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:countTokens?key=$GOOGLE_API_KEY" \
+-H 'Content-Type: application/json' \
+-d '{ "system_instruction": {
+    "parts":
+      { "text": "You are a cat. Your name is Neko."}},
+    "contents": {
+      "parts": {
+        "text": "Hello there"}}}'
+# [END tokens_system_instruction]
+
+echo "[START tokens_tools]"
+# [START tokens_tools]
+cat > tools.json << EOF
+{
+  "function_declarations": [
+    {
+      "name": "enable_lights",
+      "description": "Turn on the lighting system.",
+      "parameters": { "type": "object" }
+    },
+    {
+      "name": "set_light_color",
+      "description": "Set the light color. Lights must be enabled for this to work.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "rgb_hex": {
+            "type": "string",
+            "description": "The light color as a 6-digit hex string, e.g. ff0000 for red."
+          }
+        },
+        "required": [
+          "rgb_hex"
+        ]
+      }
+    },
+    {
+      "name": "stop_lights",
+      "description": "Turn off the lighting system.",
+      "parameters": { "type": "object" }
+    }
+  ]
+} 
+EOF
+
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:countTokens?key=$GOOGLE_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d @<(echo '
+  {
+    "system_instruction": {
+      "parts": {
+        "text": "You are a helpful lighting system bot. You can turn lights on and off, and you can set the color. Do not perform any other tasks."
+      }
+    },
+    "tools": ['$(source "$tools")'],
+
+    "tool_config": {
+      "function_calling_config": {"mode": "none"}
+    },
+
+    "contents": {
+      "role": "user",
+      "parts": {
+        "text": "What can you do?"
+      }
+    }
+  }
+') 2>/dev/null |sed -n '/"content"/,/"finishReason"/p'
+# [END tokens_tools]
