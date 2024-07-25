@@ -16,6 +16,11 @@ else
   B64FLAGS="-w0"
 fi
 
+echo "[START tokens_context_window]"
+# [START tokens_context_window]
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:countTokens?key=$GOOGLE_API_KEY
+# [END tokens_context_window]
+
 echo "[START tokens_text_only]"
 # [START tokens_text_only]
 curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens?key=$GOOGLE_API_KEY \
