@@ -2,11 +2,6 @@ set -eu
 
 echo "[START code_execution_basic]"
 # [START code_execution_basic]
-
-# [END code_execution_basic]
-
-echo "[START code_execution_request_override]"
-# [START code_execution_request_override]
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=$GOOGLE_API_KEY" \
 -H 'Content-Type: application/json' \
 -d ' {"tools": ["code_execution"],
@@ -17,4 +12,4 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-lat
                 }
         },
     }'
-# [END code_execution_request_override]
+# [END code_execution_basic]
