@@ -42,10 +42,11 @@ from __future__ import annotations
 
 from google.generativeai import version
 
+from google.generativeai import caching
 from google.generativeai import protos
 from google.generativeai import types
-from google.generativeai.types import GenerationConfig
 
+from google.generativeai.client import configure
 
 from google.generativeai.discuss import chat
 from google.generativeai.discuss import chat_async
@@ -62,10 +63,6 @@ from google.generativeai.files import delete_file
 from google.generativeai.generative_models import GenerativeModel
 from google.generativeai.generative_models import ChatSession
 
-from google.generativeai.text import generate_text
-from google.generativeai.text import generate_embeddings
-from google.generativeai.text import count_text_tokens
-
 from google.generativeai.models import list_models
 from google.generativeai.models import list_tuned_models
 
@@ -80,8 +77,11 @@ from google.generativeai.models import delete_tuned_model
 from google.generativeai.operations import list_operations
 from google.generativeai.operations import get_operation
 
+from google.generativeai.text import generate_text
+from google.generativeai.text import generate_embeddings
+from google.generativeai.text import count_text_tokens
 
-from google.generativeai.client import configure
+from google.generativeai.types import GenerationConfig
 
 __version__ = version.__version__
 
