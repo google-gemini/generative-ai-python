@@ -1,21 +1,14 @@
 set -eu
 
 export access_token=$(gcloud auth application-default print-access-token)
-export project_id=my-project-id
-export base_url=https://generativelanguage.googleapis.com
+export project_id=<your project id>
 
-import os
+access_token=$(gcloud auth application-default print-access-token)
 
-access_token = !gcloud auth application-default print-access-token
-access_token = '\n'.join(access_token)
-
-os.environ['access_token'] = access_token
-os.environ['project_id'] = "[Enter your project-id here]"
-os.environ['base_url'] = "https://generativelanguage.googleapis.com"
 
 echo "[START tuned_models_create]"
 # [START tuned_models_create]
-curl -X POST $base_url/v1beta/tunedModels \
+curl -X POST https://generativelanguage.googleapis.com/v1beta/tunedModels \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer ${access_token}" \
     -H "x-goog-user-project: ${project_id}" \
@@ -83,11 +76,28 @@ curl -X POST $base_url/v1beta/tunedModels \
           }
         }
       }' | tee tunemodel.json
+
+# Check the operation for status updates during training.
+# Note: you can only check the operation on v1/
+operation=$(cat tunemodel.json | jq ".name" | tr -d '"')
+curl -X GET  https://generativelanguage.googleapis.com/v1/${operation} \
+    -H 'Content-Type: application/json' \
+    -H "Authorization: Bearer ${access_token}" \
+    -H "x-goog-user-project: ${project_id}"
+
+# Or get the TunedModel and check it's state. The model is ready to use if the state is active.
+modelname=$(cat tunemodel.json | jq ".metadata.tunedModel" | tr -d '"')
+curl -X GET  https://generativelanguage.googleapis.com/v1beta/${modelname} \
+    -H 'Content-Type: application/json' \
+    -H "Authorization: Bearer ${access_token}" \
+    -H "x-goog-user-project: ${project_id}" | tee check.json
+
+cat check.json | jq ".state"
 # [END tuned_models_create]
 
 echo "[START tuned_models_generate_content]"
 # [START tuned_models_generate_content]
-curl -X POST $base_url/v1beta/$modelname:generateContent \
+curl -X POST https://generativelanguage.googleapis.com/v1beta/$modelname:generateContent \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer ${access_token}" \
     -H "x-goog-user-project: ${project_id}" \
@@ -102,7 +112,7 @@ curl -X POST $base_url/v1beta/$modelname:generateContent \
 
 echo "[START tuned_models_get]"
 # [START tuned_models_get]
-curl -X GET ${base_url}/v1beta/${modelname} \
+curl -X GET https://generativelanguage.googleapis.com/v1beta/${modelname} \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer ${access_token}" \
     -H "x-goog-user-project: ${project_id}" | grep state
@@ -110,7 +120,7 @@ curl -X GET ${base_url}/v1beta/${modelname} \
 
 echo "[START tuned_models_list]"
 # [START tuned_models_list]
-curl -X GET ${base_url}/v1beta/tunedModels \
+curl -X GET https://generativelanguage.googleapis.com/v1beta/tunedModels \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${access_token}" \
     -H "x-goog-user-project: ${project_id}"
