@@ -554,9 +554,9 @@ ASYNC_GENERATE_CONTENT_RESPONSE_DOC = (
 class GenerateContentResponse(BaseGenerateContentResponse):
     @classmethod
     def from_iterator(cls, iterator: Iterable[protos.GenerateContentResponse]):
-        iterator = iter(iterator)
+        iterator = iter(iterator)  # type: ignore
         with rewrite_stream_error():
-            response = next(iterator)
+            response = next(iterator)  # type: ignore
 
         return cls(
             done=False,
@@ -581,7 +581,7 @@ class GenerateContentResponse(BaseGenerateContentResponse):
 
         # Always have the next chunk available.
         if len(self._chunks) == 0:
-            self._chunks.append(next(self._iterator))
+            self._chunks.append(next(self._iterator))  # type: ignore
 
         for n in itertools.count():
             if self._error:
@@ -594,7 +594,7 @@ class GenerateContentResponse(BaseGenerateContentResponse):
                     return
 
                 try:
-                    item = next(self._iterator)
+                    item = next(self._iterator)  # type: ignore
                 except StopIteration:
                     self._done = True
                 except Exception as e:

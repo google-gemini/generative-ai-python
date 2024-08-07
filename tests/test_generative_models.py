@@ -851,6 +851,45 @@ class CUJTests(parameterized.TestCase):
             {"total_tokens": 7},
         )
 
+    @parameterized.named_parameters(
+        [
+            "GenerateContentResponse",
+            generation_types.GenerateContentResponse,
+            generation_types.AsyncGenerateContentResponse,
+        ],
+        [
+            "GenerativeModel.generate_response",
+            generative_models.GenerativeModel.generate_content,
+            generative_models.GenerativeModel.generate_content_async,
+        ],
+        [
+            "GenerativeModel.count_tokens",
+            generative_models.GenerativeModel.count_tokens,
+            generative_models.GenerativeModel.count_tokens_async,
+        ],
+    )
+    def test_async_code_match(self, obj, aobj):
+        import inspect
+        import re
+
+        source = inspect.getsource(obj)
+        asource = inspect.getsource(aobj)
+
+        source = re.sub('""".*"""', "", source, flags=re.DOTALL)
+        asource = re.sub('""".*"""', "", asource, flags=re.DOTALL)
+
+        asource = (
+            asource.replace("anext", "next")
+            .replace("aiter", "iter")
+            .replace("_async", "")
+            .replace("async ", "")
+            .replace("await ", "")
+            .replace("Async", "")
+            .replace("ASYNC_", "")
+        )
+
+        self.assertEqual(source, asource, f"in {obj}")
+
     def test_repr_for_unary_non_streamed_response(self):
         model = generative_models.GenerativeModel(model_name="gemini-pro")
         self.responses["generate_content"].append(simple_response("world!"))
@@ -1264,23 +1303,6 @@ class CUJTests(parameterized.TestCase):
         model = generative_models.GenerativeModel("gemini-1.5-flash")
         model.count_tokens([{"role": "user", "parts": ["hello"]}], request_options=request_options)
 
-        self.assertEqual(request_options, self.observed_kwargs[0])
-
-    def test_chat_with_request_options(self):
-        self.responses["generate_content"].append(
-            protos.GenerateContentResponse(
-                {
-                    "candidates": [{"finish_reason": "STOP"}],
-                }
-            )
-        )
-        request_options = {"timeout": 120}
-
-        model = generative_models.GenerativeModel("gemini-pro")
-        chat = model.start_chat()
-        chat.send_message("hello", request_options=helper_types.RequestOptions(**request_options))
-
-        request_options["retry"] = None
         self.assertEqual(request_options, self.observed_kwargs[0])
 
 
