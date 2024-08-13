@@ -1,0 +1,62 @@
+name: Validate samples
+
+on:
+  pull_request:
+    types: [opened, synchronize]  # new, updates
+
+jobs:
+  update-python-list:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Get Changed Files
+        id: changed_files
+        uses: tj-actions/changed-files@v44
+        with:
+          files:  |
+            samples/*.py
+          output_renamed_files_as_deleted_and_added: "true"
+
+      - name: Check Python samples
+        env:
+          NEW_FILES: ${{ steps.changed_files.outputs.all_changed_files }}
+        run: |
+          #!/bin/bash
+          
+          for file in "${NEW_FILES}"; do
+            if ! grep -q $name samples/README.md; then
+              echo "Error: sample not listed in README ($name)"
+              exit 1
+            fi
+          done
+
+  update-rest-list:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Get Changed Files
+        id: changed_files
+        uses: tj-actions/changed-files@v44
+        with:
+          files:  |
+            samples/rest/*.sh
+          output_renamed_files_as_deleted_and_added: "true"
+
+      - name: Check Python samples
+        env:
+          NEW_FILES: ${{ steps.changed_files.outputs.all_changed_files }}
+        run: |
+          #!/bin/bash
+          
+          for file in "${NEW_FILES}"; do
+            if ! grep -q $name samples/README.md; then
+              echo "Error: sample not listed in README ($name)"
+              exit 1
+            fi
+          done
