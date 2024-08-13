@@ -48,7 +48,7 @@ jobs:
             samples/rest/*.sh
           output_renamed_files_as_deleted_and_added: "true"
 
-      - name: Check Python samples
+      - name: Check REST samples
         env:
           NEW_FILES: ${{ steps.changed_files.outputs.all_changed_files }}
         run: |
