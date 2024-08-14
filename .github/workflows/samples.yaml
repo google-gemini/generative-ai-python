@@ -22,7 +22,7 @@ jobs:
 
       - name: Check Python samples
         env:
-          NEW_FILES: ${{ steps.changed_files.outputs.all_changed_files }}
+          NEW_FILES: ${{ steps.changed_files.outputs.all_added_files }}
         run: |
           #!/bin/bash
           
@@ -50,7 +50,7 @@ jobs:
 
       - name: Check REST samples
         env:
-          NEW_FILES: ${{ steps.changed_files.outputs.all_changed_files }}
+          NEW_FILES: ${{ steps.changed_files.outputs.all_added_files }}
         run: |
           #!/bin/bash
           
