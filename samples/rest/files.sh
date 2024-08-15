@@ -8,6 +8,7 @@ IMG_PATH=${MEDIA_DIR}/organ.jpg
 IMG_PATH_2=${MEDIA_DIR}/Cajun_instruments.jpg
 AUDIO_PATH=${MEDIA_DIR}/sample.mp3
 VIDEO_PATH=${MEDIA_DIR}/Big_Buck_Bunny.mp4
+PDF_PATH=${MEDIA_DIR}/test.pdf
 
 BASE_URL="https://generativelanguage.googleapis.com"
 
@@ -245,12 +246,8 @@ jq ".candidates[].content.parts[].text" response.json
 
 echo "[START files_create_pdf]"
 # [START files_create_pdf]
-MIME_TYPE=$(file -b --mime-type "${PDF_PATH}")
 NUM_BYTES=$(wc -c < "${PDF_PATH}")
 DISPLAY_NAME=TEXT
-
-
-echo $MIME_TYPE
 tmp_header_file=upload-header.tmp
 
 # Initial resumable request defining metadata.
@@ -260,7 +257,7 @@ curl "${BASE_URL}/upload/v1beta/files?key=${GOOGLE_API_KEY}" \
   -H "X-Goog-Upload-Protocol: resumable" \
   -H "X-Goog-Upload-Command: start" \
   -H "X-Goog-Upload-Header-Content-Length: ${NUM_BYTES}" \
-  -H "X-Goog-Upload-Header-Content-Type: ${MIME_TYPE}" \
+  -H "X-Goog-Upload-Header-Content-Type: application/pdf" \
   -H "Content-Type: application/json" \
   -d "{'file': {'display_name': '${DISPLAY_NAME}'}}" 2> /dev/null
 

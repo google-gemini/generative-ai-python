@@ -3,8 +3,6 @@ set -eu
 SCRIPT_DIR=$(dirname "$0")
 MEDIA_DIR=$(realpath ${SCRIPT_DIR}/../../third_party)
 
-GOOGLE_API_KEY=AIzaSyA3Gw4E_RoF_wfergxCQ2Y7BhtkSHALxfM
-
 TEXT_PATH=${MEDIA_DIR}/poem.txt
 A11_PATH=${MEDIA_DIR}/a11.txt
 IMG_PATH=${MEDIA_DIR}/organ.jpg
