@@ -3,7 +3,10 @@ set -eu
 SCRIPT_DIR=$(dirname "$0")
 MEDIA_DIR=$(realpath ${SCRIPT_DIR}/../../third_party)
 
+GOOGLE_API_KEY=AIzaSyA3Gw4E_RoF_wfergxCQ2Y7BhtkSHALxfM
+
 TEXT_PATH=${MEDIA_DIR}/poem.txt
+A11_PATH=${MEDIA_DIR}/a11.txt
 IMG_PATH=${MEDIA_DIR}/organ.jpg
 AUDIO_PATH=${MEDIA_DIR}/sample.mp3
 VIDEO_PATH=${MEDIA_DIR}/Big_Buck_Bunny.mp4
@@ -18,7 +21,9 @@ fi
 
 echo "[START tokens_context_window]"
 # [START tokens_context_window]
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:countTokens?key=$GOOGLE_API_KEY
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro?key=$GOOGLE_API_KEY > model.json
+jq .inputTokenLimit model.json
+jq .outputTokenLimit model.json
 # [END tokens_context_window]
 
 echo "[START tokens_text_only]"
@@ -102,7 +107,6 @@ curl "${upload_url}" \
   --data-binary "@${IMG_PATH}" 2> /dev/null > file_info.json
 
 file_uri=$(jq ".file.uri" file_info.json)
-echo file_uri=$file_uri
 
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens?key=$GOOGLE_API_KEY" \
     -H 'Content-Type: application/json' \
@@ -148,13 +152,10 @@ curl "${upload_url}" \
   --data-binary "@${VIDEO_PATH}" 2> /dev/null > file_info.json
 
 file_uri=$(jq ".file.uri" file_info.json)
-echo file_uri=$file_uri
 
 state=$(jq ".file.state" file_info.json)
-echo state=$state
 
 name=$(jq ".file.name" file_info.json)
-echo name=$name
 
 while [[ "($state)" = *"PROCESSING"* ]];
 do
@@ -179,7 +180,6 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:c
 
 echo "[START tokens_cached_content]"
 # [START tokens_cached_content]
-wget https://storage.googleapis.com/generativeai-downloads/data/a11.txt
 echo '{
   "model": "models/gemini-1.5-flash-001",
   "contents":[
@@ -188,7 +188,7 @@ echo '{
         {
           "inline_data": {
             "mime_type":"text/plain",
-            "data": "'$(base64 $B64FLAGS a11.txt)'"
+            "data": "'$(base64 $B64FLAGS $A11_PATH)'"
           }
         }
       ],
@@ -210,33 +210,21 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/cachedContents?ke
  -d @request.json \
  > cache.json
 
-CACHE_NAME=$(cat cache.json | grep '"name":' | cut -d '"' -f 4 | head -n 1)
-
-curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens?key=$GOOGLE_API_KEY" \
--H 'Content-Type: application/json' \
--d '{
-      "contents": [
-        {
-          "parts":[{
-            "text": "Please summarize this transcript"
-          }],
-          "role": "user"
-        },
-      ],
-      "cachedContent": "'$CACHE_NAME'"
-    }'
+jq .usageMetadata.totalTokenCount cache.json
 # [END tokens_cached_content]
 
 echo "[START tokens_system_instruction]"
 # [START tokens_system_instruction]
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:countTokens?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=$GOOGLE_API_KEY" \
 -H 'Content-Type: application/json' \
 -d '{ "system_instruction": {
     "parts":
       { "text": "You are a cat. Your name is Neko."}},
     "contents": {
       "parts": {
-        "text": "Hello there"}}}'
+        "text": "Hello there"}}}' > system_instructions.json
+
+jq .usageMetadata.totalTokenCount system_instructions.json
 # [END tokens_system_instruction]
 
 echo "[START tokens_tools]"
@@ -274,9 +262,9 @@ cat > tools.json << EOF
 } 
 EOF
 
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:countTokens?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=$GOOGLE_API_KEY" \
   -H 'Content-Type: application/json' \
-  -d @<(echo '
+  -d '
   {
     "system_instruction": {
       "parts": {
@@ -296,5 +284,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-lat
       }
     }
   }
-') 2>/dev/null |sed -n '/"content"/,/"finishReason"/p'
+' > tools_output.json
+
+jq .usageMetadata.totalTokenCount tools_output.json
 # [END tokens_tools]
