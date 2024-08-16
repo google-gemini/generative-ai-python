@@ -142,6 +142,7 @@ class UnitTests(absltest.TestCase):
         # [START code_execution_chat]
         model = genai.GenerativeModel(model_name="gemini-1.5-pro", tools="code_execution")
         chat = model.start_chat()
+        response = chat.send_message('Can you print "Hello world!"?')
         response = chat.send_message(
             (
                 "What is the sum of the first 50 prime numbers? "
