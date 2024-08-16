@@ -88,6 +88,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.12",
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Typing :: Typed",
     ],
     platforms="Posix; MacOS X; Windows",
     packages=packages,
@@ -97,4 +98,5 @@ setuptools.setup(
     extras_require=extras_require,
     include_package_data=True,
     zip_safe=False,
+    package_data={"generativeai": ["py.typed"]},
 )
