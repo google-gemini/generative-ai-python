@@ -69,14 +69,14 @@ jobs:
             if [[ -f ${file} ]]; then
               # File exists, so needs to be listed.
               echo $(basename $file)
-              name=echo $(basename $file)
+              name=$(basename $file)
               if ! grep -q $name ${README}; then
                 echo "Error: Sample not listed in README ($name)"
                 exit 1
               fi
             else
               # File does not exist, ensure it's not listed
-              name=echo $(basename $file)
+              name=$(basename $file)
               if grep -q $name ${README}; then
                 echo "Error: Sample should not be listed in README ($name)"
                 exit 1
