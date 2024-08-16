@@ -126,3 +126,10 @@ curl -X GET https://generativelanguage.googleapis.com/v1beta/tunedModels \
     -H "x-goog-user-project: ${project_id}"
 # [END tuned_models_list]
 
+echo "[START tuned_models_delete]"
+# [START tuned_models_delete]
+curl -X DELETE https://generativelanguage.googleapis.com/v1beta/${modelname} \
+    -H 'Content-Type: application/json' \
+    -H "Authorization: Bearer ${access_token}" \
+    -H "x-goog-user-project: ${project_id}"
+# [END tuned_models_delete]
