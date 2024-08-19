@@ -58,9 +58,6 @@ class ClientTests(parameterized.TestCase):
         self.assertEqual(actual_client_opts.api_endpoint, "web.site")
 
     @parameterized.parameters(
-        client.get_default_discuss_client,
-        client.get_default_text_client,
-        client.get_default_discuss_async_client,
         client.get_default_model_client,
         client.get_default_operations_client,
     )
@@ -76,7 +73,7 @@ class ClientTests(parameterized.TestCase):
         def __init__(self, *args, **kwargs):
             pass
 
-        def generate_text(self, metadata=None):
+        def generate_content(self, metadata=None):
             self.metadata = metadata
 
         not_a_function = 7
@@ -98,7 +95,7 @@ class ClientTests(parameterized.TestCase):
         metadata = [("hello", "world")]
         client.configure(default_metadata=metadata)
 
-        generative_client = client.get_default_text_client()
+        generative_client = client.get_default_generative_client()
         generative_client.generate_content()
 
         self.assertEqual(metadata, generative_client.metadata)
