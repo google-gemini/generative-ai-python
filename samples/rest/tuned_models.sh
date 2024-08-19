@@ -1,8 +1,5 @@
 set -eu
 
-export access_token=$(gcloud auth application-default print-access-token)
-export project_id=<your project id>
-
 access_token=$(gcloud auth application-default print-access-token)
 
 
@@ -80,20 +77,33 @@ curl -X POST https://generativelanguage.googleapis.com/v1beta/tunedModels \
 # Check the operation for status updates during training.
 # Note: you can only check the operation on v1/
 operation=$(cat tunemodel.json | jq ".name" | tr -d '"')
-curl -X GET  https://generativelanguage.googleapis.com/v1/${operation} \
+tuning_done=false
+
+while [[ "$tuning_done" != "true" ]];
+do
+  sleep 5
+  curl -X GET  https://generativelanguage.googleapis.com/v1/${operation} \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer ${access_token}" \
-    -H "x-goog-user-project: ${project_id}"
+    -H "x-goog-user-project: ${project_id}" 2> /dev/null > tuning_operation.json
+
+  complete=$(jq .metadata.completedPercent < tuning_operation.json)
+  tput cuu1
+  tput el
+  echo "Tuning...${complete}%"
+  tuning_done=$(jq .done < tuning_operation.json)
+done
 
 # Or get the TunedModel and check it's state. The model is ready to use if the state is active.
 modelname=$(cat tunemodel.json | jq ".metadata.tunedModel" | tr -d '"')
 curl -X GET  https://generativelanguage.googleapis.com/v1beta/${modelname} \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer ${access_token}" \
-    -H "x-goog-user-project: ${project_id}" | tee check.json
+    -H "x-goog-user-project: ${project_id}" > tuned_model.json
 
-cat check.json | jq ".state"
+cat tuned_model.json | jq ".state"
 # [END tuned_models_create]
+
 
 echo "[START tuned_models_generate_content]"
 # [START tuned_models_generate_content]
@@ -120,10 +130,24 @@ curl -X GET https://generativelanguage.googleapis.com/v1beta/${modelname} \
 
 echo "[START tuned_models_list]"
 # [START tuned_models_list]
-curl -X GET https://generativelanguage.googleapis.com/v1beta/tunedModels \
+# Sending a page_size is optional
+curl -X GET https://generativelanguage.googleapis.com/v1beta/tunedModels?page_size=5 \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${access_token}" \
-    -H "x-goog-user-project: ${project_id}"
+    -H "x-goog-user-project: ${project_id}" > tuned_models.json
+
+jq .tunedModels[].name < tuned_models.json
+
+# Send the nextPageToken to get the next page.
+page_token=$(jq .nextPageToken < tuned_models.json | tr -d '"')
+
+if [[ "$page_token" != "null"" ]]; then
+curl -X GET https://generativelanguage.googleapis.com/v1beta/tunedModels?page_size=5\&page_token=${page_token} \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer ${access_token}" \
+    -H "x-goog-user-project: ${project_id}" > tuned_models2.json
+jq .tunedModels[].name < tuned_models.json
+fi
 # [END tuned_models_list]
 
 echo "[START tuned_models_delete]"
