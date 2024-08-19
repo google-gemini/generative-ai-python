@@ -23,6 +23,7 @@ from typing_extensions import TypedDict
 from google.generativeai import string_utils
 from google.generativeai.types import citation_types
 
+
 class EmbeddingDict(TypedDict):
     embedding: list[float]
 
