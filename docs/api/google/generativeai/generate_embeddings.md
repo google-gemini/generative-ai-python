@@ -27,7 +27,7 @@ Calls the API to create an embedding for the text passed in.
 <code>google.generativeai.generate_embeddings(
     model: model_types.BaseModelNameOptions,
     text: (str | Sequence[str]),
-    client: glm.TextServiceClient = None,
+    client: glm.GenerativeServiceClient = None,
     request_options: (helper_types.RequestOptionsType | None) = None
 ) -> (text_types.EmbeddingDict | text_types.BatchEmbeddingDict)
 </code></pre>
@@ -62,7 +62,7 @@ generate an embedding based on the input text.
 `client`<a id="client"></a>
 </td>
 <td>
-If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+If you're not relying on a default client, you pass a `glm.GenerativeServiceClient` instead.
 </td>
 </tr><tr>
 <td>
