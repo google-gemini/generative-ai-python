@@ -92,26 +92,26 @@ class ClientTests(parameterized.TestCase):
         def classm(cls):
             cls.called_classm = True
 
-    @mock.patch.object(glm, "TextServiceClient", DummyClient)
+    @mock.patch.object(glm, "GenerativeServiceClient", DummyClient)
     def test_default_metadata(self):
         # The metadata wrapper injects this argument.
         metadata = [("hello", "world")]
         client.configure(default_metadata=metadata)
 
-        text_client = client.get_default_text_client()
-        text_client.generate_text()
+        generative_client = client.get_default_text_client()
+        generative_client.generate_content()
 
-        self.assertEqual(metadata, text_client.metadata)
+        self.assertEqual(metadata, generative_client.metadata)
 
-        self.assertEqual(text_client.not_a_function, ClientTests.DummyClient.not_a_function)
+        self.assertEqual(generative_client.not_a_function, ClientTests.DummyClient.not_a_function)
 
         # Since these don't have a metadata arg, they'll fail if the wrapper is applied.
-        text_client._hidden()
-        self.assertTrue(text_client.called_hidden)
+        generative_client._hidden()
+        self.assertTrue(generative_client.called_hidden)
 
-        text_client.static()
+        generative_client.static()
 
-        text_client.classm()
+        generative_client.classm()
         self.assertTrue(ClientTests.DummyClient.called_classm)
 
     def test_same_config(self):
