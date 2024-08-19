@@ -108,9 +108,6 @@ class FileServiceAsyncClient(glm.FileServiceAsyncClient):
 class _ClientManager:
     client_config: dict[str, Any] = dataclasses.field(default_factory=dict)
     default_metadata: Sequence[tuple[str, str]] = ()
-
-    discuss_client: glm.DiscussServiceClient | None = None
-    discuss_async_client: glm.DiscussServiceAsyncClient | None = None
     clients: dict[str, Any] = dataclasses.field(default_factory=dict)
 
     def configure(
@@ -119,7 +116,6 @@ class _ClientManager:
         api_key: str | None = None,
         credentials: ga_credentials.Credentials | dict | None = None,
         # The user can pass a string to choose `rest` or `grpc` or 'grpc_asyncio'.
-        # See `_transport_registry` in `DiscussServiceClientMeta`.
         # Since the transport classes align with the client classes it wouldn't make
         # sense to accept a `Transport` object here even though the client classes can.
         # We could accept a dict since all the `Transport` classes take the same args,
@@ -281,7 +277,6 @@ def configure(
     api_key: str | None = None,
     credentials: ga_credentials.Credentials | dict | None = None,
     # The user can pass a string to choose `rest` or `grpc` or 'grpc_asyncio'.
-    # See `_transport_registry` in `DiscussServiceClientMeta`.
     # Since the transport classes align with the client classes it wouldn't make
     # sense to accept a `Transport` object here even though the client classes can.
     # We could accept a dict since all the `Transport` classes take the same args,
@@ -326,14 +321,6 @@ def get_default_cache_client() -> glm.CacheServiceClient:
     return _client_manager.get_default_client("cache")
 
 
-def get_default_discuss_client() -> glm.DiscussServiceClient:
-    return _client_manager.get_default_client("discuss")
-
-
-def get_default_discuss_async_client() -> glm.DiscussServiceAsyncClient:
-    return _client_manager.get_default_client("discuss_async")
-
-
 def get_default_file_client() -> glm.FilesServiceClient:
     return _client_manager.get_default_client("file")
 
@@ -348,10 +335,6 @@ def get_default_generative_client() -> glm.GenerativeServiceClient:
 
 def get_default_generative_async_client() -> glm.GenerativeServiceAsyncClient:
     return _client_manager.get_default_client("generative_async")
-
-
-def get_default_text_client() -> glm.TextServiceClient:
-    return _client_manager.get_default_client("text")
 
 
 def get_default_operations_client() -> operations_v1.OperationsClient:
