@@ -58,8 +58,17 @@ class ClientTests(parameterized.TestCase):
         self.assertEqual(actual_client_opts.api_endpoint, "web.site")
 
     @parameterized.parameters(
+        client.get_default_cache_client,
+        client.get_default_file_client,
+        client.get_default_file_async_client,
+        client.get_default_generative_client,
+        client.get_default_generative_async_client,
         client.get_default_model_client,
         client.get_default_operations_client,
+        client.get_default_retriever_client,
+        client.get_default_retriever_async_client,
+        client.get_default_permission_client,
+        client.get_default_permission_async_client,
     )
     @mock.patch.dict(os.environ, {"GOOGLE_API_KEY": "AIzA_env"})
     def test_configureless_client_with_key(self, factory_fn):
