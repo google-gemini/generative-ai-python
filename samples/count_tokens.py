@@ -23,7 +23,7 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 class UnitTests(absltest.TestCase):
     def test_tokens_context_window(self):
         # [START tokens_context_window]
-        model_info = genai.get_model("models/gemini-1.0-pro-001")
+        model_info = genai.get_model("models/gemini-1.5-flash")
 
         # Returns the "context window" for the model,
         # which is the combined input and output token limits.
@@ -91,7 +91,7 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("models/gemini-1.5-flash")
 
         prompt = "Tell me about this image"
-        your_image_file = PIL.Image.open("image.jpg")
+        your_image_file = PIL.Image.open(media/"organ.jpg")
 
         # Call `count_tokens` to get the input token count
         # of the combined text and file (`total_tokens`).
@@ -115,7 +115,7 @@ class UnitTests(absltest.TestCase):
         model = genai.GenerativeModel("models/gemini-1.5-flash")
 
         prompt = "Tell me about this image"
-        your_image_file = genai.upload_file(path="image.jpg")
+        your_image_file = genai.upload_file(path=media/"organ.jpg")
 
         # Call `count_tokens` to get the input token count
         # of the combined text and file (`total_tokens`).

@@ -29,7 +29,7 @@ class UnitTests(absltest.TestCase):
         )
 
         # Each `part` either contains `text`, `executable_code` or an `execution_result`
-        for part in result.candidates[0].content.parts:
+        for part in response.candidates[0].content.parts:
             print(part, "\n")
 
         print("-" * 80)
@@ -92,7 +92,7 @@ class UnitTests(absltest.TestCase):
 
     def test_code_execution_request_override(self):
         # [START code_execution_request_override]
-        model = genai.GenerativeModel(model_name="gemini-1.5-pro")
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash")
         response = model.generate_content(
             (
                 "What is the sum of the first 50 prime numbers? "
@@ -140,7 +140,7 @@ class UnitTests(absltest.TestCase):
 
     def test_code_execution_chat(self):
         # [START code_execution_chat]
-        model = genai.GenerativeModel(model_name="gemini-1.5-pro", tools="code_execution")
+        model = genai.GenerativeModel(model_name="gemini-1.5-flash", tools="code_execution")
         chat = model.start_chat()
         response = chat.send_message('Can you print "Hello world!"?')
         response = chat.send_message(

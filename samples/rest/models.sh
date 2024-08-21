@@ -7,5 +7,5 @@ curl https://generativelanguage.googleapis.com/v1beta/models?key=$GOOGLE_API_KEY
 
 echo "[START models_get]"
 # [START models_get]
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-pro?key=$GOOGLE_API_KEY
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash?key=$GOOGLE_API_KEY
 # [END models_get]
