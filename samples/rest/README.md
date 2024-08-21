@@ -23,3 +23,4 @@ Each file is structured as a runnable script, ensuring that samples are executab
 | [safety_settings.sh](./safety_settings.sh) | Setting and using safety controls |
 | [system_instruction.sh](./system_instruction.sh) | Setting system instructions |
 | [text_generation.sh](./text_generation.sh) | Generating text |
+| [tuned_models.sh](./tuned_models.sh) | Tuned models |
