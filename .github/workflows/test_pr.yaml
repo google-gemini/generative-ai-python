@@ -6,10 +6,11 @@ on:
   # Relevant PRs
   pull_request:
     paths:
+    - ".github/workflows/test_pr.yml"
     - "google/**"
     - "tests/**"
-    - "samples/**"
     - "pyproject.toml"
+    - "samples/*.py"
     - "setup.py"
   # Allow manual runs
   workflow_dispatch:
