@@ -27,7 +27,7 @@ class UnitTests(absltest.TestCase):
         # [START tuned_models_create]
         import time
 
-        base_model = "models/gemini-1.0-pro-001"
+        base_model = "models/gemini-1.5-flash-001-tuning"
         training_data = [
             {"text_input": "1", "output": "2"},
             # ... more examples ...
@@ -94,7 +94,7 @@ class UnitTests(absltest.TestCase):
     def test_tuned_models_delete(self):
         import time
 
-        base_model = "models/gemini-1.0-pro-001"
+        base_model = "models/gemini-1.5-flash-001-tuning"
         training_data = samples / "increment_tuning_data.json"
         try:
             operation = genai.create_tuned_model(

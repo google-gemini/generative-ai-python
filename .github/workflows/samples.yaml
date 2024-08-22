@@ -28,6 +28,7 @@ jobs:
           
           for file in ${NEW_FILES}; do
             echo "Testing $file"
+            name=$(basename $file)
             if [[ -f ${file} ]]; then
               # File exists, so needs to be listed.
               if ! grep -q $name ${README}; then
