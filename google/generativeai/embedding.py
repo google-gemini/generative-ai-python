@@ -24,8 +24,8 @@ from google.generativeai.client import get_default_generative_client
 from google.generativeai.client import get_default_generative_async_client
 
 from google.generativeai.types import helper_types
-from google.generativeai.types import text_types
 from google.generativeai.types import model_types
+from google.generativeai.types import text_types
 from google.generativeai.types import content_types
 
 DEFAULT_EMB_MODEL = "models/embedding-001"

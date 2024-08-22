@@ -48,10 +48,6 @@ from google.generativeai import types
 
 from google.generativeai.client import configure
 
-from google.generativeai.discuss import chat
-from google.generativeai.discuss import chat_async
-from google.generativeai.discuss import count_message_tokens
-
 from google.generativeai.embedding import embed_content
 from google.generativeai.embedding import embed_content_async
 
@@ -77,19 +73,13 @@ from google.generativeai.models import delete_tuned_model
 from google.generativeai.operations import list_operations
 from google.generativeai.operations import get_operation
 
-from google.generativeai.text import generate_text
-from google.generativeai.text import generate_embeddings
-from google.generativeai.text import count_text_tokens
-
 from google.generativeai.types import GenerationConfig
 
 __version__ = version.__version__
 
-del discuss
 del embedding
 del files
 del generative_models
-del text
 del models
 del client
 del operations
