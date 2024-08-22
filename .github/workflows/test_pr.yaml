@@ -6,7 +6,6 @@ on:
   # Relevant PRs
   pull_request:
     paths:
-    - ".github/workflows/test_pr.yml"
     - "google/**"
     - "tests/**"
     - "pyproject.toml"
