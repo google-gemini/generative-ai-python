@@ -73,6 +73,10 @@ __all__ = [
 
 
 def pil_to_blob(img):
+    # References:
+    #   - file formats: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
+    #   - image modes: https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
+
     bytesio = io.BytesIO()
 
     get_mime = getattr(img, "get_format_mimetype", None)
