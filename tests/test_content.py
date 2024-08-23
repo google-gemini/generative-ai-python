@@ -39,6 +39,7 @@ TEST_GIF_PATH = HERE / "test_img.gif"
 TEST_GIF_URL = "https://storage.googleapis.com/generativeai-downloads/data/test_img.gif"
 TEST_GIF_DATA = TEST_GIF_PATH.read_bytes()
 
+
 # simple test function
 def datetime():
     "Returns the current UTC date and time."
@@ -93,7 +94,7 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_GIF_PATH)],
-        ["P", PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8)).convert('P')],
+        ["P", PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8)).convert("P")],
         ["IPython", IPython.display.Image(filename=TEST_GIF_PATH)],
     )
     def test_gif_to_blob(self, image):
