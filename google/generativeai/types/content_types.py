@@ -74,10 +74,18 @@ __all__ = [
 
 def pil_to_blob(img):
     bytesio = io.BytesIO()
-    if isinstance(img, PIL.PngImagePlugin.PngImageFile) or img.mode == "RGBA":
+
+    get_mime = getattr(img, "get_format_mimetype", None)
+    if get_mime is not None:
+        # If the image is created from a file, convert back to the same file type.
+        img.save(bytesio, format=img.format)
+        mime_type = img.get_format_mimetype()
+    elif img.mode == "RGBA":
         img.save(bytesio, format="PNG")
         mime_type = "image/png"
     else:
+        if img.mode != "RGB":
+            img = img.convert('RGB')
         img.save(bytesio, format="JPEG")
         mime_type = "image/jpeg"
     bytesio.seek(0)
