@@ -373,15 +373,10 @@ def _create_parser(
     epilog = ""
 
     # Commands
-    extra_args = {}
-    if sys.version_info[0:2] >= (3, 9):
-        extra_args["exit_on_error"] = False
-
     parser = argument_parser.ArgumentParser(
         prog=system_name,
         description=description,
         epilog=epilog,
-        **extra_args,
     )
     subparsers = parser.add_subparsers(dest="cmd")
     _create_run_parser(
