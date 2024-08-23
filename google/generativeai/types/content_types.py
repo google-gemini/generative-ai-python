@@ -83,6 +83,9 @@ def pil_to_blob(img):
     elif img.mode == "RGBA":
         img.save(bytesio, format="PNG")
         mime_type = "image/png"
+    elif img.mode == "P":
+        img.save(bytesio, format="GIF")
+        mime_type = "image/gif"
     else:
         if img.mode != "RGB":
             img = img.convert('RGB')
