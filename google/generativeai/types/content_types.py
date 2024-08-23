@@ -73,6 +73,14 @@ __all__ = [
 
 
 def pil_to_blob(img):
+    # When you load an image with PIL you get a subclass of PIL.Image
+    # The subclass knows what file type it was loaded from it has a `.format` class attribute
+    # and the `get_format_mimetype` method. Convert these back to the same file type.
+    #
+    # The base image class doesn't know its file type, it just knows its mode.
+    # RGBA converts to PNG easily, P[allet] converts to GIF, RGB to GIF.
+    # But for anything else I'm not going to bother mapping it out (for now) let's just convert to RGB and send it.
+    #
     # References:
     #   - file formats: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
     #   - image modes: https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
