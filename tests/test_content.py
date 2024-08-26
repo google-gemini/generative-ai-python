@@ -65,17 +65,17 @@ class ADataClassWithNullable:
 class ADataClassWithList:
     a: list[int]
 
+
 class Choices(enum.Enum):
-    A:str = "A"
-    B:str = "B"
-    C:str = "C"
-    D:str = "D"
+    A: str = "A"
+    B: str = "B"
+    C: str = "C"
+    D: str = "D"
 
 
 @dataclasses.dataclass
 class HasEnum:
-    choice:Choices
-
+    choice: Choices
 
 
 class UnitTests(parameterized.TestCase):
@@ -549,20 +549,25 @@ class UnitTests(parameterized.TestCase):
                 },
             ),
         ],
-        ['enum', Choices, protos.Schema(type=protos.Type.STRING, enum=['A', 'B', 'C', 'D'])],
-        ['enum_list',
-         list[Choices],
-         protos.Schema(
-              type="ARRAY",
-              items=protos.Schema(type=protos.Type.STRING, enum=['A', 'B', 'C', 'D']),
-         ),
+        ["enum", Choices, protos.Schema(type=protos.Type.STRING, enum=["A", "B", "C", "D"])],
+        [
+            "enum_list",
+            list[Choices],
+            protos.Schema(
+                type="ARRAY",
+                items=protos.Schema(type=protos.Type.STRING, enum=["A", "B", "C", "D"]),
+            ),
         ],
-        ['has_enum',
-         HasEnum,
-         protos.Schema(
-            type=protos.Type.OBJECT,
-            properties={'choice': protos.Schema(type=protos.Type.STRING, enum=['A', 'B', 'C', 'D'])})
-        ]
+        [
+            "has_enum",
+            HasEnum,
+            protos.Schema(
+                type=protos.Type.OBJECT,
+                properties={
+                    "choice": protos.Schema(type=protos.Type.STRING, enum=["A", "B", "C", "D"])
+                },
+            ),
+        ],
     )
     def test_auto_schema(self, annotation, expected):
         def fun(a: annotation):
