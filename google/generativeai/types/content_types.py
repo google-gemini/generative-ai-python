@@ -379,7 +379,7 @@ def _schema_for_function(
 
 
 def _build_schema(fname, fields_dict):
-    parameters = pydantic.create_model(fname, **fields_dict).schema()
+    parameters = pydantic.create_model(fname, **fields_dict).model_json_schema()
     defs = parameters.pop("$defs", {})
     # flatten the defs
     for name, value in defs.items():
@@ -401,7 +401,10 @@ def _build_schema(fname, fields_dict):
 
 
 def unpack_defs(schema, defs):
-    properties = schema["properties"]
+    properties = schema.get("properties", None)
+    if properties is None:
+        return
+
     for name, value in properties.items():
         ref_key = value.get("$ref", None)
         if ref_key is not None:
