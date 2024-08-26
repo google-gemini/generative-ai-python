@@ -67,10 +67,10 @@ class ADataClassWithList:
 
 
 class Choices(enum.Enum):
-    A: str = "A"
-    B: str = "B"
-    C: str = "C"
-    D: str = "D"
+    A: int = 'a'
+    B: int = 'b'
+    C: int = 'c'
+    D: int = 'd'
 
 
 @dataclasses.dataclass
@@ -549,13 +549,13 @@ class UnitTests(parameterized.TestCase):
                 },
             ),
         ],
-        ["enum", Choices, protos.Schema(type=protos.Type.STRING, enum=["A", "B", "C", "D"])],
+        ["enum", Choices, protos.Schema(type=protos.Type.STRING, enum=["a", "b", "c", "d"])],
         [
             "enum_list",
             list[Choices],
             protos.Schema(
                 type="ARRAY",
-                items=protos.Schema(type=protos.Type.STRING, enum=["A", "B", "C", "D"]),
+                items=protos.Schema(type=protos.Type.STRING, enum=["a", "b", "c", "d"]),
             ),
         ],
         [
@@ -564,7 +564,7 @@ class UnitTests(parameterized.TestCase):
             protos.Schema(
                 type=protos.Type.OBJECT,
                 properties={
-                    "choice": protos.Schema(type=protos.Type.STRING, enum=["A", "B", "C", "D"])
+                    "choice": protos.Schema(type=protos.Type.STRING, enum=["a", "b", "c", "d"])
                 },
             ),
         ],
