@@ -73,11 +73,34 @@ __all__ = [
 
 
 def pil_to_blob(img):
+    # When you load an image with PIL you get a subclass of PIL.Image
+    # The subclass knows what file type it was loaded from it has a `.format` class attribute
+    # and the `get_format_mimetype` method. Convert these back to the same file type.
+    #
+    # The base image class doesn't know its file type, it just knows its mode.
+    # RGBA converts to PNG easily, P[allet] converts to GIF, RGB to GIF.
+    # But for anything else I'm not going to bother mapping it out (for now) let's just convert to RGB and send it.
+    #
+    # References:
+    #   - file formats: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
+    #   - image modes: https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
+
     bytesio = io.BytesIO()
-    if isinstance(img, PIL.PngImagePlugin.PngImageFile) or img.mode == "RGBA":
+
+    get_mime = getattr(img, "get_format_mimetype", None)
+    if get_mime is not None:
+        # If the image is created from a file, convert back to the same file type.
+        img.save(bytesio, format=img.format)
+        mime_type = img.get_format_mimetype()
+    elif img.mode == "RGBA":
         img.save(bytesio, format="PNG")
         mime_type = "image/png"
+    elif img.mode == "P":
+        img.save(bytesio, format="GIF")
+        mime_type = "image/gif"
     else:
+        if img.mode != "RGB":
+            img = img.convert("RGB")
         img.save(bytesio, format="JPEG")
         mime_type = "image/jpeg"
     bytesio.seek(0)
