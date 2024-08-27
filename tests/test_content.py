@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+import enum
 import pathlib
 import typing_extensions
 from typing import Any, Union, Iterable
@@ -67,6 +68,18 @@ class ADataClassWithNullable:
 @dataclasses.dataclass
 class ADataClassWithList:
     a: list[int]
+
+
+class Choices(enum.Enum):
+    A = "a"
+    B = "b"
+    C = "c"
+    D = "d"
+
+
+@dataclasses.dataclass
+class HasEnum:
+    choice: Choices
 
 
 class UnitTests(parameterized.TestCase):
@@ -548,6 +561,25 @@ class UnitTests(parameterized.TestCase):
                             "a": {"type_": protos.Type.INTEGER},
                         },
                     ),
+                },
+            ),
+        ],
+        ["enum", Choices, protos.Schema(type=protos.Type.STRING, enum=["a", "b", "c", "d"])],
+        [
+            "enum_list",
+            list[Choices],
+            protos.Schema(
+                type="ARRAY",
+                items=protos.Schema(type=protos.Type.STRING, enum=["a", "b", "c", "d"]),
+            ),
+        ],
+        [
+            "has_enum",
+            HasEnum,
+            protos.Schema(
+                type=protos.Type.OBJECT,
+                properties={
+                    "choice": protos.Schema(type=protos.Type.STRING, enum=["a", "b", "c", "d"])
                 },
             ),
         ],
