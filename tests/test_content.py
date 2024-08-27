@@ -67,10 +67,10 @@ class ADataClassWithList:
 
 
 class Choices(enum.Enum):
-    A: int = "a"
-    B: int = "b"
-    C: int = "c"
-    D: int = "d"
+    A = "a"
+    B = "b"
+    C = "c"
+    D = "d"
 
 
 @dataclasses.dataclass
