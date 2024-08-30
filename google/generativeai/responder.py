@@ -116,7 +116,7 @@ def _generate_schema(
             inspect.Parameter.POSITIONAL_ONLY,
         )
     }
-    parameters = pydantic.create_model(f.__name__, **fields_dict).schema()
+    parameters = pydantic.create_model(f.__name__, **fields_dict).model_json_schema()
     # Postprocessing
     # 4. Suppress unnecessary title generation:
     #    * https://github.com/pydantic/pydantic/issues/1051

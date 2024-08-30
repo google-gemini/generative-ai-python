@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import collections
 import contextlib
-import sys
 from collections.abc import Iterable, AsyncIterable, Mapping
 import dataclasses
 import itertools
@@ -165,7 +164,7 @@ class GenerationConfig:
     top_p: float | None = None
     top_k: int | None = None
     response_mime_type: str | None = None
-    response_schema: protos.Schema | Mapping[str, Any] | None = None
+    response_schema: protos.Schema | Mapping[str, Any] | type | None = None
 
 
 GenerationConfigType = Union[protos.GenerationConfig, GenerationConfigDict, GenerationConfig]
@@ -186,7 +185,8 @@ def _normalize_schema(generation_config):
         if not str(response_schema).startswith("list["):
             raise ValueError(
                 f"Invalid input: Could not understand the type of '{response_schema}'. "
-                "Expected one of the following types: `int`, `float`, `str`, `bool`, `typing_extensions.TypedDict`, `dataclass`, or `list[...]`."
+                "Expected one of the following types: `int`, `float`, `str`, `bool`, `enum`, "
+                "`typing_extensions.TypedDict`, `dataclass` or `list[...]`."
             )
         response_schema = content_types._schema_for_class(response_schema)
 
