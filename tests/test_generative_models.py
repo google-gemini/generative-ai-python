@@ -1120,13 +1120,13 @@ class CUJTests(parameterized.TestCase):
                   "usage_metadata": {}
                 }),
             ),
-            error=<StopCandidateException> index: 0
-            content {
+            error=<StopCandidateException> content {
               parts {
                 text: "abc"
               }
             }
             finish_reason: SAFETY
+            index: 0
             citation_metadata {
             }
             """
