@@ -9,7 +9,7 @@ The Google AI Python SDK is the easiest way for Python developers to build with 
 ## Get started with the Gemini API
 1. Go to [Google AI Studio](https://aistudio.google.com/).
 2. Login with your Google account.
-3. [Create](https://aistudio.google.com/app/apikey) an API key. Note that in Europe the free tier is not available.
+3. [Create](https://aistudio.google.com/app/apikey) an API key.
 4. Try a Python SDK [quickstart](https://github.com/google-gemini/gemini-api-cookbook/blob/main/quickstarts/Prompting.ipynb) in the [Gemini API Cookbook](https://github.com/google-gemini/gemini-api-cookbook/).
 5. For detailed instructions, try the 
 [Python SDK tutorial](https://ai.google.dev/tutorials/python_quickstart) on [ai.google.dev](https://ai.google.dev).
