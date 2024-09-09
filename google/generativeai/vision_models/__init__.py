@@ -14,32 +14,14 @@
 #
 """Classes for working with vision models."""
 
-from vertexai.vision_models._vision_models import (
+from google.generativeai.vision_models._vision_models import (
     GeneratedImage,
-    Image,
-    ImageCaptioningModel,
     ImageGenerationModel,
     ImageGenerationResponse,
-    ImageQnAModel,
-    ImageTextModel,
-    MultiModalEmbeddingModel,
-    MultiModalEmbeddingResponse,
-    Video,
-    VideoEmbedding,
-    VideoSegmentConfig,
 )
 
 __all__ = [
     "GeneratedImage",
-    "Image",
-    "ImageCaptioningModel",
     "ImageGenerationModel",
     "ImageGenerationResponse",
-    "ImageQnAModel",
-    "ImageTextModel",
-    "MultiModalEmbeddingModel",
-    "MultiModalEmbeddingResponse",
-    "Video",
-    "VideoEmbedding",
-    "VideoSegmentConfig",
 ]
