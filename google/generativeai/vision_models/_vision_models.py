@@ -47,24 +47,17 @@ class Image:
 
     _loaded_bytes: Optional[bytes] = None
     _loaded_image: Optional["PIL_Image.Image"] = None
-    _gcs_uri: Optional[str] = None
 
     def __init__(
         self,
-        image_bytes: Optional[bytes] = None,
-        gcs_uri: Optional[str] = None,
+        image_bytes: Optional[bytes],
     ):
         """Creates an `Image` object.
 
         Args:
             image_bytes: Image file bytes. Image can be in PNG or JPEG format.
-            gcs_uri: Image URI in Google Cloud Storage.
         """
-        if bool(image_bytes) == bool(gcs_uri):
-            raise ValueError("Either image_bytes or gcs_uri must be provided.")
-
         self._image_bytes = image_bytes
-        self._gcs_uri = gcs_uri
 
     @staticmethod
     def load_from_file(location: str) -> "Image":
@@ -77,19 +70,6 @@ class Image:
         Returns:
             Loaded image as an `Image` object.
         """
-        parsed_url = urllib.parse.urlparse(location)
-        if (
-            parsed_url.scheme == "https"
-            and parsed_url.netloc == "storage.googleapis.com"
-        ):
-            parsed_url = parsed_url._replace(
-                scheme="gs", netloc="", path=f"/{urllib.parse.unquote(parsed_url.path)}"
-            )
-            location = urllib.parse.urlunparse(parsed_url)
-
-        if parsed_url.scheme == "gs":
-            return Image(gcs_uri=location)
-
         # Load image from local path
         image_bytes = pathlib.Path(location).read_bytes()
         image = Image(image_bytes=image_bytes)
@@ -98,8 +78,6 @@ class Image:
 
     @property
     def _image_bytes(self) -> bytes:
-        if self._loaded_bytes is None:
-            self._loaded_bytes = self._blob.download_as_bytes()
         return self._loaded_bytes
 
     @_image_bytes.setter
@@ -123,8 +101,6 @@ class Image:
     @property
     def _mime_type(self) -> str:
         """Returns the MIME type of the image."""
-        if self._gcs_uri:
-            return self._blob.content_type
         if PIL_Image:
             return PIL_Image.MIME.get(self._pil_image.format, "image/jpeg")
         # Fall back to jpeg
