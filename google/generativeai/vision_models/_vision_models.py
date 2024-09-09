@@ -114,6 +114,12 @@ class Image:
         if PIL_Image and IPython_display:
             IPython_display.display(self._pil_image)
 
+    def _repr_jpeg(self):
+        return self._pil_image._repr_jpeg()
+
+    def _repr_png(self):
+        return self._pil_image._repr_png()
+
     def save(self, location: str):
         """Saves image to a file.
 
