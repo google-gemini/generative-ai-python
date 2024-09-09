@@ -188,7 +188,6 @@ class ImageGenerationModel:
         output_mime_type: Optional[Literal["image/png", "image/jpeg"]] = None,
         compression_quality: Optional[float] = None,
         language: Optional[str] = None,
-        output_gcs_uri: Optional[str] = None,
         add_watermark: Optional[bool] = None,
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
@@ -249,7 +248,6 @@ class ImageGenerationModel:
               Supported values are `"en"` for English, `"hi"` for Hindi, `"ja"` for
               Japanese, `"ko"` for Korean, and `"auto"` for automatic language
               detection.
-            output_gcs_uri: Google Cloud Storage uri to store the generated images.
             add_watermark: Add a watermark to the generated image
             safety_filter_level: Adds a filter level to Safety filtering. Supported
               values are: * "block_most" : Strongest filtering level, most strict
@@ -338,10 +336,6 @@ class ImageGenerationModel:
             parameters["language"] = language
             shared_generation_parameters["language"] = language
 
-        if output_gcs_uri is not None:
-            parameters["storageUri"] = output_gcs_uri
-            shared_generation_parameters["storage_uri"] = output_gcs_uri
-
         parameters["editConfig"] = {}
         if edit_mode is not None:
             parameters["editConfig"]["editMode"] = edit_mode
@@ -415,7 +409,6 @@ class ImageGenerationModel:
         guidance_scale: Optional[float] = None,
         language: Optional[str] = None,
         seed: Optional[int] = None,
-        output_gcs_uri: Optional[str] = None,
         add_watermark: Optional[bool] = True,
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
@@ -447,7 +440,6 @@ class ImageGenerationModel:
                 for Japanese, `"ko"` for Korean, and `"auto"` for automatic language
                 detection.
             seed: Image generation random seed.
-            output_gcs_uri: Google Cloud Storage uri to store the generated images.
             add_watermark: Add a watermark to the generated image
             safety_filter_level: Adds a filter level to Safety filtering. Supported
                 values are:
@@ -472,7 +464,6 @@ class ImageGenerationModel:
             guidance_scale=guidance_scale,
             language=language,
             seed=seed,
-            output_gcs_uri=output_gcs_uri,
             add_watermark=add_watermark,
             safety_filter_level=safety_filter_level,
             person_generation=person_generation,
@@ -500,7 +491,6 @@ class ImageGenerationModel:
         compression_quality: Optional[float] = None,
         language: Optional[str] = None,
         seed: Optional[int] = None,
-        output_gcs_uri: Optional[str] = None,
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
         ] = None,
@@ -557,7 +547,6 @@ class ImageGenerationModel:
                 `"ja"` for Japanese, `"ko"` for Korean, and `"auto"` for
                 automatic language detection.
             seed: Image generation random seed.
-            output_gcs_uri: Google Cloud Storage uri to store the edited images.
             safety_filter_level: Adds a filter level to Safety filtering. Supported
                 values are:
                 * "block_most" : Strongest filtering level, most strict
@@ -590,7 +579,6 @@ class ImageGenerationModel:
             output_mime_type=output_mime_type,
             compression_quality=compression_quality,
             language=language,
-            output_gcs_uri=output_gcs_uri,
             add_watermark=False,  # Not supported for editing yet
             safety_filter_level=safety_filter_level,
             person_generation=person_generation,
@@ -603,7 +591,6 @@ class ImageGenerationModel:
         upscale_factor: Optional[Literal["x2", "x4"]] = None,
         output_mime_type: Optional[Literal["image/png", "image/jpeg"]] = "image/png",
         output_compression_quality: Optional[int] = None,
-        output_gcs_uri: Optional[str] = None,
     ) -> "Image":
         """Upscales an image.
 
@@ -647,8 +634,6 @@ class ImageGenerationModel:
                 image
                 as an int (0-100). Only applicable if the output mime type is
                 "image/jpeg". Defaults to None.
-            output_gcs_uri: Google Cloud Storage uri to store the upscaled
-                images.
 
         Returns:
             An `Image` object.
@@ -703,9 +688,6 @@ class ImageGenerationModel:
 
         else:
             parameters["sampleImageSize"] = str(new_size)
-
-        if output_gcs_uri is not None:
-            parameters["storageUri"] = output_gcs_uri
 
         parameters["outputOptions"] = {"mimeType": output_mime_type}
         if output_mime_type == "image/jpeg" and output_compression_quality is not None:
