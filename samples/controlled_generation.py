@@ -139,47 +139,6 @@ class UnitTests(absltest.TestCase):
                 response_mime_type="text/x.enum", response_schema=Choice
             ),
         )
-        print(result)  # Keyboard
-        # [END x_enum]
-
-    def test_x_enum_raw(self):
-        # [START x_enum_raw]
-        model = genai.GenerativeModel("gemini-1.5-pro-latest")
-
-        organ = genai.upload_file(media / "organ.jpg")
-        result = model.generate_content(
-            ["What kind of instrument is this:", organ],
-            generation_config=genai.GenerationConfig(
-                response_mime_type="text/x.enum",
-                response_schema={
-                    "type": "STRING",
-                    "enum": ["Percussion", "String", "Woodwind", "Brass", "Keyboard"],
-                },
-            ),
-        )
-        print(result)  # Keyboard
-        # [END x_enum_raw]
-
-    def test_x_enum(self):
-        # [START x_enum]
-        import enum
-
-        class Choice(enum.Enum):
-            PERCUSSION = "Percussion"
-            STRING = "String"
-            WOODWIND = "Woodwind"
-            BRASS = "Brass"
-            KEYBOARD = "Keyboard"
-
-        model = genai.GenerativeModel("gemini-1.5-pro-latest")
-
-        organ = genai.upload_file(media / "organ.jpg")
-        result = model.generate_content(
-            ["What kind of instrument is this:", organ],
-            generation_config=genai.GenerationConfig(
-                response_mime_type="text/x.enum", response_schema=Choice
-            ),
-        )
         print(result)  # "Keyboard"
         # [END x_enum]
 
