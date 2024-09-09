@@ -90,14 +90,12 @@ class UnitTests(absltest.TestCase):
             recipe_name: str
             grade: Grade
 
-
         model = genai.GenerativeModel("gemini-1.5-pro-latest")
 
         result = model.generate_content(
             "List about 10 cookie recipes, grade them based on popularity",
             generation_config=genai.GenerationConfig(
-                response_mime_type="application/json",
-                response_schema=list[Recipe]
+                response_mime_type="application/json", response_schema=list[Recipe]
             ),
         )
         print(result)  # [{"grade": "a+", "recipe_name": "Chocolate Chip Cookies"}, ...]
@@ -120,7 +118,6 @@ class UnitTests(absltest.TestCase):
         )
         print(result)  # "Keyboard"
         # [END json_enum_raw]
-
 
     def test_x_enum(self):
         # [START x_enum]
@@ -162,6 +159,7 @@ class UnitTests(absltest.TestCase):
         )
         print(result)  # "Keyboard"
         # [END x_enum_raw]
+
 
 if __name__ == "__main__":
     absltest.main()
