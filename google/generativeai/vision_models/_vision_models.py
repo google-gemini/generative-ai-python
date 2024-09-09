@@ -267,40 +267,22 @@ class ImageGenerationModel:
         }
 
         if base_image:
-            if base_image._gcs_uri:  # pylint: disable=protected-access
-                instance["image"] = {
-                    "gcsUri": base_image._gcs_uri  # pylint: disable=protected-access
-                }
-                shared_generation_parameters[
-                    "base_image_uri"
-                ] = base_image._gcs_uri  # pylint: disable=protected-access
-            else:
-                instance["image"] = {
-                    "bytesBase64Encoded": base_image._as_base64_string()  # pylint: disable=protected-access
-                }
-                shared_generation_parameters["base_image_hash"] = hashlib.sha1(
-                    base_image._image_bytes  # pylint: disable=protected-access
-                ).hexdigest()
+            instance["image"] = {
+                "bytesBase64Encoded": base_image._as_base64_string()  # pylint: disable=protected-access
+            }
+            shared_generation_parameters["base_image_hash"] = hashlib.sha1(
+                base_image._image_bytes  # pylint: disable=protected-access
+            ).hexdigest()
 
         if mask:
-            if mask._gcs_uri:  # pylint: disable=protected-access
-                instance["mask"] = {
-                    "image": {
-                        "gcsUri": mask._gcs_uri  # pylint: disable=protected-access
-                    },
-                }
-                shared_generation_parameters[
-                    "mask_uri"
-                ] = mask._gcs_uri  # pylint: disable=protected-access
-            else:
-                instance["mask"] = {
-                    "image": {
-                        "bytesBase64Encoded": mask._as_base64_string()  # pylint: disable=protected-access
-                    },
-                }
-                shared_generation_parameters["mask_hash"] = hashlib.sha1(
-                    mask._image_bytes  # pylint: disable=protected-access
-                ).hexdigest()
+            instance["mask"] = {
+                "image": {
+                    "bytesBase64Encoded": mask._as_base64_string()  # pylint: disable=protected-access
+                },
+            }
+            shared_generation_parameters["mask_hash"] = hashlib.sha1(
+                mask._image_bytes  # pylint: disable=protected-access
+            ).hexdigest()
 
         parameters = {}
         max_size = max(width or 0, height or 0) or None
@@ -387,7 +369,6 @@ class ImageGenerationModel:
             generated_image = GeneratedImage(
                 image_bytes=base64.b64decode(encoded_bytes) if encoded_bytes else None,
                 generation_parameters=generation_parameters,
-                gcs_uri=prediction.get("gcsUri"),
             )
             generated_images.append(generated_image)
 
@@ -663,14 +644,9 @@ class ImageGenerationModel:
 
         instance = {"prompt": ""}
 
-        if image._gcs_uri:  # pylint: disable=protected-access
-            instance["image"] = {
-                "gcsUri": image._gcs_uri  # pylint: disable=protected-access
-            }
-        else:
-            instance["image"] = {
-                "bytesBase64Encoded": image._as_base64_string()  # pylint: disable=protected-access
-            }
+        instance["image"] = {
+            "bytesBase64Encoded": image._as_base64_string()  # pylint: disable=protected-access
+        }
 
         parameters = {
             "sampleCount": 1,
@@ -708,7 +684,6 @@ class ImageGenerationModel:
         return GeneratedImage(
             image_bytes=base64.b64decode(encoded_bytes) if encoded_bytes else None,
             generation_parameters=generation_parameters,
-            gcs_uri=upscaled_image.get("gcsUri"),
         )
 
 
@@ -748,16 +723,14 @@ class GeneratedImage(Image):
         self,
         image_bytes: Optional[bytes],
         generation_parameters: Dict[str, Any],
-        gcs_uri: Optional[str] = None,
     ):
         """Creates a `GeneratedImage` object.
 
         Args:
             image_bytes: Image file bytes. Image can be in PNG or JPEG format.
             generation_parameters: Image generation parameter values.
-            gcs_uri: Image file Google Cloud Storage uri.
         """
-        super().__init__(image_bytes=image_bytes, gcs_uri=gcs_uri)
+        super().__init__(image_bytes=image_bytes)
         self._generation_parameters = generation_parameters
 
     @property
@@ -782,7 +755,6 @@ class GeneratedImage(Image):
         return GeneratedImage(
             image_bytes=base_image._image_bytes,  # pylint: disable=protected-access
             generation_parameters=generation_parameters,
-            gcs_uri=base_image._gcs_uri,  # pylint: disable=protected-access
         )
 
     def save(self, location: str, include_generation_parameters: bool = True):
