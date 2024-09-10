@@ -51,7 +51,7 @@ class FileServiceClient(glm.FileServiceClient):
         self._discovery_api = None
         super().__init__(*args, **kwargs)
 
-    def _setup_discovery_api(self, metadata:dict|Sequence[tuple[str, str]]=()):
+    def _setup_discovery_api(self, metadata: dict | Sequence[tuple[str, str]] = ()):
         api_key = self._client_options.api_key
         if api_key is None:
             raise ValueError(
@@ -62,7 +62,7 @@ class FileServiceClient(glm.FileServiceClient):
             http=httplib2.Http(),
             postproc=lambda resp, content: (resp, content),
             uri=f"{GENAI_API_DISCOVERY_URL}?version=v1beta&key={api_key}",
-            headers=dict(metadata)
+            headers=dict(metadata),
         )
         response, content = request.execute()
         request.http.close()
@@ -80,7 +80,7 @@ class FileServiceClient(glm.FileServiceClient):
         name: str | None = None,
         display_name: str | None = None,
         resumable: bool = True,
-        metadata:Sequence[tuple[str, str]] = ()
+        metadata: Sequence[tuple[str, str]] = (),
     ) -> protos.File:
         if self._discovery_api is None:
             self._setup_discovery_api(metadata)
@@ -95,8 +95,8 @@ class FileServiceClient(glm.FileServiceClient):
             filename=path, mimetype=mime_type, resumable=resumable
         )
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
-        for key,value in metadata:
-            request.headers[key]=value
+        for key, value in metadata:
+            request.headers[key] = value
         result = request.execute()
 
         return self.get_file({"name": result["file"]["name"]})
@@ -235,7 +235,7 @@ class _ClientManager:
             if not callable(f):
                 return False
 
-            if 'metadata' not in inspect.signature(f).parameters.keys():
+            if "metadata" not in inspect.signature(f).parameters.keys():
                 return False
 
             return True
