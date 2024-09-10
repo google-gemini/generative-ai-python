@@ -51,7 +51,7 @@ class FileServiceClient(glm.FileServiceClient):
         self._discovery_api = None
         super().__init__(*args, **kwargs)
 
-    def _setup_discovery_api(self):
+    def _setup_discovery_api(self, metadata:dict|Sequence[tuple[str, str]]=()):
         api_key = self._client_options.api_key
         if api_key is None:
             raise ValueError(
@@ -62,6 +62,7 @@ class FileServiceClient(glm.FileServiceClient):
             http=httplib2.Http(),
             postproc=lambda resp, content: (resp, content),
             uri=f"{GENAI_API_DISCOVERY_URL}?version=v1beta&key={api_key}",
+            headers=dict(metadata)
         )
         response, content = request.execute()
         request.http.close()
@@ -82,7 +83,7 @@ class FileServiceClient(glm.FileServiceClient):
         metadata:Sequence[tuple[str, str]] = ()
     ) -> protos.File:
         if self._discovery_api is None:
-            self._setup_discovery_api()
+            self._setup_discovery_api(metadata)
 
         file = {}
         if name is not None:
