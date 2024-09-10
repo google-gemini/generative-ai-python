@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import contextlib
+import inspect
 import dataclasses
 import pathlib
 import types
@@ -78,6 +79,7 @@ class FileServiceClient(glm.FileServiceClient):
         name: str | None = None,
         display_name: str | None = None,
         resumable: bool = True,
+        metadata:Sequence[tuple[str, str]] = ()
     ) -> protos.File:
         if self._discovery_api is None:
             self._setup_discovery_api()
@@ -92,6 +94,8 @@ class FileServiceClient(glm.FileServiceClient):
             filename=path, mimetype=mime_type, resumable=resumable
         )
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
+        for key,value in metadata:
+            request.headers[key]=value
         result = request.execute()
 
         return self.get_file({"name": result["file"]["name"]})
@@ -226,8 +230,6 @@ class _ClientManager:
         def keep(name, f):
             if name.startswith("_"):
                 return False
-            elif name == "create_file":
-                return False
             elif not isinstance(f, types.FunctionType):
                 return False
             elif isinstance(f, classmethod):
@@ -244,7 +246,7 @@ class _ClientManager:
 
             return call
 
-        for name, value in cls.__dict__.items():
+        for name, value in inspect.getmembers(cls):
             if not keep(name, value):
                 continue
             f = getattr(client, name)
