@@ -231,14 +231,14 @@ class _ClientManager:
         def keep(name, f):
             if name.startswith("_"):
                 return False
-            elif not isinstance(f, types.FunctionType):
+
+            if not callable(f):
                 return False
-            elif isinstance(f, classmethod):
+
+            if 'metadata' not in inspect.signature(f).parameters.keys():
                 return False
-            elif isinstance(f, staticmethod):
-                return False
-            else:
-                return True
+
+            return True
 
         def add_default_metadata_wrapper(f):
             def call(*args, metadata=(), **kwargs):
