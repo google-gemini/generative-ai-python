@@ -412,13 +412,15 @@ class BaseGenerateContentResponse:
         """
         candidates = self.candidates
         if not candidates:
-            msg = ("Invalid operation: The `response.parts` quick accessor requires a single candidate, "
-                   "but but `response.candidates` is empty.")
+            msg = (
+                "Invalid operation: The `response.parts` quick accessor requires a single candidate, "
+                "but but `response.candidates` is empty."
+            )
             if self.prompt_feedback:
                 raise ValueError(
-                    msg +
-                    "\nThis appears to be caused by a blocked prompt, "
-                    f"see `response.prompt_feedback`: {self.prompt_feedback}")
+                    msg + "\nThis appears to be caused by a blocked prompt, "
+                    f"see `response.prompt_feedback`: {self.prompt_feedback}"
+                )
             else:
                 raise ValueError(msg)
 
@@ -444,11 +446,13 @@ class BaseGenerateContentResponse:
             fr = candidate.finish_reason
             FinishReason = protos.Candidate.FinishReason
 
-            msg=("Invalid operation: The `response.text` quick accessor requires the response to contain a valid "
-                 "`Part`, but none were returned. The candidate's "
-                 f"[finish_reason](https://ai.google.dev/api/generate-content#finishreason) is {fr}.")
+            msg = (
+                "Invalid operation: The `response.text` quick accessor requires the response to contain a valid "
+                "`Part`, but none were returned. The candidate's "
+                f"[finish_reason](https://ai.google.dev/api/generate-content#finishreason) is {fr}."
+            )
             if candidate.finish_message:
-                msg += "The `finish_message` is \"{candidate.finish_message}\"."
+                msg += 'The `finish_message` is "{candidate.finish_message}".'
 
             if fr is FinishReason.FINISH_REASON_UNSPECIFIED:
                 raise ValueError(msg)
@@ -457,10 +461,14 @@ class BaseGenerateContentResponse:
             elif fr is FinishReason.MAX_TOKENS:
                 raise ValueError(msg)
             elif fr is FinishReason.SAFETY:
-                raise ValueError(msg +
-                                 f" The candidate's safety_ratings are: {candidate.safety_ratings}.", candidate.safety_ratings)
+                raise ValueError(
+                    msg + f" The candidate's safety_ratings are: {candidate.safety_ratings}.",
+                    candidate.safety_ratings,
+                )
             elif fr is FinishReason.RECITATION:
-                raise ValueError(msg + " Meaning that the model was reciting from copyrighted material.")
+                raise ValueError(
+                    msg + " Meaning that the model was reciting from copyrighted material."
+                )
             elif fr is FinishReason.LANGUAGE:
                 raise ValueError(msg + " Meaning the response was using an unsupported language.")
             elif fr is FinishReason.OTHER:
@@ -473,11 +481,11 @@ class BaseGenerateContentResponse:
                 raise ValueError(msg + " SPII - Sensitive Personally Identifiable Information.")
             elif fr is FinishReason.MALFORMED_FUNCTION_CALL:
                 raise ValueError(
-                    msg +
-                    " Meaning that model generated a `FunctionCall` that was invalid. "
+                    msg + " Meaning that model generated a `FunctionCall` that was invalid. "
                     "Setting the "
                     "[Function calling mode](https://ai.google.dev/gemini-api/docs/function-calling#function_calling_mode) "
-                    "to `ANY` can fix this because it enables constrained decoding.")
+                    "to `ANY` can fix this because it enables constrained decoding."
+                )
             else:
                 raise ValueError(msg)
 
