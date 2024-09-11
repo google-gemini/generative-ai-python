@@ -41,6 +41,7 @@ USER_AGENT = "genai-py"
 #    - I think their proxy would forward the discovery traffic.
 #    - But they don't need to intercept the files-service at all, and uploads of large files could overload them.
 #      - Do the scotty uploads go to the same domain?
+#    - If you do route the discovery call to kaggle, be sure to attach the default_metadata (they need it).
 #  - One solution to all this would be if configure could take overrides per service.
 #    - set client_options.endpoint, but use a different endpoint for file service? It's not clear how best to do that
 #      through the file service.
