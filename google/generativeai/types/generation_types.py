@@ -412,14 +412,22 @@ class BaseGenerateContentResponse:
         """
         candidates = self.candidates
         if not candidates:
-            raise ValueError(
+            msg = (
                 "Invalid operation: The `response.parts` quick accessor requires a single candidate, "
-                "but none were returned. Please check the `response.prompt_feedback` to determine if the prompt was blocked."
+                "but but `response.candidates` is empty."
             )
+            if self.prompt_feedback:
+                raise ValueError(
+                    msg + "\nThis appears to be caused by a blocked prompt, "
+                    f"see `response.prompt_feedback`: {self.prompt_feedback}"
+                )
+            else:
+                raise ValueError(msg)
+
         if len(candidates) > 1:
             raise ValueError(
-                "Invalid operation: The `response.parts` quick accessor requires a single candidate. "
-                "For multiple candidates, please use `result.candidates[index].text`."
+                "Invalid operation: The `response.parts` quick accessor retrieves the parts for a single candidate. "
+                "This response contains multiple candidates, please use `result.candidates[index].text`."
             )
         parts = candidates[0].content.parts
         return parts
@@ -433,10 +441,53 @@ class BaseGenerateContentResponse:
         """
         parts = self.parts
         if not parts:
-            raise ValueError(
-                "Invalid operation: The `response.text` quick accessor requires the response to contain a valid `Part`, "
-                "but none were returned. Please check the `candidate.safety_ratings` to determine if the response was blocked."
+            candidate = self.candidates[0]
+
+            fr = candidate.finish_reason
+            FinishReason = protos.Candidate.FinishReason
+
+            msg = (
+                "Invalid operation: The `response.text` quick accessor requires the response to contain a valid "
+                "`Part`, but none were returned. The candidate's "
+                f"[finish_reason](https://ai.google.dev/api/generate-content#finishreason) is {fr}."
             )
+            if candidate.finish_message:
+                msg += 'The `finish_message` is "{candidate.finish_message}".'
+
+            if fr is FinishReason.FINISH_REASON_UNSPECIFIED:
+                raise ValueError(msg)
+            elif fr is FinishReason.STOP:
+                raise ValueError(msg)
+            elif fr is FinishReason.MAX_TOKENS:
+                raise ValueError(msg)
+            elif fr is FinishReason.SAFETY:
+                raise ValueError(
+                    msg + f" The candidate's safety_ratings are: {candidate.safety_ratings}.",
+                    candidate.safety_ratings,
+                )
+            elif fr is FinishReason.RECITATION:
+                raise ValueError(
+                    msg + " Meaning that the model was reciting from copyrighted material."
+                )
+            elif fr is FinishReason.LANGUAGE:
+                raise ValueError(msg + " Meaning the response was using an unsupported language.")
+            elif fr is FinishReason.OTHER:
+                raise ValueError(msg)
+            elif fr is FinishReason.BLOCKLIST:
+                raise ValueError(msg)
+            elif fr is FinishReason.PROHIBITED_CONTENT:
+                raise ValueError(msg)
+            elif fr is FinishReason.SPII:
+                raise ValueError(msg + " SPII - Sensitive Personally Identifiable Information.")
+            elif fr is FinishReason.MALFORMED_FUNCTION_CALL:
+                raise ValueError(
+                    msg + " Meaning that model generated a `FunctionCall` that was invalid. "
+                    "Setting the "
+                    "[Function calling mode](https://ai.google.dev/gemini-api/docs/function-calling#function_calling_mode) "
+                    "to `ANY` can fix this because it enables constrained decoding."
+                )
+            else:
+                raise ValueError(msg)
 
         texts = []
         for part in parts:
