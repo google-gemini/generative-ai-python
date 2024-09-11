@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import os
 import contextlib
+import inspect
 import dataclasses
 import pathlib
-import types
 from typing import Any, cast
 from collections.abc import Sequence
 import httplib2
@@ -30,6 +30,21 @@ except ImportError:
     __version__ = "0.0.0"
 
 USER_AGENT = "genai-py"
+
+#### Caution! ####
+#  - It would make sense for the discovery URL to respect the client_options.endpoint setting.
+#    - That would make testing Files on the staging server possible.
+#  - We tried fixing this once, but broke colab in the process because their endpoint didn't forward the discovery
+#    requests. https://github.com/google-gemini/generative-ai-python/pull/333
+#  - Kaggle would have a similar problem  (b/362278209).
+#    - I think their proxy would forward the discovery traffic.
+#    - But they don't need to intercept the files-service at all, and uploads of large files could overload them.
+#      - Do the scotty uploads go to the same domain?
+#    - If you do route the discovery call to kaggle, be sure to attach the default_metadata (they need it).
+#  - One solution to all this would be if configure could take overrides per service.
+#    - set client_options.endpoint, but use a different endpoint for file service? It's not clear how best to do that
+#      through the file service.
+##################
 GENAI_API_DISCOVERY_URL = "https://generativelanguage.googleapis.com/$discovery/rest"
 
 
@@ -50,7 +65,7 @@ class FileServiceClient(glm.FileServiceClient):
         self._discovery_api = None
         super().__init__(*args, **kwargs)
 
-    def _setup_discovery_api(self):
+    def _setup_discovery_api(self, metadata: dict | Sequence[tuple[str, str]] = ()):
         api_key = self._client_options.api_key
         if api_key is None:
             raise ValueError(
@@ -61,6 +76,7 @@ class FileServiceClient(glm.FileServiceClient):
             http=httplib2.Http(),
             postproc=lambda resp, content: (resp, content),
             uri=f"{GENAI_API_DISCOVERY_URL}?version=v1beta&key={api_key}",
+            headers=dict(metadata),
         )
         response, content = request.execute()
         request.http.close()
@@ -78,9 +94,10 @@ class FileServiceClient(glm.FileServiceClient):
         name: str | None = None,
         display_name: str | None = None,
         resumable: bool = True,
+        metadata: Sequence[tuple[str, str]] = (),
     ) -> protos.File:
         if self._discovery_api is None:
-            self._setup_discovery_api()
+            self._setup_discovery_api(metadata)
 
         file = {}
         if name is not None:
@@ -92,6 +109,8 @@ class FileServiceClient(glm.FileServiceClient):
             filename=path, mimetype=mime_type, resumable=resumable
         )
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
+        for key, value in metadata:
+            request.headers[key] = value
         result = request.execute()
 
         return self.get_file({"name": result["file"]["name"]})
@@ -226,16 +245,14 @@ class _ClientManager:
         def keep(name, f):
             if name.startswith("_"):
                 return False
-            elif name == "create_file":
+
+            if not callable(f):
                 return False
-            elif not isinstance(f, types.FunctionType):
+
+            if "metadata" not in inspect.signature(f).parameters.keys():
                 return False
-            elif isinstance(f, classmethod):
-                return False
-            elif isinstance(f, staticmethod):
-                return False
-            else:
-                return True
+
+            return True
 
         def add_default_metadata_wrapper(f):
             def call(*args, metadata=(), **kwargs):
@@ -244,7 +261,7 @@ class _ClientManager:
 
             return call
 
-        for name, value in cls.__dict__.items():
+        for name, value in inspect.getmembers(cls):
             if not keep(name, value):
                 continue
             f = getattr(client, name)
