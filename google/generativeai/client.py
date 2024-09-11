@@ -31,6 +31,20 @@ except ImportError:
     __version__ = "0.0.0"
 
 USER_AGENT = "genai-py"
+
+#### Caution! ####
+#  - It would make sense for the discovery URL to respect the client_options.endpoint setting.
+#    - That would make testing Files on the staging server possible.
+#  - We tried fixing this once, but broke colab in the process because their endpoint didn't forward the discovery
+#    requests. https://github.com/google-gemini/generative-ai-python/pull/333
+#  - Kaggle would have a similar problem  (b/362278209).
+#    - I think their proxy would forward the discovery traffic.
+#    - But they don't need to intercept the files-service at all, and uploads of large files could overload them.
+#      - Do the scotty uploads go to the same domain?
+#  - One solution to all this would be if configure could take overrides per service.
+#    - set client_options.endpoint, but use a different endpoint for file service? It's not clear how best to do that
+#      through the file service.
+##################
 GENAI_API_DISCOVERY_URL = "https://generativelanguage.googleapis.com/$discovery/rest"
 
 
