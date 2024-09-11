@@ -5,7 +5,6 @@ import contextlib
 import inspect
 import dataclasses
 import pathlib
-import types
 from typing import Any, cast
 from collections.abc import Sequence
 import httplib2
