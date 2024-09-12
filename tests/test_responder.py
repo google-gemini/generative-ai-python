@@ -19,8 +19,7 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from google.generativeai import protos
 from google.generativeai import responder
-import IPython.display
-import PIL.Image
+
 
 HERE = pathlib.Path(__file__).parent
 TEST_PNG_PATH = HERE / "test_img.png"
@@ -250,3 +249,7 @@ class UnitTests(parameterized.TestCase):
         cfd = responder.FunctionDeclaration.from_function(fun)
         got = cfd.parameters.properties["a"]
         self.assertEqual(got, expected)
+
+
+if __name__ == "__main__":
+    absltest.main()
