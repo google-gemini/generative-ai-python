@@ -23,15 +23,19 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 class UnitTests(absltest.TestCase):
     def test_text_gen_text_only_prompt(self):
         # [START text_gen_text_only_prompt]
+        import google.generativeai as genai
+        import os
+
+        genai.configure(api_key=os.environ["API_KEY"])
         model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content("Write a story about a magic backpack.")
+        response = model.generate_content("Explain how AI works")
         print(response.text)
         # [END text_gen_text_only_prompt]
 
     def test_text_gen_text_only_prompt_streaming(self):
         # [START text_gen_text_only_prompt_streaming]
         model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content("Write a story about a magic backpack.", stream=True)
+        response = model.generate_content("Explain how AI works", stream=True)
         for chunk in response:
             print(chunk.text)
             print("_" * 80)
