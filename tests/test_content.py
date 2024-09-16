@@ -433,6 +433,56 @@ class UnitTests(parameterized.TestCase):
             t = content_types._make_tool(tools)  # Pass code execution into tools
             self.assertIsInstance(t.code_execution, protos.CodeExecution)
 
+    @parameterized.named_parameters(
+        ["string", "unspecified"],
+        [
+            "dictionary",
+            {"google_search_retrieval": {"mode": "unspecified", "dynamic_threshold": 0.5}},
+        ],
+        ["tuple", ("unspecified", 0.5)],
+        [
+            "proto_object",
+            protos.GoogleSearchRetrieval(
+                protos.DynamicRetrievalConfig(mode="MODE_UNSPECIFIED", dynamic_threshold=0.5)
+            ),
+        ],
+        [
+            "proto_passed_in",
+            protos.Tool(
+                google_search_retrieval=protos.GoogleSearchRetrieval(
+                    protos.DynamicRetrievalConfig(mode="MODE_UNSPECIFIED", dynamic_threshold=0.5)
+                )
+            ),
+        ],
+        [
+            "proto_object_list",
+            [
+                protos.GoogleSearchRetrieval(
+                    protos.DynamicRetrievalConfig(mode="MODE_UNSPECIFIED", dynamic_threshold=0.5)
+                )
+            ],
+        ],
+        [
+            "proto_passed_in_list",
+            [
+                protos.Tool(
+                    google_search_retrieval=protos.GoogleSearchRetrieval(
+                        protos.DynamicRetrievalConfig(
+                            mode="MODE_UNSPECIFIED", dynamic_threshold=0.5
+                        )
+                    )
+                )
+            ],
+        ],
+    )
+    def test_search_grounding(self, tools):
+        if isinstance(tools, Iterable):
+            t = content_types._make_tools(tools)
+            self.assertIsInstance(t[0].google_search_retrieval, protos.GoogleSearchRetrieval)
+        else:
+            t = content_types._make_tool(tools)  # Pass code execution into tools
+            self.assertIsInstance(t.google_search_retrieval, protos.GoogleSearchRetrieval)
+
     def test_two_fun_is_one_tool(self):
         def a():
             pass

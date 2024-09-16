@@ -71,6 +71,27 @@ __all__ = [
     "FunctionLibraryType",
 ]
 
+Mode = protos.DynamicRetrievalConfig.Mode
+
+ModeOptions = Union[str, str, Mode]
+
+_MODE: dict[ModeOptions, Mode] = {
+    Mode.MODE_UNSPECIFIED: Mode.MODE_UNSPECIFIED,
+    0: Mode.MODE_UNSPECIFIED,
+    "mode_unspecified": Mode.MODE_UNSPECIFIED,
+    "unspecified": Mode.MODE_UNSPECIFIED,
+    Mode.DYNAMIC: Mode.DYNAMIC,
+    1: Mode.DYNAMIC,
+    "mode_dynamic": Mode.DYNAMIC,
+    "dynamic": Mode.DYNAMIC,
+}
+
+
+def to_mode(x: ModeOptions) -> Mode:
+    if isinstance(x, str):
+        x = x.lower()
+    return _MODE[x]
+
 
 def pil_to_blob(img):
     # When you load an image with PIL you get a subclass of PIL.Image
@@ -656,6 +677,7 @@ class Tool:
     def __init__(
         self,
         function_declarations: Iterable[FunctionDeclarationType] | None = None,
+        google_search_retrieval: protos.GoogleSearchRetrieval | None = None,
         code_execution: protos.CodeExecution | None = None,
     ):
         # The main path doesn't use this but is seems useful.
@@ -676,6 +698,7 @@ class Tool:
 
         self._proto = protos.Tool(
             function_declarations=[_encode_fd(fd) for fd in self._function_declarations],
+            google_search_retrieval=google_search_retrieval,
             code_execution=code_execution,
         )
 
@@ -723,9 +746,17 @@ def _make_tool(tool: ToolType) -> Tool:
             code_execution = tool.code_execution
         else:
             code_execution = None
-        return Tool(function_declarations=tool.function_declarations, code_execution=code_execution)
+        return Tool(
+            function_declarations=tool.function_declarations,
+            google_search_retrieval=tool.google_search_retrieval,
+            code_execution=code_execution,
+        )
     elif isinstance(tool, dict):
-        if "function_declarations" in tool or "code_execution" in tool:
+        if (
+            "function_declarations" in tool
+            or "google_search_retrieval" in tool
+            or "code_execution" in tool
+        ):
             return Tool(**tool)
         else:
             fd = tool
@@ -733,10 +764,18 @@ def _make_tool(tool: ToolType) -> Tool:
     elif isinstance(tool, str):
         if tool.lower() == "code_execution":
             return Tool(code_execution=protos.CodeExecution())
+        # Check to see if one of the mode enums matches
+        elif to_mode(tool) == Mode.MODE_UNSPECIFIED or to_mode(tool) == Mode.DYNAMIC:
+            mode = to_mode(tool)
+            return Tool(google_search_retrieval=protos.GoogleSearchRetrieval(mode=mode))
         else:
-            raise ValueError("The only string that can be passed as a tool is 'code_execution'.")
+            raise ValueError(
+                "The only string that can be passed as a tool is 'code_execution', or one of the specified values for the `mode` parameter for google_search_retrieval."
+            )
     elif isinstance(tool, protos.CodeExecution):
         return Tool(code_execution=tool)
+    elif isinstance(tool, protos.GoogleSearchRetrieval):
+        return Tool(google_search_retrieval=tool)
     elif isinstance(tool, Iterable):
         return Tool(function_declarations=tool)
     else:
