@@ -73,7 +73,7 @@ __all__ = [
 
 Mode = protos.DynamicRetrievalConfig.Mode
 
-ModeOptions = Union[str, str, Mode]
+ModeOptions = Union[int, str, Mode]
 
 _MODE: dict[ModeOptions, Mode] = {
     Mode.MODE_UNSPECIFIED: Mode.MODE_UNSPECIFIED,
