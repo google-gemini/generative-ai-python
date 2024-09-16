@@ -434,7 +434,7 @@ class UnitTests(parameterized.TestCase):
             self.assertIsInstance(t.code_execution, protos.CodeExecution)
 
     @parameterized.named_parameters(
-        ["string", "unspecified"],
+        ["string", "google_search_retrieval"],
         [
             "dictionary",
             {"google_search_retrieval": {"mode": "unspecified", "dynamic_threshold": 0.5}},
