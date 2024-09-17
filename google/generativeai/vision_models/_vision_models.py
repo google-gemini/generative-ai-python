@@ -16,6 +16,7 @@
 """Classes for working with vision models."""
 
 import base64
+import collections
 import dataclasses
 import hashlib
 import io
@@ -23,7 +24,12 @@ import json
 import pathlib
 import typing
 from typing import Any, Dict, List, Literal, Optional, Union
-import urllib
+
+from google.protobuf import struct_pb2
+
+from proto.marshal.collections import maps
+from proto.marshal.collections import repeated
+
 
 # pylint: disable=g-import-not-at-top
 try:
@@ -35,6 +41,56 @@ try:
     from PIL import Image as PIL_Image
 except ImportError:
     PIL_Image = None
+
+
+def to_value(value) -> struct_pb2.Value:
+    """Return a protobuf Value object representing this value."""
+    if isinstance(value, struct_pb2.Value):
+        return value
+    if value is None:
+        return struct_pb2.Value(null_value=0)
+    if isinstance(value, bool):
+        return struct_pb2.Value(bool_value=value)
+    if isinstance(value, (int, float)):
+        return struct_pb2.Value(number_value=float(value))
+    if isinstance(value, str):
+        return struct_pb2.Value(string_value=value)
+    if isinstance(value, collections.abc.Sequence):
+        return struct_pb2.Value(list_value=to_list_value(value))
+    if isinstance(value, collections.abc.Mapping):
+        return struct_pb2.Value(struct_value=to_mapping_value(value))
+    raise ValueError("Unable to coerce value: %r" % value)
+
+def to_list_value(value) -> struct_pb2.ListValue:
+    # We got a proto, or else something we sent originally.
+    # Preserve the instance we have.
+    if isinstance(value, struct_pb2.ListValue):
+        return value
+    if isinstance(value, repeated.RepeatedComposite):
+        return struct_pb2.ListValue(values=[v for v in value.pb])
+
+    # We got a list (or something list-like); convert it.
+    return struct_pb2.ListValue(
+        values=[to_value(v) for v in value]
+    )
+
+def to_mapping_value(value) -> struct_pb2.Struct:
+    # We got a proto, or else something we sent originally.
+    # Preserve the instance we have.
+    if isinstance(value, struct_pb2.Struct):
+        return value
+    if isinstance(value, maps.MapComposite):
+        return struct_pb2.Struct(
+            fields={k: v for k, v in value.pb.items()},
+        )
+
+    # We got a dict (or something dict-like); convert it.
+    return struct_pb2.Struct(
+        fields={
+            k: to_value(v) for k, v in value.items()
+        }
+    )
+
 
 
 _SUPPORTED_UPSCALING_SIZES = [2048, 4096]
@@ -357,7 +413,7 @@ class ImageGenerationModel:
             shared_generation_parameters["person_generation"] = person_generation
 
         response = self._endpoint.predict(
-            instances=[instance],
+            instances=[to_value(instance)],
             parameters=parameters,
         )
 
@@ -666,7 +722,7 @@ class ImageGenerationModel:
             ] = output_compression_quality
 
         response = self._endpoint.predict(
-            instances=[instance],
+            instances=[to_value(instance)],
             parameters=parameters,
         )
 
