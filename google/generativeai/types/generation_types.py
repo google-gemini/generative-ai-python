@@ -144,27 +144,41 @@ class GenerationConfig:
             Note: The default value varies by model, see the
             `Model.top_k` attribute of the `Model` returned the
             `genai.get_model` function.
-
+        seed:
+            Optional.  Seed used in decoding. If not set, the request uses a randomly generated seed.
         response_mime_type:
             Optional. Output response mimetype of the generated candidate text.
 
             Supported mimetype:
                 `text/plain`: (default) Text output.
+                `text/x-enum`: for use with a string-enum in `response_schema`
                 `application/json`: JSON response in the candidates.
 
         response_schema:
             Optional. Specifies the format of the JSON requested if response_mime_type is
             `application/json`.
+        presence_penalty:
+            Optional.
+        frequency_penalty:
+            Optional.
+        response_logprobs:
+            Optional. If true, export the `logprobs` results in response.
+        logprobs:
+            Optional. Number of candidates of log probabilities to return at each step of decoding.
     """
-
     candidate_count: int | None = None
     stop_sequences: Iterable[str] | None = None
     max_output_tokens: int | None = None
     temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
+    seed: int | None = None
     response_mime_type: str | None = None
     response_schema: protos.Schema | Mapping[str, Any] | type | None = None
+    presence_penalty:float | None = None
+    frequency_penalty: float | None = None
+    response_logprobs: bool|None = None
+    logprobs: int| None = None
 
 
 GenerationConfigType = Union[protos.GenerationConfig, GenerationConfigDict, GenerationConfig]
