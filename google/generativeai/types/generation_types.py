@@ -166,6 +166,7 @@ class GenerationConfig:
         logprobs:
             Optional. Number of candidates of log probabilities to return at each step of decoding.
     """
+
     candidate_count: int | None = None
     stop_sequences: Iterable[str] | None = None
     max_output_tokens: int | None = None
@@ -175,10 +176,10 @@ class GenerationConfig:
     seed: int | None = None
     response_mime_type: str | None = None
     response_schema: protos.Schema | Mapping[str, Any] | type | None = None
-    presence_penalty:float | None = None
+    presence_penalty: float | None = None
     frequency_penalty: float | None = None
-    response_logprobs: bool|None = None
-    logprobs: int| None = None
+    response_logprobs: bool | None = None
+    logprobs: int | None = None
 
 
 GenerationConfigType = Union[protos.GenerationConfig, GenerationConfigDict, GenerationConfig]
