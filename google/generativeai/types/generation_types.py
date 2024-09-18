@@ -555,7 +555,8 @@ class BaseGenerateContentResponse:
         _result = _result.replace("\n", "\n                    ")
 
         if self._error:
-            _error = f",\nerror=<{self._error.__class__.__name__}> {self._error}"
+
+            _error = f",\nerror={repr(self._error)}"
         else:
             _error = ""
 
