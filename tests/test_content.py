@@ -434,23 +434,34 @@ class UnitTests(parameterized.TestCase):
             self.assertIsInstance(t.code_execution, protos.CodeExecution)
 
     @parameterized.named_parameters(
-        ["string", "unspecified"],
+        ["string", "google_search_retrieval"],
         [
-            "dictionary",
+            "dictionary_with_dynamic_retrieval_config",
+            {
+                "google_search_retrieval": {
+                    "dynamic_retrieval_config": {"mode": "unspecified", "dynamic_threshold": 0.5}
+                }
+            },
+        ],
+        [
+            "dictionary_without_dynamic_retrieval_config",
             {"google_search_retrieval": {"mode": "unspecified", "dynamic_threshold": 0.5}},
         ],
-        ["tuple", ("unspecified", 0.5)],
         [
             "proto_object",
             protos.GoogleSearchRetrieval(
-                protos.DynamicRetrievalConfig(mode="MODE_UNSPECIFIED", dynamic_threshold=0.5)
+                dynamic_retrieval_config=protos.DynamicRetrievalConfig(
+                    mode="MODE_UNSPECIFIED", dynamic_threshold=0.5
+                )
             ),
         ],
         [
             "proto_passed_in",
             protos.Tool(
                 google_search_retrieval=protos.GoogleSearchRetrieval(
-                    protos.DynamicRetrievalConfig(mode="MODE_UNSPECIFIED", dynamic_threshold=0.5)
+                    dynamic_retrieval_config=protos.DynamicRetrievalConfig(
+                        mode="MODE_UNSPECIFIED", dynamic_threshold=0.5
+                    )
                 )
             ),
         ],
@@ -458,7 +469,9 @@ class UnitTests(parameterized.TestCase):
             "proto_object_list",
             [
                 protos.GoogleSearchRetrieval(
-                    protos.DynamicRetrievalConfig(mode="MODE_UNSPECIFIED", dynamic_threshold=0.5)
+                    dynamic_retrieval_config=protos.DynamicRetrievalConfig(
+                        mode="MODE_UNSPECIFIED", dynamic_threshold=0.5
+                    )
                 )
             ],
         ],
@@ -467,7 +480,7 @@ class UnitTests(parameterized.TestCase):
             [
                 protos.Tool(
                     google_search_retrieval=protos.GoogleSearchRetrieval(
-                        protos.DynamicRetrievalConfig(
+                        dynamic_retrieval_config=protos.DynamicRetrievalConfig(
                             mode="MODE_UNSPECIFIED", dynamic_threshold=0.5
                         )
                     )
