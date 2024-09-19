@@ -436,7 +436,7 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["string", "google_search_retrieval"],
         ["empty_dictionary", {"google_search_retrieval": {}}],
-        ["empty_dictionary_with_dynamic_retrieval_config", {"dynamic_retrieval_config": {}}],
+        ["empty_dictionary_with_dynamic_retrieval_config", {"google_search_retrieval": {"dynamic_retrieval_config": {}}}],
         [
             "dictionary_with_mode_integer",
             {"google_search_retrieval": {"dynamic_retrieval_config": {"mode": 0}}},
