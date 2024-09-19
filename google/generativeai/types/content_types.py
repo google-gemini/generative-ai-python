@@ -670,7 +670,9 @@ def _encode_fd(fd: FunctionDeclaration | protos.FunctionDeclaration) -> protos.F
 
     return fd.to_proto()
 
+
 GoogleSearchRetrievalType = Union[protos.GoogleSearchRetrieval, dict[str, float]]
+
 
 def _make_google_search_retrieval(gsr: GoogleSearchRetrievalType):
     if isinstance(gsr, protos.GoogleSearchRetrieval):
@@ -682,13 +684,25 @@ def _make_google_search_retrieval(gsr: GoogleSearchRetrievalType):
         if "mode" in gsr["dynamic_retrieval_config"]:
             print(to_mode(gsr["dynamic_retrieval_config"]["mode"]))
             # Create proto object from dictionary
-            gsr = {"google_search_retrieval": {"dynamic_retrieval_config": {"mode": to_mode(gsr["dynamic_retrieval_config"]["mode"]),
-                                                                        "dynamic_threshold": gsr["dynamic_retrieval_config"]["dynamic_threshold"]}}}
+            gsr = {
+                "google_search_retrieval": {
+                    "dynamic_retrieval_config": {
+                        "mode": to_mode(gsr["dynamic_retrieval_config"]["mode"]),
+                        "dynamic_threshold": gsr["dynamic_retrieval_config"]["dynamic_threshold"],
+                    }
+                }
+            }
             print(gsr)
         elif "mode" in gsr.keys():
             # Create proto object from dictionary
-            gsr = {"google_search_retrieval": {"dynamic_retrieval_config": {"mode": to_mode(gsr["mode"]),
-                                                                        "dynamic_threshold": gsr["dynamic_threshold"]}}}
+            gsr = {
+                "google_search_retrieval": {
+                    "dynamic_retrieval_config": {
+                        "mode": to_mode(gsr["mode"]),
+                        "dynamic_threshold": gsr["dynamic_threshold"],
+                    }
+                }
+            }
         return gsr
     else:
         raise TypeError(
@@ -724,10 +738,14 @@ class Tool:
             # Consistent fields
             self._function_declarations = []
             self._index = {}
-        
+
         if google_search_retrieval:
             if isinstance(google_search_retrieval, str):
-                google_search_retrieval = {"google_search_retrieval" : {"dynamic_retrieval_config": {"mode": to_mode(google_search_retrieval)}}} 
+                google_search_retrieval = {
+                    "google_search_retrieval": {
+                        "dynamic_retrieval_config": {"mode": to_mode(google_search_retrieval)}
+                    }
+                }
             else:
                 _make_google_search_retrieval(google_search_retrieval)
 
@@ -792,7 +810,7 @@ def _make_tool(tool: ToolType) -> Tool:
             google_search_retrieval = tool.google_search_retrieval
         else:
             google_search_retrieval = None
-        
+
         return Tool(
             function_declarations=tool.function_declarations,
             google_search_retrieval=google_search_retrieval,

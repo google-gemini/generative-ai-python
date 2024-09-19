@@ -435,6 +435,16 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["string", "google_search_retrieval"],
+        ["empty_dictionary", {"google_search_retrieval": {}}],
+        ["empty_dictionary_with_dynamic_retrieval_config", {"dynamic_retrieval_config": {}}],
+        [
+            "dictionary_with_mode_integer",
+            {"google_search_retrieval": {"dynamic_retrieval_config": {"mode": 0}}},
+        ],
+        [
+            "dictionary_with_mode_string",
+            {"google_search_retrieval": {"dynamic_retrieval_config": {"mode": "DYNAMIC"}}},
+        ],
         [
             "dictionary_with_dynamic_retrieval_config",
             {
@@ -493,7 +503,7 @@ class UnitTests(parameterized.TestCase):
             t = content_types._make_tools(tools)
             self.assertIsInstance(t[0].google_search_retrieval, protos.GoogleSearchRetrieval)
         else:
-            t = content_types._make_tool(tools)  # Pass code execution into tools
+            t = content_types._make_tool(tools)  # Pass google_search_retrieval into tools
             self.assertIsInstance(t.google_search_retrieval, protos.GoogleSearchRetrieval)
 
     def test_two_fun_is_one_tool(self):
