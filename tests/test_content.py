@@ -426,17 +426,16 @@ class UnitTests(parameterized.TestCase):
         ["empty_dictionary_list", [{"code_execution": {}}]],
     )
     def test_code_execution(self, tools):
-        if isinstance(tools, Iterable):
-            t = content_types._make_tools(tools)
-            self.assertIsInstance(t[0].code_execution, protos.CodeExecution)
-        else:
-            t = content_types._make_tool(tools)  # Pass code execution into tools
-            self.assertIsInstance(t.code_execution, protos.CodeExecution)
+        t = content_types._make_tools(tools)
+        self.assertIsInstance(t[0].code_execution, protos.CodeExecution)
 
     @parameterized.named_parameters(
         ["string", "google_search_retrieval"],
         ["empty_dictionary", {"google_search_retrieval": {}}],
-        ["empty_dictionary_with_dynamic_retrieval_config", {"google_search_retrieval": {"dynamic_retrieval_config": {}}}],
+        [
+            "empty_dictionary_with_dynamic_retrieval_config",
+            {"google_search_retrieval": {"dynamic_retrieval_config": {}}},
+        ],
         [
             "dictionary_with_mode_integer",
             {"google_search_retrieval": {"dynamic_retrieval_config": {"mode": 0}}},
@@ -452,10 +451,6 @@ class UnitTests(parameterized.TestCase):
                     "dynamic_retrieval_config": {"mode": "unspecified", "dynamic_threshold": 0.5}
                 }
             },
-        ],
-        [
-            "dictionary_without_dynamic_retrieval_config",
-            {"google_search_retrieval": {"mode": "unspecified", "dynamic_threshold": 0.5}},
         ],
         [
             "proto_object",
@@ -499,12 +494,10 @@ class UnitTests(parameterized.TestCase):
         ],
     )
     def test_search_grounding(self, tools):
-        if isinstance(tools, Iterable):
-            t = content_types._make_tools(tools)
-            self.assertIsInstance(t[0].google_search_retrieval, protos.GoogleSearchRetrieval)
-        else:
-            t = content_types._make_tool(tools)  # Pass google_search_retrieval into tools
-            self.assertIsInstance(t.google_search_retrieval, protos.GoogleSearchRetrieval)
+        if self._testMethodName == "test_search_grounding_empty_dictionary":
+            pass
+        t = content_types._make_tools(tools)
+        self.assertIsInstance(t[0].google_search_retrieval, protos.GoogleSearchRetrieval)
 
     def test_two_fun_is_one_tool(self):
         def a():

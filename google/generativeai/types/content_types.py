@@ -677,39 +677,22 @@ GoogleSearchRetrievalType = Union[protos.GoogleSearchRetrieval, dict[str, float]
 def _make_google_search_retrieval(gsr: GoogleSearchRetrievalType):
     if isinstance(gsr, protos.GoogleSearchRetrieval):
         return gsr
-    elif isinstance(gsr, Iterable) and not isinstance(gsr, Mapping):
-        # Handle list of protos.Tool(...) and list of protos.GoogleSearchRetrieval
-        return gsr
     elif isinstance(gsr, Mapping):
-        if "mode" in gsr["dynamic_retrieval_config"]:
-            print(to_mode(gsr["dynamic_retrieval_config"]["mode"]))
-            # Create proto object from dictionary
-            gsr = {
-                "google_search_retrieval": {
-                    "dynamic_retrieval_config": {
-                        "mode": to_mode(gsr["dynamic_retrieval_config"]["mode"]),
-                        "dynamic_threshold": gsr["dynamic_retrieval_config"]["dynamic_threshold"],
-                    }
-                }
-            }
-            print(gsr)
-        elif "mode" in gsr.keys():
-            # Create proto object from dictionary
-            gsr = {
-                "google_search_retrieval": {
-                    "dynamic_retrieval_config": {
-                        "mode": to_mode(gsr["mode"]),
-                        "dynamic_threshold": gsr["dynamic_threshold"],
-                    }
-                }
-            }
-        return gsr
+        drc = gsr.get("dynamic_retrieval_config", None)
+        if drc is not None:
+            mode = drc.get("mode", None)
+            if mode is not None:
+                mode = to_mode(mode)
+                gsr = gsr.copy()
+                gsr["dynamic_retrieval_config"]["mode"] = mode
+        return protos.GoogleSearchRetrieval(gsr)
     else:
         raise TypeError(
             "Invalid input type. Expected an instance of `genai.GoogleSearchRetrieval`.\n"
             f"However, received an object of type: {type(gsr)}.\n"
             f"Object Value: {gsr}"
         )
+    
 
 
 class Tool:
@@ -741,13 +724,13 @@ class Tool:
 
         if google_search_retrieval:
             if isinstance(google_search_retrieval, str):
-                google_search_retrieval = {
+                self._google_search_retrieval = {
                     "google_search_retrieval": {
                         "dynamic_retrieval_config": {"mode": to_mode(google_search_retrieval)}
                     }
                 }
             else:
-                _make_google_search_retrieval(google_search_retrieval)
+               self._google_search_retrieval = _make_google_search_retrieval(google_search_retrieval)
 
         self._proto = protos.Tool(
             function_declarations=[_encode_fd(fd) for fd in self._function_declarations],
@@ -763,7 +746,7 @@ class Tool:
 
     @property
     def google_search_retrieval(self) -> protos.GoogleSearchRetrieval:
-        return self._proto.google_search_retrieval
+        return self._google_search_retrieval
 
     @property
     def code_execution(self) -> protos.CodeExecution:
