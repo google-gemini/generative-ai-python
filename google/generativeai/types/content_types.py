@@ -733,8 +733,6 @@ class Tool:
             code_execution=code_execution,
         )
 
-        print(self._proto.google_search_retrieval)
-
     @property
     def function_declarations(self) -> list[FunctionDeclaration | protos.FunctionDeclaration]:
         return self._function_declarations
