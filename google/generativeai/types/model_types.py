@@ -143,7 +143,7 @@ def idecode_time(parent: dict["str", Any], name: str):
 
 def decode_tuned_model(tuned_model: protos.TunedModel | dict["str", Any]) -> TunedModel:
     if isinstance(tuned_model, protos.TunedModel):
-        tuned_model = type(tuned_model).to_dict(tuned_model)  # pytype: disable=attribute-error
+        tuned_model = type(tuned_model).to_dict(tuned_model, including_default_value_fields=False)  # pytype: disable=attribute-error
     tuned_model["state"] = to_tuned_model_state(tuned_model.pop("state", None))
 
     base_model = tuned_model.pop("base_model", None)
