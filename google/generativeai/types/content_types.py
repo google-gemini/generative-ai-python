@@ -703,11 +703,11 @@ class Tool:
         self,
         *,
         function_declarations: Iterable[FunctionDeclarationType] | None = None,
-        google_search_retrieval: Union[protos.GoogleSearchRetrieval, str] | None = None,
+        google_search_retrieval: GoogleSearchRetrievalType | None = None,
         code_execution: protos.CodeExecution | None = None,
     ):
         # The main path doesn't use this but is seems useful.
-        if function_declarations:
+        if function_declarations is not None:
             self._function_declarations = [
                 _make_function_declaration(f) for f in function_declarations
             ]
@@ -722,15 +722,10 @@ class Tool:
             self._function_declarations = []
             self._index = {}
 
-        if google_search_retrieval:
-            if isinstance(google_search_retrieval, str):
-                self._google_search_retrieval = {
-                    "google_search_retrieval": {
-                        "dynamic_retrieval_config": {"mode": to_mode(google_search_retrieval)}
-                    }
-                }
-            else:
-               self._google_search_retrieval = _make_google_search_retrieval(google_search_retrieval)
+        if google_search_retrieval is not None:
+            self._google_search_retrieval = _make_google_search_retrieval(google_search_retrieval)
+        else:
+            self._google_search_retrieval = None
 
         self._proto = protos.Tool(
             function_declarations=[_encode_fd(fd) for fd in self._function_declarations],
