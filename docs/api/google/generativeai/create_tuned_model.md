@@ -74,107 +74,117 @@ palm.generate_text(f"tunedModels/{my_id}", prompt="...")
 
 <tr>
 <td>
-`source_model`<a id="source_model"></a>
+<code>source_model</code><a id="source_model"></a>
 </td>
 <td>
 The name of the model to tune.
 </td>
 </tr><tr>
 <td>
-`training_data`<a id="training_data"></a>
+<code>training_data</code><a id="training_data"></a>
 </td>
 <td>
 The dataset to tune the model on. This must be either:
-* A <a href="../../google/generativeai/protos/Dataset.md"><code>protos.Dataset</code></a>, or
-* An `Iterable` of:
-  *<a href="../../google/generativeai/protos/TuningExample.md"><code>protos.TuningExample</code></a>,
-  * `{'text_input': text_input, 'output': output}` dicts
-  * `(text_input, output)` tuples.
-* A `Mapping` of `Iterable[str]` - use `input_key` and `output_key` to choose which
-  columns to use as the input/output
-* A csv file (will be read with `pd.read_csv` and handles as a `Mapping`
+<ul>
+<li> A <a href="../../google/generativeai/protos/Dataset.md"><code>protos.Dataset</code></a>, or </li>
+<li> An <code>Iterable</code> of:
+ <ul>
+   <li> <a href="../../google/generativeai/protos/TuningExample.md"><code>protos.TuningExample</code></a>,</li>
+   <li> <code>{'text_input': text_input, 'output': output}</code> dicts</li>
+   <li> <code>(text_input, output)</code> tuples.</li> 
+ </ul>
+</li>
+<li> A <code>Mapping</code> of <code>Iterable[str]</code> - use <code>input_key</code> and <code>output_key</code> to choose which
+  columns to use as the input/output</li>
+<li> A csv file (will be read with <code>pd.read_csv</code> and handles as a <code>Mapping</code>
   above). This can be:
-  * A local path as a `str` or `pathlib.Path`.
-  * A url for a csv file.
-  * The url of a Google Sheets file.
-* A JSON file - Its contents will be handled either as an `Iterable` or `Mapping`
+ <ul>
+  <li> A local path as a <code>str</code> or <code>pathlib.Path</code>.</li>
+  <li> A url for a csv file.</li>
+  <li> The url of a Google Sheets file.</li>
+ </ul>
+</li>
+<li> A JSON file - Its contents will be handled either as an <code>Iterable</code> or <code>Mapping</code>
   above. This can be:
-  * A local path as a `str` or `pathlib.Path`.
+ <ul>
+  <li> A local path as a <code>str</code> or <code>pathlib.Path</code>.</li>
+ </ul>
+</li>
 </td>
 </tr><tr>
 <td>
-`id`<a id="id"></a>
+<code>id</code><a id="id"></a>
 </td>
 <td>
 The model identifier, used to refer to the model in the API
-`tunedModels/{id}`. Must be unique.
+<code>tunedModels/{id}</code>. Must be unique.
 </td>
 </tr><tr>
 <td>
-`display_name`<a id="display_name"></a>
+<code>display_name</code><a id="display_name"></a>
 </td>
 <td>
 A human-readable name for display.
 </td>
 </tr><tr>
 <td>
-`description`<a id="description"></a>
+<code>description</code><a id="description"></a>
 </td>
 <td>
 A description of the tuned model.
 </td>
 </tr><tr>
 <td>
-`temperature`<a id="temperature"></a>
+<code>temperature</code><a id="temperature"></a>
 </td>
 <td>
 The default temperature for the tuned model, see <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a> for details.
 </td>
 </tr><tr>
 <td>
-`top_p`<a id="top_p"></a>
+<code>top_p</code><a id="top_p"></a>
 </td>
 <td>
-The default `top_p` for the model, see <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a> for details.
-</td>
-</tr><tr>
-<td>
-`top_k`<a id="top_k"></a>
-</td>
-<td>
-The default `top_k` for the model, see <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a> for details.
+The default <code>top_p</code> for the model, see <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a> for details.
 </td>
 </tr><tr>
 <td>
-`epoch_count`<a id="epoch_count"></a>
+<code>top_k</code><a id="top_k"></a>
+</td>
+<td>
+The default <code>top_k</code> for the model, see <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a> for details.
+</td>
+</tr><tr>
+<td>
+<code>epoch_count</code><a id="epoch_count"></a>
 </td>
 <td>
 The number of tuning epochs to run. An epoch is a pass over the whole dataset.
 </td>
 </tr><tr>
 <td>
-`batch_size`<a id="batch_size"></a>
+<code>batch_size</code><a id="batch_size"></a>
 </td>
 <td>
 The number of examples to use in each training batch.
 </td>
 </tr><tr>
 <td>
-`learning_rate`<a id="learning_rate"></a>
+<code>learning_rate</code><a id="learning_rate"></a>
 </td>
 <td>
 The step size multiplier for the gradient updates.
 </td>
 </tr><tr>
 <td>
-`client`<a id="client"></a>
+<code>client</code><a id="client"></a>
 </td>
 <td>
 Which client to use.
 </td>
 </tr><tr>
 <td>
-`request_options`<a id="request_options"></a>
+<code>request_options</code><a id="request_options"></a>
 </td>
 <td>
 Options for the request.
@@ -190,7 +200,7 @@ Options for the request.
 <tr><th colspan="2"><h2 class="add-link">Returns</h2></th></tr>
 <tr class="alt">
 <td colspan="2">
-A [`google.api_core.operation.Operation`](https://googleapis.dev/python/google-api-core/latest/operation.html)
+A <a href="https://googleapis.dev/python/google-api-core/latest/operation.html"><code>google.api_core.operation.Operation</code></a>
 </td>
 </tr>
 
