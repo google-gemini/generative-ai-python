@@ -692,7 +692,6 @@ def _make_google_search_retrieval(gsr: GoogleSearchRetrievalType):
             f"However, received an object of type: {type(gsr)}.\n"
             f"Object Value: {gsr}"
         )
-    
 
 
 class Tool:

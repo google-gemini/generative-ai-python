@@ -39,6 +39,7 @@ class Person(TypedDict):
 
 class UnitTests(parameterized.TestCase):
     maxDiff = None
+
     @parameterized.named_parameters(
         [
             "protos.GenerationConfig",
@@ -473,7 +474,10 @@ class UnitTests(parameterized.TestCase):
     def test_join_candidates(self):
         candidate_lists = [[protos.Candidate(c) for c in cl] for cl in self.CANDIDATE_LISTS]
         result = generation_types._join_candidate_lists(candidate_lists)
-        self.assertEqual(self.MERGED_CANDIDATES, [type(r).to_dict(r, including_default_value_fields=False) for r in result])
+        self.assertEqual(
+            self.MERGED_CANDIDATES,
+            [type(r).to_dict(r, including_default_value_fields=False) for r in result],
+        )
 
     def test_join_chunks(self):
         chunks = [protos.GenerateContentResponse(candidates=cl) for cl in self.CANDIDATE_LISTS]
@@ -485,7 +489,9 @@ class UnitTests(parameterized.TestCase):
             ],
         )
 
-        chunks[-1].usage_metadata = protos.GenerateContentResponse.UsageMetadata(prompt_token_count=5)
+        chunks[-1].usage_metadata = protos.GenerateContentResponse.UsageMetadata(
+            prompt_token_count=5
+        )
 
         result = generation_types._join_chunks(chunks)
 
@@ -502,15 +508,16 @@ class UnitTests(parameterized.TestCase):
                         }
                     ],
                 },
-                "usage_metadata": {
-                         "prompt_token_count": 5
-                }
-
+                "usage_metadata": {"prompt_token_count": 5},
             },
         )
 
-        expected = json.dumps(type(expected).to_dict(expected, including_default_value_fields=False), indent=4)
-        result = json.dumps(type(result).to_dict(result, including_default_value_fields=False), indent=4)
+        expected = json.dumps(
+            type(expected).to_dict(expected, including_default_value_fields=False), indent=4
+        )
+        result = json.dumps(
+            type(result).to_dict(result, including_default_value_fields=False), indent=4
+        )
 
         self.assertEqual(expected, result)
 
