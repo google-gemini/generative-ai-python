@@ -935,8 +935,7 @@ class CUJTests(parameterized.TestCase):
                       "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {},
-                  "usage_metadata": {}
+                  "prompt_feedback": {}
                 }),
             )"""
         )
@@ -964,8 +963,7 @@ class CUJTests(parameterized.TestCase):
                       "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {},
-                  "usage_metadata": {}
+                  "prompt_feedback": {}
                 }),
             )"""
         )
@@ -1056,8 +1054,7 @@ class CUJTests(parameterized.TestCase):
                       "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {},
-                  "usage_metadata": {}
+                  "prompt_feedback": {}
                 }),
             ),
             error=ValueError()"""
