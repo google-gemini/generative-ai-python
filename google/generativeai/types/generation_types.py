@@ -306,6 +306,7 @@ def _join_code_execution_result(result_1, result_2):
 
 
 def _join_candidates(candidates: Iterable[protos.Candidate]):
+    """Joins stream chunks of a single candidate."""
     candidates = tuple(candidates)
 
     index = candidates[0].index  # These should all be the same.
@@ -321,6 +322,7 @@ def _join_candidates(candidates: Iterable[protos.Candidate]):
 
 
 def _join_candidate_lists(candidate_lists: Iterable[list[protos.Candidate]]):
+    """Joins stream chunks where each chunk is a list of candidate chunks."""
     # Assuming that is a candidate ends, it is no longer returned in the list of
     # candidates and that's why candidates have an index
     candidates = collections.defaultdict(list)
@@ -344,10 +346,16 @@ def _join_prompt_feedbacks(
 
 def _join_chunks(chunks: Iterable[protos.GenerateContentResponse]):
     chunks = tuple(chunks)
+    if 'usage_metadata' in chunks[-1]:
+        usage_metadata = chunks[-1].usage_metadata
+    else:
+        usage_metadata=None
+
+
     return protos.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
-        usage_metadata=chunks[-1].usage_metadata,
+        usage_metadata=usage_metadata,
     )
 
 
