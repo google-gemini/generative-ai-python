@@ -361,11 +361,10 @@ def _join_prompt_feedbacks(
 
 def _join_chunks(chunks: Iterable[protos.GenerateContentResponse]):
     chunks = tuple(chunks)
-    if 'usage_metadata' in chunks[-1]:
+    if "usage_metadata" in chunks[-1]:
         usage_metadata = chunks[-1].usage_metadata
     else:
-        usage_metadata=None
-
+        usage_metadata = None
 
     return protos.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
