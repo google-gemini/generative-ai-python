@@ -144,17 +144,27 @@ class GenerationConfig:
             Note: The default value varies by model, see the
             `Model.top_k` attribute of the `Model` returned the
             `genai.get_model` function.
-
+        seed:
+            Optional.  Seed used in decoding. If not set, the request uses a randomly generated seed.
         response_mime_type:
             Optional. Output response mimetype of the generated candidate text.
 
             Supported mimetype:
                 `text/plain`: (default) Text output.
+                `text/x-enum`: for use with a string-enum in `response_schema`
                 `application/json`: JSON response in the candidates.
 
         response_schema:
             Optional. Specifies the format of the JSON requested if response_mime_type is
             `application/json`.
+        presence_penalty:
+            Optional.
+        frequency_penalty:
+            Optional.
+        response_logprobs:
+            Optional. If true, export the `logprobs` results in response.
+        logprobs:
+            Optional. Number of candidates of log probabilities to return at each step of decoding.
     """
 
     candidate_count: int | None = None
@@ -163,8 +173,13 @@ class GenerationConfig:
     temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
+    seed: int | None = None
     response_mime_type: str | None = None
     response_schema: protos.Schema | Mapping[str, Any] | type | None = None
+    presence_penalty: float | None = None
+    frequency_penalty: float | None = None
+    response_logprobs: bool | None = None
+    logprobs: int | None = None
 
 
 GenerationConfigType = Union[protos.GenerationConfig, GenerationConfigDict, GenerationConfig]
@@ -306,6 +321,7 @@ def _join_code_execution_result(result_1, result_2):
 
 
 def _join_candidates(candidates: Iterable[protos.Candidate]):
+    """Joins stream chunks of a single candidate."""
     candidates = tuple(candidates)
 
     index = candidates[0].index  # These should all be the same.
@@ -321,6 +337,7 @@ def _join_candidates(candidates: Iterable[protos.Candidate]):
 
 
 def _join_candidate_lists(candidate_lists: Iterable[list[protos.Candidate]]):
+    """Joins stream chunks where each chunk is a list of candidate chunks."""
     # Assuming that is a candidate ends, it is no longer returned in the list of
     # candidates and that's why candidates have an index
     candidates = collections.defaultdict(list)
@@ -344,10 +361,15 @@ def _join_prompt_feedbacks(
 
 def _join_chunks(chunks: Iterable[protos.GenerateContentResponse]):
     chunks = tuple(chunks)
+    if "usage_metadata" in chunks[-1]:
+        usage_metadata = chunks[-1].usage_metadata
+    else:
+        usage_metadata = None
+
     return protos.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
-        usage_metadata=chunks[-1].usage_metadata,
+        usage_metadata=usage_metadata,
     )
 
 
@@ -541,7 +563,8 @@ class BaseGenerateContentResponse:
         _result = _result.replace("\n", "\n                    ")
 
         if self._error:
-            _error = f",\nerror=<{self._error.__class__.__name__}> {self._error}"
+
+            _error = f",\nerror={repr(self._error)}"
         else:
             _error = ""
 
