@@ -82,8 +82,6 @@ class HasEnum:
     choice: Choices
 
 
-
-
 class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
