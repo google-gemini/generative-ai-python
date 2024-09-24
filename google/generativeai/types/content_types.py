@@ -19,6 +19,7 @@ from collections.abc import Iterable, Mapping, Sequence
 import io
 import inspect
 import mimetypes
+import pathlib
 import typing
 from typing import Any, Callable, Union
 from typing_extensions import TypedDict
@@ -30,7 +31,7 @@ from google.generativeai import protos
 
 if typing.TYPE_CHECKING:
     import PIL.Image
-    import PIL.PngImagePlugin
+    import PIL.ImageFile
     import IPython.display
 
     IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
@@ -38,7 +39,7 @@ else:
     IMAGE_TYPES = ()
     try:
         import PIL.Image
-        import PIL.PngImagePlugin
+        import PIL.ImageFile
 
         IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
     except ImportError:
@@ -72,46 +73,39 @@ __all__ = [
 ]
 
 
-def pil_to_blob(img):
-    # When you load an image with PIL you get a subclass of PIL.Image
-    # The subclass knows what file type it was loaded from it has a `.format` class attribute
-    # and the `get_format_mimetype` method. Convert these back to the same file type.
-    #
-    # The base image class doesn't know its file type, it just knows its mode.
-    # RGBA converts to PNG easily, P[allet] converts to GIF, RGB to GIF.
-    # But for anything else I'm not going to bother mapping it out (for now) let's just convert to RGB and send it.
-    #
-    # References:
-    #   - file formats: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
-    #   - image modes: https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
+def _pil_to_blob(image: PIL.Image.Image) -> protos.Blob:
+    # If the image is a local file, return a file-based blob without any modification.
+    # Otherwise, return a lossless WebP blob (same quality with optimized size).
+    def file_blob(image: PIL.Image.Image) -> protos.Blob | None:
+        if not isinstance(image, PIL.ImageFile.ImageFile) or image.filename is None:
+            return None
+        filename = str(image.filename)
+        if not pathlib.Path(filename).is_file():
+            return None
 
-    bytesio = io.BytesIO()
+        mime_type = image.get_format_mimetype()
+        image_bytes = pathlib.Path(filename).read_bytes()
 
-    get_mime = getattr(img, "get_format_mimetype", None)
-    if get_mime is not None:
-        # If the image is created from a file, convert back to the same file type.
-        img.save(bytesio, format=img.format)
-        mime_type = img.get_format_mimetype()
-    elif img.mode == "RGBA":
-        img.save(bytesio, format="PNG")
-        mime_type = "image/png"
-    elif img.mode == "P":
-        img.save(bytesio, format="GIF")
-        mime_type = "image/gif"
-    else:
-        if img.mode != "RGB":
-            img = img.convert("RGB")
-        img.save(bytesio, format="JPEG")
-        mime_type = "image/jpeg"
-    bytesio.seek(0)
-    data = bytesio.read()
-    return protos.Blob(mime_type=mime_type, data=data)
+        return protos.Blob(mime_type=mime_type, data=image_bytes)
+
+    def webp_blob(image: PIL.Image.Image) -> protos.Blob:
+        # Reference: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#webp
+        image_io = io.BytesIO()
+        image.save(image_io, format="webp", lossless=True)
+        image_io.seek(0)
+
+        mime_type = "image/webp"
+        image_bytes = image_io.read()
+
+        return protos.Blob(mime_type=mime_type, data=image_bytes)
+
+    return file_blob(image) or webp_blob(image)
 
 
 def image_to_blob(image) -> protos.Blob:
     if PIL is not None:
         if isinstance(image, PIL.Image.Image):
-            return pil_to_blob(image)
+            return _pil_to_blob(image)
 
     if IPython is not None:
         if isinstance(image, IPython.display.Image):

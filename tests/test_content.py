@@ -83,9 +83,20 @@ class HasEnum:
 
 
 class UnitTests(parameterized.TestCase):
+
+    @parameterized.named_parameters(
+        ["RGBA", PIL.Image.fromarray(np.zeros([6, 6, 4], dtype=np.uint8))],
+        ["RGB", PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8))],
+        ["P", PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8)).convert("P")],
+    )
+    def test_numpy_to_blob(self, image):
+        blob = content_types.image_to_blob(image)
+        self.assertIsInstance(blob, protos.Blob)
+        self.assertEqual(blob.mime_type, "image/webp")
+        self.assertStartsWith(blob.data, b"RIFF \x00\x00\x00WEBPVP8L")
+
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_PNG_PATH)],
-        ["RGBA", PIL.Image.fromarray(np.zeros([6, 6, 4], dtype=np.uint8))],
         ["IPython", IPython.display.Image(filename=TEST_PNG_PATH)],
     )
     def test_png_to_blob(self, image):
@@ -96,7 +107,6 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_JPG_PATH)],
-        ["RGB", PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8))],
         ["IPython", IPython.display.Image(filename=TEST_JPG_PATH)],
     )
     def test_jpg_to_blob(self, image):
@@ -107,7 +117,6 @@ class UnitTests(parameterized.TestCase):
 
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_GIF_PATH)],
-        ["P", PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8)).convert("P")],
         ["IPython", IPython.display.Image(filename=TEST_GIF_PATH)],
     )
     def test_gif_to_blob(self, image):
