@@ -72,6 +72,27 @@ __all__ = [
     "FunctionLibraryType",
 ]
 
+Mode = protos.DynamicRetrievalConfig.Mode
+
+ModeOptions = Union[int, str, Mode]
+
+_MODE: dict[ModeOptions, Mode] = {
+    Mode.MODE_UNSPECIFIED: Mode.MODE_UNSPECIFIED,
+    0: Mode.MODE_UNSPECIFIED,
+    "mode_unspecified": Mode.MODE_UNSPECIFIED,
+    "unspecified": Mode.MODE_UNSPECIFIED,
+    Mode.MODE_DYNAMIC: Mode.MODE_DYNAMIC,
+    1: Mode.MODE_DYNAMIC,
+    "mode_dynamic": Mode.MODE_DYNAMIC,
+    "dynamic": Mode.MODE_DYNAMIC,
+}
+
+
+def to_mode(x: ModeOptions) -> Mode:
+    if isinstance(x, str):
+        x = x.lower()
+    return _MODE[x]
+
 
 def _pil_to_blob(image: PIL.Image.Image) -> protos.Blob:
     # If the image is a local file, return a file-based blob without any modification.
@@ -644,16 +665,54 @@ def _encode_fd(fd: FunctionDeclaration | protos.FunctionDeclaration) -> protos.F
     return fd.to_proto()
 
 
+class DynamicRetrievalConfigDict(TypedDict):
+    mode: protos.DynamicRetrievalConfig.mode
+    dynamic_threshold: float
+
+
+DynamicRetrievalConfig = Union[protos.DynamicRetrievalConfig, DynamicRetrievalConfigDict]
+
+
+class GoogleSearchRetrievalDict(TypedDict):
+    dynamic_retrieval_config: DynamicRetrievalConfig
+
+
+GoogleSearchRetrievalType = Union[protos.GoogleSearchRetrieval, GoogleSearchRetrievalDict]
+
+
+def _make_google_search_retrieval(gsr: GoogleSearchRetrievalType):
+    if isinstance(gsr, protos.GoogleSearchRetrieval):
+        return gsr
+    elif isinstance(gsr, Mapping):
+        drc = gsr.get("dynamic_retrieval_config", None)
+        if drc is not None and isinstance(drc, Mapping):
+            mode = drc.get("mode", None)
+            if mode is not None:
+                mode = to_mode(mode)
+                gsr = gsr.copy()
+                gsr["dynamic_retrieval_config"]["mode"] = mode
+        return protos.GoogleSearchRetrieval(gsr)
+    else:
+        raise TypeError(
+            "Invalid input type. Expected an instance of `genai.GoogleSearchRetrieval`.\n"
+            f"However, received an object of type: {type(gsr)}.\n"
+            f"Object Value: {gsr}"
+        )
+
+
 class Tool:
-    """A wrapper for `protos.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
+    """A wrapper for `protos.Tool`, Contains a collection of related `FunctionDeclaration` objects,
+    protos.CodeExecution object, and protos.GoogleSearchRetrieval object."""
 
     def __init__(
         self,
+        *,
         function_declarations: Iterable[FunctionDeclarationType] | None = None,
+        google_search_retrieval: GoogleSearchRetrievalType | None = None,
         code_execution: protos.CodeExecution | None = None,
     ):
         # The main path doesn't use this but is seems useful.
-        if function_declarations:
+        if function_declarations is not None:
             self._function_declarations = [
                 _make_function_declaration(f) for f in function_declarations
             ]
@@ -668,14 +727,24 @@ class Tool:
             self._function_declarations = []
             self._index = {}
 
+        if google_search_retrieval is not None:
+            self._google_search_retrieval = _make_google_search_retrieval(google_search_retrieval)
+        else:
+            self._google_search_retrieval = None
+
         self._proto = protos.Tool(
             function_declarations=[_encode_fd(fd) for fd in self._function_declarations],
+            google_search_retrieval=google_search_retrieval,
             code_execution=code_execution,
         )
 
     @property
     def function_declarations(self) -> list[FunctionDeclaration | protos.FunctionDeclaration]:
         return self._function_declarations
+
+    @property
+    def google_search_retrieval(self) -> protos.GoogleSearchRetrieval:
+        return self._google_search_retrieval
 
     @property
     def code_execution(self) -> protos.CodeExecution:
@@ -705,7 +774,7 @@ class ToolDict(TypedDict):
 
 
 ToolType = Union[
-    Tool, protos.Tool, ToolDict, Iterable[FunctionDeclarationType], FunctionDeclarationType
+    str, Tool, protos.Tool, ToolDict, Iterable[FunctionDeclarationType], FunctionDeclarationType
 ]
 
 
@@ -717,9 +786,23 @@ def _make_tool(tool: ToolType) -> Tool:
             code_execution = tool.code_execution
         else:
             code_execution = None
-        return Tool(function_declarations=tool.function_declarations, code_execution=code_execution)
+
+        if "google_search_retrieval" in tool:
+            google_search_retrieval = tool.google_search_retrieval
+        else:
+            google_search_retrieval = None
+
+        return Tool(
+            function_declarations=tool.function_declarations,
+            google_search_retrieval=google_search_retrieval,
+            code_execution=code_execution,
+        )
     elif isinstance(tool, dict):
-        if "function_declarations" in tool or "code_execution" in tool:
+        if (
+            "function_declarations" in tool
+            or "google_search_retrieval" in tool
+            or "code_execution" in tool
+        ):
             return Tool(**tool)
         else:
             fd = tool
@@ -727,10 +810,17 @@ def _make_tool(tool: ToolType) -> Tool:
     elif isinstance(tool, str):
         if tool.lower() == "code_execution":
             return Tool(code_execution=protos.CodeExecution())
+        # Check to see if one of the mode enums matches
+        elif tool.lower() == "google_search_retrieval":
+            return Tool(google_search_retrieval=protos.GoogleSearchRetrieval())
         else:
-            raise ValueError("The only string that can be passed as a tool is 'code_execution'.")
+            raise ValueError(
+                "The only string that can be passed as a tool is 'code_execution', or one of the specified values for the `mode` parameter for google_search_retrieval."
+            )
     elif isinstance(tool, protos.CodeExecution):
         return Tool(code_execution=tool)
+    elif isinstance(tool, protos.GoogleSearchRetrieval):
+        return Tool(google_search_retrieval=tool)
     elif isinstance(tool, Iterable):
         return Tool(function_declarations=tool)
     else:
@@ -786,7 +876,7 @@ ToolsType = Union[Iterable[ToolType], ToolType]
 
 def _make_tools(tools: ToolsType) -> list[Tool]:
     if isinstance(tools, str):
-        if tools.lower() == "code_execution":
+        if tools.lower() == "code_execution" or tools.lower() == "google_search_retrieval":
             return [_make_tool(tools)]
         else:
             raise ValueError("The only string that can be passed as a tool is 'code_execution'.")
