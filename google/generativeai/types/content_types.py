@@ -675,10 +675,13 @@ class DynamicRetrievalConfigDict(TypedDict):
     mode: protos.DynamicRetrievalConfig.mode
     dynamic_threshold: float
 
+
 DynamicRetrievalConfig = Union[protos.DynamicRetrievalConfig, DynamicRetrievalConfigDict]
+
 
 class GoogleSearchRetrievalDict(TypedDict):
     dynamic_retrieval_config: DynamicRetrievalConfig
+
 
 GoogleSearchRetrievalType = Union[protos.GoogleSearchRetrieval, GoogleSearchRetrievalDict]
 
