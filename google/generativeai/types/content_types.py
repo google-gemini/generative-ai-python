@@ -671,7 +671,16 @@ def _encode_fd(fd: FunctionDeclaration | protos.FunctionDeclaration) -> protos.F
     return fd.to_proto()
 
 
-GoogleSearchRetrievalType = Union[protos.GoogleSearchRetrieval, dict[str, float]]
+class DynamicRetrievalConfigDict(TypedDict):
+    mode: protos.DynamicRetrievalConfig.mode
+    dynamic_threshold: float
+
+DynamicRetrievalConfig = Union[protos.DynamicRetrievalConfig, DynamicRetrievalConfigDict]
+
+class GoogleSearchRetrievalDict(TypedDict):
+    dynamic_retrieval_config: DynamicRetrievalConfig
+
+GoogleSearchRetrievalType = Union[protos.GoogleSearchRetrieval, GoogleSearchRetrievalDict]
 
 
 def _make_google_search_retrieval(gsr: GoogleSearchRetrievalType):
@@ -679,7 +688,7 @@ def _make_google_search_retrieval(gsr: GoogleSearchRetrievalType):
         return gsr
     elif isinstance(gsr, Mapping):
         drc = gsr.get("dynamic_retrieval_config", None)
-        if drc is not None:
+        if drc is not None and isinstance(drc, Mapping):
             mode = drc.get("mode", None)
             if mode is not None:
                 mode = to_mode(mode)
