@@ -197,7 +197,7 @@ class TunedModel:
     create_time: datetime.datetime | None = None
     update_time: datetime.datetime | None = None
     tuning_task: TuningTask | None = None
-    reader_project_numbers: List[int] | None = None
+    reader_project_numbers: list[int] | None = None
 
     @property
     def permissions(self) -> permission_types.Permissions:

@@ -996,10 +996,10 @@ class CUJTests(parameterized.TestCase):
                   }
                 }),
             ),
-            error=<BlockedPromptException> prompt_feedback {
+            error=BlockedPromptException(prompt_feedback {
               block_reason: SAFETY
             }
-            """
+            )"""
         )
         self.assertEqual(expected, result)
 
@@ -1057,7 +1057,7 @@ class CUJTests(parameterized.TestCase):
                   "prompt_feedback": {}
                 }),
             ),
-            error=<ValueError> """
+            error=ValueError()"""
         )
         self.assertEqual(expected, result)
 
