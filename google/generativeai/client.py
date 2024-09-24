@@ -384,3 +384,11 @@ def get_default_permission_client() -> glm.PermissionServiceClient:
 
 def get_default_permission_async_client() -> glm.PermissionServiceAsyncClient:
     return _client_manager.get_default_client("permission_async")
+
+
+def get_default_prediction_client() -> glm.PermissionServiceClient:
+    return _client_manager.get_default_client("prediction")
+
+
+def get_default_prediction_async_client() -> glm.PermissionServiceAsyncClient:
+    return _client_manager.get_default_client("prediction_async")

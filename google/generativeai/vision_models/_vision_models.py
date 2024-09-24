@@ -25,6 +25,9 @@ import pathlib
 import typing
 from typing import Any, Dict, List, Literal, Optional, Union
 
+from google.generativeai import client
+from google.generativeai import protos
+
 from google.protobuf import struct_pb2
 
 from proto.marshal.collections import maps
@@ -43,6 +46,7 @@ except ImportError:
     PIL_Image = None
 
 
+# This is to get around https://github.com/googleapis/proto-plus-python/issues/488
 def to_value(value) -> struct_pb2.Value:
     """Return a protobuf Value object representing this value."""
     if isinstance(value, struct_pb2.Value):
@@ -61,6 +65,7 @@ def to_value(value) -> struct_pb2.Value:
         return struct_pb2.Value(struct_value=to_mapping_value(value))
     raise ValueError("Unable to coerce value: %r" % value)
 
+
 def to_list_value(value) -> struct_pb2.ListValue:
     # We got a proto, or else something we sent originally.
     # Preserve the instance we have.
@@ -70,9 +75,8 @@ def to_list_value(value) -> struct_pb2.ListValue:
         return struct_pb2.ListValue(values=[v for v in value.pb])
 
     # We got a list (or something list-like); convert it.
-    return struct_pb2.ListValue(
-        values=[to_value(v) for v in value]
-    )
+    return struct_pb2.ListValue(values=[to_value(v) for v in value])
+
 
 def to_mapping_value(value) -> struct_pb2.Struct:
     # We got a proto, or else something we sent originally.
@@ -85,12 +89,7 @@ def to_mapping_value(value) -> struct_pb2.Struct:
         )
 
     # We got a dict (or something dict-like); convert it.
-    return struct_pb2.Struct(
-        fields={
-            k: to_value(v) for k, v in value.items()
-        }
-    )
-
+    return struct_pb2.Struct(fields={k: to_value(v) for k, v in value.items()})
 
 
 _SUPPORTED_UPSCALING_SIZES = [2048, 4096]
@@ -130,7 +129,6 @@ class Image:
         image_bytes = pathlib.Path(location).read_bytes()
         image = Image(image_bytes=image_bytes)
         return image
-
 
     @property
     def _image_bytes(self) -> bytes:
@@ -206,9 +204,16 @@ class ImageGenerationModel:
         response[0].save("image1.png")
     """
 
-    __module__ = "vertexai.preview.vision_models"
+    def __init__(self, model_id: str):
+        if not model_id.startswith("models"):
+            model_id = f"models/{model_id}"
+        self.model_name = model_id
+        self._client = None
 
-    _INSTANCE_SCHEMA_URI = "gs://google-cloud-aiplatform/schema/predict/instance/vision_generative_model_1.0.0.yaml"
+    @classmethod
+    def from_pretrained(cls, model_name: str):
+        """For vertex compatibility"""
+        return cls(model_name)
 
     def _generate_images(
         self,
@@ -242,9 +247,7 @@ class ImageGenerationModel:
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
         ] = None,
-        person_generation: Optional[
-            Literal["dont_allow", "allow_adult", "allow_all"]
-        ] = None,
+        person_generation: Optional[Literal["dont_allow", "allow_adult", "allow_all"]] = None,
     ) -> "ImageGenerationResponse":
         """Generates images from text prompt.
 
@@ -312,6 +315,8 @@ class ImageGenerationModel:
         Returns:
             An `ImageGenerationResponse` object.
         """
+        if self._client is None:
+            self._client = client.get_default_prediction_client()
         # Note: Only a single prompt is supported by the service.
         instance = {"prompt": prompt}
         shared_generation_parameters = {
@@ -412,10 +417,13 @@ class ImageGenerationModel:
             parameters["personGeneration"] = person_generation
             shared_generation_parameters["person_generation"] = person_generation
 
-        response = self._endpoint.predict(
-            instances=[to_value(instance)],
-            parameters=parameters,
+        # This is to get around https://github.com/googleapis/proto-plus-python/issues/488
+        pr = protos.PredictRequest.pb()
+        request = pr(
+            model=self.model_name, instances=[to_value(instance)], parameters=to_value(parameters)
         )
+
+        response = self._client.predict(request)
 
         generated_images: List["GeneratedImage"] = []
         for idx, prediction in enumerate(response.predictions):
@@ -444,9 +452,7 @@ class ImageGenerationModel:
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
         ] = None,
-        person_generation: Optional[
-            Literal["dont_allow", "allow_adult", "allow_all"]
-        ] = None,
+        person_generation: Optional[Literal["dont_allow", "allow_adult", "allow_all"]] = None,
     ) -> "ImageGenerationResponse":
         """Generates images from text prompt.
 
@@ -510,9 +516,7 @@ class ImageGenerationModel:
         number_of_images: int = 1,
         guidance_scale: Optional[float] = None,
         edit_mode: Optional[
-            Literal[
-                "inpainting-insert", "inpainting-remove", "outpainting", "product-image"
-            ]
+            Literal["inpainting-insert", "inpainting-remove", "outpainting", "product-image"]
         ] = None,
         mask_mode: Optional[Literal["background", "foreground", "semantic"]] = None,
         segmentation_classes: Optional[List[str]] = None,
@@ -525,9 +529,7 @@ class ImageGenerationModel:
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
         ] = None,
-        person_generation: Optional[
-            Literal["dont_allow", "allow_adult", "allow_all"]
-        ] = None,
+        person_generation: Optional[Literal["dont_allow", "allow_adult", "allow_all"]] = None,
     ) -> "ImageGenerationResponse":
         """Edits an existing image based on text prompt.
 
@@ -717,9 +719,7 @@ class ImageGenerationModel:
 
         parameters["outputOptions"] = {"mimeType": output_mime_type}
         if output_mime_type == "image/jpeg" and output_compression_quality is not None:
-            parameters["outputOptions"][
-                "compressionQuality"
-            ] = output_compression_quality
+            parameters["outputOptions"]["compressionQuality"] = output_compression_quality
 
         response = self._endpoint.predict(
             instances=[to_value(instance)],
@@ -825,9 +825,7 @@ class GeneratedImage(Image):
             if not self._generation_parameters:
                 raise ValueError("Image does not have generation parameters.")
             if not PIL_Image:
-                raise ValueError(
-                    "The PIL module is required for saving generation parameters."
-                )
+                raise ValueError("The PIL module is required for saving generation parameters.")
 
             exif = self._pil_image.getexif()
             exif[_EXIF_USER_COMMENT_TAG_IDX] = json.dumps(
@@ -836,4 +834,3 @@ class GeneratedImage(Image):
             self._pil_image.save(location, exif=exif)
         else:
             super().save(location=location)
-
