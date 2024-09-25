@@ -201,7 +201,6 @@ class ImageGenerationModel:
             prompt="Astronaut riding a horse",
             # Optional:
             number_of_images=1,
-            seed=0,
         )
         response[0].show()
         response[0].save("image1.png")
@@ -228,7 +227,6 @@ class ImageGenerationModel:
         height: Optional[int] = None,
         aspect_ratio: Optional[Literal["1:1", "9:16", "16:9", "4:3", "3:4"]] = None,
         guidance_scale: Optional[float] = None,
-        seed: Optional[int] = None,
         base_image: Optional["Image"] = None,
         mask: Optional["Image"] = None,
         edit_mode: Optional[
@@ -269,7 +267,6 @@ class ImageGenerationModel:
             guidance_scale: Controls the strength of the prompt. Suggested values
               are - * 0-9 (low strength) * 10-20 (medium strength) * 21+ (high
               strength)
-            seed: Image generation random seed.
             base_image: Base image to use for the image generation.
             mask: Mask for the base image.
             edit_mode: Describes the editing mode for the request. Supported values
@@ -361,11 +358,6 @@ class ImageGenerationModel:
             parameters["negativePrompt"] = negative_prompt
             shared_generation_parameters["negative_prompt"] = negative_prompt
 
-        if seed is not None:
-            # Note: String seed and numerical seed give different results
-            parameters["seed"] = seed
-            shared_generation_parameters["seed"] = seed
-
         if guidance_scale is not None:
             parameters["guidanceScale"] = guidance_scale
             shared_generation_parameters["guidance_scale"] = guidance_scale
@@ -444,7 +436,6 @@ class ImageGenerationModel:
         aspect_ratio: Optional[Literal["1:1", "9:16", "16:9", "4:3", "3:4"]] = None,
         guidance_scale: Optional[float] = None,
         language: Optional[str] = None,
-        seed: Optional[int] = None,
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
         ] = None,
@@ -472,7 +463,6 @@ class ImageGenerationModel:
                 Supported values are `"en"` for English, `"hi"` for Hindi, `"ja"`
                 for Japanese, `"ko"` for Korean, and `"auto"` for automatic language
                 detection.
-            seed: Image generation random seed.
             safety_filter_level: Adds a filter level to Safety filtering. Supported
                 values are:
                 * "block_most" : Strongest filtering level, most strict
@@ -495,7 +485,6 @@ class ImageGenerationModel:
             aspect_ratio=aspect_ratio,
             guidance_scale=guidance_scale,
             language=language,
-            seed=seed,
             safety_filter_level=safety_filter_level,
             person_generation=person_generation,
         )
@@ -519,7 +508,6 @@ class ImageGenerationModel:
         output_mime_type: Optional[Literal["image/png", "image/jpeg"]] = None,
         compression_quality: Optional[float] = None,
         language: Optional[str] = None,
-        seed: Optional[int] = None,
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
         ] = None,
@@ -573,7 +561,6 @@ class ImageGenerationModel:
                 Supported values are `"en"` for English, `"hi"` for Hindi,
                 `"ja"` for Japanese, `"ko"` for Korean, and `"auto"` for
                 automatic language detection.
-            seed: Image generation random seed.
             safety_filter_level: Adds a filter level to Safety filtering. Supported
                 values are:
                 * "block_most" : Strongest filtering level, most strict
@@ -595,7 +582,6 @@ class ImageGenerationModel:
             negative_prompt=negative_prompt,
             number_of_images=number_of_images,
             guidance_scale=guidance_scale,
-            seed=seed,
             base_image=base_image,
             mask=mask,
             edit_mode=edit_mode,
@@ -613,7 +599,7 @@ class ImageGenerationModel:
     def upscale_image(
         self,
         image: Union["Image", "GeneratedImage"],
-        new_size: Optional[int] = 2048,
+        new_size: Optional[int] = None,
         upscale_factor: Optional[Literal["x2", "x4"]] = None,
         output_mime_type: Optional[Literal["image/png", "image/jpeg"]] = "image/png",
         output_compression_quality: Optional[int] = None,
@@ -664,6 +650,9 @@ class ImageGenerationModel:
         Returns:
             An `Image` object.
         """
+        if self._client is None:
+            self._client = client.get_default_prediction_client()
+
         target_image_size = new_size if new_size else None
         longest_dim = max(image._size[0], image._size[1])
 
@@ -714,10 +703,12 @@ class ImageGenerationModel:
         if output_mime_type == "image/jpeg" and output_compression_quality is not None:
             parameters["outputOptions"]["compressionQuality"] = output_compression_quality
 
-        response = self._endpoint.predict(
-            instances=[to_value(instance)],
-            parameters=parameters,
+
+        pr = protos.PredictRequest.pb()
+        request = pr(
+            model=self.model_name, instances=[to_value(instance)], parameters=to_value(parameters)
         )
+        response = self._client.predict(request)
 
         upscaled_image = response.predictions[0]
 
