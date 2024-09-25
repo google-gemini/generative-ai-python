@@ -92,9 +92,6 @@ def to_mapping_value(value) -> struct_pb2.Struct:
     return struct_pb2.Struct(fields={k: to_value(v) for k, v in value.items()})
 
 
-_SUPPORTED_UPSCALING_SIZES = [2048, 4096]
-
-
 class Image:
     """Image."""
 
