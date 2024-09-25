@@ -187,6 +187,9 @@ class Image:
         # "received initial metadata size exceeds limit"
         return base64.b64encode(self._image_bytes).decode("ascii")
 
+    def _repr_png_(self):
+        return self._pil_image._repr_png_()
+
 
 class ImageGenerationModel:
     """Generates images from text prompt.
@@ -773,7 +776,7 @@ _IMAGE_GENERATION_PARAMETERS_EXIF_KEY = (
 class GeneratedImage(Image):
     """Generated image."""
 
-    __module__ = "vertexai.preview.vision_models"
+    __module__ = "google.generativeai"
 
     def __init__(
         self,
