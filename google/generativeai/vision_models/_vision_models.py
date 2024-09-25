@@ -246,7 +246,6 @@ class ImageGenerationModel:
         output_mime_type: Optional[Literal["image/png", "image/jpeg"]] = None,
         compression_quality: Optional[float] = None,
         language: Optional[str] = None,
-        add_watermark: Optional[bool] = None,
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
         ] = None,
@@ -304,7 +303,6 @@ class ImageGenerationModel:
               Supported values are `"en"` for English, `"hi"` for Hindi, `"ja"` for
               Japanese, `"ko"` for Korean, and `"auto"` for automatic language
               detection.
-            add_watermark: Add a watermark to the generated image
             safety_filter_level: Adds a filter level to Safety filtering. Supported
               values are: * "block_most" : Strongest filtering level, most strict
               blocking * "block_some" : Block some problematic prompts and responses
@@ -408,10 +406,6 @@ class ImageGenerationModel:
             parameters["outputOptions"]["compressionQuality"] = compression_quality
             shared_generation_parameters["compression_quality"] = compression_quality
 
-        if add_watermark is not None:
-            parameters["addWatermark"] = add_watermark
-            shared_generation_parameters["add_watermark"] = add_watermark
-
         if safety_filter_level is not None:
             parameters["safetySetting"] = safety_filter_level
             shared_generation_parameters["safety_filter_level"] = safety_filter_level
@@ -451,7 +445,6 @@ class ImageGenerationModel:
         guidance_scale: Optional[float] = None,
         language: Optional[str] = None,
         seed: Optional[int] = None,
-        add_watermark: Optional[bool] = True,
         safety_filter_level: Optional[
             Literal["block_most", "block_some", "block_few", "block_fewest"]
         ] = None,
@@ -480,7 +473,6 @@ class ImageGenerationModel:
                 for Japanese, `"ko"` for Korean, and `"auto"` for automatic language
                 detection.
             seed: Image generation random seed.
-            add_watermark: Add a watermark to the generated image
             safety_filter_level: Adds a filter level to Safety filtering. Supported
                 values are:
                 * "block_most" : Strongest filtering level, most strict
@@ -504,7 +496,6 @@ class ImageGenerationModel:
             guidance_scale=guidance_scale,
             language=language,
             seed=seed,
-            add_watermark=add_watermark,
             safety_filter_level=safety_filter_level,
             person_generation=person_generation,
         )
@@ -615,7 +606,6 @@ class ImageGenerationModel:
             output_mime_type=output_mime_type,
             compression_quality=compression_quality,
             language=language,
-            add_watermark=False,  # Not supported for editing yet
             safety_filter_level=safety_filter_level,
             person_generation=person_generation,
         )
