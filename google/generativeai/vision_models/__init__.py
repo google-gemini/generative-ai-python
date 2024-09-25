@@ -15,12 +15,14 @@
 """Classes for working with vision models."""
 
 from google.generativeai.vision_models._vision_models import (
+    Image,
     GeneratedImage,
     ImageGenerationModel,
     ImageGenerationResponse,
 )
 
 __all__ = [
+    "Image",
     "GeneratedImage",
     "ImageGenerationModel",
     "ImageGenerationResponse",
