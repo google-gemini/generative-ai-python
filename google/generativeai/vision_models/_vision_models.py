@@ -93,16 +93,16 @@ def to_mapping_value(value) -> struct_pb2.Struct:
 
 
 AspectRatio = Literal["1:1", "9:16", "16:9", "4:3", "3:4"]
-ASPECT_RATIOS = AspectRatio.__args__
+ASPECT_RATIOS = AspectRatio.__args__  # type: ignore
 
 OutputMimeType = Literal["image/png", "image/jpeg"]
-OUTPUT_MIME_TYPES = OutputMimeType.__args__
+OUTPUT_MIME_TYPES = OutputMimeType.__args__  # type: ignore
 
 SafetyFilterLevel = Literal["block_most", "block_some", "block_few", "block_fewest"]
-SAFETY_FILTER_LEVELS = SafetyFilterLevel.__args__
+SAFETY_FILTER_LEVELS = SafetyFilterLevel.__args__  # type: ignore
 
 PersonGeneration = Literal["dont_allow", "allow_adult", "allow_all"]
-PERSON_GENERATIONS = PersonGeneration.__args__
+PERSON_GENERATIONS = PersonGeneration.__args__  # type: ignore
 
 
 class Image:
@@ -198,7 +198,7 @@ class Image:
         return base64.b64encode(self._image_bytes).decode("ascii")
 
     def _repr_png_(self):
-        return self._pil_image._repr_png_()
+        return self._pil_image._repr_png_()   # type:ignore
 
 
 class ImageGenerationModel:
