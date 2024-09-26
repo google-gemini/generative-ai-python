@@ -91,6 +91,10 @@ def to_mapping_value(value) -> struct_pb2.Struct:
     # We got a dict (or something dict-like); convert it.
     return struct_pb2.Struct(fields={k: to_value(v) for k, v in value.items()})
 
+ASPECT_RATIOS = ["1:1", "9:16", "16:9", "4:3", "3:4"]
+OUTPUT_MIME_TYPES = ["image/png", "image/jpeg"]
+SAFETY_FILTER_LEVELS = ["block_most", "block_some", "block_few", "block_fewest"]
+PERSON_GENERATIONS = ["dont_allow", "allow_adult", "allow_all"]
 
 class Image:
     """Image."""
@@ -222,15 +226,15 @@ class ImageGenerationModel:
         number_of_images: int = 1,
         width: Optional[int] = None,
         height: Optional[int] = None,
-        aspect_ratio: Optional[Literal["1:1", "9:16", "16:9", "4:3", "3:4"]] = None,
+        aspect_ratio: Optional[Literal[*ASPECT_RATIOS]] = None,
         guidance_scale: Optional[float] = None,
-        output_mime_type: Optional[Literal["image/png", "image/jpeg"]] = None,
+        output_mime_type: Optional[Literal[*OUTPUT_MIME_TYPES]] = None,
         compression_quality: Optional[float] = None,
         language: Optional[str] = None,
         safety_filter_level: Optional[
-            Literal["block_most", "block_some", "block_few", "block_fewest"]
+            Literal[*SAFETY_FILTER_LEVELS]
         ] = None,
-        person_generation: Optional[Literal["dont_allow", "allow_adult", "allow_all"]] = None,
+        person_generation: Optional[Literal[*PERSON_GENERATIONS]] = None,
     ) -> "ImageGenerationResponse":
         """Generates images from text prompt.
 
@@ -287,6 +291,8 @@ class ImageGenerationModel:
         parameters = {}
         max_size = max(width or 0, height or 0) or None
         if aspect_ratio is not None:
+            if aspect_ratio not in ASPECT_RATIOS:
+                raise ValueError(f'aspect_ratio not in {ASPECT_RATIOS}')
             parameters["aspectRatio"] = aspect_ratio
         elif max_size:
             # Note: The size needs to be a string
@@ -309,6 +315,8 @@ class ImageGenerationModel:
 
         parameters["outputOptions"] = {}
         if output_mime_type is not None:
+            if output_mime_type not in OUTPUT_MIME_TYPES:
+                raise ValueError(f'output_mime_type not in {OUTPUT_MIME_TYPES}')
             parameters["outputOptions"]["mimeType"] = output_mime_type
             shared_generation_parameters["mime_type"] = output_mime_type
 
@@ -317,6 +325,8 @@ class ImageGenerationModel:
             shared_generation_parameters["compression_quality"] = compression_quality
 
         if safety_filter_level is not None:
+            if safety_filter_level not in SAFETY_FILTER_LEVELS:
+                raise ValueError(f'safety_filter_level not in {SAFETY_FILTER_LEVELS}')
             parameters["safetySetting"] = safety_filter_level
             shared_generation_parameters["safety_filter_level"] = safety_filter_level
 
