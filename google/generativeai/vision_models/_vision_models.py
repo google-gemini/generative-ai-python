@@ -149,7 +149,7 @@ class Image:
         self._loaded_bytes = value
 
     @property
-    def _pil_image(self) -> "PIL_Image.Image":
+    def _pil_image(self) -> "PIL_Image.Image":   # type: ignore
         if self._loaded_image is None:
             if not PIL_Image:
                 raise RuntimeError(
@@ -198,7 +198,7 @@ class Image:
         return base64.b64encode(self._image_bytes).decode("ascii")
 
     def _repr_png_(self):
-        return self._pil_image._repr_png_()   # type:ignore
+        return self._pil_image._repr_png_()  # type:ignore
 
 
 class ImageGenerationModel:
@@ -371,9 +371,7 @@ class ImageGenerationModel:
         aspect_ratio: Optional[AspectRatio] = None,
         guidance_scale: Optional[float] = None,
         language: Optional[str] = None,
-        safety_filter_level: Optional[
-            SafetyFilterLevel
-        ] = None,
+        safety_filter_level: Optional[SafetyFilterLevel] = None,
         person_generation: Optional[PersonGeneration] = None,
     ) -> "ImageGenerationResponse":
         """Generates images from text prompt.
