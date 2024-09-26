@@ -473,8 +473,6 @@ class BaseGenerateContentResponse:
                 "`Part`, but none were returned. The candidate's "
                 f"[finish_reason](https://ai.google.dev/api/generate-content#finishreason) is {fr}."
             )
-            if candidate.finish_message:
-                msg += 'The `finish_message` is "{candidate.finish_message}".'
 
             if fr is FinishReason.FINISH_REASON_UNSPECIFIED:
                 raise ValueError(msg)
