@@ -18,6 +18,7 @@ from google.generativeai.types import file_types
 
 import collections
 import datetime
+import io
 import os
 from typing import Iterable, Sequence
 import pathlib
@@ -38,7 +39,7 @@ class FileServiceClient(client_lib.FileServiceClient):
 
     def create_file(
         self,
-        path: str | pathlib.Path | os.PathLike,
+        path: str | io.IOBase | os.PathLike,
         *,
         mime_type: str | None = None,
         name: str | None = None,
