@@ -74,11 +74,10 @@ def upload_file(
             mime_type, _ = mimetypes.guess_type(path)
 
         if mime_type is None:
-            if mime_type is None:
-                raise ValueError(
-                    "Unknown mime type: Could not determine the mimetype for your file\n"
-                    "    please set the `mime_type` argument"
-                )
+            raise ValueError(
+                "Unknown mime type: Could not determine the mimetype for your file\n"
+                "    please set the `mime_type` argument"
+            )
 
     if name is not None and "/" not in name:
         name = f"files/{name}"
