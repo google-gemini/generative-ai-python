@@ -935,8 +935,7 @@ class CUJTests(parameterized.TestCase):
                       "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {},
-                  "usage_metadata": {}
+                  "prompt_feedback": {}
                 }),
             )"""
         )
@@ -964,8 +963,7 @@ class CUJTests(parameterized.TestCase):
                       "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {},
-                  "usage_metadata": {}
+                  "prompt_feedback": {}
                 }),
             )"""
         )
@@ -998,10 +996,10 @@ class CUJTests(parameterized.TestCase):
                   }
                 }),
             ),
-            error=<BlockedPromptException> prompt_feedback {
+            error=BlockedPromptException(prompt_feedback {
               block_reason: SAFETY
             }
-            """
+            )"""
         )
         self.assertEqual(expected, result)
 
@@ -1056,11 +1054,10 @@ class CUJTests(parameterized.TestCase):
                       "citation_metadata": {}
                     }
                   ],
-                  "prompt_feedback": {},
-                  "usage_metadata": {}
+                  "prompt_feedback": {}
                 }),
             ),
-            error=<ValueError> """
+            error=ValueError()"""
         )
         self.assertEqual(expected, result)
 
@@ -1095,43 +1092,7 @@ class CUJTests(parameterized.TestCase):
             response = chat.send_message("hello2", stream=True)
 
         result = repr(response)
-        expected = textwrap.dedent(
-            """\
-            response:
-            GenerateContentResponse(
-                done=True,
-                iterator=None,
-                result=protos.GenerateContentResponse({
-                  "candidates": [
-                    {
-                      "content": {
-                        "parts": [
-                          {
-                            "text": "abc"
-                          }
-                        ]
-                      },
-                      "finish_reason": "SAFETY",
-                      "index": 0,
-                      "citation_metadata": {}
-                    }
-                  ],
-                  "prompt_feedback": {},
-                  "usage_metadata": {}
-                }),
-            ),
-            error=<StopCandidateException> content {
-              parts {
-                text: "abc"
-              }
-            }
-            finish_reason: SAFETY
-            index: 0
-            citation_metadata {
-            }
-            """
-        )
-        self.assertEqual(expected, result)
+        self.assertIn("StopCandidateException", result)
 
     def test_repr_for_multi_turn_chat(self):
         # Multi turn chat

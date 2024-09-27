@@ -1,4 +1,20 @@
+# -*- coding: utf-8 -*-
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import inspect
+import json
 import string
 import textwrap
 from typing_extensions import TypedDict
@@ -22,6 +38,8 @@ class Person(TypedDict):
 
 
 class UnitTests(parameterized.TestCase):
+    maxDiff = None
+
     @parameterized.named_parameters(
         [
             "protos.GenerationConfig",
@@ -416,12 +434,8 @@ class UnitTests(parameterized.TestCase):
                 ],
                 "role": "assistant",
             },
-            "citation_metadata": {"citation_sources": []},
             "index": 0,
-            "finish_reason": 0,
-            "safety_ratings": [],
-            "token_count": 0,
-            "grounding_attributions": [],
+            "citation_metadata": {},
         },
         {
             "content": {
@@ -429,11 +443,7 @@ class UnitTests(parameterized.TestCase):
                 "role": "assistant",
             },
             "index": 1,
-            "citation_metadata": {"citation_sources": []},
-            "finish_reason": 0,
-            "safety_ratings": [],
-            "token_count": 0,
-            "grounding_attributions": [],
+            "citation_metadata": {},
         },
         {
             "content": {
@@ -458,17 +468,16 @@ class UnitTests(parameterized.TestCase):
                     },
                 ]
             },
-            "finish_reason": 0,
-            "safety_ratings": [],
-            "token_count": 0,
-            "grounding_attributions": [],
         },
     ]
 
     def test_join_candidates(self):
         candidate_lists = [[protos.Candidate(c) for c in cl] for cl in self.CANDIDATE_LISTS]
         result = generation_types._join_candidate_lists(candidate_lists)
-        self.assertEqual(self.MERGED_CANDIDATES, [type(r).to_dict(r) for r in result])
+        self.assertEqual(
+            self.MERGED_CANDIDATES,
+            [type(r).to_dict(r, including_default_value_fields=False) for r in result],
+        )
 
     def test_join_chunks(self):
         chunks = [protos.GenerateContentResponse(candidates=cl) for cl in self.CANDIDATE_LISTS]
@@ -478,6 +487,10 @@ class UnitTests(parameterized.TestCase):
             safety_ratings=[
                 protos.SafetyRating(category="HARM_CATEGORY_DANGEROUS", probability="LOW"),
             ],
+        )
+
+        chunks[-1].usage_metadata = protos.GenerateContentResponse.UsageMetadata(
+            prompt_token_count=5
         )
 
         result = generation_types._join_chunks(chunks)
@@ -495,10 +508,18 @@ class UnitTests(parameterized.TestCase):
                         }
                     ],
                 },
+                "usage_metadata": {"prompt_token_count": 5},
             },
         )
 
-        self.assertEqual(type(expected).to_dict(expected), type(result).to_dict(expected))
+        expected = json.dumps(
+            type(expected).to_dict(expected, including_default_value_fields=False), indent=4
+        )
+        result = json.dumps(
+            type(result).to_dict(result, including_default_value_fields=False), indent=4
+        )
+
+        self.assertEqual(expected, result)
 
     def test_generate_content_response_iterator_end_to_end(self):
         chunks = [protos.GenerateContentResponse(candidates=cl) for cl in self.CANDIDATE_LISTS]
