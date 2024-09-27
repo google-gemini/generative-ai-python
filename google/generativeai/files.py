@@ -58,7 +58,13 @@ def upload_file(
     """
     client = get_default_file_client()
 
-    if not isinstance(path, IOBase):
+    if isinstance(path, IOBase):
+        if mime_type is None:
+            raise ValueError(
+                "Unknown mime type: When passing a file like object to `path` (instead of a\n"
+                "    path-like object) you must set the `mime_type` argument"
+            )
+    else:
         path = pathlib.Path(os.fspath(path))
 
         if display_name is None:
@@ -67,9 +73,12 @@ def upload_file(
         if mime_type is None:
             mime_type, _ = mimetypes.guess_type(path)
 
-    if mime_type is None:
-        # Guess failed or IOBase, use octet-stream.
-        mime_type = 'application/octet-stream'
+        if mime_type is None:
+            if mime_type is None:
+                raise ValueError(
+                    "Unknown mime type: Could not determine the mimetype for your file\n"
+                    "    please set the `mime_type` argument"
+                )
 
     if name is not None and "/" not in name:
         name = f"files/{name}"

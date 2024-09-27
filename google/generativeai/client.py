@@ -105,7 +105,7 @@ class FileServiceClient(glm.FileServiceClient):
             file["name"] = name
         if display_name is not None:
             file["displayName"] = display_name
-        
+
         if isinstance(path, IOBase):
             media = googleapiclient.http.MediaIoBaseUpload(
                 fd=path, mimetype=mime_type, resumable=resumable
@@ -114,7 +114,7 @@ class FileServiceClient(glm.FileServiceClient):
             media = googleapiclient.http.MediaFileUpload(
                 filename=path, mimetype=mime_type, resumable=resumable
             )
-        
+
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
         for key, value in metadata:
             request.headers[key] = value

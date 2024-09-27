@@ -102,12 +102,13 @@ class UnitTests(parameterized.TestCase):
             protos.File(
                 uri="https://test",
                 state="ACTIVE",
+                mime_type="video/quicktime",
                 video_metadata=dict(video_duration=datetime.timedelta(seconds=30)),
                 error=dict(code=7, message="ok?"),
             )
         )
 
-        f = genai.upload_file(path="dummy")
+        f = genai.upload_file(path="dummy.mov")
         self.assertEqual(google.rpc.status_pb2.Status(code=7, message="ok?"), f.error)
         self.assertEqual(
             protos.VideoMetadata(dict(video_duration=datetime.timedelta(seconds=30))),
