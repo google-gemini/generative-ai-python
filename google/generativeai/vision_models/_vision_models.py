@@ -34,16 +34,22 @@ from proto.marshal.collections import maps
 from proto.marshal.collections import repeated
 
 
-# pylint: disable=g-import-not-at-top
-try:
+# pylint: disable=g-import-not-at-top\
+if typing.TYPE_CHECKING:
     from IPython import display as IPython_display
-except ImportError:
-    IPython_display = None
+else:
+    try:
+        from IPython import display as IPython_display
+    except ImportError:
+        IPython_display = None
 
-try:
-    from PIL import Image as PIL_Image
-except ImportError:
-    PIL_Image = None
+if typing.TYPE_CHECKING:
+    import PIL.Image as PIL_Image
+else:
+    try:
+        from PIL import Image as PIL_Image
+    except ImportError:
+        PIL_Image = None
 
 
 # This is to get around https://github.com/googleapis/proto-plus-python/issues/488
