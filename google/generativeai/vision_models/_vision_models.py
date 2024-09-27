@@ -42,8 +42,10 @@ except ImportError:
 
 try:
     from PIL import Image as PIL_Image
+    from PIL.Image import Image as PILImageClass
 except ImportError:
     PIL_Image = None
+    PILImageClass = None
 
 
 # This is to get around https://github.com/googleapis/proto-plus-python/issues/488
@@ -111,7 +113,7 @@ class Image:
     __module__ = "vertexai.vision_models"
 
     _loaded_bytes: Optional[bytes] = None
-    _loaded_image: Optional["PIL_Image.Image"] = None
+    _loaded_image: Optional["PILImageClass"] = None
 
     def __init__(
         self,
@@ -149,7 +151,7 @@ class Image:
         self._loaded_bytes = value
 
     @property
-    def _pil_image(self) -> "PIL_Image.Image":   # type: ignore
+    def _pil_image(self) -> "PILImageClass":
         if self._loaded_image is None:
             if not PIL_Image:
                 raise RuntimeError(
