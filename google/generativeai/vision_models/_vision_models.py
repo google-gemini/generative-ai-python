@@ -155,7 +155,7 @@ class Image:
         self._loaded_bytes = value
 
     @property
-    def _pil_image(self) -> "PIL_Image.Image":   # type: ignore
+    def _pil_image(self) -> "PIL_Image.Image":  # type: ignore
         if self._loaded_image is None:
             if not PIL_Image:
                 raise RuntimeError(
