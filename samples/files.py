@@ -83,6 +83,18 @@ class UnitTests(absltest.TestCase):
         print(response.text)
         # [END files_create_pdf]
 
+    def test_files_create_from_IO(self):
+        # [START files_create_io]
+        # You can pass a file-like object, instead of a path.
+        # Useful for streaming.
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        fpath = media / "test.pdf"
+        with open(fpath, "rb") as f:
+            sample_pdf = genai.upload_file(f, mime_type="application/pdf")
+        response = model.generate_content(["Give me a summary of this pdf file.", sample_pdf])
+        print(response.text)
+        # [END files_create_io]
+
     def test_files_list(self):
         # [START files_list]
         print("My files:")

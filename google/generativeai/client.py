@@ -8,6 +8,7 @@ import pathlib
 from typing import Any, cast
 from collections.abc import Sequence
 import httplib2
+from io import IOBase
 
 import google.ai.generativelanguage as glm
 import google.generativeai.protos as protos
@@ -88,7 +89,7 @@ class FileServiceClient(glm.FileServiceClient):
 
     def create_file(
         self,
-        path: str | pathlib.Path | os.PathLike,
+        path: str | pathlib.Path | os.PathLike | IOBase,
         *,
         mime_type: str | None = None,
         name: str | None = None,
@@ -105,9 +106,15 @@ class FileServiceClient(glm.FileServiceClient):
         if display_name is not None:
             file["displayName"] = display_name
 
-        media = googleapiclient.http.MediaFileUpload(
-            filename=path, mimetype=mime_type, resumable=resumable
-        )
+        if isinstance(path, IOBase):
+            media = googleapiclient.http.MediaIoBaseUpload(
+                fd=path, mimetype=mime_type, resumable=resumable
+            )
+        else:
+            media = googleapiclient.http.MediaFileUpload(
+                filename=path, mimetype=mime_type, resumable=resumable
+            )
+
         request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
         for key, value in metadata:
             request.headers[key] = value
