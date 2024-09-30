@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+import enum
 import pathlib
 import typing_extensions
 from typing import Any, Union, Iterable
@@ -34,6 +35,10 @@ TEST_PNG_DATA = TEST_PNG_PATH.read_bytes()
 TEST_JPG_PATH = HERE / "test_img.jpg"
 TEST_JPG_URL = "https://storage.googleapis.com/generativeai-downloads/data/test_img.jpg"
 TEST_JPG_DATA = TEST_JPG_PATH.read_bytes()
+
+TEST_GIF_PATH = HERE / "test_img.gif"
+TEST_GIF_URL = "https://storage.googleapis.com/generativeai-downloads/data/test_img.gif"
+TEST_GIF_DATA = TEST_GIF_PATH.read_bytes()
 
 
 # simple test function
@@ -65,6 +70,18 @@ class ADataClassWithList:
     a: list[int]
 
 
+class Choices(enum.Enum):
+    A = "a"
+    B = "b"
+    C = "c"
+    D = "d"
+
+
+@dataclasses.dataclass
+class HasEnum:
+    choice: Choices
+
+
 class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_PNG_PATH)],
@@ -87,6 +104,17 @@ class UnitTests(parameterized.TestCase):
         self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/jpeg")
         self.assertStartsWith(blob.data, b"\xff\xd8\xff\xe0\x00\x10JFIF")
+
+    @parameterized.named_parameters(
+        ["PIL", PIL.Image.open(TEST_GIF_PATH)],
+        ["P", PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8)).convert("P")],
+        ["IPython", IPython.display.Image(filename=TEST_GIF_PATH)],
+    )
+    def test_gif_to_blob(self, image):
+        blob = content_types.image_to_blob(image)
+        self.assertIsInstance(blob, protos.Blob)
+        self.assertEqual(blob.mime_type, "image/gif")
+        self.assertStartsWith(blob.data, b"GIF87a")
 
     @parameterized.named_parameters(
         ["BlobDict", {"mime_type": "image/png", "data": TEST_PNG_DATA}],
@@ -533,6 +561,25 @@ class UnitTests(parameterized.TestCase):
                             "a": {"type_": protos.Type.INTEGER},
                         },
                     ),
+                },
+            ),
+        ],
+        ["enum", Choices, protos.Schema(type=protos.Type.STRING, enum=["a", "b", "c", "d"])],
+        [
+            "enum_list",
+            list[Choices],
+            protos.Schema(
+                type="ARRAY",
+                items=protos.Schema(type=protos.Type.STRING, enum=["a", "b", "c", "d"]),
+            ),
+        ],
+        [
+            "has_enum",
+            HasEnum,
+            protos.Schema(
+                type=protos.Type.OBJECT,
+                properties={
+                    "choice": protos.Schema(type=protos.Type.STRING, enum=["a", "b", "c", "d"])
                 },
             ),
         ],

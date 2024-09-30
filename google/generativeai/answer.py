@@ -283,7 +283,7 @@ def generate_answer(
         answer_style: Style in which the grounded answer should be returned.
         safety_settings: Safety settings for generated output. Defaults to None.
         temperature: Controls the randomness of the output.
-        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `glm.GenerativeServiceClient` instead.
         request_options: Options for the request.
 
     Returns:
@@ -337,7 +337,7 @@ async def generate_answer_async(
         answer_style: Style in which the grounded answer should be returned.
         safety_settings: Safety settings for generated output. Defaults to None.
         temperature: Controls the randomness of the output.
-        client: If you're not relying on a default client, you pass a `glm.TextServiceClient` instead.
+        client: If you're not relying on a default client, you pass a `glm.GenerativeServiceClient` instead.
 
     Returns:
         A `types.Answer` containing the model's text answer response.

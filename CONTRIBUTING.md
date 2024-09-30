@@ -93,10 +93,11 @@ pytest
 
 Or to debug, use:
 
-```commandline
+```
 pip install nose2
 
 nose2 --debugger
+```
 
 ### Type checking 
 
@@ -123,7 +124,6 @@ black .
 ```
 python docs/build_docs.py
 ```
-
 
 [setup]: https://cloud.google.com/nodejs/docs/setup
 [projects]: https://console.cloud.google.com/project

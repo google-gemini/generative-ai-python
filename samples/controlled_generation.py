@@ -11,8 +11,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from absl.testing import absltest
+import pathlib
 
 import google.generativeai as genai
+
+media = pathlib.Path(__file__).parents[1] / "third_party"
 
 
 class UnitTests(absltest.TestCase):
@@ -22,6 +25,7 @@ class UnitTests(absltest.TestCase):
 
         class Recipe(typing.TypedDict):
             recipe_name: str
+            ingredients: list[str]
 
         model = genai.GenerativeModel("gemini-1.5-pro-latest")
         result = model.generate_content(
@@ -36,13 +40,125 @@ class UnitTests(absltest.TestCase):
     def test_json_no_schema(self):
         # [START json_no_schema]
         model = genai.GenerativeModel("gemini-1.5-pro-latest")
-        prompt = """List a few popular cookie recipes using this JSON schema:
+        prompt = """List a few popular cookie recipes in JSON format.
 
-        Recipe = {'recipe_name': str}
+        Use this JSON schema:
+
+        Recipe = {'recipe_name': str, 'ingredients': list[str]}
         Return: list[Recipe]"""
         result = model.generate_content(prompt)
         print(result)
         # [END json_no_schema]
+
+    def test_json_enum(self):
+        # [START json_enum]
+        import enum
+
+        class Choice(enum.Enum):
+            PERCUSSION = "Percussion"
+            STRING = "String"
+            WOODWIND = "Woodwind"
+            BRASS = "Brass"
+            KEYBOARD = "Keyboard"
+
+        model = genai.GenerativeModel("gemini-1.5-pro-latest")
+
+        organ = genai.upload_file(media / "organ.jpg")
+        result = model.generate_content(
+            ["What kind of instrument is this:", organ],
+            generation_config=genai.GenerationConfig(
+                response_mime_type="application/json", response_schema=Choice
+            ),
+        )
+        print(result)  # "Keyboard"
+        # [END json_enum]
+
+    def test_enum_in_json(self):
+        # [START enum_in_json]
+        import enum
+        from typing_extensions import TypedDict
+
+        class Grade(enum.Enum):
+            A_PLUS = "a+"
+            A = "a"
+            B = "b"
+            C = "c"
+            D = "d"
+            F = "f"
+
+        class Recipe(TypedDict):
+            recipe_name: str
+            grade: Grade
+
+        model = genai.GenerativeModel("gemini-1.5-pro-latest")
+
+        result = model.generate_content(
+            "List about 10 cookie recipes, grade them based on popularity",
+            generation_config=genai.GenerationConfig(
+                response_mime_type="application/json", response_schema=list[Recipe]
+            ),
+        )
+        print(result)  # [{"grade": "a+", "recipe_name": "Chocolate Chip Cookies"}, ...]
+        # [END enum_in_json]
+
+    def test_json_enum_raw(self):
+        # [START json_enum_raw]
+        model = genai.GenerativeModel("gemini-1.5-pro-latest")
+
+        organ = genai.upload_file(media / "organ.jpg")
+        result = model.generate_content(
+            ["What kind of instrument is this:", organ],
+            generation_config=genai.GenerationConfig(
+                response_mime_type="application/json",
+                response_schema={
+                    "type": "STRING",
+                    "enum": ["Percussion", "String", "Woodwind", "Brass", "Keyboard"],
+                },
+            ),
+        )
+        print(result)  # "Keyboard"
+        # [END json_enum_raw]
+
+    def test_x_enum(self):
+        # [START x_enum]
+        import enum
+
+        class Choice(enum.Enum):
+            PERCUSSION = "Percussion"
+            STRING = "String"
+            WOODWIND = "Woodwind"
+            BRASS = "Brass"
+            KEYBOARD = "Keyboard"
+
+        model = genai.GenerativeModel("gemini-1.5-pro-latest")
+
+        organ = genai.upload_file(media / "organ.jpg")
+        result = model.generate_content(
+            ["What kind of instrument is this:", organ],
+            generation_config=genai.GenerationConfig(
+                response_mime_type="text/x.enum", response_schema=Choice
+            ),
+        )
+        print(result)  # Keyboard
+        # [END x_enum]
+
+    def test_x_enum_raw(self):
+        # [START x_enum_raw]
+        model = genai.GenerativeModel("gemini-1.5-pro-latest")
+
+        organ = genai.upload_file(media / "organ.jpg")
+        result = model.generate_content(
+            ["What kind of instrument is this:", organ],
+            generation_config=genai.GenerationConfig(
+                response_mime_type="text/x.enum",
+                response_schema={
+                    "type": "STRING",
+                    "enum": ["Percussion", "String", "Woodwind", "Brass", "Keyboard"],
+                },
+            ),
+        )
+        print(result)  # Keyboard
+        # [END x_enum_raw]
 
 
 if __name__ == "__main__":

@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import collections
 import contextlib
-import sys
 from collections.abc import Iterable, AsyncIterable, Mapping
 import dataclasses
 import itertools
@@ -145,17 +144,27 @@ class GenerationConfig:
             Note: The default value varies by model, see the
             `Model.top_k` attribute of the `Model` returned the
             `genai.get_model` function.
-
+        seed:
+            Optional.  Seed used in decoding. If not set, the request uses a randomly generated seed.
         response_mime_type:
             Optional. Output response mimetype of the generated candidate text.
 
             Supported mimetype:
                 `text/plain`: (default) Text output.
+                `text/x-enum`: for use with a string-enum in `response_schema`
                 `application/json`: JSON response in the candidates.
 
         response_schema:
             Optional. Specifies the format of the JSON requested if response_mime_type is
             `application/json`.
+        presence_penalty:
+            Optional.
+        frequency_penalty:
+            Optional.
+        response_logprobs:
+            Optional. If true, export the `logprobs` results in response.
+        logprobs:
+            Optional. Number of candidates of log probabilities to return at each step of decoding.
     """
 
     candidate_count: int | None = None
@@ -164,8 +173,13 @@ class GenerationConfig:
     temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
+    seed: int | None = None
     response_mime_type: str | None = None
-    response_schema: protos.Schema | Mapping[str, Any] | None = None
+    response_schema: protos.Schema | Mapping[str, Any] | type | None = None
+    presence_penalty: float | None = None
+    frequency_penalty: float | None = None
+    response_logprobs: bool | None = None
+    logprobs: int | None = None
 
 
 GenerationConfigType = Union[protos.GenerationConfig, GenerationConfigDict, GenerationConfig]
@@ -186,7 +200,8 @@ def _normalize_schema(generation_config):
         if not str(response_schema).startswith("list["):
             raise ValueError(
                 f"Invalid input: Could not understand the type of '{response_schema}'. "
-                "Expected one of the following types: `int`, `float`, `str`, `bool`, `typing_extensions.TypedDict`, `dataclass`, or `list[...]`."
+                "Expected one of the following types: `int`, `float`, `str`, `bool`, `enum`, "
+                "`typing_extensions.TypedDict`, `dataclass` or `list[...]`."
             )
         response_schema = content_types._schema_for_class(response_schema)
 
@@ -306,6 +321,7 @@ def _join_code_execution_result(result_1, result_2):
 
 
 def _join_candidates(candidates: Iterable[protos.Candidate]):
+    """Joins stream chunks of a single candidate."""
     candidates = tuple(candidates)
 
     index = candidates[0].index  # These should all be the same.
@@ -321,6 +337,7 @@ def _join_candidates(candidates: Iterable[protos.Candidate]):
 
 
 def _join_candidate_lists(candidate_lists: Iterable[list[protos.Candidate]]):
+    """Joins stream chunks where each chunk is a list of candidate chunks."""
     # Assuming that is a candidate ends, it is no longer returned in the list of
     # candidates and that's why candidates have an index
     candidates = collections.defaultdict(list)
@@ -344,10 +361,15 @@ def _join_prompt_feedbacks(
 
 def _join_chunks(chunks: Iterable[protos.GenerateContentResponse]):
     chunks = tuple(chunks)
+    if "usage_metadata" in chunks[-1]:
+        usage_metadata = chunks[-1].usage_metadata
+    else:
+        usage_metadata = None
+
     return protos.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
-        usage_metadata=chunks[-1].usage_metadata,
+        usage_metadata=usage_metadata,
     )
 
 
@@ -412,14 +434,22 @@ class BaseGenerateContentResponse:
         """
         candidates = self.candidates
         if not candidates:
-            raise ValueError(
+            msg = (
                 "Invalid operation: The `response.parts` quick accessor requires a single candidate, "
-                "but none were returned. Please check the `response.prompt_feedback` to determine if the prompt was blocked."
+                "but but `response.candidates` is empty."
             )
+            if self.prompt_feedback:
+                raise ValueError(
+                    msg + "\nThis appears to be caused by a blocked prompt, "
+                    f"see `response.prompt_feedback`: {self.prompt_feedback}"
+                )
+            else:
+                raise ValueError(msg)
+
         if len(candidates) > 1:
             raise ValueError(
-                "Invalid operation: The `response.parts` quick accessor requires a single candidate. "
-                "For multiple candidates, please use `result.candidates[index].text`."
+                "Invalid operation: The `response.parts` quick accessor retrieves the parts for a single candidate. "
+                "This response contains multiple candidates, please use `result.candidates[index].text`."
             )
         parts = candidates[0].content.parts
         return parts
@@ -433,10 +463,53 @@ class BaseGenerateContentResponse:
         """
         parts = self.parts
         if not parts:
-            raise ValueError(
-                "Invalid operation: The `response.text` quick accessor requires the response to contain a valid `Part`, "
-                "but none were returned. Please check the `candidate.safety_ratings` to determine if the response was blocked."
+            candidate = self.candidates[0]
+
+            fr = candidate.finish_reason
+            FinishReason = protos.Candidate.FinishReason
+
+            msg = (
+                "Invalid operation: The `response.text` quick accessor requires the response to contain a valid "
+                "`Part`, but none were returned. The candidate's "
+                f"[finish_reason](https://ai.google.dev/api/generate-content#finishreason) is {fr}."
             )
+            if candidate.finish_message:
+                msg += 'The `finish_message` is "{candidate.finish_message}".'
+
+            if fr is FinishReason.FINISH_REASON_UNSPECIFIED:
+                raise ValueError(msg)
+            elif fr is FinishReason.STOP:
+                raise ValueError(msg)
+            elif fr is FinishReason.MAX_TOKENS:
+                raise ValueError(msg)
+            elif fr is FinishReason.SAFETY:
+                raise ValueError(
+                    msg + f" The candidate's safety_ratings are: {candidate.safety_ratings}.",
+                    candidate.safety_ratings,
+                )
+            elif fr is FinishReason.RECITATION:
+                raise ValueError(
+                    msg + " Meaning that the model was reciting from copyrighted material."
+                )
+            elif fr is FinishReason.LANGUAGE:
+                raise ValueError(msg + " Meaning the response was using an unsupported language.")
+            elif fr is FinishReason.OTHER:
+                raise ValueError(msg)
+            elif fr is FinishReason.BLOCKLIST:
+                raise ValueError(msg)
+            elif fr is FinishReason.PROHIBITED_CONTENT:
+                raise ValueError(msg)
+            elif fr is FinishReason.SPII:
+                raise ValueError(msg + " SPII - Sensitive Personally Identifiable Information.")
+            elif fr is FinishReason.MALFORMED_FUNCTION_CALL:
+                raise ValueError(
+                    msg + " Meaning that model generated a `FunctionCall` that was invalid. "
+                    "Setting the "
+                    "[Function calling mode](https://ai.google.dev/gemini-api/docs/function-calling#function_calling_mode) "
+                    "to `ANY` can fix this because it enables constrained decoding."
+                )
+            else:
+                raise ValueError(msg)
 
         texts = []
         for part in parts:
@@ -490,7 +563,8 @@ class BaseGenerateContentResponse:
         _result = _result.replace("\n", "\n                    ")
 
         if self._error:
-            _error = f",\nerror=<{self._error.__class__.__name__}> {self._error}"
+
+            _error = f",\nerror={repr(self._error)}"
         else:
             _error = ""
 

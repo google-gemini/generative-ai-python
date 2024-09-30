@@ -15,6 +15,7 @@
 import pathlib
 import re
 
+from absl.testing import absltest
 from absl.testing import parameterized
 
 ROOT = pathlib.Path(__file__).parent.parent
@@ -32,3 +33,7 @@ class UnitTests(parameterized.TestCase):
                     match,
                     msg=f"Bad `glm.` usage, use `genai.protos` instead,\n   in {fpath}",
                 )
+
+
+if __name__ == "__main__":
+    absltest.main()
