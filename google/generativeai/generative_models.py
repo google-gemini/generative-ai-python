@@ -72,7 +72,7 @@ class GenerativeModel:
 
     def __init__(
         self,
-        model_name: str = "gemini-pro",
+        model_name: str = "gemini-1.5-flash-002",
         safety_settings: safety_types.SafetySettingOptions | None = None,
         generation_config: generation_types.GenerationConfigType | None = None,
         tools: content_types.FunctionLibraryType | None = None,
