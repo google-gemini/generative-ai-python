@@ -78,7 +78,8 @@ while [[ "$tuning_done" != "true" ]];
 do
   sleep 5
   curl -X GET "https://generativelanguage.googleapis.com/v1/${operation}?key=$GOOGLE_API_KEY" \
-    -H 'Content-Type: application/json' \ 2> /dev/null > tuning_operation.json
+    -H 'Content-Type: application/json' \
+     2> /dev/null > tuning_operation.json
 
   complete=$(jq .metadata.completedPercent < tuning_operation.json)
   tput cuu1
