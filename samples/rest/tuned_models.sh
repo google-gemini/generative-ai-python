@@ -1,7 +1,5 @@
 set -eu
 
-GOOGLE_API_KEY=AIzaSyB1bw8ghsEm65evO_Yn9CeorYEh2oDEw-M
-
 echo "[START tuned_models_create]"
 # [START tuned_models_create]
 curl -X POST "https://generativelanguage.googleapis.com/v1beta/tunedModels?key=$GOOGLE_API_KEY" \
