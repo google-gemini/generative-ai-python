@@ -104,10 +104,10 @@ ASPECT_RATIOS = AspectRatio.__args__  # type: ignore
 OutputMimeType = Literal["image/png", "image/jpeg"]
 OUTPUT_MIME_TYPES = OutputMimeType.__args__  # type: ignore
 
-SafetyFilterLevel = Literal["block_most", "block_some", "block_few", "block_fewest"]
+SafetyFilterLevel = Literal["block_most", "block_some", "block_few"]
 SAFETY_FILTER_LEVELS = SafetyFilterLevel.__args__  # type: ignore
 
-PersonGeneration = Literal["dont_allow", "allow_adult", "allow_all"]
+PersonGeneration = Literal["dont_allow", "allow_adult"]
 PERSON_GENERATIONS = PersonGeneration.__args__  # type: ignore
 
 
@@ -277,14 +277,14 @@ class ImageGenerationModel:
               Japanese, `"ko"` for Korean, and `"auto"` for automatic language
               detection.
             safety_filter_level: Adds a filter level to Safety filtering. Supported
-              values are: * "block_most" : Strongest filtering level, most strict
-              blocking * "block_some" : Block some problematic prompts and responses
-              * "block_few" : Block fewer problematic prompts and responses *
-              "block_fewest" : Block very few problematic prompts and responses
+              values are:
+              * "block_most" : Strongest filtering level, most strict blocking
+              * "block_some" : Block some problematic prompts and responses
+              * "block_few" : Block fewer problematic prompts and responses
             person_generation: Allow generation of people by the model Supported
-              values are: * "dont_allow" : Block generation of people *
-              "allow_adult" : Generate adults, but not children * "allow_all" :
-              Generate adults and children
+              values are:
+              * "dont_allow" : Block generation of people
+              * "allow_adult" : Generate adults, but not children
 
         Returns:
             An `ImageGenerationResponse` object.
@@ -408,12 +408,10 @@ class ImageGenerationModel:
                 blocking
                 * "block_some" : Block some problematic prompts and responses
                 * "block_few" : Block fewer problematic prompts and responses
-                * "block_fewest" : Block very few problematic prompts and responses
             person_generation: Allow generation of people by the model Supported
                 values are:
                 * "dont_allow" : Block generation of people
                 * "allow_adult" : Generate adults, but not children
-                * "allow_all" : Generate adults and children
         Returns:
             An `ImageGenerationResponse` object.
         """
