@@ -107,7 +107,7 @@ OUTPUT_MIME_TYPES = OutputMimeType.__args__  # type: ignore
 SafetyFilterLevel = Literal["block_most", "block_some", "block_few"]
 SAFETY_FILTER_LEVELS = SafetyFilterLevel.__args__  # type: ignore
 
-PersonGeneration = Literal["dont_allow", "allow_adult", "allow_all"]
+PersonGeneration = Literal["dont_allow", "allow_adult"]
 PERSON_GENERATIONS = PersonGeneration.__args__  # type: ignore
 
 
@@ -285,7 +285,6 @@ class ImageGenerationModel:
               values are:
               * "dont_allow" : Block generation of people
               * "allow_adult" : Generate adults, but not children
-              * "allow_all" : Generate adults and children
 
         Returns:
             An `ImageGenerationResponse` object.
@@ -413,7 +412,6 @@ class ImageGenerationModel:
                 values are:
                 * "dont_allow" : Block generation of people
                 * "allow_adult" : Generate adults, but not children
-                * "allow_all" : Generate adults and children
         Returns:
             An `ImageGenerationResponse` object.
         """
