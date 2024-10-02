@@ -21,8 +21,8 @@ import inspect
 import mimetypes
 import pathlib
 import typing
-from typing import Any, Callable, Union
-from typing_extensions import TypedDict
+from typing import Any, Callable, Union, get_type_hints, get_origin, get_args
+from typing_extensions import TypedDict, is_typeddict
 
 import pydantic
 
@@ -336,7 +336,18 @@ def to_contents(contents: ContentsType) -> list[protos.Content]:
 
 def _schema_for_class(cls: TypedDict) -> dict[str, Any]:
     schema = _build_schema("dummy", {"dummy": (cls, pydantic.Field())})
-    return schema["properties"]["dummy"]
+    properties = schema["properties"]["dummy"]
+    if is_typeddict(cls):
+        required_keys = []
+        type_hints = get_type_hints(cls)
+        for key, type_hint in type_hints.items():
+            if key in cls.__required_keys__:
+                # Check if the type is Optional, i.e., Union[..., NoneType]
+                if get_origin(type_hint) is Union and type(None) in get_args(type_hint):
+                    continue
+                required_keys.append(key)
+        properties["required"] = required_keys
+    return properties
 
 
 def _schema_for_function(
