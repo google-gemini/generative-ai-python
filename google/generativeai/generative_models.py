@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 import textwrap
-from typing import Any, Union, overload
+from typing import Any, Literal, Union, overload
 import reprlib
 
 # pylint: disable=bad-continuation, line-too-long

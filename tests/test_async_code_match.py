@@ -75,6 +75,7 @@ class CodeMatch(absltest.TestCase):
         asource = re.sub(" *?# type: ignore", "", asource)
         self.assertEqual(source, asource)
 
+    @absltest.skip("This test is broken: globally matching functions based only on the name")
     def test_code_match_for_async_methods(self):
         for fpath in (pathlib.Path(__file__).parent.parent / "google").rglob("*.py"):
             if fpath.name in EXEMPT_FILES or any([d in fpath.parts for d in EXEMPT_DIRS]):
