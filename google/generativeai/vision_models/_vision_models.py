@@ -277,14 +277,14 @@ class ImageGenerationModel:
               Japanese, `"ko"` for Korean, and `"auto"` for automatic language
               detection.
             safety_filter_level: Adds a filter level to Safety filtering. Supported
-              values are: 
-              * "block_most" : Strongest filtering level, most strict blocking 
+              values are:
+              * "block_most" : Strongest filtering level, most strict blocking
               * "block_some" : Block some problematic prompts and responses
               * "block_few" : Block fewer problematic prompts and responses
             person_generation: Allow generation of people by the model Supported
-              values are: 
+              values are:
               * "dont_allow" : Block generation of people
-              * "allow_adult" : Generate adults, but not children 
+              * "allow_adult" : Generate adults, but not children
               * "allow_all" : Generate adults and children
 
         Returns:
