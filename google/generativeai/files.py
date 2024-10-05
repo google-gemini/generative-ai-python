@@ -88,8 +88,10 @@ def upload_file(
     )
     return file_types.File(response)
 
+
 async def upload_file_async(*args, **kwargs):
-  return await asyncio.to_thread(upload_file, *args, **kwargs)
+    return await asyncio.to_thread(upload_file, *args, **kwargs)
+
 
 def list_files(page_size=100) -> Iterable[file_types.File]:
     """Calls the API to list files using a supported file service."""
@@ -99,8 +101,10 @@ def list_files(page_size=100) -> Iterable[file_types.File]:
     for proto in response:
         yield file_types.File(proto)
 
+
 async def list_files_async(*args, **kwargs):
     return await asyncio.to_thread(list_files, *args, **kwargs)
+
 
 def get_file(name: str) -> file_types.File:
     """Calls the API to retrieve a specified file using a supported file service."""
@@ -109,8 +113,10 @@ def get_file(name: str) -> file_types.File:
     client = get_default_file_client()
     return file_types.File(client.get_file(name=name))
 
+
 async def get_file_async(*args, **kwargs):
     return await asyncio.to_thread(get_file, *args, **kwargs)
+
 
 def delete_file(name: str | file_types.File | protos.File):
     """Calls the API to permanently delete a specified file using a supported file service."""
@@ -121,6 +127,7 @@ def delete_file(name: str | file_types.File | protos.File):
     request = protos.DeleteFileRequest(name=name)
     client = get_default_file_client()
     client.delete_file(request=request)
+
 
 async def delete_file_async(*args, **kwargs):
     return await asyncio.to_thread(get_file, *args, **kwargs)
