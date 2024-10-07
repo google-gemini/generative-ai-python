@@ -104,7 +104,7 @@ ASPECT_RATIOS = AspectRatio.__args__  # type: ignore
 OutputMimeType = Literal["image/png", "image/jpeg"]
 OUTPUT_MIME_TYPES = OutputMimeType.__args__  # type: ignore
 
-SafetyFilterLevel = Literal["block_most", "block_some", "block_few"]
+SafetyFilterLevel = Literal["block_low_and_above", "block_medium_and_above", "block_only_high"]
 SAFETY_FILTER_LEVELS = SafetyFilterLevel.__args__  # type: ignore
 
 PersonGeneration = Literal["dont_allow", "allow_adult"]
