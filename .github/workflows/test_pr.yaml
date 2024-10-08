@@ -11,7 +11,7 @@ on:
     - "pyproject.toml"
     - "samples/*.py"
     - "setup.py"
-  # Allow manual runs
+  # Allow manual runs 
   workflow_dispatch:
 
 jobs:
