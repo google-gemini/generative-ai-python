@@ -115,7 +115,7 @@ class CUJTests(parameterized.TestCase):
 
     def test_hello(self):
         # Generate text from text prompt
-        model = generative_models.GenerativeModel(model_name="gemini-pro")
+        model = generative_models.GenerativeModel(model_name="gemini-1.5-flash")
 
         self.responses["generate_content"].append(simple_response("world!"))
 
@@ -138,7 +138,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_image(self, content):
         # Generate text from image
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
 
         cat = "It's a cat"
         self.responses["generate_content"].append(simple_response(cat))
@@ -172,7 +172,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_generation_config_overwrite(self, config1, config2):
         # Generation config
-        model = generative_models.GenerativeModel("gemini-pro", generation_config=config1)
+        model = generative_models.GenerativeModel("gemini-1.5-flash", generation_config=config1)
 
         self.responses["generate_content"] = [
             simple_response(" world!"),
@@ -218,7 +218,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_safety_overwrite(self, safe1, safe2):
         # Safety
-        model = generative_models.GenerativeModel("gemini-pro", safety_settings=safe1)
+        model = generative_models.GenerativeModel("gemini-1.5-flash", safety_settings=safe1)
 
         self.responses["generate_content"] = [
             simple_response(" world!"),
@@ -253,7 +253,7 @@ class CUJTests(parameterized.TestCase):
         chunks = ["first", " second", " third"]
         self.responses["stream_generate_content"] = [(simple_response(text) for text in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content("Hello", stream=True)
 
         self.assertEqual(self.observed_requests[0].contents[0].parts[0].text, "Hello")
@@ -267,7 +267,7 @@ class CUJTests(parameterized.TestCase):
         chunks = ["first", " second", " third"]
         self.responses["stream_generate_content"] = [(simple_response(text) for text in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content("Hello", stream=True)
 
         self.assertEqual(self.observed_requests[0].contents[0].parts[0].text, "Hello")
@@ -287,7 +287,7 @@ class CUJTests(parameterized.TestCase):
         ]
         self.responses["stream_generate_content"] = [(chunk for chunk in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content("Bad stuff!", stream=True)
 
         self.assertEqual(
@@ -322,7 +322,7 @@ class CUJTests(parameterized.TestCase):
         ]
         self.responses["stream_generate_content"] = [(chunk for chunk in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content("Hello", stream=True)
 
         self.assertEqual(
@@ -389,7 +389,7 @@ class CUJTests(parameterized.TestCase):
 
     def test_chat(self):
         # Multi turn chat
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         self.responses["generate_content"] = [
@@ -423,7 +423,7 @@ class CUJTests(parameterized.TestCase):
     def test_chat_roles(self):
         self.responses["generate_content"] = [simple_response("hello!")]
 
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
         response = chat.send_message("hello?")
         history = chat.history
@@ -792,7 +792,7 @@ class CUJTests(parameterized.TestCase):
         )
         self.responses["generate_content"] = [simple_response("echo echo")]
 
-        model = generative_models.GenerativeModel("gemini-pro", tools=tools)
+        model = generative_models.GenerativeModel("gemini-1.5-flash", tools=tools)
         _ = model.generate_content("Hello", tools=[tools], tool_config=tool_config)
 
         req = self.observed_requests[0]
@@ -811,7 +811,7 @@ class CUJTests(parameterized.TestCase):
     )
     def test_system_instruction(self, instruction, expected_instr):
         self.responses["generate_content"] = [simple_response("echo echo")]
-        model = generative_models.GenerativeModel("gemini-pro", system_instruction=instruction)
+        model = generative_models.GenerativeModel("gemini-1.5-flash", system_instruction=instruction)
 
         _ = model.generate_content("test")
 
@@ -852,7 +852,7 @@ class CUJTests(parameterized.TestCase):
         )
 
     def test_repr_for_unary_non_streamed_response(self):
-        model = generative_models.GenerativeModel(model_name="gemini-pro")
+        model = generative_models.GenerativeModel(model_name="gemini-1.5-flash")
         self.responses["generate_content"].append(simple_response("world!"))
         response = model.generate_content("Hello")
 
@@ -885,7 +885,7 @@ class CUJTests(parameterized.TestCase):
         chunks = ["first", " second", " third"]
         self.responses["stream_generate_content"] = [(simple_response(text) for text in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content("Hello", stream=True)
         iterator = iter(response)
 
@@ -980,7 +980,7 @@ class CUJTests(parameterized.TestCase):
         ]
         self.responses["stream_generate_content"] = [(chunk for chunk in chunks)]
 
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content("Bad stuff!", stream=True)
 
         result = repr(response)
@@ -1096,7 +1096,7 @@ class CUJTests(parameterized.TestCase):
 
     def test_repr_for_multi_turn_chat(self):
         # Multi turn chat
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         self.responses["generate_content"] = [
@@ -1119,7 +1119,7 @@ class CUJTests(parameterized.TestCase):
             """\
             ChatSession(
                 model=genai.GenerativeModel(
-                    model_name='models/gemini-pro',
+                    model_name='models/gemini-1.5-flash',
                     generation_config={},
                     safety_settings={},
                     tools=None,
@@ -1133,7 +1133,7 @@ class CUJTests(parameterized.TestCase):
 
     def test_repr_for_incomplete_streaming_chat(self):
         # Multi turn chat
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         self.responses["stream_generate_content"] = [
@@ -1148,7 +1148,7 @@ class CUJTests(parameterized.TestCase):
             """\
             ChatSession(
                 model=genai.GenerativeModel(
-                    model_name='models/gemini-pro',
+                    model_name='models/gemini-1.5-flash',
                     generation_config={},
                     safety_settings={},
                     tools=None,
@@ -1162,7 +1162,7 @@ class CUJTests(parameterized.TestCase):
 
     def test_repr_for_broken_streaming_chat(self):
         # Multi turn chat
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 
         self.responses["stream_generate_content"] = [
@@ -1193,7 +1193,7 @@ class CUJTests(parameterized.TestCase):
             """\
             ChatSession(
                 model=genai.GenerativeModel(
-                    model_name='models/gemini-pro',
+                    model_name='models/gemini-1.5-flash',
                     generation_config={},
                     safety_settings={},
                     tools=None,
@@ -1206,7 +1206,7 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(expected, result)
 
     def test_repr_for_system_instruction(self):
-        model = generative_models.GenerativeModel("gemini-pro", system_instruction="Be excellent.")
+        model = generative_models.GenerativeModel("gemini-1.5-flash", system_instruction="Be excellent.")
         result = repr(model)
         self.assertIn("system_instruction='Be excellent.'", result)
 
@@ -1237,7 +1237,7 @@ class CUJTests(parameterized.TestCase):
         )
         request_options = {"timeout": 120}
 
-        model = generative_models.GenerativeModel("gemini-pro")
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
         chat.send_message("hello", request_options=helper_types.RequestOptions(**request_options))
 

@@ -40,7 +40,7 @@ def get_model(
 
     ```
     import pprint
-    model = genai.get_model('models/gemini-pro')
+    model = genai.get_model('models/gemini-1.5-flash')
     pprint.pprint(model)
     ```
 
