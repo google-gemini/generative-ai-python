@@ -811,7 +811,9 @@ class CUJTests(parameterized.TestCase):
     )
     def test_system_instruction(self, instruction, expected_instr):
         self.responses["generate_content"] = [simple_response("echo echo")]
-        model = generative_models.GenerativeModel("gemini-1.5-flash", system_instruction=instruction)
+        model = generative_models.GenerativeModel(
+            "gemini-1.5-flash", system_instruction=instruction
+        )
 
         _ = model.generate_content("test")
 
@@ -1206,7 +1208,9 @@ class CUJTests(parameterized.TestCase):
         self.assertEqual(expected, result)
 
     def test_repr_for_system_instruction(self):
-        model = generative_models.GenerativeModel("gemini-1.5-flash", system_instruction="Be excellent.")
+        model = generative_models.GenerativeModel(
+            "gemini-1.5-flash", system_instruction="Be excellent."
+        )
         result = repr(model)
         self.assertIn("system_instruction='Be excellent.'", result)
 
