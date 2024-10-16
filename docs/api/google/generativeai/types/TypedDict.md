@@ -9,7 +9,7 @@ description: A simple typed namespace. At runtime it is equivalent to a plain di
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 
 </table>
 

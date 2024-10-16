@@ -19,7 +19,7 @@ description: A permission to access a resource.
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/permission_types.py#L92-L267">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

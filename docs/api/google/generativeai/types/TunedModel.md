@@ -24,7 +24,7 @@ description: A dataclass representation of a <a href="../../../google/generative
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/model_types.py#L183-L204">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

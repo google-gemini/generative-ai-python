@@ -9,7 +9,7 @@ description: User provided string values assigned to a single metadata key.
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/retriever.py#L140-L152">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

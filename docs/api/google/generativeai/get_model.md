@@ -9,7 +9,7 @@ description: Calls the API to fetch a model by name.
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/models.py#L33-L63">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

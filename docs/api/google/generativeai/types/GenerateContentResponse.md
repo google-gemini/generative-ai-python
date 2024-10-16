@@ -15,7 +15,7 @@ description: Instances of this class manage the response of the generate_content
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L625-L689">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

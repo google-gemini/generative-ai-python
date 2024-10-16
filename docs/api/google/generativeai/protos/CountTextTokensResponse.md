@@ -9,7 +9,7 @@ description: A response from CountTextTokens.
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/text_service.py#L422-L438">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

@@ -9,7 +9,7 @@ description: Calls the API to create async embeddings for content passed in.
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/embedding.py#L246-L312">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

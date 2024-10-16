@@ -9,7 +9,7 @@ description: Calls the API to list all operations
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/operations.py#L29-L42">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

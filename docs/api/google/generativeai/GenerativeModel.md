@@ -16,7 +16,7 @@ description: The genai.GenerativeModel class wraps default parameters for calls 
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/generative_models.py#L27-L478">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

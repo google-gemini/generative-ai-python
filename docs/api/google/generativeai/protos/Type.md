@@ -60,7 +60,7 @@ description: Type contains the list of OpenAPI data types as defined by https://
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L49-L75">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

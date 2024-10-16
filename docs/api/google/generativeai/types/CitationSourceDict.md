@@ -9,7 +9,7 @@ description: A citation to a source for a portion of a specific response.
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/citation_types.py#L30-L36">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

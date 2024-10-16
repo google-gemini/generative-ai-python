@@ -9,7 +9,7 @@ description: Content filtering metadata associated with processing a single requ
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/safety_types.py#L149-L153">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

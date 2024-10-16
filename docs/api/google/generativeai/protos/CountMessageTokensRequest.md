@@ -9,7 +9,7 @@ description: Counts the number of tokens in the prompt sent to a model.
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/discuss_service.py#L306-L334">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

@@ -13,7 +13,7 @@ description: Contains an ongoing conversation with the model.
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/generative_models.py#L481-L875">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />

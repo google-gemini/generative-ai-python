@@ -14,7 +14,7 @@ description: This is the async version of genai.GenerateContentResponse.
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L692-L756">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
