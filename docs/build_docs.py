@@ -101,8 +101,8 @@ parser.TEXT_TEMPLATE = textwrap.dedent(
   </tr>"""
 )
 
-base_page.TABLE_HEADER = (
-    '<table class="tfo-notebook-buttons tfo-api nocontent">')
+base_page.TABLE_HEADER = '<table class="tfo-notebook-buttons tfo-api nocontent">'
+
 
 def gen_api_docs():
     """Generates api docs for the generative-ai package."""
