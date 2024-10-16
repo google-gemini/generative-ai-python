@@ -11,7 +11,7 @@ description: The base structured datatype containing multi-part content of a mes
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L76-L103">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L78-L105">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -37,25 +37,33 @@ that contains the content of the message turn.
 
 <tr>
 <td>
+
 `parts`<a id="parts"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Part]`
 
 Ordered ``Parts`` that constitute a single message. Parts
 may have different MIME types.
+
 </td>
 </tr><tr>
 <td>
+
 `role`<a id="role"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. The producer of the content. Must
 be either 'user' or 'model'.
 Useful to set for multi-turn conversations,
 otherwise can be left blank or unset.
+
 </td>
 </tr>
 </table>

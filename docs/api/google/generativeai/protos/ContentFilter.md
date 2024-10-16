@@ -12,7 +12,7 @@ description: Content filtering metadata associated with processing a single requ
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L83-L128">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L85-L130">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -38,23 +38,31 @@ string. The reason may be unspecified.
 
 <tr>
 <td>
+
 `reason`<a id="reason"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.ContentFilter.BlockedReason`
 
 The reason content was blocked during request
 processing.
+
 </td>
 </tr><tr>
 <td>
+
 `message`<a id="message"></a>
+
 </td>
 <td>
+
 `str`
 
 A string that describes the filtering
 behavior in more detail.
+
 
 </td>
 </tr>

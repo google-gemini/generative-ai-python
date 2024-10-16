@@ -40,21 +40,29 @@ result.
 
 <tr>
 <td>
+
 `rating`<a id="rating"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.SafetyRating`
 
 Safety rating evaluated from content.
+
 </td>
 </tr><tr>
 <td>
+
 `setting`<a id="setting"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.SafetySetting`
 
 Safety settings applied to the request.
+
 </td>
 </tr>
 </table>

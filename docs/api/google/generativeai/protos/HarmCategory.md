@@ -45,7 +45,9 @@ description: The category of a rating.
 <meta itemprop="property" content="bit_length"/>
 <meta itemprop="property" content="conjugate"/>
 <meta itemprop="property" content="from_bytes"/>
+<meta itemprop="property" content="is_integer"/>
 <meta itemprop="property" content="to_bytes"/>
+<meta itemprop="property" content="HARM_CATEGORY_CIVIC_INTEGRITY"/>
 <meta itemprop="property" content="HARM_CATEGORY_DANGEROUS"/>
 <meta itemprop="property" content="HARM_CATEGORY_DANGEROUS_CONTENT"/>
 <meta itemprop="property" content="HARM_CATEGORY_DEROGATORY"/>
@@ -65,7 +67,7 @@ description: The category of a rating.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L34-L80">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L34-L82">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -96,108 +98,164 @@ may wish to adjust.
 
 <tr>
 <td>
+
 `HARM_CATEGORY_UNSPECIFIED`<a id="HARM_CATEGORY_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `0`
 
 Category is unspecified.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_DEROGATORY`<a id="HARM_CATEGORY_DEROGATORY"></a>
+
 </td>
 <td>
+
 `1`
 
-Negative or harmful comments targeting
-identity and/or protected attribute.
+**PaLM** - Negative or harmful comments targeting identity
+and/or protected attribute.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_TOXICITY`<a id="HARM_CATEGORY_TOXICITY"></a>
+
 </td>
 <td>
+
 `2`
 
-Content that is rude, disrespectful, or
-profane.
+**PaLM** - Content that is rude, disrespectful, or profane.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_VIOLENCE`<a id="HARM_CATEGORY_VIOLENCE"></a>
+
 </td>
 <td>
+
 `3`
 
-Describes scenarios depicting violence
-against an individual or group, or general
-descriptions of gore.
+**PaLM** - Describes scenarios depicting violence against an
+individual or group, or general descriptions of gore.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_SEXUAL`<a id="HARM_CATEGORY_SEXUAL"></a>
+
 </td>
 <td>
+
 `4`
 
-Contains references to sexual acts or other
-lewd content.
+**PaLM** - Contains references to sexual acts or other lewd
+content.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_MEDICAL`<a id="HARM_CATEGORY_MEDICAL"></a>
+
 </td>
 <td>
+
 `5`
 
-Promotes unchecked medical advice.
+**PaLM** - Promotes unchecked medical advice.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_DANGEROUS`<a id="HARM_CATEGORY_DANGEROUS"></a>
+
 </td>
 <td>
+
 `6`
 
-Dangerous content that promotes, facilitates,
-or encourages harmful acts.
+**PaLM** - Dangerous content that promotes, facilitates, or
+encourages harmful acts.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_HARASSMENT`<a id="HARM_CATEGORY_HARASSMENT"></a>
+
 </td>
 <td>
+
 `7`
 
-Harasment content.
+**Gemini** - Harassment content.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_HATE_SPEECH`<a id="HARM_CATEGORY_HATE_SPEECH"></a>
+
 </td>
 <td>
+
 `8`
 
-Hate speech and content.
+**Gemini** - Hate speech and content.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_SEXUALLY_EXPLICIT`<a id="HARM_CATEGORY_SEXUALLY_EXPLICIT"></a>
+
 </td>
 <td>
+
 `9`
 
-Sexually explicit content.
+**Gemini** - Sexually explicit content.
+
 </td>
 </tr><tr>
 <td>
+
 `HARM_CATEGORY_DANGEROUS_CONTENT`<a id="HARM_CATEGORY_DANGEROUS_CONTENT"></a>
+
 </td>
 <td>
+
 `10`
 
-Dangerous content.
+**Gemini** - Dangerous content.
+
+</td>
+</tr><tr>
+<td>
+
+`HARM_CATEGORY_CIVIC_INTEGRITY`<a id="HARM_CATEGORY_CIVIC_INTEGRITY"></a>
+
+</td>
+<td>
+
+`11`
+
+**Gemini** - Content that may be used to harm civic
+integrity.
+
 </td>
 </tr>
 </table>
@@ -213,31 +271,47 @@ Dangerous content.
 
 <tr>
 <td>
+
 `denominator`<a id="denominator"></a>
+
 </td>
 <td>
+
 the denominator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `imag`<a id="imag"></a>
+
 </td>
 <td>
+
 the imaginary part of a complex number
+
 </td>
 </tr><tr>
 <td>
+
 `numerator`<a id="numerator"></a>
+
 </td>
 <td>
+
 the numerator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `real`<a id="real"></a>
+
 </td>
 <td>
+
 the real part of a complex number
+
 </td>
 </tr>
 </table>
@@ -252,10 +326,9 @@ the real part of a complex number
 <code>as_integer_ratio()
 </code></pre>
 
-Return integer ratio.
+Return a pair of integers, whose ratio is equal to the original int.
 
-Return a pair of integers, whose ratio is exactly equal to the original int
-and with a positive denominator.
+The ratio is in lowest terms and has a positive denominator.
 
 ```
 >>> (10).as_integer_ratio()
@@ -330,6 +403,15 @@ byteorder
   `sys.byteorder' as the byte order value.  Default is to use 'big'.
 signed
   Indicates whether two's complement is used to represent the integer.
+
+<h3 id="is_integer"><code>is_integer</code></h3>
+
+<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
+<code>is_integer()
+</code></pre>
+
+Returns True. Exists for duck type compatibility with float.is_integer.
+
 
 <h3 id="to_bytes"><code>to_bytes</code></h3>
 
@@ -742,80 +824,135 @@ Return self^value.
 
 <tr>
 <td>
+
+HARM_CATEGORY_CIVIC_INTEGRITY<a id="HARM_CATEGORY_CIVIC_INTEGRITY"></a>
+
+</td>
+<td>
+
+`<HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY: 11>`
+
+</td>
+</tr><tr>
+<td>
+
 HARM_CATEGORY_DANGEROUS<a id="HARM_CATEGORY_DANGEROUS"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_DANGEROUS: 6>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_DANGEROUS_CONTENT<a id="HARM_CATEGORY_DANGEROUS_CONTENT"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: 10>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_DEROGATORY<a id="HARM_CATEGORY_DEROGATORY"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_DEROGATORY: 1>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_HARASSMENT<a id="HARM_CATEGORY_HARASSMENT"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_HARASSMENT: 7>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_HATE_SPEECH<a id="HARM_CATEGORY_HATE_SPEECH"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_HATE_SPEECH: 8>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_MEDICAL<a id="HARM_CATEGORY_MEDICAL"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_MEDICAL: 5>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_SEXUAL<a id="HARM_CATEGORY_SEXUAL"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_SEXUAL: 4>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_SEXUALLY_EXPLICIT<a id="HARM_CATEGORY_SEXUALLY_EXPLICIT"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: 9>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_TOXICITY<a id="HARM_CATEGORY_TOXICITY"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_TOXICITY: 2>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_UNSPECIFIED<a id="HARM_CATEGORY_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_UNSPECIFIED: 0>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_CATEGORY_VIOLENCE<a id="HARM_CATEGORY_VIOLENCE"></a>
+
 </td>
 <td>
+
 `<HarmCategory.HARM_CATEGORY_VIOLENCE: 3>`
+
 </td>
 </tr>
 </table>

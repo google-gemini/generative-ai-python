@@ -16,7 +16,7 @@ description: This is the async version of genai.GenerateContentResponse.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L620-L684">
+  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L692-L756">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -51,37 +51,57 @@ This is the async version of `genai.GenerateContentResponse`.
 
 <tr>
 <td>
+
 `candidates`<a id="candidates"></a>
+
 </td>
 <td>
+
 The list of candidate responses.
-</td>
-</tr><tr>
-<td>
-`parts`<a id="parts"></a>
-</td>
-<td>
-A quick accessor equivalent to `self.candidates[0].content.parts`
-</td>
-</tr><tr>
-<td>
-`prompt_feedback`<a id="prompt_feedback"></a>
-</td>
-<td>
 
 </td>
 </tr><tr>
 <td>
-`text`<a id="text"></a>
+
+`parts`<a id="parts"></a>
+
 </td>
 <td>
-A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
+
+A quick accessor equivalent to `self.candidates[0].content.parts`
+
 </td>
 </tr><tr>
 <td>
-`usage_metadata`<a id="usage_metadata"></a>
+
+`prompt_feedback`<a id="prompt_feedback"></a>
+
 </td>
 <td>
+
+
+
+</td>
+</tr><tr>
+<td>
+
+`text`<a id="text"></a>
+
+</td>
+<td>
+
+A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
+
+</td>
+</tr><tr>
+<td>
+
+`usage_metadata`<a id="usage_metadata"></a>
+
+</td>
+<td>
+
+
 
 </td>
 </tr>
@@ -93,7 +113,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="from_aiterator"><code>from_aiterator</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L622-L632">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L694-L704">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>from_aiterator(
@@ -106,7 +126,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="from_response"><code>from_response</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L634-L640">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L706-L712">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>@classmethod</code>
@@ -120,7 +140,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="resolve"><code>resolve</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L679-L684">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L751-L756">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>resolve()
@@ -131,7 +151,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="to_dict"><code>to_dict</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L383-L393">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L405-L415">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>to_dict()

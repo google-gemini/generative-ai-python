@@ -40,35 +40,47 @@ members.
 
 <tr>
 <td>
+
 `string_value`<a id="string_value"></a>
+
 </td>
 <td>
+
 `str`
 
 The string value to filter the metadata on.
 
 This field is a member of `oneof`_ ``value``.
+
 </td>
 </tr><tr>
 <td>
+
 `numeric_value`<a id="numeric_value"></a>
+
 </td>
 <td>
+
 `float`
 
 The numeric value to filter the metadata on.
 
 This field is a member of `oneof`_ ``value``.
+
 </td>
 </tr><tr>
 <td>
+
 `operation`<a id="operation"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Condition.Operator`
 
 Required. Operator applied to the given
 key-value pair to trigger the condition.
+
 </td>
 </tr>
 </table>

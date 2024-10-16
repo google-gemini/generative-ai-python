@@ -11,7 +11,7 @@ description: Dataset for training or validation.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/tuned_model.py#L334-L351">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/tuned_model.py#L344-L361">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,14 +34,18 @@ Dataset for training or validation.
 
 <tr>
 <td>
+
 `examples`<a id="examples"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.TuningExamples`
 
 Optional. Inline examples.
 
 This field is a member of `oneof`_ ``dataset``.
+
 </td>
 </tr>
 </table>

@@ -54,31 +54,42 @@ previous role's permitted operations:
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Output only. Identifier. The permission name. A unique name
 will be generated on create. Examples:
 tunedModels/{tuned_model}/permissions/{permission}
 corpora/{corpus}/permissions/{permission} Output only.
+
 </td>
 </tr><tr>
 <td>
+
 `grantee_type`<a id="grantee_type"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Permission.GranteeType`
 
 Optional. Immutable. The type of the grantee.
 
+
 </td>
 </tr><tr>
 <td>
+
 `email_address`<a id="email_address"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. Immutable. The email address of the
@@ -86,16 +97,21 @@ user of group which this permission refers.
 Field is not set when permission's grantee type
 is EVERYONE.
 
+
 </td>
 </tr><tr>
 <td>
+
 `role`<a id="role"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Permission.Role`
 
 Required. The role granted by this
 permission.
+
 
 </td>
 </tr>

@@ -11,7 +11,7 @@ description: The response to a BatchEmbedContentsRequest.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1086-L1100">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1525-L1539">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,14 +34,18 @@ The response to a ``BatchEmbedContentsRequest``.
 
 <tr>
 <td>
+
 `embeddings`<a id="embeddings"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.ContentEmbedding]`
 
 Output only. The embeddings for each request,
 in the same order as provided in the batch
 request.
+
 </td>
 </tr>
 </table>

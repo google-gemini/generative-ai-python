@@ -11,7 +11,7 @@ description: Identifier for a Chunk retrieved via Semantic Retriever specified i
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L654-L676">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L876-L898">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,24 +34,32 @@ Identifier for a ``Chunk`` retrieved via Semantic Retriever specified in the ``G
 
 <tr>
 <td>
+
 `source`<a id="source"></a>
+
 </td>
 <td>
+
 `str`
 
 Output only. Name of the source matching the request's
 <a href="../../../../google/generativeai/protos/SemanticRetrieverConfig.md#source"><code>SemanticRetrieverConfig.source</code></a>. Example: ``corpora/123``
 or ``corpora/123/documents/abc``
+
 </td>
 </tr><tr>
 <td>
+
 `chunk`<a id="chunk"></a>
+
 </td>
 <td>
+
 `str`
 
 Output only. Name of the ``Chunk`` containing the attributed
 text. Example: ``corpora/123/documents/abc/chunks/xyz``
+
 </td>
 </tr>
 </table>

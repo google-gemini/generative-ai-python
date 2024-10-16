@@ -34,13 +34,17 @@ Request for getting information about a specific ``Chunk``.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Chunk`` to retrieve. Example:
 ``corpora/my-corpus-123/documents/the-doc-abc/chunks/some-chunk``
+
 </td>
 </tr>
 </table>

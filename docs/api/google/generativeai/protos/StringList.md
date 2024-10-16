@@ -34,12 +34,16 @@ User provided string values assigned to a single metadata key.
 
 <tr>
 <td>
+
 `values`<a id="values"></a>
+
 </td>
 <td>
+
 `MutableSequence[str]`
 
 The string values of the metadata to store.
+
 </td>
 </tr>
 </table>

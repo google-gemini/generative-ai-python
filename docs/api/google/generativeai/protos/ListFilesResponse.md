@@ -34,22 +34,30 @@ Response for ``ListFiles``.
 
 <tr>
 <td>
+
 `files`<a id="files"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.File]`
 
 The list of ``File``\ s.
+
 </td>
 </tr><tr>
 <td>
+
 `next_page_token`<a id="next_page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 A token that can be sent as a ``page_token`` into a
 subsequent ``ListFiles`` call.
+
 </td>
 </tr>
 </table>

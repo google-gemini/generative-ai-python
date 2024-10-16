@@ -31,30 +31,40 @@ The abstract base class for a message.
 <tr><th colspan="2"><h2 class="add-link">Args</h2></th></tr>
 <tr class="alt">
 <td colspan="2">
+
 mapping (Union[dict, ~.Message]): A dictionary or message to be
 used to determine the values for this message.
+
 </td>
 </tr>
 <tr>
 <td>
+
 `ignore_unknown_fields`<a id="ignore_unknown_fields"></a>
+
 </td>
 <td>
+
 `Optional(bool`
 
 If True, do not raise errors for
     unknown fields. Only applied if `mapping` is a mapping type or there
     are keyword parameters.
+
 </td>
 </tr><tr>
 <td>
+
 `kwargs`<a id="kwargs"></a>
+
 </td>
 <td>
+
 `dict`
 
 Keys and values corresponding to the fields of the
     message.
+
 </td>
 </tr>
 </table>
@@ -70,17 +80,25 @@ Keys and values corresponding to the fields of the
 
 <tr>
 <td>
+
 `key`<a id="key"></a>
+
 </td>
 <td>
+
 `string key`
+
 </td>
 </tr><tr>
 <td>
+
 `value`<a id="value"></a>
+
 </td>
 <td>
+
 `Schema value`
+
 </td>
 </tr>
 </table>

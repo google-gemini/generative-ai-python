@@ -1,4 +1,4 @@
-description: Request to generate a grounded answer from the model.
+description: Request to generate a grounded answer from the Model.
 
 <div itemscope itemtype="http://developers.google.com/ReferenceObject">
 <meta itemprop="name" content="google.generativeai.protos.GenerateAnswerRequest" />
@@ -12,7 +12,7 @@ description: Request to generate a grounded answer from the model.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L716-L840">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1151-L1280">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -21,7 +21,7 @@ description: Request to generate a grounded answer from the model.
 
 
 
-Request to generate a grounded answer from the model.
+Request to generate a grounded answer from the ``Model``.
 
 <!-- Placeholder for "Used in" -->
 
@@ -40,70 +40,92 @@ members.
 
 <tr>
 <td>
+
 `inline_passages`<a id="inline_passages"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.GroundingPassages`
 
 Passages provided inline with the request.
 
 This field is a member of `oneof`_ ``grounding_source``.
+
 </td>
 </tr><tr>
 <td>
+
 `semantic_retriever`<a id="semantic_retriever"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.SemanticRetrieverConfig`
 
 Content retrieved from resources created via
 the Semantic Retriever API.
 
 This field is a member of `oneof`_ ``grounding_source``.
+
 </td>
 </tr><tr>
 <td>
+
 `model`<a id="model"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Model`` to use for generating
 the grounded response.
 
 Format: ``model=models/{model}``.
+
 </td>
 </tr><tr>
 <td>
+
 `contents`<a id="contents"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Content]`
 
 Required. The content of the current conversation with the
-model. For single-turn queries, this is a single question to
-answer. For multi-turn queries, this is a repeated field
-that contains conversation history and the last ``Content``
-in the list containing the question.
+``Model``. For single-turn queries, this is a single
+question to answer. For multi-turn queries, this is a
+repeated field that contains conversation history and the
+last ``Content`` in the list containing the question.
 
-Note: GenerateAnswer currently only supports queries in
-English.
+Note: ``GenerateAnswer`` only supports queries in English.
+
 </td>
 </tr><tr>
 <td>
+
 `answer_style`<a id="answer_style"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.GenerateAnswerRequest.AnswerStyle`
 
 Required. Style in which answers should be
 returned.
+
 </td>
 </tr><tr>
 <td>
+
 `safety_settings`<a id="safety_settings"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.SafetySetting]`
 
 Optional. A list of unique ``SafetySetting`` instances for
@@ -122,13 +144,23 @@ will use the default safety setting for that category. Harm
 categories HARM_CATEGORY_HATE_SPEECH,
 HARM_CATEGORY_SEXUALLY_EXPLICIT,
 HARM_CATEGORY_DANGEROUS_CONTENT, HARM_CATEGORY_HARASSMENT
-are supported.
+are supported. Refer to the
+`guide <https://ai.google.dev/gemini-api/docs/safety-settings>`__
+for detailed information on available safety settings. Also
+refer to the `Safety
+guidance <https://ai.google.dev/gemini-api/docs/safety-guidance>`__
+to learn how to incorporate safety considerations in your AI
+applications.
+
 </td>
 </tr><tr>
 <td>
+
 `temperature`<a id="temperature"></a>
+
 </td>
 <td>
+
 `float`
 
 Optional. Controls the randomness of the output.
@@ -139,6 +171,7 @@ creative, while a value closer to 0.0 will typically result
 in more straightforward responses from the model. A low
 temperature (~0.2) is usually recommended for
 Attributed-Question-Answering use cases.
+
 
 </td>
 </tr>

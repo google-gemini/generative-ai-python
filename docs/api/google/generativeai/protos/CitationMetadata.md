@@ -34,12 +34,16 @@ A collection of source attributions for a piece of content.
 
 <tr>
 <td>
+
 `citation_sources`<a id="citation_sources"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.CitationSource]`
 
 Citations to sources for a specific response.
+
 </td>
 </tr>
 </table>

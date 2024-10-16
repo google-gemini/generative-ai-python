@@ -34,22 +34,30 @@ Request to create a ``Document``.
 
 <tr>
 <td>
+
 `parent`<a id="parent"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Corpus`` where this ``Document``
 will be created. Example: ``corpora/my-corpus-123``
+
 </td>
 </tr><tr>
 <td>
+
 `document`<a id="document"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Document`
 
 Required. The ``Document`` to create.
+
 </td>
 </tr>
 </table>

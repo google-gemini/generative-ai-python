@@ -47,50 +47,74 @@ Calls the API to create embeddings for content passed in.
 
 <tr>
 <td>
+
 `model`<a id="model"></a>
+
 </td>
 <td>
+
     Which [model](https://ai.google.dev/models/gemini#embedding) to
 call, as a string or a <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a>.
+
 </td>
 </tr><tr>
 <td>
+
 `content`<a id="content"></a>
+
 </td>
 <td>
+
     Content to embed.
+
 </td>
 </tr><tr>
 <td>
+
 `task_type`<a id="task_type"></a>
+
 </td>
 <td>
+
     Optional task type for which the embeddings will be used. Can only
 be set for `models/embedding-001`.
+
 </td>
 </tr><tr>
 <td>
+
 `title`<a id="title"></a>
+
 </td>
 <td>
+
     An optional title for the text. Only applicable when task_type is
 `RETRIEVAL_DOCUMENT`.
+
 </td>
 </tr><tr>
 <td>
+
 `output_dimensionality`<a id="output_dimensionality"></a>
+
 </td>
 <td>
+
     Optional reduced dimensionality for the output embeddings. If set,
 excessive values from the output embeddings will be truncated from
 the end.
+
 </td>
 </tr><tr>
 <td>
+
 `request_options`<a id="request_options"></a>
+
 </td>
 <td>
+
     Options for the request.
+
 </td>
 </tr>
 </table>
@@ -103,8 +127,10 @@ the end.
 <tr><th colspan="2"><h2 class="add-link">Return</h2></th></tr>
 <tr class="alt">
 <td colspan="2">
+
 Dictionary containing the embedding (list of float values) for the
 input content.
+
 </td>
 </tr>
 

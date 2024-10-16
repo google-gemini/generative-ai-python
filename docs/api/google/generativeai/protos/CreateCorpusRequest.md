@@ -34,12 +34,16 @@ Request to create a ``Corpus``.
 
 <tr>
 <td>
+
 `corpus`<a id="corpus"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Corpus`
 
 Required. The ``Corpus`` to create.
+
 </td>
 </tr>
 </table>

@@ -55,31 +55,47 @@ A permission to access a resource.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr><tr>
 <td>
+
 `role`<a id="role"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr><tr>
 <td>
+
 `grantee_type`<a id="grantee_type"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr><tr>
 <td>
+
 `email_address`<a id="email_address"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr>
 </table>
@@ -135,10 +151,14 @@ Get information about a specific permission.
 
 <tr>
 <td>
+
 `name`
+
 </td>
 <td>
+
 The name of the permission to get.
+
 </td>
 </tr>
 </table>
@@ -151,7 +171,9 @@ The name of the permission to get.
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
+
 Requested permission as an instance of `Permission`.
+
 </td>
 </tr>
 
@@ -204,11 +226,15 @@ Update a list of fields for a specified permission.
 
 <tr>
 <td>
+
 `updates`
+
 </td>
 <td>
+
 The list of fields to update.
 Currently only `role` is supported as an update path.
+
 </td>
 </tr>
 </table>
@@ -221,7 +247,9 @@ Currently only `role` is supported as an update path.
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
+
 `Permission` object with specified updates.
+
 </td>
 </tr>
 
@@ -264,10 +292,14 @@ Return self==value.
 
 <tr>
 <td>
+
 email_address<a id="email_address"></a>
+
 </td>
 <td>
+
 `None`
+
 </td>
 </tr>
 </table>

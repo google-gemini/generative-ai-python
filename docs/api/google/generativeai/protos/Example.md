@@ -36,22 +36,30 @@ response.
 
 <tr>
 <td>
+
 `input`<a id="input"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Message`
 
 Required. An example of an input ``Message`` from the user.
+
 </td>
 </tr><tr>
 <td>
+
 `output`<a id="output"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Message`
 
 Required. An example of what the model should
 output given the input.
+
 </td>
 </tr>
 </table>

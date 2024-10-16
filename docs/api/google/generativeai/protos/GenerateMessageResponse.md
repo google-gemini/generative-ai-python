@@ -37,27 +37,38 @@ messages.
 
 <tr>
 <td>
+
 `candidates`<a id="candidates"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Message]`
 
 Candidate response messages from the model.
+
 </td>
 </tr><tr>
 <td>
+
 `messages`<a id="messages"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Message]`
 
 The conversation history used by the model.
+
 </td>
 </tr><tr>
 <td>
+
 `filters`<a id="filters"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.ContentFilter]`
 
 A set of content filtering metadata for the prompt and
@@ -67,6 +78,7 @@ This indicates which ``SafetyCategory``\ (s) blocked a
 candidate from this response, the lowest ``HarmProbability``
 that triggered a block, and the HarmThreshold setting for
 that category.
+
 </td>
 </tr>
 </table>

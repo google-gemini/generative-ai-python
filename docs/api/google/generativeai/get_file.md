@@ -11,7 +11,7 @@ description: Calls the API to retrieve a specified file using a supported file s
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/files.py#L86-L91">
+  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/files.py#L100-L105">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>

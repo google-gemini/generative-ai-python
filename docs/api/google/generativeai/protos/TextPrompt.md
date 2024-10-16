@@ -36,12 +36,16 @@ completion.
 
 <tr>
 <td>
+
 `text`<a id="text"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The prompt text.
+
 </td>
 </tr>
 </table>

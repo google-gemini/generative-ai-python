@@ -34,23 +34,31 @@ Request for ``ListFiles``.
 
 <tr>
 <td>
+
 `page_size`<a id="page_size"></a>
+
 </td>
 <td>
+
 `int`
 
 Optional. Maximum number of ``File``\ s to return per page.
 If unspecified, defaults to 10. Maximum ``page_size`` is
 100.
+
 </td>
 </tr><tr>
 <td>
+
 `page_token`<a id="page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. A page token from a previous ``ListFiles`` call.
+
 </td>
 </tr>
 </table>

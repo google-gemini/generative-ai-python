@@ -34,12 +34,16 @@ Request for ``CreateFile``.
 
 <tr>
 <td>
+
 `file`<a id="file"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.File`
 
 Optional. Metadata for the file to create.
+
 </td>
 </tr>
 </table>

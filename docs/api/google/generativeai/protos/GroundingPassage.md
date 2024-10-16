@@ -11,7 +11,7 @@ description: Passage included inline with a grounding configuration.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L652-L671">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L737-L756">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,22 +34,30 @@ Passage included inline with a grounding configuration.
 
 <tr>
 <td>
+
 `id`<a id="id"></a>
+
 </td>
 <td>
+
 `str`
 
 Identifier for the passage for attributing
 this passage in grounded answers.
+
 </td>
 </tr><tr>
 <td>
+
 `content`<a id="content"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Content`
 
 Content of the passage.
+
 </td>
 </tr>
 </table>

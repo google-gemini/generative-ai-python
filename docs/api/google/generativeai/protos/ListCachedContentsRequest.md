@@ -34,9 +34,12 @@ Request to list CachedContents.
 
 <tr>
 <td>
+
 `page_size`<a id="page_size"></a>
+
 </td>
 <td>
+
 `int`
 
 Optional. The maximum number of cached
@@ -45,12 +48,16 @@ than this value. If unspecified, some default
 (under maximum) number of items will be
 returned. The maximum value is 1000; values
 above 1000 will be coerced to 1000.
+
 </td>
 </tr><tr>
 <td>
+
 `page_token`<a id="page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. A page token, received from a previous
@@ -60,6 +67,7 @@ subsequent page.
 When paginating, all other parameters provided to
 ``ListCachedContents`` must match the call that provided the
 page token.
+
 </td>
 </tr>
 </table>

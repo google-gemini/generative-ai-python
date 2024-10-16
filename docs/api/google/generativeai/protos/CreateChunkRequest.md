@@ -34,23 +34,31 @@ Request to create a ``Chunk``.
 
 <tr>
 <td>
+
 `parent`<a id="parent"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Document`` where this ``Chunk``
 will be created. Example:
 ``corpora/my-corpus-123/documents/the-doc-abc``
+
 </td>
 </tr><tr>
 <td>
+
 `chunk`<a id="chunk"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Chunk`
 
 Required. The ``Chunk`` to create.
+
 </td>
 </tr>
 </table>

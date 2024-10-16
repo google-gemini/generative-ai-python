@@ -35,15 +35,19 @@ It returns the model's ``token_count`` for the ``prompt``.
 
 <tr>
 <td>
+
 `token_count`<a id="token_count"></a>
+
 </td>
 <td>
+
 `int`
 
 The number of tokens that the ``model`` tokenizes the
 ``prompt`` into.
 
 Always non-negative.
+
 </td>
 </tr>
 </table>

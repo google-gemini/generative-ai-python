@@ -11,7 +11,7 @@ description: Batch request to get embeddings from the model for a list of prompt
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1056-L1083">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1495-L1522">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,9 +34,12 @@ Batch request to get embeddings from the model for a list of prompts.
 
 <tr>
 <td>
+
 `model`<a id="model"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The model's resource name. This serves as an ID
@@ -46,17 +49,22 @@ This name should match a model name returned by the
 ``ListModels`` method.
 
 Format: ``models/{model}``
+
 </td>
 </tr><tr>
 <td>
+
 `requests`<a id="requests"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.EmbedContentRequest]`
 
 Required. Embed requests for the batch. The model in each of
 these requests must match the model specified
 <a href="../../../google/generativeai/protos/BatchEmbedContentsRequest.md#model"><code>BatchEmbedContentsRequest.model</code></a>.
+
 </td>
 </tr>
 </table>

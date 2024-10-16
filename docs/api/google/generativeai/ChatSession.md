@@ -58,17 +58,25 @@ This `ChatSession` object collects the messages sent and received, in its
 
 <tr>
 <td>
+
 `model`<a id="model"></a>
+
 </td>
 <td>
+
 The model to use in the chat.
+
 </td>
 </tr><tr>
 <td>
+
 `history`<a id="history"></a>
+
 </td>
 <td>
+
 A chat history to initialize the object with.
+
 </td>
 </tr>
 </table>
@@ -84,17 +92,25 @@ A chat history to initialize the object with.
 
 <tr>
 <td>
+
 `history`<a id="history"></a>
+
 </td>
 <td>
+
 The chat history.
+
 </td>
 </tr><tr>
 <td>
+
 `last`<a id="last"></a>
+
 </td>
 <td>
+
 returns the last received `genai.GenerateContentResponse`
+
 </td>
 </tr>
 </table>
@@ -167,31 +183,47 @@ Like <a href="../../google/generativeai/GenerativeModel.md#generate_content"><co
 
 <tr>
 <td>
+
 `content`
+
 </td>
 <td>
+
 The message contents.
+
 </td>
 </tr><tr>
 <td>
+
 `generation_config`
+
 </td>
 <td>
+
 Overrides for the model's generation config.
+
 </td>
 </tr><tr>
 <td>
+
 `safety_settings`
+
 </td>
 <td>
+
 Overrides for the model's safety settings.
+
 </td>
 </tr><tr>
 <td>
+
 `stream`
+
 </td>
 <td>
+
 If True, yield response chunks as they are generated.
+
 </td>
 </tr>
 </table>

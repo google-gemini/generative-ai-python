@@ -11,7 +11,7 @@ description: Response from ListModel containing a paginated list of Models.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/model_service.py#L94-L119">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/model_service.py#L93-L118">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,24 +34,32 @@ Response from ``ListModel`` containing a paginated list of Models.
 
 <tr>
 <td>
+
 `models`<a id="models"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Model]`
 
 The returned Models.
+
 </td>
 </tr><tr>
 <td>
+
 `next_page_token`<a id="next_page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 A token, which can be sent as ``page_token`` to retrieve the
 next page.
 
 If this field is omitted, there are no more pages.
+
 </td>
 </tr>
 </table>

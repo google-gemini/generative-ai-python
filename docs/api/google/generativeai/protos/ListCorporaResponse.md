@@ -35,23 +35,31 @@ Response from ``ListCorpora`` containing a paginated list of ``Corpora``.
 
 <tr>
 <td>
+
 `corpora`<a id="corpora"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Corpus]`
 
 The returned corpora.
+
 </td>
 </tr><tr>
 <td>
+
 `next_page_token`<a id="next_page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 A token, which can be sent as ``page_token`` to retrieve the
 next page. If this field is omitted, there are no more
 pages.
+
 </td>
 </tr>
 </table>

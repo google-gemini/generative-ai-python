@@ -29,24 +29,36 @@ A ProtocolMessage
 
 <tr>
 <td>
+
 `code`<a id="code"></a>
+
 </td>
 <td>
+
 `int32 code`
+
 </td>
 </tr><tr>
 <td>
+
 `details`<a id="details"></a>
+
 </td>
 <td>
+
 `repeated Any details`
+
 </td>
 </tr><tr>
 <td>
+
 `message`<a id="message"></a>
+
 </td>
 <td>
+
 `string message`
+
 </td>
 </tr>
 </table>

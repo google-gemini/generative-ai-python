@@ -34,12 +34,16 @@ Request to create CachedContent.
 
 <tr>
 <td>
+
 `cached_content`<a id="cached_content"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.CachedContent`
 
 Required. The cached content to create.
+
 </td>
 </tr>
 </table>

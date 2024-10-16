@@ -41,9 +41,12 @@ model as text.
 
 <tr>
 <td>
+
 `author`<a id="author"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. The author of this Message.
@@ -53,21 +56,29 @@ the content of this Message when it is fed to
 the model as text.
 
 The author can be any alphanumeric string.
+
 </td>
 </tr><tr>
 <td>
+
 `content`<a id="content"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The text content of the structured ``Message``.
+
 </td>
 </tr><tr>
 <td>
+
 `citation_metadata`<a id="citation_metadata"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.CitationMetadata`
 
 Output only. Citation information for model-generated
@@ -77,6 +88,7 @@ If this ``Message`` was generated as output from the model,
 this field may be populated with attribution information for
 any text included in the ``content``. This field is used
 only on output.
+
 
 </td>
 </tr>

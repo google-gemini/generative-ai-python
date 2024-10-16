@@ -34,22 +34,30 @@ Request to update a ``Chunk``.
 
 <tr>
 <td>
+
 `chunk`<a id="chunk"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Chunk`
 
 Required. The ``Chunk`` to update.
+
 </td>
 </tr><tr>
 <td>
+
 `update_mask`<a id="update_mask"></a>
+
 </td>
 <td>
+
 `google.protobuf.field_mask_pb2.FieldMask`
 
 Required. The list of fields to update. Currently, this only
 supports updating ``custom_metadata`` and ``data``.
+
 </td>
 </tr>
 </table>

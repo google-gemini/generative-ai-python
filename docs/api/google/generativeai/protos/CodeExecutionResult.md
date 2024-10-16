@@ -12,7 +12,7 @@ description: Result of executing the ExecutableCode.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L295-L340">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L297-L342">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -37,23 +37,31 @@ a ``part`` containing the ``ExecutableCode``.
 
 <tr>
 <td>
+
 `outcome`<a id="outcome"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.CodeExecutionResult.Outcome`
 
 Required. Outcome of the code execution.
+
 </td>
 </tr><tr>
 <td>
+
 `output`<a id="output"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. Contains stdout when code execution
 is successful, stderr or other description
 otherwise.
+
 </td>
 </tr>
 </table>

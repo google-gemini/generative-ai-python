@@ -12,7 +12,7 @@ description: Safety rating for a piece of content.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L160-L219">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L162-L221">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -40,32 +40,44 @@ included here.
 
 <tr>
 <td>
+
 `category`<a id="category"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.HarmCategory`
 
 Required. The category for this rating.
+
 </td>
 </tr><tr>
 <td>
+
 `probability`<a id="probability"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.SafetyRating.HarmProbability`
 
 Required. The probability of harm for this
 content.
+
 </td>
 </tr><tr>
 <td>
+
 `blocked`<a id="blocked"></a>
+
 </td>
 <td>
+
 `bool`
 
 Was this content blocked because of this
 rating?
+
 </td>
 </tr>
 </table>

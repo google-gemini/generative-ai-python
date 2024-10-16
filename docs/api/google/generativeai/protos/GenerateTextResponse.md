@@ -34,18 +34,25 @@ The response from the model, including candidate completions.
 
 <tr>
 <td>
+
 `candidates`<a id="candidates"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.TextCompletion]`
 
 Candidate responses from the model.
+
 </td>
 </tr><tr>
 <td>
+
 `filters`<a id="filters"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.ContentFilter]`
 
 A set of content filtering metadata for the prompt and
@@ -60,16 +67,21 @@ least 1 response.
 
 The blocking is configured by the ``SafetySettings`` in the
 request (or the default ``SafetySettings`` of the API).
+
 </td>
 </tr><tr>
 <td>
+
 `safety_feedback`<a id="safety_feedback"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.SafetyFeedback]`
 
 Returns any safety feedback related to
 content filtering.
+
 </td>
 </tr>
 </table>

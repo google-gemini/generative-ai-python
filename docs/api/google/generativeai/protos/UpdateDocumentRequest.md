@@ -34,22 +34,30 @@ Request to update a ``Document``.
 
 <tr>
 <td>
+
 `document`<a id="document"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Document`
 
 Required. The ``Document`` to update.
+
 </td>
 </tr><tr>
 <td>
+
 `update_mask`<a id="update_mask"></a>
+
 </td>
 <td>
+
 `google.protobuf.field_mask_pb2.FieldMask`
 
 Required. The list of fields to update. Currently, this only
 supports updating ``display_name`` and ``custom_metadata``.
+
 </td>
 </tr>
 </table>

@@ -17,7 +17,7 @@ description: Instances of this class manage the response of the generate_content
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L553-L617">
+  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L625-L689">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -72,37 +72,57 @@ are only available after the iteration is complete.
 
 <tr>
 <td>
+
 `candidates`<a id="candidates"></a>
+
 </td>
 <td>
+
 The list of candidate responses.
-</td>
-</tr><tr>
-<td>
-`parts`<a id="parts"></a>
-</td>
-<td>
-A quick accessor equivalent to `self.candidates[0].content.parts`
-</td>
-</tr><tr>
-<td>
-`prompt_feedback`<a id="prompt_feedback"></a>
-</td>
-<td>
 
 </td>
 </tr><tr>
 <td>
-`text`<a id="text"></a>
+
+`parts`<a id="parts"></a>
+
 </td>
 <td>
-A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
+
+A quick accessor equivalent to `self.candidates[0].content.parts`
+
 </td>
 </tr><tr>
 <td>
-`usage_metadata`<a id="usage_metadata"></a>
+
+`prompt_feedback`<a id="prompt_feedback"></a>
+
 </td>
 <td>
+
+
+
+</td>
+</tr><tr>
+<td>
+
+`text`<a id="text"></a>
+
+</td>
+<td>
+
+A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
+
+</td>
+</tr><tr>
+<td>
+
+`usage_metadata`<a id="usage_metadata"></a>
+
+</td>
+<td>
+
+
 
 </td>
 </tr>
@@ -114,7 +134,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="from_iterator"><code>from_iterator</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L555-L565">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L627-L637">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>@classmethod</code>
@@ -128,7 +148,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="from_response"><code>from_response</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L567-L573">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L639-L645">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>@classmethod</code>
@@ -142,7 +162,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="resolve"><code>resolve</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L612-L617">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L684-L689">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>resolve()
@@ -153,7 +173,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="to_dict"><code>to_dict</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L383-L393">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L405-L415">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>to_dict()
@@ -172,7 +192,7 @@ Note: This doesn't capture the iterator state when streaming, it only captures t
 
 <h3 id="__iter__"><code>__iter__</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L575-L610">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L647-L682">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>__iter__()

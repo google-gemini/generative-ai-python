@@ -34,13 +34,17 @@ Request for ``GetFile``.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``File`` to get. Example:
 ``files/abc-123``
+
 </td>
 </tr>
 </table>

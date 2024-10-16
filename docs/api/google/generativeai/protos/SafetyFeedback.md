@@ -11,7 +11,7 @@ description: Safety feedback for an entire request.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L131-L157">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L133-L159">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -40,21 +40,29 @@ result.
 
 <tr>
 <td>
+
 `rating`<a id="rating"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.SafetyRating`
 
 Safety rating evaluated from content.
+
 </td>
 </tr><tr>
 <td>
+
 `setting`<a id="setting"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.SafetySetting`
 
 Safety settings applied to the request.
+
 </td>
 </tr>
 </table>

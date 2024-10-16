@@ -11,7 +11,7 @@ description: A response from CountTokens.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1143-L1168">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1589-L1610">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -35,27 +35,31 @@ It returns the model's ``token_count`` for the ``prompt``.
 
 <tr>
 <td>
+
 `total_tokens`<a id="total_tokens"></a>
+
 </td>
 <td>
+
 `int`
 
-The number of tokens that the ``model`` tokenizes the
-``prompt`` into.
+The number of tokens that the ``Model`` tokenizes the
+``prompt`` into. Always non-negative.
 
-Always non-negative. When cached_content is set, this is
-still the total effective prompt size. I.e. this includes
-the number of tokens in the cached content.
 </td>
 </tr><tr>
 <td>
+
 `cached_content_token_count`<a id="cached_content_token_count"></a>
+
 </td>
 <td>
+
 `int`
 
 Number of tokens in the cached part of the
-prompt, i.e. in the cached content.
+prompt (the cached content).
+
 </td>
 </tr>
 </table>

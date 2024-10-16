@@ -29,9 +29,7 @@ A collection of type definitions used throughout the library.
 
 [`class AsyncGenerateContentResponse`](../../google/generativeai/types/AsyncGenerateContentResponse.md): This is the async version of `genai.GenerateContentResponse`.
 
-[`class AuthorError`](../../google/generativeai/types/AuthorError.md): Raised by the `chat` (or `reply`) functions when the author list can't be normalized.
-
-[`class BlobDict`](../../google/generativeai/types/BlobDict.md): dict() -> new empty dictionary dict(mapping) -> new dictionary initialized from a mapping object's (key, value) pairs dict(iterable) -> new dictionary initialized as if via: d = {} for k, v in iterable: d[k] = v dict(**kwargs) -> new dictionary initialized with the name=value pairs in the keyword argument list.
+[`class BlobDict`](../../google/generativeai/types/BlobDict.md)
 
 [`class BlockedPromptException`](../../google/generativeai/types/BlockedPromptException.md): Common base class for all non-exit exceptions.
 
@@ -41,23 +39,17 @@ A collection of type definitions used throughout the library.
 
 [`class CallableFunctionDeclaration`](../../google/generativeai/types/CallableFunctionDeclaration.md): An extension of `FunctionDeclaration` that can be built from a python function, and is callable.
 
-[`class ChatResponse`](../../google/generativeai/types/ChatResponse.md): A chat response from the model.
-
 [`class CitationMetadataDict`](../../google/generativeai/types/CitationMetadataDict.md): A collection of source attributions for a piece of content.
 
 [`class CitationSourceDict`](../../google/generativeai/types/CitationSourceDict.md): A citation to a source for a portion of a specific response.
 
-[`class Completion`](../../google/generativeai/types/Completion.md): The result returned by <a href="../../google/generativeai/generate_text.md"><code>generativeai.generate_text</code></a>.
-
-[`class ContentDict`](../../google/generativeai/types/ContentDict.md): dict() -> new empty dictionary dict(mapping) -> new dictionary initialized from a mapping object's (key, value) pairs dict(iterable) -> new dictionary initialized as if via: d = {} for k, v in iterable: d[k] = v dict(**kwargs) -> new dictionary initialized with the name=value pairs in the keyword argument list.
+[`class ContentDict`](../../google/generativeai/types/ContentDict.md)
 
 [`class ContentFilterDict`](../../google/generativeai/types/ContentFilterDict.md): Content filtering metadata associated with processing a single request.
 
-[`class ExampleDict`](../../google/generativeai/types/ExampleDict.md): A dict representation of a <a href="../../google/generativeai/protos/Example.md"><code>protos.Example</code></a>.
-
 [`class File`](../../google/generativeai/types/File.md)
 
-[`class FileDataDict`](../../google/generativeai/types/FileDataDict.md): dict() -> new empty dictionary dict(mapping) -> new dictionary initialized from a mapping object's (key, value) pairs dict(iterable) -> new dictionary initialized as if via: d = {} for k, v in iterable: d[k] = v dict(**kwargs) -> new dictionary initialized with the name=value pairs in the keyword argument list.
+[`class FileDataDict`](../../google/generativeai/types/FileDataDict.md)
 
 [`class FunctionDeclaration`](../../google/generativeai/types/FunctionDeclaration.md)
 
@@ -67,7 +59,7 @@ A collection of type definitions used throughout the library.
 
 [`class GenerationConfig`](../../google/generativeai/types/GenerationConfig.md): A simple dataclass used to configure the generation parameters of <a href="../../google/generativeai/GenerativeModel.md#generate_content"><code>GenerativeModel.generate_content</code></a>.
 
-[`class GenerationConfigDict`](../../google/generativeai/types/GenerationConfigDict.md): dict() -> new empty dictionary dict(mapping) -> new dictionary initialized from a mapping object's (key, value) pairs dict(iterable) -> new dictionary initialized as if via: d = {} for k, v in iterable: d[k] = v dict(**kwargs) -> new dictionary initialized with the name=value pairs in the keyword argument list.
+[`class GenerationConfigDict`](../../google/generativeai/types/GenerationConfigDict.md)
 
 [`class HarmBlockThreshold`](../../google/generativeai/types/HarmBlockThreshold.md): Block at and beyond a specified harm probability.
 
@@ -77,21 +69,15 @@ A collection of type definitions used throughout the library.
 
 [`class IncompleteIterationError`](../../google/generativeai/types/IncompleteIterationError.md): Common base class for all non-exit exceptions.
 
-[`class MessageDict`](../../google/generativeai/types/MessageDict.md): A dict representation of a <a href="../../google/generativeai/protos/Message.md"><code>protos.Message</code></a>.
-
-[`class MessagePromptDict`](../../google/generativeai/types/MessagePromptDict.md): A dict representation of a <a href="../../google/generativeai/protos/MessagePrompt.md"><code>protos.MessagePrompt</code></a>.
-
 [`class Model`](../../google/generativeai/types/Model.md): A dataclass representation of a <a href="../../google/generativeai/protos/Model.md"><code>protos.Model</code></a>.
 
-[`class PartDict`](../../google/generativeai/types/PartDict.md): dict() -> new empty dictionary dict(mapping) -> new dictionary initialized from a mapping object's (key, value) pairs dict(iterable) -> new dictionary initialized as if via: d = {} for k, v in iterable: d[k] = v dict(**kwargs) -> new dictionary initialized with the name=value pairs in the keyword argument list.
+[`class PartDict`](../../google/generativeai/types/PartDict.md)
 
 [`class Permission`](../../google/generativeai/types/Permission.md): A permission to access a resource.
 
 [`class Permissions`](../../google/generativeai/types/Permissions.md)
 
 [`class RequestOptions`](../../google/generativeai/types/RequestOptions.md): Request options
-
-[`class ResponseDict`](../../google/generativeai/types/ResponseDict.md): A dict representation of a <a href="../../google/generativeai/protos/GenerateMessageResponse.md"><code>protos.GenerateMessageResponse</code></a>.
 
 [`class SafetyFeedbackDict`](../../google/generativeai/types/SafetyFeedbackDict.md): Safety feedback for an entire request.
 
@@ -103,9 +89,9 @@ A collection of type definitions used throughout the library.
 
 [`class StopCandidateException`](../../google/generativeai/types/StopCandidateException.md): Common base class for all non-exit exceptions.
 
-[`class Tool`](../../google/generativeai/types/Tool.md): A wrapper for <a href="../../google/generativeai/protos/Tool.md"><code>protos.Tool</code></a>, Contains a collection of related `FunctionDeclaration` objects.
+[`class Tool`](../../google/generativeai/types/Tool.md): A wrapper for <a href="../../google/generativeai/protos/Tool.md"><code>protos.Tool</code></a>, Contains a collection of related `FunctionDeclaration` objects, protos.CodeExecution object, and protos.GoogleSearchRetrieval object.
 
-[`class ToolDict`](../../google/generativeai/types/ToolDict.md): dict() -> new empty dictionary dict(mapping) -> new dictionary initialized from a mapping object's (key, value) pairs dict(iterable) -> new dictionary initialized as if via: d = {} for k, v in iterable: d[k] = v dict(**kwargs) -> new dictionary initialized with the name=value pairs in the keyword argument list.
+[`class ToolDict`](../../google/generativeai/types/ToolDict.md)
 
 [`class TunedModel`](../../google/generativeai/types/TunedModel.md): A dataclass representation of a <a href="../../google/generativeai/protos/TunedModel.md"><code>protos.TunedModel</code></a>.
 
@@ -131,10 +117,6 @@ A collection of type definitions used throughout the library.
 
 [`ContentsType`](../../google/generativeai/types/ContentsType.md)
 
-[`ExampleOptions`](../../google/generativeai/types/ExampleOptions.md)
-
-[`ExamplesOptions`](../../google/generativeai/types/ExamplesOptions.md)
-
 [`FileDataType`](../../google/generativeai/types/FileDataType.md)
 
 [`FunctionDeclarationType`](../../google/generativeai/types/FunctionDeclarationType.md)
@@ -142,12 +124,6 @@ A collection of type definitions used throughout the library.
 [`FunctionLibraryType`](../../google/generativeai/types/FunctionLibraryType.md)
 
 [`GenerationConfigType`](../../google/generativeai/types/GenerationConfigType.md)
-
-[`MessageOptions`](../../google/generativeai/types/MessageOptions.md)
-
-[`MessagePromptOptions`](../../google/generativeai/types/MessagePromptOptions.md)
-
-[`MessagesOptions`](../../google/generativeai/types/MessagesOptions.md)
 
 [`ModelNameOptions`](../../google/generativeai/types/AnyModelNameOptions.md)
 
@@ -172,10 +148,14 @@ A collection of type definitions used throughout the library.
 
 <tr>
 <td>
+
 annotations<a id="annotations"></a>
+
 </td>
 <td>
+
 Instance of `__future__._Feature`
+
 </td>
 </tr>
 </table>

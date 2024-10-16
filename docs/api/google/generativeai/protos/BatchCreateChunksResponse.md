@@ -34,12 +34,16 @@ Response from ``BatchCreateChunks`` containing a list of created ``Chunk``\ s.
 
 <tr>
 <td>
+
 `chunks`<a id="chunks"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Chunk]`
 
 ``Chunk``\ s created.
+
 </td>
 </tr>
 </table>

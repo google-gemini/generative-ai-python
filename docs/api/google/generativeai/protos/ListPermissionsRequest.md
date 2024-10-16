@@ -34,19 +34,26 @@ Request for listing permissions.
 
 <tr>
 <td>
+
 `parent`<a id="parent"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The parent resource of the permissions. Formats:
 ``tunedModels/{tuned_model}`` ``corpora/{corpus}``
+
 </td>
 </tr><tr>
 <td>
+
 `page_size`<a id="page_size"></a>
+
 </td>
 <td>
+
 `int`
 
 Optional. The maximum number of ``Permission``\ s to return
@@ -55,12 +62,16 @@ Optional. The maximum number of ``Permission``\ s to return
 If unspecified, at most 10 permissions will be returned.
 This method returns at most 1000 permissions per page, even
 if you pass larger page_size.
+
 </td>
 </tr><tr>
 <td>
+
 `page_token`<a id="page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. A page token, received from a previous
@@ -72,6 +83,7 @@ argument to the next request to retrieve the next page.
 When paginating, all other parameters provided to
 ``ListPermissions`` must match the call that provided the
 page token.
+
 </td>
 </tr>
 </table>

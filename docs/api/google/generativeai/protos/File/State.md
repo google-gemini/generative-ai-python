@@ -45,6 +45,7 @@ description: States for the lifecycle of a File.
 <meta itemprop="property" content="bit_length"/>
 <meta itemprop="property" content="conjugate"/>
 <meta itemprop="property" content="from_bytes"/>
+<meta itemprop="property" content="is_integer"/>
 <meta itemprop="property" content="to_bytes"/>
 <meta itemprop="property" content="ACTIVE"/>
 <meta itemprop="property" content="FAILED"/>
@@ -87,42 +88,58 @@ States for the lifecycle of a File.
 
 <tr>
 <td>
+
 `STATE_UNSPECIFIED`<a id="STATE_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `0`
 
 The default value. This value is used if the
 state is omitted.
+
 </td>
 </tr><tr>
 <td>
+
 `PROCESSING`<a id="PROCESSING"></a>
+
 </td>
 <td>
+
 `1`
 
 File is being processed and cannot be used
 for inference yet.
+
 </td>
 </tr><tr>
 <td>
+
 `ACTIVE`<a id="ACTIVE"></a>
+
 </td>
 <td>
+
 `2`
 
 File is processed and available for
 inference.
+
 </td>
 </tr><tr>
 <td>
+
 `FAILED`<a id="FAILED"></a>
+
 </td>
 <td>
+
 `10`
 
 File failed processing.
+
 </td>
 </tr>
 </table>
@@ -138,31 +155,47 @@ File failed processing.
 
 <tr>
 <td>
+
 `denominator`<a id="denominator"></a>
+
 </td>
 <td>
+
 the denominator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `imag`<a id="imag"></a>
+
 </td>
 <td>
+
 the imaginary part of a complex number
+
 </td>
 </tr><tr>
 <td>
+
 `numerator`<a id="numerator"></a>
+
 </td>
 <td>
+
 the numerator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `real`<a id="real"></a>
+
 </td>
 <td>
+
 the real part of a complex number
+
 </td>
 </tr>
 </table>
@@ -177,10 +210,9 @@ the real part of a complex number
 <code>as_integer_ratio()
 </code></pre>
 
-Return integer ratio.
+Return a pair of integers, whose ratio is equal to the original int.
 
-Return a pair of integers, whose ratio is exactly equal to the original int
-and with a positive denominator.
+The ratio is in lowest terms and has a positive denominator.
 
 ```
 >>> (10).as_integer_ratio()
@@ -255,6 +287,15 @@ byteorder
   `sys.byteorder' as the byte order value.  Default is to use 'big'.
 signed
   Indicates whether two's complement is used to represent the integer.
+
+<h3 id="is_integer"><code>is_integer</code></h3>
+
+<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
+<code>is_integer()
+</code></pre>
+
+Returns True. Exists for duck type compatibility with float.is_integer.
+
 
 <h3 id="to_bytes"><code>to_bytes</code></h3>
 
@@ -667,31 +708,47 @@ Return self^value.
 
 <tr>
 <td>
+
 ACTIVE<a id="ACTIVE"></a>
+
 </td>
 <td>
+
 `<State.ACTIVE: 2>`
+
 </td>
 </tr><tr>
 <td>
+
 FAILED<a id="FAILED"></a>
+
 </td>
 <td>
+
 `<State.FAILED: 10>`
+
 </td>
 </tr><tr>
 <td>
+
 PROCESSING<a id="PROCESSING"></a>
+
 </td>
 <td>
+
 `<State.PROCESSING: 1>`
+
 </td>
 </tr><tr>
 <td>
+
 STATE_UNSPECIFIED<a id="STATE_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `<State.STATE_UNSPECIFIED: 0>`
+
 </td>
 </tr>
 </table>

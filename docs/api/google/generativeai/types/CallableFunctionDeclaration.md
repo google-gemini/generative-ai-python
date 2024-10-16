@@ -16,7 +16,7 @@ description: An extension of FunctionDeclaration that can be built from a python
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L568-L589">
+  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L609-L630">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -54,23 +54,35 @@ Note: The python function must have type annotations.
 
 <tr>
 <td>
+
 `description`<a id="description"></a>
+
 </td>
 <td>
+
+
 
 </td>
 </tr><tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
+
 
 </td>
 </tr><tr>
 <td>
+
 `parameters`<a id="parameters"></a>
+
 </td>
 <td>
+
+
 
 </td>
 </tr>
@@ -82,7 +94,7 @@ Note: The python function must have type annotations.
 
 <h3 id="from_function"><code>from_function</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L542-L561">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L583-L602">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>@staticmethod</code>
@@ -104,7 +116,7 @@ contents. But you can build these manually.
 
 <h3 id="from_proto"><code>from_proto</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L533-L537">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L574-L578">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>@classmethod</code>
@@ -118,7 +130,7 @@ contents. But you can build these manually.
 
 <h3 id="to_proto"><code>to_proto</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L539-L540">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L580-L581">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>to_proto() -> protos.FunctionDeclaration
@@ -129,7 +141,7 @@ contents. But you can build these manually.
 
 <h3 id="__call__"><code>__call__</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L585-L589">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L626-L630">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>__call__(

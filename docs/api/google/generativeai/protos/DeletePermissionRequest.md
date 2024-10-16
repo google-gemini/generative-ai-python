@@ -34,14 +34,18 @@ Request to delete the ``Permission``.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The resource name of the permission. Formats:
 ``tunedModels/{tuned_model}/permissions/{permission}``
 ``corpora/{corpus}/permissions/{permission}``
+
 </td>
 </tr>
 </table>

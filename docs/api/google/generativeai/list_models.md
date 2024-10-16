@@ -49,24 +49,36 @@ for model in genai.list_models():
 
 <tr>
 <td>
+
 `page_size`<a id="page_size"></a>
+
 </td>
 <td>
+
 How many `types.Models` to fetch per page (api call).
+
 </td>
 </tr><tr>
 <td>
+
 `client`<a id="client"></a>
+
 </td>
 <td>
+
 You may pass a `glm.ModelServiceClient` instead of using the default client.
+
 </td>
 </tr><tr>
 <td>
+
 `request_options`<a id="request_options"></a>
+
 </td>
 <td>
+
 Options for the request.
+
 </td>
 </tr>
 </table>
@@ -79,7 +91,9 @@ Options for the request.
 <tr><th colspan="2"><h2 class="add-link">Yields</h2></th></tr>
 <tr class="alt">
 <td colspan="2">
+
 <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a> objects.
+
 </td>
 </tr>
 

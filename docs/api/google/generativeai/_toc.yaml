@@ -7,16 +7,8 @@ toc:
     path: /api/python/google/generativeai/ChatSession
   - title: GenerativeModel
     path: /api/python/google/generativeai/GenerativeModel
-  - title: chat
-    path: /api/python/google/generativeai/chat
-  - title: chat_async
-    path: /api/python/google/generativeai/chat_async
   - title: configure
     path: /api/python/google/generativeai/configure
-  - title: count_message_tokens
-    path: /api/python/google/generativeai/count_message_tokens
-  - title: count_text_tokens
-    path: /api/python/google/generativeai/count_text_tokens
   - title: create_tuned_model
     path: /api/python/google/generativeai/create_tuned_model
   - title: delete_file
@@ -27,10 +19,6 @@ toc:
     path: /api/python/google/generativeai/embed_content
   - title: embed_content_async
     path: /api/python/google/generativeai/embed_content_async
-  - title: generate_embeddings
-    path: /api/python/google/generativeai/generate_embeddings
-  - title: generate_text
-    path: /api/python/google/generativeai/generate_text
   - title: get_base_model
     path: /api/python/google/generativeai/get_base_model
   - title: get_file
@@ -53,6 +41,14 @@ toc:
     path: /api/python/google/generativeai/update_tuned_model
   - title: upload_file
     path: /api/python/google/generativeai/upload_file
+  - title: caching
+    section:
+    - title: Overview
+      path: /api/python/google/generativeai/caching
+    - title: CachedContent
+      path: /api/python/google/generativeai/caching/CachedContent
+    - title: get_default_cache_client
+      path: /api/python/google/generativeai/caching/get_default_cache_client
   - title: protos
     section:
     - title: Overview
@@ -169,6 +165,10 @@ toc:
       path: /api/python/google/generativeai/protos/DeleteTunedModelRequest
     - title: Document
       path: /api/python/google/generativeai/protos/Document
+    - title: DynamicRetrievalConfig
+      path: /api/python/google/generativeai/protos/DynamicRetrievalConfig
+    - title: DynamicRetrievalConfig.Mode
+      path: /api/python/google/generativeai/protos/DynamicRetrievalConfig/Mode
     - title: EmbedContentRequest
       path: /api/python/google/generativeai/protos/EmbedContentRequest
     - title: EmbedContentResponse
@@ -247,12 +247,22 @@ toc:
       path: /api/python/google/generativeai/protos/GetPermissionRequest
     - title: GetTunedModelRequest
       path: /api/python/google/generativeai/protos/GetTunedModelRequest
+    - title: GoogleSearchRetrieval
+      path: /api/python/google/generativeai/protos/GoogleSearchRetrieval
     - title: GroundingAttribution
       path: /api/python/google/generativeai/protos/GroundingAttribution
+    - title: GroundingChunk
+      path: /api/python/google/generativeai/protos/GroundingChunk
+    - title: GroundingChunk.Web
+      path: /api/python/google/generativeai/protos/GroundingChunk/Web
+    - title: GroundingMetadata
+      path: /api/python/google/generativeai/protos/GroundingMetadata
     - title: GroundingPassage
       path: /api/python/google/generativeai/protos/GroundingPassage
     - title: GroundingPassages
       path: /api/python/google/generativeai/protos/GroundingPassages
+    - title: GroundingSupport
+      path: /api/python/google/generativeai/protos/GroundingSupport
     - title: HarmCategory
       path: /api/python/google/generativeai/protos/HarmCategory
     - title: Hyperparameters
@@ -289,6 +299,12 @@ toc:
       path: /api/python/google/generativeai/protos/ListTunedModelsRequest
     - title: ListTunedModelsResponse
       path: /api/python/google/generativeai/protos/ListTunedModelsResponse
+    - title: LogprobsResult
+      path: /api/python/google/generativeai/protos/LogprobsResult
+    - title: LogprobsResult.Candidate
+      path: /api/python/google/generativeai/protos/LogprobsResult/Candidate
+    - title: LogprobsResult.TopCandidates
+      path: /api/python/google/generativeai/protos/LogprobsResult/TopCandidates
     - title: Message
       path: /api/python/google/generativeai/protos/Message
     - title: MessagePrompt
@@ -305,6 +321,10 @@ toc:
       path: /api/python/google/generativeai/protos/Permission/GranteeType
     - title: Permission.Role
       path: /api/python/google/generativeai/protos/Permission/Role
+    - title: PredictRequest
+      path: /api/python/google/generativeai/protos/PredictRequest
+    - title: PredictResponse
+      path: /api/python/google/generativeai/protos/PredictResponse
     - title: QueryCorpusRequest
       path: /api/python/google/generativeai/protos/QueryCorpusRequest
     - title: QueryCorpusResponse
@@ -315,6 +335,8 @@ toc:
       path: /api/python/google/generativeai/protos/QueryDocumentResponse
     - title: RelevantChunk
       path: /api/python/google/generativeai/protos/RelevantChunk
+    - title: RetrievalMetadata
+      path: /api/python/google/generativeai/protos/RetrievalMetadata
     - title: SafetyFeedback
       path: /api/python/google/generativeai/protos/SafetyFeedback
     - title: SafetyRating
@@ -325,6 +347,10 @@ toc:
       path: /api/python/google/generativeai/protos/Schema
     - title: Schema.PropertiesEntry
       path: /api/python/google/generativeai/protos/Schema/PropertiesEntry
+    - title: SearchEntryPoint
+      path: /api/python/google/generativeai/protos/SearchEntryPoint
+    - title: Segment
+      path: /api/python/google/generativeai/protos/Segment
     - title: SemanticRetrieverConfig
       path: /api/python/google/generativeai/protos/SemanticRetrieverConfig
     - title: StringList
@@ -379,8 +405,6 @@ toc:
       path: /api/python/google/generativeai/types/AnyModelNameOptions
     - title: AsyncGenerateContentResponse
       path: /api/python/google/generativeai/types/AsyncGenerateContentResponse
-    - title: AuthorError
-      path: /api/python/google/generativeai/types/AuthorError
     - title: BaseModelNameOptions
       path: /api/python/google/generativeai/types/BaseModelNameOptions
     - title: BlobDict
@@ -395,14 +419,10 @@ toc:
       path: /api/python/google/generativeai/types/BrokenResponseError
     - title: CallableFunctionDeclaration
       path: /api/python/google/generativeai/types/CallableFunctionDeclaration
-    - title: ChatResponse
-      path: /api/python/google/generativeai/types/ChatResponse
     - title: CitationMetadataDict
       path: /api/python/google/generativeai/types/CitationMetadataDict
     - title: CitationSourceDict
       path: /api/python/google/generativeai/types/CitationSourceDict
-    - title: Completion
-      path: /api/python/google/generativeai/types/Completion
     - title: ContentDict
       path: /api/python/google/generativeai/types/ContentDict
     - title: ContentFilterDict
@@ -411,12 +431,6 @@ toc:
       path: /api/python/google/generativeai/types/ContentType
     - title: ContentsType
       path: /api/python/google/generativeai/types/ContentsType
-    - title: ExampleDict
-      path: /api/python/google/generativeai/types/ExampleDict
-    - title: ExampleOptions
-      path: /api/python/google/generativeai/types/ExampleOptions
-    - title: ExamplesOptions
-      path: /api/python/google/generativeai/types/ExamplesOptions
     - title: File
       path: /api/python/google/generativeai/types/File
     - title: FileDataDict
@@ -447,16 +461,6 @@ toc:
       path: /api/python/google/generativeai/types/HarmProbability
     - title: IncompleteIterationError
       path: /api/python/google/generativeai/types/IncompleteIterationError
-    - title: MessageDict
-      path: /api/python/google/generativeai/types/MessageDict
-    - title: MessageOptions
-      path: /api/python/google/generativeai/types/MessageOptions
-    - title: MessagePromptDict
-      path: /api/python/google/generativeai/types/MessagePromptDict
-    - title: MessagePromptOptions
-      path: /api/python/google/generativeai/types/MessagePromptOptions
-    - title: MessagesOptions
-      path: /api/python/google/generativeai/types/MessagesOptions
     - title: Model
       path: /api/python/google/generativeai/types/Model
     - title: ModelsIterable
@@ -473,8 +477,6 @@ toc:
       path: /api/python/google/generativeai/types/RequestOptions
     - title: RequestOptionsType
       path: /api/python/google/generativeai/types/RequestOptionsType
-    - title: ResponseDict
-      path: /api/python/google/generativeai/types/ResponseDict
     - title: SafetyFeedbackDict
       path: /api/python/google/generativeai/types/SafetyFeedbackDict
     - title: SafetyRatingDict

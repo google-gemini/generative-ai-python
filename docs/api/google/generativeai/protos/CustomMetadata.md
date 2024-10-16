@@ -39,46 +39,62 @@ members.
 
 <tr>
 <td>
+
 `string_value`<a id="string_value"></a>
+
 </td>
 <td>
+
 `str`
 
 The string value of the metadata to store.
 
 This field is a member of `oneof`_ ``value``.
+
 </td>
 </tr><tr>
 <td>
+
 `string_list_value`<a id="string_list_value"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.StringList`
 
 The StringList value of the metadata to
 store.
 
 This field is a member of `oneof`_ ``value``.
+
 </td>
 </tr><tr>
 <td>
+
 `numeric_value`<a id="numeric_value"></a>
+
 </td>
 <td>
+
 `float`
 
 The numeric value of the metadata to store.
 
 This field is a member of `oneof`_ ``value``.
+
 </td>
 </tr><tr>
 <td>
+
 `key`<a id="key"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The key of the metadata to store.
+
 </td>
 </tr>
 </table>

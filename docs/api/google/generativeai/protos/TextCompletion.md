@@ -34,30 +34,41 @@ Output text returned from a model.
 
 <tr>
 <td>
+
 `output`<a id="output"></a>
+
 </td>
 <td>
+
 `str`
 
 Output only. The generated text returned from
 the model.
+
 </td>
 </tr><tr>
 <td>
+
 `safety_ratings`<a id="safety_ratings"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.SafetyRating]`
 
 Ratings for the safety of a response.
 
 There is at most one rating per category.
+
 </td>
 </tr><tr>
 <td>
+
 `citation_metadata`<a id="citation_metadata"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.CitationMetadata`
 
 Output only. Citation information for model-generated
@@ -65,6 +76,7 @@ Output only. Citation information for model-generated
 
 This field may be populated with attribution information for
 any text included in the ``output``.
+
 
 </td>
 </tr>

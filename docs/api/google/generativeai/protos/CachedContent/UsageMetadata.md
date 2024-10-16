@@ -34,13 +34,17 @@ Metadata on the usage of the cached content.
 
 <tr>
 <td>
+
 `total_token_count`<a id="total_token_count"></a>
+
 </td>
 <td>
+
 `int`
 
 Total number of tokens that the cached
 content consumes.
+
 </td>
 </tr>
 </table>

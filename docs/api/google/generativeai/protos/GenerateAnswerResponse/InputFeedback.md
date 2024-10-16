@@ -1,4 +1,4 @@
-description: Feedback related to the input data used to answer the question, as opposed to model-generated response to the question.
+description: Feedback related to the input data used to answer the question, as opposed to the model-generated response to the question.
 
 <div itemscope itemtype="http://developers.google.com/ReferenceObject">
 <meta itemprop="name" content="google.generativeai.protos.GenerateAnswerResponse.InputFeedback" />
@@ -12,7 +12,7 @@ description: Feedback related to the input data used to answer the question, as 
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L893-L939">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1332-L1378">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -21,7 +21,7 @@ description: Feedback related to the input data used to answer the question, as 
 
 
 
-Feedback related to the input data used to answer the question, as opposed to model-generated response to the question.
+Feedback related to the input data used to answer the question, as opposed to the model-generated response to the question.
 
 <!-- Placeholder for "Used in" -->
 
@@ -36,24 +36,32 @@ Feedback related to the input data used to answer the question, as opposed to mo
 
 <tr>
 <td>
+
 `block_reason`<a id="block_reason"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.GenerateAnswerResponse.InputFeedback.BlockReason`
 
 Optional. If set, the input was blocked and
-no candidates are returned. Rephrase your input.
+no candidates are returned. Rephrase the input.
+
 
 </td>
 </tr><tr>
 <td>
+
 `safety_ratings`<a id="safety_ratings"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.SafetyRating]`
 
 Ratings for safety of the input.
 There is at most one rating per category.
+
 </td>
 </tr>
 </table>

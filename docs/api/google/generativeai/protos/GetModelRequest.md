@@ -34,9 +34,12 @@ Request for getting information about a specific Model.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The resource name of the model.
@@ -45,6 +48,7 @@ This name should match a model name returned by the
 ``ListModels`` method.
 
 Format: ``models/{model}``
+
 </td>
 </tr>
 </table>

@@ -34,19 +34,26 @@ Request for listing ``Document``\ s.
 
 <tr>
 <td>
+
 `parent`<a id="parent"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Corpus`` containing
 ``Document``\ s. Example: ``corpora/my-corpus-123``
+
 </td>
 </tr><tr>
 <td>
+
 `page_size`<a id="page_size"></a>
+
 </td>
 <td>
+
 `int`
 
 Optional. The maximum number of ``Document``\ s to return
@@ -54,12 +61,16 @@ Optional. The maximum number of ``Document``\ s to return
 
 If unspecified, at most 10 ``Document``\ s will be returned.
 The maximum size limit is 20 ``Document``\ s per page.
+
 </td>
 </tr><tr>
 <td>
+
 `page_token`<a id="page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. A page token, received from a previous
@@ -71,6 +82,7 @@ an argument to the next request to retrieve the next page.
 When paginating, all other parameters provided to
 ``ListDocuments`` must match the call that provided the page
 token.
+
 </td>
 </tr>
 </table>

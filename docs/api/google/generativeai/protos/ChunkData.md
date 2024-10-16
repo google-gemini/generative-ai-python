@@ -34,15 +34,19 @@ Extracted data that represents the ``Chunk`` content.
 
 <tr>
 <td>
+
 `string_value`<a id="string_value"></a>
+
 </td>
 <td>
+
 `str`
 
 The ``Chunk`` content as a string. The maximum number of
 tokens per chunk is 2043.
 
 This field is a member of `oneof`_ ``data``.
+
 </td>
 </tr>
 </table>

@@ -20,7 +20,7 @@ A simple typed namespace. At runtime it is equivalent to a plain dict.
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>google.generativeai.types.TypedDict(
-    typename, fields, /, *, total=True, **kwargs
+    typename, fields, /, *, total=True, closed=False, **kwargs
 )
 </code></pre>
 

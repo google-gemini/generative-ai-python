@@ -40,9 +40,12 @@ model.
 
 <tr>
 <td>
+
 `context`<a id="context"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. Text that should be provided to the model first to
@@ -61,12 +64,16 @@ statement, classify the sentiment as happy, sad or neutral."
 Anything included in this field will take precedence over
 message history if the total input size exceeds the model's
 ``input_token_limit`` and the input request is truncated.
+
 </td>
 </tr><tr>
 <td>
+
 `examples`<a id="examples"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Example]`
 
 Optional. Examples of what the model should generate.
@@ -79,12 +86,16 @@ messages except that they take precedence over the history
 in ``messages``: If the total input size exceeds the model's
 ``input_token_limit`` the input will be truncated. Items
 will be dropped from ``messages`` before ``examples``.
+
 </td>
 </tr><tr>
 <td>
+
 `messages`<a id="messages"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Message]`
 
 Required. A snapshot of the recent conversation history
@@ -95,6 +106,7 @@ Turns alternate between two authors.
 If the total input size exceeds the model's
 ``input_token_limit`` the input will be truncated: The
 oldest items will be dropped from ``messages``.
+
 </td>
 </tr>
 </table>

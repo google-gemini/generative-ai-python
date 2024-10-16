@@ -34,29 +34,40 @@ Request for querying a ``Document``.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Document`` to query. Example:
 ``corpora/my-corpus-123/documents/the-doc-abc``
+
 </td>
 </tr><tr>
 <td>
+
 `query`<a id="query"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. Query string to perform semantic
 search.
+
 </td>
 </tr><tr>
 <td>
+
 `results_count`<a id="results_count"></a>
+
 </td>
 <td>
+
 `int`
 
 Optional. The maximum number of ``Chunk``\ s to return. The
@@ -64,12 +75,16 @@ service may return fewer ``Chunk``\ s.
 
 If unspecified, at most 10 ``Chunk``\ s will be returned.
 The maximum specified result count is 100.
+
 </td>
 </tr><tr>
 <td>
+
 `metadata_filters`<a id="metadata_filters"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.MetadataFilter]`
 
 Optional. Filter for ``Chunk`` metadata. Each
@@ -101,6 +116,7 @@ AND year <= 2020)
 
 Note: "AND"s for the same key are only supported for numeric
 values. String values only support "OR"s for the same key.
+
 </td>
 </tr>
 </table>

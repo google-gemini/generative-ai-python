@@ -36,9 +36,12 @@ different ``token_count``.
 
 <tr>
 <td>
+
 `model`<a id="model"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The model's resource name. This serves as an ID
@@ -48,16 +51,21 @@ This name should match a model name returned by the
 ``ListModels`` method.
 
 Format: ``models/{model}``
+
 </td>
 </tr><tr>
 <td>
+
 `prompt`<a id="prompt"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.MessagePrompt`
 
 Required. The prompt, whose token count is to
 be returned.
+
 </td>
 </tr>
 </table>

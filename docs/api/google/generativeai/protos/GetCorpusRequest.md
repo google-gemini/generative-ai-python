@@ -34,13 +34,17 @@ Request for getting information about a specific ``Corpus``.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Corpus``. Example:
 ``corpora/my-corpus-123``
+
 </td>
 </tr>
 </table>

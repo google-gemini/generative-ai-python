@@ -34,21 +34,29 @@ Request to update CachedContent.
 
 <tr>
 <td>
+
 `cached_content`<a id="cached_content"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.CachedContent`
 
 Required. The content cache entry to update
+
 </td>
 </tr><tr>
 <td>
+
 `update_mask`<a id="update_mask"></a>
+
 </td>
 <td>
+
 `google.protobuf.field_mask_pb2.FieldMask`
 
 The list of fields to update.
+
 </td>
 </tr>
 </table>

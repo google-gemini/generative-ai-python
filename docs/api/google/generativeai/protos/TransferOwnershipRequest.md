@@ -34,25 +34,33 @@ Request to transfer the ownership of the tuned model.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The resource name of the tuned model to transfer
 ownership.
 
 Format: ``tunedModels/my-model-id``
+
 </td>
 </tr><tr>
 <td>
+
 `email_address`<a id="email_address"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The email address of the user to
 whom the tuned model is being transferred to.
+
 </td>
 </tr>
 </table>

@@ -45,6 +45,7 @@ description: Defines the role granted by this permission.
 <meta itemprop="property" content="bit_length"/>
 <meta itemprop="property" content="conjugate"/>
 <meta itemprop="property" content="from_bytes"/>
+<meta itemprop="property" content="is_integer"/>
 <meta itemprop="property" content="to_bytes"/>
 <meta itemprop="property" content="OWNER"/>
 <meta itemprop="property" content="READER"/>
@@ -87,41 +88,57 @@ Defines the role granted by this permission.
 
 <tr>
 <td>
+
 `ROLE_UNSPECIFIED`<a id="ROLE_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `0`
 
 The default value. This value is unused.
+
 </td>
 </tr><tr>
 <td>
+
 `OWNER`<a id="OWNER"></a>
+
 </td>
 <td>
+
 `1`
 
 Owner can use, update, share and delete the
 resource.
+
 </td>
 </tr><tr>
 <td>
+
 `WRITER`<a id="WRITER"></a>
+
 </td>
 <td>
+
 `2`
 
 Writer can use, update and share the
 resource.
+
 </td>
 </tr><tr>
 <td>
+
 `READER`<a id="READER"></a>
+
 </td>
 <td>
+
 `3`
 
 Reader can use the resource.
+
 </td>
 </tr>
 </table>
@@ -137,31 +154,47 @@ Reader can use the resource.
 
 <tr>
 <td>
+
 `denominator`<a id="denominator"></a>
+
 </td>
 <td>
+
 the denominator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `imag`<a id="imag"></a>
+
 </td>
 <td>
+
 the imaginary part of a complex number
+
 </td>
 </tr><tr>
 <td>
+
 `numerator`<a id="numerator"></a>
+
 </td>
 <td>
+
 the numerator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `real`<a id="real"></a>
+
 </td>
 <td>
+
 the real part of a complex number
+
 </td>
 </tr>
 </table>
@@ -176,10 +209,9 @@ the real part of a complex number
 <code>as_integer_ratio()
 </code></pre>
 
-Return integer ratio.
+Return a pair of integers, whose ratio is equal to the original int.
 
-Return a pair of integers, whose ratio is exactly equal to the original int
-and with a positive denominator.
+The ratio is in lowest terms and has a positive denominator.
 
 ```
 >>> (10).as_integer_ratio()
@@ -254,6 +286,15 @@ byteorder
   `sys.byteorder' as the byte order value.  Default is to use 'big'.
 signed
   Indicates whether two's complement is used to represent the integer.
+
+<h3 id="is_integer"><code>is_integer</code></h3>
+
+<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
+<code>is_integer()
+</code></pre>
+
+Returns True. Exists for duck type compatibility with float.is_integer.
+
 
 <h3 id="to_bytes"><code>to_bytes</code></h3>
 
@@ -666,31 +707,47 @@ Return self^value.
 
 <tr>
 <td>
+
 OWNER<a id="OWNER"></a>
+
 </td>
 <td>
+
 `<Role.OWNER: 1>`
+
 </td>
 </tr><tr>
 <td>
+
 READER<a id="READER"></a>
+
 </td>
 <td>
+
 `<Role.READER: 3>`
+
 </td>
 </tr><tr>
 <td>
+
 ROLE_UNSPECIFIED<a id="ROLE_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `<Role.ROLE_UNSPECIFIED: 0>`
+
 </td>
 </tr><tr>
 <td>
+
 WRITER<a id="WRITER"></a>
+
 </td>
 <td>
+
 `<Role.WRITER: 2>`
+
 </td>
 </tr>
 </table>

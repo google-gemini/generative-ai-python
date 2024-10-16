@@ -45,6 +45,7 @@ description: Supported programming languages for the generated code.
 <meta itemprop="property" content="bit_length"/>
 <meta itemprop="property" content="conjugate"/>
 <meta itemprop="property" content="from_bytes"/>
+<meta itemprop="property" content="is_integer"/>
 <meta itemprop="property" content="to_bytes"/>
 <meta itemprop="property" content="LANGUAGE_UNSPECIFIED"/>
 <meta itemprop="property" content="PYTHON"/>
@@ -56,7 +57,7 @@ description: Supported programming languages for the generated code.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L270-L282">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L272-L284">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -85,23 +86,31 @@ Supported programming languages for the generated code.
 
 <tr>
 <td>
+
 `LANGUAGE_UNSPECIFIED`<a id="LANGUAGE_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `0`
 
 Unspecified language. This value should not
 be used.
+
 </td>
 </tr><tr>
 <td>
+
 `PYTHON`<a id="PYTHON"></a>
+
 </td>
 <td>
+
 `1`
 
 Python >= 3.10, with numpy and simpy
 available.
+
 </td>
 </tr>
 </table>
@@ -117,31 +126,47 @@ available.
 
 <tr>
 <td>
+
 `denominator`<a id="denominator"></a>
+
 </td>
 <td>
+
 the denominator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `imag`<a id="imag"></a>
+
 </td>
 <td>
+
 the imaginary part of a complex number
+
 </td>
 </tr><tr>
 <td>
+
 `numerator`<a id="numerator"></a>
+
 </td>
 <td>
+
 the numerator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `real`<a id="real"></a>
+
 </td>
 <td>
+
 the real part of a complex number
+
 </td>
 </tr>
 </table>
@@ -156,10 +181,9 @@ the real part of a complex number
 <code>as_integer_ratio()
 </code></pre>
 
-Return integer ratio.
+Return a pair of integers, whose ratio is equal to the original int.
 
-Return a pair of integers, whose ratio is exactly equal to the original int
-and with a positive denominator.
+The ratio is in lowest terms and has a positive denominator.
 
 ```
 >>> (10).as_integer_ratio()
@@ -234,6 +258,15 @@ byteorder
   `sys.byteorder' as the byte order value.  Default is to use 'big'.
 signed
   Indicates whether two's complement is used to represent the integer.
+
+<h3 id="is_integer"><code>is_integer</code></h3>
+
+<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
+<code>is_integer()
+</code></pre>
+
+Returns True. Exists for duck type compatibility with float.is_integer.
+
 
 <h3 id="to_bytes"><code>to_bytes</code></h3>
 
@@ -646,17 +679,25 @@ Return self^value.
 
 <tr>
 <td>
+
 LANGUAGE_UNSPECIFIED<a id="LANGUAGE_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `<Language.LANGUAGE_UNSPECIFIED: 0>`
+
 </td>
 </tr><tr>
 <td>
+
 PYTHON<a id="PYTHON"></a>
+
 </td>
 <td>
+
 `<Language.PYTHON: 1>`
+
 </td>
 </tr>
 </table>

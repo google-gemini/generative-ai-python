@@ -34,12 +34,16 @@ Metadata for a video ``File``.
 
 <tr>
 <td>
+
 `video_duration`<a id="video_duration"></a>
+
 </td>
 <td>
+
 `google.protobuf.duration_pb2.Duration`
 
 Duration of the video.
+
 </td>
 </tr>
 </table>

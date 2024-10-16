@@ -34,13 +34,17 @@ The response to a EmbedTextRequest.
 
 <tr>
 <td>
+
 `embedding`<a id="embedding"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Embedding`
 
 Output only. The embedding generated from the
 input text.
+
 
 </td>
 </tr>

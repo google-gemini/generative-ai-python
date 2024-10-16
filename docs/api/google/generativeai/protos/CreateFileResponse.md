@@ -34,12 +34,16 @@ Response for ``CreateFile``.
 
 <tr>
 <td>
+
 `file`<a id="file"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.File`
 
 Metadata for the created file.
+
 </td>
 </tr>
 </table>

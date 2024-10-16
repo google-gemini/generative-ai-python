@@ -34,12 +34,16 @@ Response from ``QueryDocument`` containing a list of relevant chunks.
 
 <tr>
 <td>
+
 `relevant_chunks`<a id="relevant_chunks"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.RelevantChunk]`
 
 The returned relevant chunks.
+
 </td>
 </tr>
 </table>

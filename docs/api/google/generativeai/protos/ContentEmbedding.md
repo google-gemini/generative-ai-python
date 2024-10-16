@@ -11,7 +11,7 @@ description: A list of floats representing an embedding.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1026-L1037">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1465-L1476">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,12 +34,16 @@ A list of floats representing an embedding.
 
 <tr>
 <td>
+
 `values`<a id="values"></a>
+
 </td>
 <td>
+
 `MutableSequence[float]`
 
 The embedding values.
+
 </td>
 </tr>
 </table>

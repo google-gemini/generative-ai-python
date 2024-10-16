@@ -34,35 +34,47 @@ Batch request to get a text embedding from the model.
 
 <tr>
 <td>
+
 `model`<a id="model"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Model`` to use for generating
 the embedding. Examples: models/embedding-gecko-001
+
 </td>
 </tr><tr>
 <td>
+
 `texts`<a id="texts"></a>
+
 </td>
 <td>
+
 `MutableSequence[str]`
 
 Optional. The free-form input texts that the
 model will turn into an embedding. The current
 limit is 100 texts, over which an error will be
 thrown.
+
 </td>
 </tr><tr>
 <td>
+
 `requests`<a id="requests"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.EmbedTextRequest]`
 
 Optional. Embed requests for the batch. Only one of
 ``texts`` or ``requests`` can be set.
+
 </td>
 </tr>
 </table>

@@ -34,23 +34,31 @@ Request to get a text embedding from the model.
 
 <tr>
 <td>
+
 `model`<a id="model"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The model name to use with the
 format model=models/{model}.
+
 </td>
 </tr><tr>
 <td>
+
 `text`<a id="text"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. The free-form input text that the
 model will turn into an embedding.
+
 </td>
 </tr>
 </table>

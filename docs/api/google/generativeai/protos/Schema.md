@@ -12,7 +12,7 @@ description: The Schema object allows the definition of input and output data ty
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L571-L649">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L641-L734">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -39,18 +39,25 @@ object <https://spec.openapis.org/oas/v3.0.3#schema>`__.
 
 <tr>
 <td>
+
 `type_`<a id="type_"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Type`
 
 Required. Data type.
+
 </td>
 </tr><tr>
 <td>
+
 `format_`<a id="format_"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. The format of the data. This is
@@ -59,68 +66,122 @@ formats:
 
  for NUMBER type: float, double
  for INTEGER type: int32, int64
+ for STRING type: enum
+
 </td>
 </tr><tr>
 <td>
+
 `description`<a id="description"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. A brief description of the
 parameter. This could contain examples of use.
 Parameter description may be formatted as
 Markdown.
+
 </td>
 </tr><tr>
 <td>
+
 `nullable`<a id="nullable"></a>
+
 </td>
 <td>
+
 `bool`
 
 Optional. Indicates if the value may be null.
+
 </td>
 </tr><tr>
 <td>
+
 `enum`<a id="enum"></a>
+
 </td>
 <td>
+
 `MutableSequence[str]`
 
 Optional. Possible values of the element of Type.STRING with
 enum format. For example we can define an Enum Direction as
 : {type:STRING, format:enum, enum:["EAST", NORTH", "SOUTH",
 "WEST"]}
+
 </td>
 </tr><tr>
 <td>
+
 `items`<a id="items"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Schema`
 
 Optional. Schema of the elements of
 Type.ARRAY.
 
+
 </td>
 </tr><tr>
 <td>
-`properties`<a id="properties"></a>
+
+`max_items`<a id="max_items"></a>
+
 </td>
 <td>
+
+`int`
+
+Optional. Maximum number of the elements for
+Type.ARRAY.
+
+</td>
+</tr><tr>
+<td>
+
+`min_items`<a id="min_items"></a>
+
+</td>
+<td>
+
+`int`
+
+Optional. Minimum number of the elements for
+Type.ARRAY.
+
+</td>
+</tr><tr>
+<td>
+
+`properties`<a id="properties"></a>
+
+</td>
+<td>
+
 `MutableMapping[str, google.ai.generativelanguage.Schema]`
 
 Optional. Properties of Type.OBJECT.
+
 </td>
 </tr><tr>
 <td>
+
 `required`<a id="required"></a>
+
 </td>
 <td>
+
 `MutableSequence[str]`
 
 Optional. Required properties of Type.OBJECT.
+
 </td>
 </tr>
 </table>

@@ -35,23 +35,31 @@ Response from ``ListDocuments`` containing a paginated list of ``Document``\ s.
 
 <tr>
 <td>
+
 `documents`<a id="documents"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Document]`
 
 The returned ``Document``\ s.
+
 </td>
 </tr><tr>
 <td>
+
 `next_page_token`<a id="next_page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 A token, which can be sent as ``page_token`` to retrieve the
 next page. If this field is omitted, there are no more
 pages.
+
 </td>
 </tr>
 </table>

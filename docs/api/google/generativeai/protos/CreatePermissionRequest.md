@@ -34,22 +34,30 @@ Request to create a ``Permission``.
 
 <tr>
 <td>
+
 `parent`<a id="parent"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The parent resource of the ``Permission``.
 Formats: ``tunedModels/{tuned_model}`` ``corpora/{corpus}``
+
 </td>
 </tr><tr>
 <td>
+
 `permission`<a id="permission"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Permission`
 
 Required. The permission to create.
+
 </td>
 </tr>
 </table>

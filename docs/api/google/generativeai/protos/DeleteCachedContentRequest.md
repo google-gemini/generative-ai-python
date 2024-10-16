@@ -34,13 +34,17 @@ Request to delete CachedContent.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The resource name referring to the content cache
 entry Format: ``cachedContents/{id}``
+
 </td>
 </tr>
 </table>

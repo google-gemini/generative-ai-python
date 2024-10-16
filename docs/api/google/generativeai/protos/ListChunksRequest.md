@@ -34,20 +34,27 @@ Request for listing ``Chunk``\ s.
 
 <tr>
 <td>
+
 `parent`<a id="parent"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Document`` containing
 ``Chunk``\ s. Example:
 ``corpora/my-corpus-123/documents/the-doc-abc``
+
 </td>
 </tr><tr>
 <td>
+
 `page_size`<a id="page_size"></a>
+
 </td>
 <td>
+
 `int`
 
 Optional. The maximum number of ``Chunk``\ s to return (per
@@ -55,12 +62,16 @@ page). The service may return fewer ``Chunk``\ s.
 
 If unspecified, at most 10 ``Chunk``\ s will be returned.
 The maximum size limit is 100 ``Chunk``\ s per page.
+
 </td>
 </tr><tr>
 <td>
+
 `page_token`<a id="page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. A page token, received from a previous
@@ -72,6 +83,7 @@ an argument to the next request to retrieve the next page.
 When paginating, all other parameters provided to
 ``ListChunks`` must match the call that provided the page
 token.
+
 </td>
 </tr>
 </table>

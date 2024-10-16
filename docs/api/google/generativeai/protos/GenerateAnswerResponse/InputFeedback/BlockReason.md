@@ -45,6 +45,7 @@ description: Specifies what was the reason why input was blocked.
 <meta itemprop="property" content="bit_length"/>
 <meta itemprop="property" content="conjugate"/>
 <meta itemprop="property" content="from_bytes"/>
+<meta itemprop="property" content="is_integer"/>
 <meta itemprop="property" content="to_bytes"/>
 <meta itemprop="property" content="BLOCK_REASON_UNSPECIFIED"/>
 <meta itemprop="property" content="OTHER"/>
@@ -57,7 +58,7 @@ description: Specifies what was the reason why input was blocked.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L912-L927">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L1351-L1366">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -86,32 +87,44 @@ Specifies what was the reason why input was blocked.
 
 <tr>
 <td>
+
 `BLOCK_REASON_UNSPECIFIED`<a id="BLOCK_REASON_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `0`
 
 Default value. This value is unused.
+
 </td>
 </tr><tr>
 <td>
+
 `SAFETY`<a id="SAFETY"></a>
+
 </td>
 <td>
+
 `1`
 
-Input was blocked due to safety reasons. You can inspect
+Input was blocked due to safety reasons. Inspect
 ``safety_ratings`` to understand which safety category
 blocked it.
+
 </td>
 </tr><tr>
 <td>
+
 `OTHER`<a id="OTHER"></a>
+
 </td>
 <td>
+
 `2`
 
 Input was blocked due to other reasons.
+
 </td>
 </tr>
 </table>
@@ -127,31 +140,47 @@ Input was blocked due to other reasons.
 
 <tr>
 <td>
+
 `denominator`<a id="denominator"></a>
+
 </td>
 <td>
+
 the denominator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `imag`<a id="imag"></a>
+
 </td>
 <td>
+
 the imaginary part of a complex number
+
 </td>
 </tr><tr>
 <td>
+
 `numerator`<a id="numerator"></a>
+
 </td>
 <td>
+
 the numerator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `real`<a id="real"></a>
+
 </td>
 <td>
+
 the real part of a complex number
+
 </td>
 </tr>
 </table>
@@ -166,10 +195,9 @@ the real part of a complex number
 <code>as_integer_ratio()
 </code></pre>
 
-Return integer ratio.
+Return a pair of integers, whose ratio is equal to the original int.
 
-Return a pair of integers, whose ratio is exactly equal to the original int
-and with a positive denominator.
+The ratio is in lowest terms and has a positive denominator.
 
 ```
 >>> (10).as_integer_ratio()
@@ -244,6 +272,15 @@ byteorder
   `sys.byteorder' as the byte order value.  Default is to use 'big'.
 signed
   Indicates whether two's complement is used to represent the integer.
+
+<h3 id="is_integer"><code>is_integer</code></h3>
+
+<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
+<code>is_integer()
+</code></pre>
+
+Returns True. Exists for duck type compatibility with float.is_integer.
+
 
 <h3 id="to_bytes"><code>to_bytes</code></h3>
 
@@ -656,24 +693,36 @@ Return self^value.
 
 <tr>
 <td>
+
 BLOCK_REASON_UNSPECIFIED<a id="BLOCK_REASON_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `<BlockReason.BLOCK_REASON_UNSPECIFIED: 0>`
+
 </td>
 </tr><tr>
 <td>
+
 OTHER<a id="OTHER"></a>
+
 </td>
 <td>
+
 `<BlockReason.OTHER: 2>`
+
 </td>
 </tr><tr>
 <td>
+
 SAFETY<a id="SAFETY"></a>
+
 </td>
 <td>
+
 `<BlockReason.SAFETY: 1>`
+
 </td>
 </tr>
 </table>

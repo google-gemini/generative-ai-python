@@ -11,7 +11,7 @@ description: URI based data.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L234-L252">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L236-L254">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,22 +34,30 @@ URI based data.
 
 <tr>
 <td>
+
 `mime_type`<a id="mime_type"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. The IANA standard MIME type of the
 source data.
+
 </td>
 </tr><tr>
 <td>
+
 `file_uri`<a id="file_uri"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. URI.
+
 </td>
 </tr>
 </table>

@@ -11,7 +11,7 @@ description: A set of tuning examples. Can be training or validation data.
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/tuned_model.py#L354-L368">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/tuned_model.py#L364-L378">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,14 +34,18 @@ A set of tuning examples. Can be training or validation data.
 
 <tr>
 <td>
+
 `examples`<a id="examples"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.TuningExample]`
 
 Required. The examples. Example input can be
 for text or discuss, but all examples in a set
 must be of the same type.
+
 </td>
 </tr>
 </table>

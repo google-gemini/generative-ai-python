@@ -34,19 +34,26 @@ Request to delete a ``Document``.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The resource name of the ``Document`` to delete.
 Example: ``corpora/my-corpus-123/documents/the-doc-abc``
+
 </td>
 </tr><tr>
 <td>
+
 `force`<a id="force"></a>
+
 </td>
 <td>
+
 `bool`
 
 Optional. If set to true, any ``Chunk``\ s and objects
@@ -54,6 +61,7 @@ related to this ``Document`` will also be deleted.
 
 If false (the default), a ``FAILED_PRECONDITION`` error will
 be returned if ``Document`` contains any ``Chunk``\ s.
+
 </td>
 </tr>
 </table>

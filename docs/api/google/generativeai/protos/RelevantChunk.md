@@ -34,21 +34,29 @@ The information for a chunk relevant to a query.
 
 <tr>
 <td>
+
 `chunk_relevance_score`<a id="chunk_relevance_score"></a>
+
 </td>
 <td>
+
 `float`
 
 ``Chunk`` relevance to the query.
+
 </td>
 </tr><tr>
 <td>
+
 `chunk`<a id="chunk"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Chunk`
 
 ``Chunk`` associated with the query.
+
 </td>
 </tr>
 </table>

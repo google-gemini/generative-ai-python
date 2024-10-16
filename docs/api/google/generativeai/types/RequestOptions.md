@@ -65,17 +65,25 @@ Request options
 
 <tr>
 <td>
+
 `retry`<a id="retry"></a>
+
 </td>
 <td>
+
 Refer to [retry docs](https://googleapis.dev/python/google-api-core/latest/retry.html) for details.
+
 </td>
 </tr><tr>
 <td>
+
 `timeout`<a id="timeout"></a>
+
 </td>
 <td>
+
 In seconds (or provide a [TimeToDeadlineTimeout](https://googleapis.dev/python/google-api-core/latest/timeout.html) object).
+
 </td>
 </tr>
 </table>
@@ -91,17 +99,25 @@ In seconds (or provide a [TimeToDeadlineTimeout](https://googleapis.dev/python/g
 
 <tr>
 <td>
+
 `retry`<a id="retry"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr><tr>
 <td>
+
 `timeout`<a id="timeout"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr>
 </table>

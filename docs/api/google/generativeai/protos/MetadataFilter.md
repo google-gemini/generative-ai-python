@@ -37,24 +37,32 @@ User provided filter to limit retrieval based on ``Chunk`` or ``Document`` level
 
 <tr>
 <td>
+
 `key`<a id="key"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The key of the metadata to filter
 on.
+
 </td>
 </tr><tr>
 <td>
+
 `conditions`<a id="conditions"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Condition]`
 
 Required. The ``Condition``\ s for the given key that will
 trigger this filter. Multiple ``Condition``\ s are joined by
 logical ORs.
+
 </td>
 </tr>
 </table>

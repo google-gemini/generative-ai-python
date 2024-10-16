@@ -34,23 +34,31 @@ Response with CachedContents list.
 
 <tr>
 <td>
+
 `cached_contents`<a id="cached_contents"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.CachedContent]`
 
 List of cached contents.
+
 </td>
 </tr><tr>
 <td>
+
 `next_page_token`<a id="next_page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 A token, which can be sent as ``page_token`` to retrieve the
 next page. If this field is omitted, there are no subsequent
 pages.
+
 </td>
 </tr>
 </table>

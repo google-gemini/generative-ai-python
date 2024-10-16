@@ -49,24 +49,36 @@ pprint.pprint(model)
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 The name of the model to fetch. Should start with `tunedModels/`
+
 </td>
 </tr><tr>
 <td>
+
 `client`<a id="client"></a>
+
 </td>
 <td>
+
 The client to use.
+
 </td>
 </tr><tr>
 <td>
+
 `request_options`<a id="request_options"></a>
+
 </td>
 <td>
+
 Options for the request.
+
 </td>
 </tr>
 </table>
@@ -79,7 +91,9 @@ Options for the request.
 <tr><th colspan="2"><h2 class="add-link">Returns</h2></th></tr>
 <tr class="alt">
 <td colspan="2">
+
 A <a href="../../google/generativeai/types/TunedModel.md"><code>types.TunedModel</code></a>.
+
 </td>
 </tr>
 

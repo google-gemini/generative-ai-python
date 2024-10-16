@@ -34,13 +34,17 @@ Request for getting information about a specific ``Document``.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Document`` to retrieve. Example:
 ``corpora/my-corpus-123/documents/the-doc-abc``
+
 </td>
 </tr>
 </table>

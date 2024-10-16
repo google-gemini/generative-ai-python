@@ -36,22 +36,30 @@ probability that content is blocked.
 
 <tr>
 <td>
+
 `category`<a id="category"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.HarmCategory`
 
 Required. The category for this setting.
+
 </td>
 </tr><tr>
 <td>
+
 `threshold`<a id="threshold"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.SafetySetting.HarmBlockThreshold`
 
 Required. Controls the probability threshold
 at which harm is blocked.
+
 </td>
 </tr>
 </table>

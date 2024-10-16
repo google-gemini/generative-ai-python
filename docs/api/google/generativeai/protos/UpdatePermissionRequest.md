@@ -34,26 +34,34 @@ Request to update the ``Permission``.
 
 <tr>
 <td>
+
 `permission`<a id="permission"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Permission`
 
 Required. The permission to update.
 
 The permission's ``name`` field is used to identify the
 permission to update.
+
 </td>
 </tr><tr>
 <td>
+
 `update_mask`<a id="update_mask"></a>
+
 </td>
 <td>
+
 `google.protobuf.field_mask_pb2.FieldMask`
 
 Required. The list of fields to update. Accepted ones:
 
 -  role (<a href="../../../google/generativeai/protos/Permission.md#role"><code>Permission.role</code></a> field)
+
 </td>
 </tr>
 </table>

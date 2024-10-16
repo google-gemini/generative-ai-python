@@ -37,23 +37,31 @@ string. The reason may be unspecified.
 
 <tr>
 <td>
+
 `reason`<a id="reason"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.ContentFilter.BlockedReason`
 
 The reason content was blocked during request
 processing.
+
 </td>
 </tr><tr>
 <td>
+
 `message`<a id="message"></a>
+
 </td>
 <td>
+
 `str`
 
 A string that describes the filtering
 behavior in more detail.
+
 </td>
 </tr>
 </table>

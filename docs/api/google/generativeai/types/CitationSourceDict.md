@@ -34,9 +34,12 @@ A citation to a source for a portion of a specific response.
 
 <tr>
 <td>
+
 `start_index`<a id="start_index"></a>
+
 </td>
 <td>
+
 `int`
 
 Optional. Start of segment of the response
@@ -44,38 +47,51 @@ that is attributed to this source.
 
 Index indicates the start of the segment,
 measured in bytes.
+
 </td>
 </tr><tr>
 <td>
+
 `end_index`<a id="end_index"></a>
+
 </td>
 <td>
+
 `int`
 
 Optional. End of the attributed segment,
 exclusive.
+
 </td>
 </tr><tr>
 <td>
+
 `uri`<a id="uri"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. URI that is attributed as a source
 for a portion of the text.
+
 </td>
 </tr><tr>
 <td>
+
 `license_`<a id="license_"></a>
+
 </td>
 <td>
+
 `str`
 
 Optional. License for the GitHub project that
 is attributed as a source for segment.
 
 License info is required for code citations.
+
 </td>
 </tr>
 </table>

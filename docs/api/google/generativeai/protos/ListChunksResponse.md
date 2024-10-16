@@ -35,23 +35,31 @@ Response from ``ListChunks`` containing a paginated list of ``Chunk``\ s.
 
 <tr>
 <td>
+
 `chunks`<a id="chunks"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.Chunk]`
 
 The returned ``Chunk``\ s.
+
 </td>
 </tr><tr>
 <td>
+
 `next_page_token`<a id="next_page_token"></a>
+
 </td>
 <td>
+
 `str`
 
 A token, which can be sent as ``page_token`` to retrieve the
 next page. If this field is omitted, there are no more
 pages.
+
 </td>
 </tr>
 </table>

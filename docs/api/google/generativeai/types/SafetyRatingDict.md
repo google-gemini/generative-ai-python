@@ -39,32 +39,44 @@ included here.
 
 <tr>
 <td>
+
 `category`<a id="category"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.HarmCategory`
 
 Required. The category for this rating.
+
 </td>
 </tr><tr>
 <td>
+
 `probability`<a id="probability"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.SafetyRating.HarmProbability`
 
 Required. The probability of harm for this
 content.
+
 </td>
 </tr><tr>
 <td>
+
 `blocked`<a id="blocked"></a>
+
 </td>
 <td>
+
 `bool`
 
 Was this content blocked because of this
 rating?
+
 </td>
 </tr>
 </table>

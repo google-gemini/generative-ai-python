@@ -11,7 +11,7 @@ description: Calls the API to permanently delete a specified file using a suppor
 
 <table class="tfo-notebook-buttons tfo-api nocontent" align="left">
 <td>
-  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/files.py#L94-L102">
+  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/files.py#L108-L116">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>

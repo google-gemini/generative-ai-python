@@ -34,14 +34,18 @@ Request to delete a ``Chunk``.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The resource name of the ``Chunk`` to delete.
 Example:
 ``corpora/my-corpus-123/documents/the-doc-abc/chunks/some-chunk``
+
 </td>
 </tr>
 </table>

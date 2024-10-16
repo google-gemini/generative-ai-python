@@ -34,12 +34,16 @@ A list of floats representing the embedding.
 
 <tr>
 <td>
+
 `value`<a id="value"></a>
+
 </td>
 <td>
+
 `MutableSequence[float]`
 
 The embedding values.
+
 </td>
 </tr>
 </table>
