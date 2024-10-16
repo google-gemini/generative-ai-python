@@ -22,12 +22,10 @@ $> pip install -U git+https://github.com/tensorflow/docs
 $> python build_docs.py
 """
 
-import os
 import pathlib
 import re
 import textwrap
 import typing
-
 
 from absl import app
 from absl import flags
@@ -48,6 +46,7 @@ from google import generativeai as genai
 
 from tensorflow_docs.api_generator import generate_lib
 from tensorflow_docs.api_generator import public_api
+from tensorflow_docs.api_generator import parser
 
 import yaml
 
@@ -72,6 +71,33 @@ _CODE_URL_PREFIX = flags.DEFINE_string(
     "code_url_prefix",
     "https://github.com/google/generative-ai-python/blob/master/google/generativeai",
     "where to find the project code",
+)
+
+parser.ITEMS_TEMPLATE = textwrap.dedent(
+    """\
+  <tr>
+  <td>
+
+  {name}{anchor}
+
+  </td>
+  <td>
+
+  {description}
+
+  </td>
+  </tr>"""
+)
+
+parser.TEXT_TEMPLATE = textwrap.dedent(
+    """\
+  <tr class="alt">
+  <td colspan="2">
+
+  {text}
+
+  </td>
+  </tr>"""
 )
 
 
