@@ -1,9 +1,3 @@
-description: The result output from a FunctionCall that contains a string representing the <a href="../../../google/generativeai/protos/FunctionDeclaration.md#name"><code>FunctionDeclaration.name</code></a> and a structured JSON object containing any output from the function is used as context to the model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.FunctionResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.FunctionResponse
 

@@ -1,11 +1,3 @@
-description: Logprobs Result
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.LogprobsResult" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="Candidate"/>
-<meta itemprop="property" content="TopCandidates"/>
-</div>
 
 # google.generativeai.protos.LogprobsResult
 

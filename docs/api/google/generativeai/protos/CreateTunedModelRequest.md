@@ -1,9 +1,3 @@
-description: Request to create a TunedModel.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CreateTunedModelRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CreateTunedModelRequest
 

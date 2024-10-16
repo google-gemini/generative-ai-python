@@ -1,9 +1,3 @@
-description: Request for getting information about a specific Document.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GetDocumentRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GetDocumentRequest
 

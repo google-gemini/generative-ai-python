@@ -1,10 +1,3 @@
-description: Result of executing the ExecutableCode.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CodeExecutionResult" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="Outcome"/>
-</div>
 
 # google.generativeai.protos.CodeExecutionResult
 

@@ -1,9 +1,3 @@
-description: Record for a single tuning step.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TuningSnapshot" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.TuningSnapshot
 

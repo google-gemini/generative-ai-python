@@ -1,9 +1,3 @@
-description: Tuning tasks that create tuned models.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TuningTask" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.TuningTask
 

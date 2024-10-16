@@ -1,11 +1,3 @@
-description: Response from the model supporting multiple candidate responses.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GenerateContentResponse" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="PromptFeedback"/>
-<meta itemprop="property" content="UsageMetadata"/>
-</div>
 
 # google.generativeai.protos.GenerateContentResponse
 

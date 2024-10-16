@@ -1,9 +1,3 @@
-description: A repeated list of passages.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GroundingPassages" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GroundingPassages
 

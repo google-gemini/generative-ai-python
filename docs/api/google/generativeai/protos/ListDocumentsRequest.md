@@ -1,9 +1,3 @@
-description: Request for listing Document\ s.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.ListDocumentsRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.ListDocumentsRequest
 

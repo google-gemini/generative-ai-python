@@ -1,9 +1,3 @@
-description: Metadata on the generation request's token usage.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GenerateContentResponse.UsageMetadata" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GenerateContentResponse.UsageMetadata
 

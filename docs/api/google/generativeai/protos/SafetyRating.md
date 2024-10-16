@@ -1,10 +1,3 @@
-description: Safety rating for a piece of content.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.SafetyRating" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="HarmProbability"/>
-</div>
 
 # google.generativeai.protos.SafetyRating
 

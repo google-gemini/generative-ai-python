@@ -1,9 +1,3 @@
-description: Calls the API to upload a file using a supported file service.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.upload_file" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.upload_file
 

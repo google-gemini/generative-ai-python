@@ -1,11 +1,3 @@
-description: Google AI Python SDK
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__version__"/>
-<meta itemprop="property" content="annotations"/>
-</div>
 
 # Module: google.generativeai
 

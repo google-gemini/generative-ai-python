@@ -1,17 +1,3 @@
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.Permissions" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="__iter__"/>
-<meta itemprop="property" content="create"/>
-<meta itemprop="property" content="create_async"/>
-<meta itemprop="property" content="get"/>
-<meta itemprop="property" content="get_async"/>
-<meta itemprop="property" content="list"/>
-<meta itemprop="property" content="list_async"/>
-<meta itemprop="property" content="transfer_ownership"/>
-<meta itemprop="property" content="transfer_ownership_async"/>
-</div>
 
 # google.generativeai.types.Permissions
 

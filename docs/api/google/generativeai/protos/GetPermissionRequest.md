@@ -1,9 +1,3 @@
-description: Request for getting information about a specific Permission.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GetPermissionRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GetPermissionRequest
 

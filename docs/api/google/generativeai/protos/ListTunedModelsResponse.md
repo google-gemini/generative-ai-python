@@ -1,9 +1,3 @@
-description: Response from ListTunedModels containing a paginated list of Models.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.ListTunedModelsResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.ListTunedModelsResponse
 

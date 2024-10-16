@@ -1,9 +1,3 @@
-description: A citation to a source for a portion of a specific response.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CitationSource" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CitationSource
 

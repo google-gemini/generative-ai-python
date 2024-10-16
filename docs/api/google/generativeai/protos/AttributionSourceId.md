@@ -1,11 +1,3 @@
-description: Identifier for the source contributing to this attribution.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.AttributionSourceId" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="GroundingPassageId"/>
-<meta itemprop="property" content="SemanticRetrieverChunk"/>
-</div>
 
 # google.generativeai.protos.AttributionSourceId
 

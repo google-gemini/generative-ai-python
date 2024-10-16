@@ -1,9 +1,3 @@
-description: A ProtocolMessage
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.Status" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.types.Status
 

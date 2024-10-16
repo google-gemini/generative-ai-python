@@ -1,9 +1,3 @@
-description: Batch request to get embeddings from the model for a list of prompts.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.BatchEmbedContentsRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.BatchEmbedContentsRequest
 

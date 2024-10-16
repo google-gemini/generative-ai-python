@@ -1,11 +1,3 @@
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.File" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="delete"/>
-<meta itemprop="property" content="to_dict"/>
-<meta itemprop="property" content="to_proto"/>
-</div>
 
 # google.generativeai.types.File
 

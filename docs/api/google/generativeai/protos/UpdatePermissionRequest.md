@@ -1,9 +1,3 @@
-description: Request to update the Permission.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.UpdatePermissionRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.UpdatePermissionRequest
 

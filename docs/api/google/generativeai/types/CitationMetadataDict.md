@@ -1,9 +1,3 @@
-description: A collection of source attributions for a piece of content.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.CitationMetadataDict" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.types.CitationMetadataDict
 

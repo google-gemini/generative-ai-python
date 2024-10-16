@@ -1,9 +1,3 @@
-description: User provided metadata stored as key-value pairs.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CustomMetadata" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CustomMetadata
 

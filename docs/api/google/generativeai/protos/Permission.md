@@ -1,11 +1,3 @@
-description: Permission resource grants user, group or the rest of the world access to the PaLM API resource (e.g.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Permission" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="GranteeType"/>
-<meta itemprop="property" content="Role"/>
-</div>
 
 # google.generativeai.protos.Permission
 

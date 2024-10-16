@@ -1,9 +1,3 @@
-description: Identifier for a part within a GroundingPassage.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.AttributionSourceId.GroundingPassageId" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.AttributionSourceId.GroundingPassageId
 

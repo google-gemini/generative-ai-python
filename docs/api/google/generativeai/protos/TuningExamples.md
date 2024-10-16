@@ -1,9 +1,3 @@
-description: A set of tuning examples. Can be training or validation data.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TuningExamples" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.TuningExamples
 

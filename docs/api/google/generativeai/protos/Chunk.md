@@ -1,10 +1,3 @@
-description: A Chunk is a subpart of a Document that is treated as an independent unit for the purposes of vector representation and storage.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Chunk" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="State"/>
-</div>
 
 # google.generativeai.protos.Chunk
 

@@ -1,9 +1,3 @@
-description: Google search entry point.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.SearchEntryPoint" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.SearchEntryPoint
 

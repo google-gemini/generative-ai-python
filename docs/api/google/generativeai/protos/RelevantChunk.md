@@ -1,9 +1,3 @@
-description: The information for a chunk relevant to a query.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.RelevantChunk" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.RelevantChunk
 

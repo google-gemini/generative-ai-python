@@ -1,9 +1,3 @@
-description: Request for GetFile.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GetFileRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GetFileRequest
 

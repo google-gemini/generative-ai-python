@@ -1,9 +1,3 @@
-description: Request for getting information about a specific Model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GetModelRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GetModelRequest
 

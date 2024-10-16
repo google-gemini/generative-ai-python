@@ -1,10 +1,3 @@
-description: Describes the options to customize dynamic retrieval.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.DynamicRetrievalConfig" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="Mode"/>
-</div>
 
 # google.generativeai.protos.DynamicRetrievalConfig
 

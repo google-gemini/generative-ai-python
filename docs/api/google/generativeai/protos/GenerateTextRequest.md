@@ -1,9 +1,3 @@
-description: Request to generate a text completion response from the model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GenerateTextRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GenerateTextRequest
 

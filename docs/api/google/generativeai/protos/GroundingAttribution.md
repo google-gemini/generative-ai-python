@@ -1,9 +1,3 @@
-description: Attribution for a source that contributed to an answer.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GroundingAttribution" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GroundingAttribution
 

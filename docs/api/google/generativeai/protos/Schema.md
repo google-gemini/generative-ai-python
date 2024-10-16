@@ -1,10 +1,3 @@
-description: The Schema object allows the definition of input and output data types.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Schema" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="PropertiesEntry"/>
-</div>
 
 # google.generativeai.protos.Schema
 

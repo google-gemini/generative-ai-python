@@ -1,10 +1,3 @@
-description: Content that has been preprocessed and can be used in subsequent request to GenerativeService.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CachedContent" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="UsageMetadata"/>
-</div>
 
 # google.generativeai.protos.CachedContent
 

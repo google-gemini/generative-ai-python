@@ -1,9 +1,3 @@
-description: This module provides low level access to the ProtoBuffer "Message" classes used by the API.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # Module: google.generativeai.protos
 

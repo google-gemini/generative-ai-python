@@ -1,10 +1,3 @@
-description: A set of the feedback metadata the prompt specified in GenerateContentRequest.content.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GenerateContentResponse.PromptFeedback" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="BlockReason"/>
-</div>
 
 # google.generativeai.protos.GenerateContentResponse.PromptFeedback
 

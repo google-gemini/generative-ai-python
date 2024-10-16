@@ -1,24 +1,3 @@
-description: A dataclass representation of a <a href="../../../google/generativeai/protos/TunedModel.md"><code>protos.TunedModel</code></a>.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.TunedModel" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="base_model"/>
-<meta itemprop="property" content="create_time"/>
-<meta itemprop="property" content="description"/>
-<meta itemprop="property" content="display_name"/>
-<meta itemprop="property" content="name"/>
-<meta itemprop="property" content="reader_project_numbers"/>
-<meta itemprop="property" content="source_model"/>
-<meta itemprop="property" content="state"/>
-<meta itemprop="property" content="temperature"/>
-<meta itemprop="property" content="top_k"/>
-<meta itemprop="property" content="top_p"/>
-<meta itemprop="property" content="tuning_task"/>
-<meta itemprop="property" content="update_time"/>
-</div>
 
 # google.generativeai.types.TunedModel
 

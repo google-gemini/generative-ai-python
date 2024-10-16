@@ -1,9 +1,3 @@
-description: Response from ListChunks containing a paginated list of Chunk\ s.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.ListChunksResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.ListChunksResponse
 

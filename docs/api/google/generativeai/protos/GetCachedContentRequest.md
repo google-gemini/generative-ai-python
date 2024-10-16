@@ -1,9 +1,3 @@
-description: Request to read CachedContent.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GetCachedContentRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GetCachedContentRequest
 

@@ -1,9 +1,3 @@
-description: Grounding support.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GroundingSupport" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GroundingSupport
 

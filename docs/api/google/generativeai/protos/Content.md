@@ -1,9 +1,3 @@
-description: The base structured datatype containing multi-part content of a message.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Content" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.Content
 

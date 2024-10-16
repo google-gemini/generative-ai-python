@@ -1,9 +1,3 @@
-description: Response from BatchUpdateChunks containing a list of updated Chunk\ s.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.BatchUpdateChunksResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.BatchUpdateChunksResponse
 

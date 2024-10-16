@@ -1,9 +1,3 @@
-description: Metadata about the state and progress of creating a tuned model returned from the long-running operation
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CreateTunedModelMetadata" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CreateTunedModelMetadata
 

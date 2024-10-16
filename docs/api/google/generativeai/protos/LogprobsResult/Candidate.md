@@ -1,9 +1,3 @@
-description: Candidate for the logprobs token and score.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.LogprobsResult.Candidate" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.LogprobsResult.Candidate
 

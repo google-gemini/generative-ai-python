@@ -1,9 +1,3 @@
-description: Calls the API to list files using a supported file service.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.list_files" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.list_files
 

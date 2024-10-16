@@ -1,10 +1,3 @@
-description: A fine-tuned model created using ModelService.CreateTunedModel.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TunedModel" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="State"/>
-</div>
 
 # google.generativeai.protos.TunedModel
 

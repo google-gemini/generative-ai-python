@@ -1,9 +1,3 @@
-description: Request to delete a Document.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.DeleteDocumentRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.DeleteDocumentRequest
 

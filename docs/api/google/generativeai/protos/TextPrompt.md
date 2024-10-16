@@ -1,9 +1,3 @@
-description: Text given to the model as a prompt.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TextPrompt" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.TextPrompt
 

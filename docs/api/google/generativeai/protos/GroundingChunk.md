@@ -1,10 +1,3 @@
-description: Grounding chunk.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GroundingChunk" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="Web"/>
-</div>
 
 # google.generativeai.protos.GroundingChunk
 

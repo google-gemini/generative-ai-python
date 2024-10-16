@@ -1,13 +1,3 @@
-description: A wrapper for <a href="../../../google/generativeai/protos/Tool.md"><code>protos.Tool</code></a>, Contains a collection of related FunctionDeclaration objects, protos.CodeExecution object, and protos.GoogleSearchRetrieval object.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.Tool" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__call__"/>
-<meta itemprop="property" content="__getitem__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="to_proto"/>
-</div>
 
 # google.generativeai.types.Tool
 

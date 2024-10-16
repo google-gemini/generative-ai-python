@@ -1,10 +1,3 @@
-description: Configuration for specifying function calling behavior.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.FunctionCallingConfig" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="Mode"/>
-</div>
 
 # google.generativeai.protos.FunctionCallingConfig
 

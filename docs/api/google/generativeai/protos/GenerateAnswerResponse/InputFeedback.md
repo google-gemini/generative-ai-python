@@ -1,10 +1,3 @@
-description: Feedback related to the input data used to answer the question, as opposed to the model-generated response to the question.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GenerateAnswerResponse.InputFeedback" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="BlockReason"/>
-</div>
 
 # google.generativeai.protos.GenerateAnswerResponse.InputFeedback
 

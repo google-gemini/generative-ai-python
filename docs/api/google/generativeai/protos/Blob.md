@@ -1,9 +1,3 @@
-description: Raw media bytes.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Blob" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.Blob
 

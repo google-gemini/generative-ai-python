@@ -1,9 +1,3 @@
-description: Captures default client configuration.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.configure" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.configure
 

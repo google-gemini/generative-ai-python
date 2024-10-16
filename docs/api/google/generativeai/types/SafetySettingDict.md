@@ -1,9 +1,3 @@
-description: Safety setting, affecting the safety-blocking behavior.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.SafetySettingDict" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.types.SafetySettingDict
 

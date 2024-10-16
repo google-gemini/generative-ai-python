@@ -1,16 +1,3 @@
-description: The genai.GenerativeModel class wraps default parameters for calls to <a href="../../google/generativeai/GenerativeModel.md#generate_content"><code>GenerativeModel.generate_content</code></a>, <a href="../../google/generativeai/GenerativeModel.md#count_tokens"><code>GenerativeModel.count_tokens</code></a>, and <a href="../../google/generativeai/GenerativeModel.md#start_chat"><code>GenerativeModel.start_chat</code></a>.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.GenerativeModel" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="count_tokens"/>
-<meta itemprop="property" content="count_tokens_async"/>
-<meta itemprop="property" content="from_cached_content"/>
-<meta itemprop="property" content="generate_content"/>
-<meta itemprop="property" content="generate_content_async"/>
-<meta itemprop="property" content="start_chat"/>
-</div>
 
 # google.generativeai.GenerativeModel
 

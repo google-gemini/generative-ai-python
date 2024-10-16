@@ -1,13 +1,3 @@
-description: Contains an ongoing conversation with the model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.ChatSession" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="rewind"/>
-<meta itemprop="property" content="send_message"/>
-<meta itemprop="property" content="send_message_async"/>
-</div>
 
 # google.generativeai.ChatSession
 

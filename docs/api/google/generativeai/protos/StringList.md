@@ -1,9 +1,3 @@
-description: User provided string values assigned to a single metadata key.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.StringList" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.StringList
 

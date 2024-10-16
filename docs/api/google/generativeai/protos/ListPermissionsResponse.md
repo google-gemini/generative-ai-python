@@ -1,9 +1,3 @@
-description: Response from ListPermissions containing a paginated list of permissions.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.ListPermissionsResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.ListPermissionsResponse
 

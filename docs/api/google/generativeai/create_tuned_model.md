@@ -1,9 +1,3 @@
-description: Calls the API to initiate a tuning process that optimizes a model for specific data, returning an operation object to track and manage the tuning progress.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.create_tuned_model" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.create_tuned_model
 

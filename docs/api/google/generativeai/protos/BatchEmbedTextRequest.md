@@ -1,9 +1,3 @@
-description: Batch request to get a text embedding from the model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.BatchEmbedTextRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.BatchEmbedTextRequest
 

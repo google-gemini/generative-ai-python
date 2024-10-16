@@ -1,10 +1,3 @@
-description: A collection of type definitions used throughout the library.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="annotations"/>
-</div>
 
 # Module: google.generativeai.types
 

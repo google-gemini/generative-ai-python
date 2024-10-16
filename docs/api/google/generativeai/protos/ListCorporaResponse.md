@@ -1,9 +1,3 @@
-description: Response from ListCorpora containing a paginated list of Corpora.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.ListCorporaResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.ListCorporaResponse
 

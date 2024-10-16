@@ -1,7 +1,3 @@
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.caching.get_default_cache_client" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.caching.get_default_cache_client
 

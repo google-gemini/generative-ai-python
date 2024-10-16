@@ -1,13 +1,3 @@
-description: A container for a set of Tool objects, manages lookup and execution of their functions.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.FunctionLibrary" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__call__"/>
-<meta itemprop="property" content="__getitem__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="to_proto"/>
-</div>
 
 # google.generativeai.types.FunctionLibrary
 

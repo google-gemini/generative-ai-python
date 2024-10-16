@@ -1,9 +1,3 @@
-description: User provided filter to limit retrieval based on Chunk or Document level metadata values.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.MetadataFilter" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.MetadataFilter
 

@@ -1,9 +1,3 @@
-description: Request to update a Document.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.UpdateDocumentRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.UpdateDocumentRequest
 

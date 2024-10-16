@@ -1,9 +1,3 @@
-description: Calls the API to permanently delete a specified file using a supported file service.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.delete_file" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.delete_file
 

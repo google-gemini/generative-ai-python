@@ -1,9 +1,3 @@
-description: Response from BatchCreateChunks containing a list of created Chunk\ s.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.BatchCreateChunksResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.BatchCreateChunksResponse
 

@@ -1,15 +1,3 @@
-description: A dataclass representation of a <a href="../../../google/generativeai/protos/Model.md"><code>protos.Model</code></a>.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.Model" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="max_temperature"/>
-<meta itemprop="property" content="temperature"/>
-<meta itemprop="property" content="top_k"/>
-<meta itemprop="property" content="top_p"/>
-</div>
 
 # google.generativeai.types.Model
 

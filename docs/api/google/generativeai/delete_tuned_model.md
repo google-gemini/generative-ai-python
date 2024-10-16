@@ -1,9 +1,3 @@
-description: Calls the API to delete a specified tuned model
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.delete_tuned_model" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.delete_tuned_model
 

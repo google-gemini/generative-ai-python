@@ -1,9 +1,3 @@
-description: Request to update a TunedModel.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.UpdateTunedModelRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.UpdateTunedModelRequest
 

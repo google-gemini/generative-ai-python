@@ -1,9 +1,3 @@
-description: The Tool configuration containing parameters for specifying Tool use in the request.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.ToolConfig" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.ToolConfig
 

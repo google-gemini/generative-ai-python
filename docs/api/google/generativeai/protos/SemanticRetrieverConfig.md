@@ -1,9 +1,3 @@
-description: Configuration for retrieving grounding content from a Corpus or Document created using the Semantic Retriever API.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.SemanticRetrieverConfig" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.SemanticRetrieverConfig
 

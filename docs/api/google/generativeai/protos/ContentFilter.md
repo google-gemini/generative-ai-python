@@ -1,10 +1,3 @@
-description: Content filtering metadata associated with processing a single request.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.ContentFilter" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="BlockedReason"/>
-</div>
 
 # google.generativeai.protos.ContentFilter
 

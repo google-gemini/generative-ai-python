@@ -1,9 +1,3 @@
-description: A predicted FunctionCall returned from the model that contains a string representing the <a href="../../../google/generativeai/protos/FunctionDeclaration.md#name"><code>FunctionDeclaration.name</code></a> with the arguments and their values.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.FunctionCall" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.FunctionCall
 

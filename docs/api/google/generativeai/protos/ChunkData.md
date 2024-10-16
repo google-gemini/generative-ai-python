@@ -1,9 +1,3 @@
-description: Extracted data that represents the Chunk content.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.ChunkData" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.ChunkData
 

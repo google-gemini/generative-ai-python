@@ -1,9 +1,3 @@
-description: Calls the API to get a specific operation
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.get_operation" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.get_operation
 

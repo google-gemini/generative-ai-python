@@ -1,7 +1,3 @@
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.get_default_file_client" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.types.get_default_file_client
 

@@ -1,9 +1,3 @@
-description: A simple typed namespace. At runtime it is equivalent to a plain dict.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.TypedDict" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.types.TypedDict
 

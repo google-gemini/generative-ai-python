@@ -1,9 +1,3 @@
-description: Calls the API to list all tuned models.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.list_tuned_models" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.list_tuned_models
 

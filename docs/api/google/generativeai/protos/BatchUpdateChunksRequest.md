@@ -1,9 +1,3 @@
-description: Request to batch update Chunk\ s.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.BatchUpdateChunksRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.BatchUpdateChunksRequest
 

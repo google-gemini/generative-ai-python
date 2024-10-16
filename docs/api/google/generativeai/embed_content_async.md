@@ -1,9 +1,3 @@
-description: Calls the API to create async embeddings for content passed in.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.embed_content_async" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.embed_content_async
 

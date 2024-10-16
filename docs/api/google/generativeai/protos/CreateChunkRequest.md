@@ -1,9 +1,3 @@
-description: Request to create a Chunk.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CreateChunkRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CreateChunkRequest
 

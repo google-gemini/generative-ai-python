@@ -1,9 +1,3 @@
-description: Structured representation of a function declaration as defined by the OpenAPI 3.03 specification <https://spec.openapis.org/oas/v3.0.3>__.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.FunctionDeclaration" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.FunctionDeclaration
 

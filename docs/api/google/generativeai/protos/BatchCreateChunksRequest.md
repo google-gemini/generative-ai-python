@@ -1,9 +1,3 @@
-description: Request to batch create Chunk\ s.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.BatchCreateChunksRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.BatchCreateChunksRequest
 

@@ -1,11 +1,3 @@
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.FunctionDeclaration" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="from_function"/>
-<meta itemprop="property" content="from_proto"/>
-<meta itemprop="property" content="to_proto"/>
-</div>
 
 # google.generativeai.types.FunctionDeclaration
 

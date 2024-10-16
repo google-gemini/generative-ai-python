@@ -1,14 +1,3 @@
-description: This is the async version of genai.GenerateContentResponse.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.AsyncGenerateContentResponse" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="from_aiterator"/>
-<meta itemprop="property" content="from_response"/>
-<meta itemprop="property" content="resolve"/>
-<meta itemprop="property" content="to_dict"/>
-</div>
 
 # google.generativeai.types.AsyncGenerateContentResponse
 

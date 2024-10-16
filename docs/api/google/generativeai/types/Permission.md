@@ -1,19 +1,3 @@
-description: A permission to access a resource.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.Permission" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="delete"/>
-<meta itemprop="property" content="delete_async"/>
-<meta itemprop="property" content="get"/>
-<meta itemprop="property" content="get_async"/>
-<meta itemprop="property" content="to_dict"/>
-<meta itemprop="property" content="update"/>
-<meta itemprop="property" content="update_async"/>
-<meta itemprop="property" content="email_address"/>
-</div>
 
 # google.generativeai.types.Permission
 

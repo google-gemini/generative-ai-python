@@ -1,15 +1,3 @@
-description: Cached content resource.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.caching.CachedContent" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="create"/>
-<meta itemprop="property" content="delete"/>
-<meta itemprop="property" content="get"/>
-<meta itemprop="property" content="list"/>
-<meta itemprop="property" content="update"/>
-</div>
 
 # google.generativeai.caching.CachedContent
 

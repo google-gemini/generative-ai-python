@@ -1,9 +1,3 @@
-description: Request for querying a Document.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.QueryDocumentRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.QueryDocumentRequest
 

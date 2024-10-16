@@ -1,9 +1,3 @@
-description: Response from TransferOwnership.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TransferOwnershipResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.TransferOwnershipResponse
 

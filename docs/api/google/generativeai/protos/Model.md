@@ -1,9 +1,3 @@
-description: Information about a Generative Language Model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Model" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.Model
 

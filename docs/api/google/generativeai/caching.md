@@ -1,8 +1,3 @@
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.caching" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="annotations"/>
-</div>
 
 # Module: google.generativeai.caching
 

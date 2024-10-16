@@ -1,9 +1,3 @@
-description: Tool to retrieve public web data for grounding, powered by Google.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GoogleSearchRetrieval" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GoogleSearchRetrieval
 

@@ -1,9 +1,3 @@
-description: A Corpus is a collection of Document\ s.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Corpus" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.Corpus
 

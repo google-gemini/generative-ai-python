@@ -1,10 +1,3 @@
-description: Filter condition applicable to a single key.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Condition" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="Operator"/>
-</div>
 
 # google.generativeai.protos.Condition
 

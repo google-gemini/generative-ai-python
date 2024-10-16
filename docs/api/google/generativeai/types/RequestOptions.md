@@ -1,19 +1,3 @@
-description: Request options
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.RequestOptions" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__contains__"/>
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__getitem__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="__iter__"/>
-<meta itemprop="property" content="__len__"/>
-<meta itemprop="property" content="get"/>
-<meta itemprop="property" content="items"/>
-<meta itemprop="property" content="keys"/>
-<meta itemprop="property" content="values"/>
-</div>
 
 # google.generativeai.types.RequestOptions
 

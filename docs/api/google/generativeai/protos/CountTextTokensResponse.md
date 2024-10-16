@@ -1,9 +1,3 @@
-description: A response from CountTextTokens.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CountTextTokensResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CountTextTokensResponse
 

@@ -1,10 +1,3 @@
-description: Request to generate a grounded answer from the Model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GenerateAnswerRequest" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="AnswerStyle"/>
-</div>
 
 # google.generativeai.protos.GenerateAnswerRequest
 

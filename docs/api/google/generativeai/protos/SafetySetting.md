@@ -1,10 +1,3 @@
-description: Safety setting, affecting the safety-blocking behavior.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.SafetySetting" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="HarmBlockThreshold"/>
-</div>
 
 # google.generativeai.protos.SafetySetting
 

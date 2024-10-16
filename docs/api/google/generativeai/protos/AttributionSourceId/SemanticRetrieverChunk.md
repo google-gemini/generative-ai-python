@@ -1,9 +1,3 @@
-description: Identifier for a Chunk retrieved via Semantic Retriever specified in the GenerateAnswerRequest using SemanticRetrieverConfig.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.AttributionSourceId.SemanticRetrieverChunk" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.AttributionSourceId.SemanticRetrieverChunk
 

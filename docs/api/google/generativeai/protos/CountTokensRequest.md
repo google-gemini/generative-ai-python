@@ -1,9 +1,3 @@
-description: Counts the number of tokens in the prompt sent to a model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CountTokensRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CountTokensRequest
 

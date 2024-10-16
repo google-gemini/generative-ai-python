@@ -1,9 +1,3 @@
-description: Chunk from the web.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GroundingChunk.Web" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GroundingChunk.Web
 

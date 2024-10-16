@@ -1,9 +1,3 @@
-description: Metadata on the usage of the cached content.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CachedContent.UsageMetadata" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CachedContent.UsageMetadata
 

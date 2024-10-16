@@ -1,9 +1,3 @@
-description: Tuned model as a source for training a new model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TunedModelSource" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.TunedModelSource
 

@@ -1,10 +1,3 @@
-description: A response candidate generated from the model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Candidate" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="FinishReason"/>
-</div>
 
 # google.generativeai.protos.Candidate
 

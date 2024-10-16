@@ -1,24 +1,3 @@
-description: A simple dataclass used to configure the generation parameters of <a href="../../../google/generativeai/GenerativeModel.md#generate_content"><code>GenerativeModel.generate_content</code></a>.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.GenerationConfig" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="candidate_count"/>
-<meta itemprop="property" content="frequency_penalty"/>
-<meta itemprop="property" content="logprobs"/>
-<meta itemprop="property" content="max_output_tokens"/>
-<meta itemprop="property" content="presence_penalty"/>
-<meta itemprop="property" content="response_logprobs"/>
-<meta itemprop="property" content="response_mime_type"/>
-<meta itemprop="property" content="response_schema"/>
-<meta itemprop="property" content="seed"/>
-<meta itemprop="property" content="stop_sequences"/>
-<meta itemprop="property" content="temperature"/>
-<meta itemprop="property" content="top_k"/>
-<meta itemprop="property" content="top_p"/>
-</div>
 
 # google.generativeai.types.GenerationConfig
 

@@ -1,9 +1,3 @@
-description: Request to update a Chunk.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.UpdateChunkRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.UpdateChunkRequest
 

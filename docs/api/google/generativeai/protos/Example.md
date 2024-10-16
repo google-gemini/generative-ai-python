@@ -1,9 +1,3 @@
-description: An input/output example used to instruct the Model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Example" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.Example
 

@@ -1,9 +1,3 @@
-description: Calls the API to fetch a model by name.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.get_model" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.get_model
 
