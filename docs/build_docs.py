@@ -44,6 +44,7 @@ import PIL.Image  # must be imported before turning on TYPE_CHECKING
 typing.TYPE_CHECKING = True
 from google import generativeai as genai
 
+from tensorflow_docs.api_generator import doc_controls
 from tensorflow_docs.api_generator import generate_lib
 from tensorflow_docs.api_generator import public_api
 from tensorflow_docs.api_generator import parser
@@ -102,6 +103,8 @@ parser.TEXT_TEMPLATE = textwrap.dedent(
 )
 
 base_page.TABLE_HEADER = '<table class="tfo-notebook-buttons tfo-api nocontent">'
+
+base_page.TemplatePageBuilder.get_devsite_headers = lambda x: ""
 
 
 def gen_api_docs():
