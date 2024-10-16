@@ -47,6 +47,7 @@ from google import generativeai as genai
 from tensorflow_docs.api_generator import generate_lib
 from tensorflow_docs.api_generator import public_api
 from tensorflow_docs.api_generator import parser
+from tensorflow_docs.api_generator.pretty_docs import base_page
 
 import yaml
 
@@ -100,6 +101,8 @@ parser.TEXT_TEMPLATE = textwrap.dedent(
   </tr>"""
 )
 
+base_page.TABLE_HEADER = (
+    '<table class="tfo-notebook-buttons tfo-api nocontent">')
 
 def gen_api_docs():
     """Generates api docs for the generative-ai package."""
