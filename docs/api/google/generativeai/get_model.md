@@ -38,7 +38,7 @@ Calls the API to fetch a model by name.
 
 ```
 import pprint
-model = genai.get_model('models/gemini-pro')
+model = genai.get_model('models/gemini-1.5-flash')
 pprint.pprint(model)
 ```
 
