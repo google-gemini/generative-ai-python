@@ -111,7 +111,7 @@ SAFETY_FILTER_LEVELS = SafetyFilterLevel.__args__  # type: ignore
 PersonGeneration = Literal["dont_allow", "allow_adult"]
 PERSON_GENERATIONS = PersonGeneration.__args__  # type: ignore
 
-ImageLikeType = Union["Image", pathlib.Path(), content_types.ImageType]
+ImageLikeType = Union["Image", pathlib.Path, content_types.ImageType]
 
 
 class Image:
