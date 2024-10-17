@@ -37,29 +37,23 @@ if typing.TYPE_CHECKING:
     IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
     ImageType = PIL.Image.Image | IPython.display.Image
 else:
+    IMAGE_TYPES = ()
     try:
         import PIL.Image
         import PIL.ImageFile
+
+        IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
     except ImportError:
         PIL = None
 
     try:
         import IPython.display
+
+        IMAGE_TYPES = IMAGE_TYPES + (IPython.display.Image,)
     except ImportError:
         IPython = None
 
-    if PIL is not None and IPython is not None:
-        IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
-        ImageType = Union[PIL.Image.Image, IPython.display.Image]
-    elif PIL is not None and IPython is None:
-        IMAGE_TYPES = (PIL.Image.Image,)
-        ImageType = Union[PIL.Image.Image]
-    elif PIL is None and IPython is not None:
-        IMAGE_TYPES = (IPython.display.Image,)
-        ImageType = Union[IPython.display.Image,]
-    else:
-        IMAGE_TYPES = ()
-        ImageType = Union
+    ImageType = Union["PIL.Image.Image", "IPython.display.Image"]
 
 
 __all__ = [
