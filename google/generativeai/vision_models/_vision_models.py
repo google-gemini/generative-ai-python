@@ -114,6 +114,50 @@ PERSON_GENERATIONS = PersonGeneration.__args__  # type: ignore
 ImageLikeType = Union["Image", pathlib.Path, content_types.ImageType]
 
 
+def check_watermark(
+    img: ImageLikeType, model_id: str = "models/image-verification-001"
+) -> "CheckWatermarkResult":
+    """Checks if an image has a Google-AI watermark.
+
+    Args:
+        img: can be a `pathlib.Path` or a `PIL.Image.Image`, `IPythin.display.Image`, or `google.generativeai.Image`.
+        model_id: Which version of the image-verification model to send the image to.
+
+    Returns:
+
+    """
+    if isinstance(img, Image):
+        pass
+    elif isinstance(img, pathlib.Path):
+        img = Image.load_from_file(img)
+    elif IPython_display is not None and isinstance(img, IPython_display.Image):
+        img = Image(image_bytes=img.data)
+    elif PIL_Image is not None and isinstance(img, PIL_Image.Image):
+        blob = content_types._pil_to_blob(img)
+        img = Image(image_bytes=blob.data)
+    elif isinstance(img, protos.Blob):
+        img = Image(image_bytes=img.data)
+    else:
+        raise TypeError(
+            f"Not implemented: Could not convert a {type(img)} into `Image`\n    {img=}"
+        )
+
+    prediction_client = client.get_default_prediction_client()
+    if not model_id.startswith("models/"):
+        model_id = f"models/{model_id}"
+
+    instance = {"image": {"bytesBase64Encoded": base64.b64encode(img._loaded_bytes).decode()}}
+    parameters = {"watermarkVerification": True}
+
+    # This is to get around https://github.com/googleapis/proto-plus-python/issues/488
+    pr = protos.PredictRequest.pb()
+    request = pr(model=model_id, instances=[to_value(instance)], parameters=to_value(parameters))
+
+    response = prediction_client.predict(request)
+
+    return CheckWatermarkResult(response.predictions)
+
+
 class Image:
     """Image."""
 
@@ -209,41 +253,7 @@ class Image:
     def _repr_png_(self):
         return self._pil_image._repr_png_()  # type:ignore
 
-    def check_watermark(self: ImageLikeType, model_id: str = "models/image-verification-001"):
-        img = None
-        if isinstance(self, Image):
-            img = self
-        elif isinstance(self, pathlib.Path):
-            img = Image.load_from_file(self)
-        elif IPython_display is not None and isinstance(self, IPython_display.Image):
-            img = Image(image_bytes=self.data)
-        elif PIL_Image is not None and isinstance(self, PIL_Image.Image):
-            blob = content_types._pil_to_blob(self)
-            img = Image(image_bytes=blob.data)
-        elif isinstance(self, protos.Blob):
-            img = Image(image_bytes=self.data)
-        else:
-            raise TypeError(
-                f"Not implemented: Could not convert a {type(img)} into `Image`\n    {img=}"
-            )
-
-        prediction_client = client.get_default_prediction_client()
-        if not model_id.startswith("models/"):
-            model_id = f"models/{model_id}"
-
-        # Note: Only a single prompt is supported by the service.
-        instance = {"image": {"bytesBase64Encoded": base64.b64encode(img._loaded_bytes).decode()}}
-        parameters = {"watermarkVerification": True}
-
-        # This is to get around https://github.com/googleapis/proto-plus-python/issues/488
-        pr = protos.PredictRequest.pb()
-        request = pr(
-            model=model_id, instances=[to_value(instance)], parameters=to_value(parameters)
-        )
-
-        response = prediction_client.predict(request)
-
-        return CheckWatermarkResult(response.predictions)
+    check_watermark = check_watermark
 
 
 class CheckWatermarkResult:
@@ -539,7 +549,7 @@ class GeneratedImage(Image):
         return self._generation_parameters
 
     @staticmethod
-    def load_from_file(location: str) -> "GeneratedImage":
+    def load_from_file(location: os.PathLike) -> "GeneratedImage":
         """Loads image from file.
 
         Args:
