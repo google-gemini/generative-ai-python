@@ -22,6 +22,8 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from google.generativeai import protos
 from google.generativeai.types import content_types
+from google.generativeai.types import image_types
+from google.generativeai.types.image_types import _image_types
 import IPython.display
 import PIL.Image
 
@@ -90,7 +92,7 @@ class UnitTests(parameterized.TestCase):
         ["P", PIL.Image.fromarray(np.zeros([6, 6, 3], dtype=np.uint8)).convert("P")],
     )
     def test_numpy_to_blob(self, image):
-        blob = content_types.image_to_blob(image)
+        blob = _image_types.image_to_blob(image)
         self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/webp")
         self.assertStartsWith(blob.data, b"RIFF \x00\x00\x00WEBPVP8L")
@@ -98,9 +100,10 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_PNG_PATH)],
         ["IPython", IPython.display.Image(filename=TEST_PNG_PATH)],
+        ["image_types.Image", image_types.Image.load_from_file(TEST_PNG_PATH)]
     )
     def test_png_to_blob(self, image):
-        blob = content_types.image_to_blob(image)
+        blob = _image_types.image_to_blob(image)
         self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/png")
         self.assertStartsWith(blob.data, b"\x89PNG")
@@ -108,9 +111,10 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_JPG_PATH)],
         ["IPython", IPython.display.Image(filename=TEST_JPG_PATH)],
+        ["image_types.Image", image_types.Image.load_from_file(TEST_JPG_PATH)]
     )
     def test_jpg_to_blob(self, image):
-        blob = content_types.image_to_blob(image)
+        blob = _image_types.image_to_blob(image)
         self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/jpeg")
         self.assertStartsWith(blob.data, b"\xff\xd8\xff\xe0\x00\x10JFIF")
@@ -118,9 +122,10 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_GIF_PATH)],
         ["IPython", IPython.display.Image(filename=TEST_GIF_PATH)],
+        ["image_types.Image", image_types.Image.load_from_file(TEST_GIF_PATH)]
     )
     def test_gif_to_blob(self, image):
-        blob = content_types.image_to_blob(image)
+        blob = _image_types.image_to_blob(image)
         self.assertIsInstance(blob, protos.Blob)
         self.assertEqual(blob.mime_type, "image/gif")
         self.assertStartsWith(blob.data, b"GIF87a")
