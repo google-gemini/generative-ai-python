@@ -174,6 +174,7 @@ class GenerationConfig:
     presence_penalty: float | None = None
     frequency_penalty: float | None = None
 
+
 GenerationConfigType = Union[protos.GenerationConfig, GenerationConfigDict, GenerationConfig]
 
 
