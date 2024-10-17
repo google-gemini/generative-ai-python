@@ -49,7 +49,7 @@ else:
         IPython = None
 
     if PIL is not None and IPython is not None:
-        IMAGE_TYPES = ( PIL.Image.Image, IPython.display.Image)
+        IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
         ImageType = Union[PIL.Image.Image, IPython.display.Image]
     elif PIL is not None and IPython is None:
         IMAGE_TYPES = (PIL.Image.Image,)
@@ -58,8 +58,8 @@ else:
         IMAGE_TYPES = (IPython.display.Image,)
         ImageType = Union[IPython.display.Image,]
     else:
-        IMAGE_TYPES=()
-        ImageType=Union
+        IMAGE_TYPES = ()
+        ImageType = Union
 
 
 __all__ = [
