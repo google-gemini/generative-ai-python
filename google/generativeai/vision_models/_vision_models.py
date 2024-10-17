@@ -16,38 +16,12 @@
 """Classes for working with vision models."""
 
 import base64
-import collections
 import dataclasses
-import io
-import json
-import os
-import pathlib
 import typing
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import List, Literal, Optional
 
 from google.generativeai import client
 from google.generativeai.types import image_types
-from google.generativeai import protos
-from google.generativeai.types import content_types
-
-
-# pylint: disable=g-import-not-at-top
-if typing.TYPE_CHECKING:
-    from IPython import display as IPython_display
-else:
-    try:
-        from IPython import display as IPython_display
-    except ImportError:
-        IPython_display = None
-
-if typing.TYPE_CHECKING:
-    import PIL.Image as PIL_Image
-else:
-    try:
-        from PIL import Image as PIL_Image
-    except ImportError:
-        PIL_Image = None
-
 
 AspectRatio = Literal["1:1", "9:16", "16:9", "4:3", "3:4"]
 ASPECT_RATIOS = AspectRatio.__args__  # type: ignore
@@ -206,7 +180,7 @@ class ImageGenerationModel:
             model=self.model_name, instances=[instance], parameters=parameters
         )
 
-        generated_images: List["GeneratedImage"] = []
+        generated_images: List[image_types.GeneratedImage] = []
         for idx, prediction in enumerate(response.predictions):
             generation_parameters = dict(shared_generation_parameters)
             generation_parameters["index_of_image_in_batch"] = idx
@@ -288,13 +262,12 @@ class ImageGenerationResponse:
 
     __module__ = "vertexai.preview.vision_models"
 
-    images: List["GeneratedImage"]
+    images: List[image_types.GeneratedImage]
 
-    def __iter__(self) -> typing.Iterator["GeneratedImage"]:
+    def __iter__(self) -> typing.Iterator[image_types.GeneratedImage]:
         """Iterates through the generated images."""
         yield from self.images
 
-    def __getitem__(self, idx: int) -> "GeneratedImage":
+    def __getitem__(self, idx: int) -> image_types.GeneratedImage:
         """Gets the generated image by index."""
         return self.images[idx]
-

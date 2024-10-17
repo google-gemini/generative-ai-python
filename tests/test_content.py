@@ -100,7 +100,7 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_PNG_PATH)],
         ["IPython", IPython.display.Image(filename=TEST_PNG_PATH)],
-        ["image_types.Image", image_types.Image.load_from_file(TEST_PNG_PATH)]
+        ["image_types.Image", image_types.Image.load_from_file(TEST_PNG_PATH)],
     )
     def test_png_to_blob(self, image):
         blob = _image_types.image_to_blob(image)
@@ -111,7 +111,7 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_JPG_PATH)],
         ["IPython", IPython.display.Image(filename=TEST_JPG_PATH)],
-        ["image_types.Image", image_types.Image.load_from_file(TEST_JPG_PATH)]
+        ["image_types.Image", image_types.Image.load_from_file(TEST_JPG_PATH)],
     )
     def test_jpg_to_blob(self, image):
         blob = _image_types.image_to_blob(image)
@@ -122,7 +122,7 @@ class UnitTests(parameterized.TestCase):
     @parameterized.named_parameters(
         ["PIL", PIL.Image.open(TEST_GIF_PATH)],
         ["IPython", IPython.display.Image(filename=TEST_GIF_PATH)],
-        ["image_types.Image", image_types.Image.load_from_file(TEST_GIF_PATH)]
+        ["image_types.Image", image_types.Image.load_from_file(TEST_GIF_PATH)],
     )
     def test_gif_to_blob(self, image):
         blob = _image_types.image_to_blob(image)
