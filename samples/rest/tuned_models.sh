@@ -7,7 +7,7 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/tunedModels?key=$
     -d '
       {
         "display_name": "number generator model",
-        "base_model": "models/gemini-1.0-pro-001",
+        "base_model": "models/gemini-1.5-flash-001-tuning",
         "tuning_task": {
           "hyperparameters": {
             "batch_size": 2,

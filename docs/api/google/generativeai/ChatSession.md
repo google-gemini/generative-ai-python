@@ -29,7 +29,7 @@ Contains an ongoing conversation with the model.
 <!-- Placeholder for "Used in" -->
 
 ```
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> chat = model.start_chat()
 >>> response = chat.send_message("Hello")
 >>> print(response.text)
@@ -142,7 +142,7 @@ Sends the conversation history with the added message and returns the model's re
 Appends the request and response to the conversation history.
 
 ```
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> chat = model.start_chat()
 >>> response = chat.send_message("Hello")
 >>> print(response.text)

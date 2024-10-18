@@ -38,7 +38,7 @@ requests. What media-types are supported for input and output is model-dependant
 >>> import google.generativeai as genai
 >>> import PIL.Image
 >>> genai.configure(api_key='YOUR_API_KEY')
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> result = model.generate_content('Tell me a story about a magic backpack')
 >>> result.text
 "In the quaint little town of Lakeside, there lived a young girl named Lily..."
@@ -49,7 +49,7 @@ requests. What media-types are supported for input and output is model-dependant
 
 
 ```
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> result = model.generate_content([
 ...     "Give me a recipe for these:", PIL.Image.open('scones.jpeg')])
 >>> result.text
@@ -291,7 +291,7 @@ This <a href="../../google/generativeai/GenerativeModel.md#generate_content"><co
 conversations.
 
 ```
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> response = model.generate_content('Tell me a story about a magic backpack')
 >>> response.text
 ```
