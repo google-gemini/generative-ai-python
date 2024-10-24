@@ -5,6 +5,7 @@ import contextlib
 import inspect
 import dataclasses
 import pathlib
+import threading
 from typing import Any, cast
 from collections.abc import Sequence
 import httplib2
@@ -64,6 +65,7 @@ def patch_colab_gce_credentials():
 class FileServiceClient(glm.FileServiceClient):
     def __init__(self, *args, **kwargs):
         self._discovery_api = None
+        self._local = threading.local()
         super().__init__(*args, **kwargs)
 
     def _setup_discovery_api(self, metadata: dict | Sequence[tuple[str, str]] = ()):
@@ -83,7 +85,7 @@ class FileServiceClient(glm.FileServiceClient):
         request.http.close()
 
         discovery_doc = content.decode("utf-8")
-        self._discovery_api = googleapiclient.discovery.build_from_document(
+        self._local.discovery_api = googleapiclient.discovery.build_from_document(
             discovery_doc, developerKey=api_key
         )
 
@@ -115,7 +117,7 @@ class FileServiceClient(glm.FileServiceClient):
                 filename=path, mimetype=mime_type, resumable=resumable
             )
 
-        request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
+        request = self._local.discovery_api.media().upload(body={"file": file}, media_body=media)
         for key, value in metadata:
             request.headers[key] = value
         result = request.execute()
