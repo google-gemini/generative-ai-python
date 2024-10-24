@@ -169,7 +169,7 @@ class Image:
     __module__ = "vertexai.vision_models"
 
     _loaded_bytes: Optional[bytes] = None
-    _loaded_image: Optional["PIL_Image.Image"] = None
+    _loaded_image: Optional["PIL.Image.Image"] = None
 
     def __init__(
         self,
@@ -207,7 +207,7 @@ class Image:
         self._loaded_bytes = value
 
     @property
-    def _pil_image(self) -> "PIL_Image.Image":  # type: ignore
+    def _pil_image(self) -> "PIL.Image.Image":  # type: ignore
         if self._loaded_image is None:
             if not PIL:
                 raise RuntimeError(
