@@ -299,7 +299,7 @@ class _ClientManager:
             "prediction": PredictionServiceClient,
             "prediction_async": PredictionServiceAsyncClient,
         }
-        cls = local_clients.get("name", None)
+        cls = local_clients.get(name, None)
 
         if cls is None:
             if name.endswith("_async"):
