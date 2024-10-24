@@ -133,24 +133,25 @@ class UnitTests(absltest.TestCase):
 class AsyncTests(absltest.TestCase, unittest.IsolatedAsyncioTestCase):
     async def test_upload_file_async(self):
         import google.generativeai.files as files
+
         tempdir = pathlib.Path(tempfile.mkdtemp())
         results = []
+
         async def create_and_upload_file(n: int):
             fname = tempdir / str(n)
             fname.write_text(str(n))
-            file_obj = await files.upload_file_async(fname, mime_type='text/plain')
+            file_obj = await files.upload_file_async(fname, mime_type="text/plain")
             results.append(file_obj)
 
         tasks = []
         for n in range(5):
             tasks.append(asyncio.create_task(create_and_upload_file(n)))
-        
+
         for task in tasks:
             await task
 
         self.assertLen(results, 5)
-        self.assertEqual(sorted(int(f.display_name) for f in results),
-                          list(range(5)))
+        self.assertEqual(sorted(int(f.display_name) for f in results), list(range(5)))
 
 
 if __name__ == "__main__":
