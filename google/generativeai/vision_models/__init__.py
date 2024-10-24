@@ -14,14 +14,15 @@
 #
 """Classes for working with vision models."""
 
+from google.generativeai.types.image_types import check_watermark, Image, GeneratedImage
+
 from google.generativeai.vision_models._vision_models import (
-    Image,
-    GeneratedImage,
     ImageGenerationModel,
     ImageGenerationResponse,
 )
 
 __all__ = [
+    "check_watermark",
     "Image",
     "GeneratedImage",
     "ImageGenerationModel",
