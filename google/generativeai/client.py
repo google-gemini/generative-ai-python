@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import contextlib
 import inspect
+import collections
 import dataclasses
 import pathlib
 from typing import Any, cast
