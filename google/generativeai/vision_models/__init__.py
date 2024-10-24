@@ -15,6 +15,7 @@
 """Classes for working with vision models."""
 
 from google.generativeai.vision_models._vision_models import (
+    check_watermark,
     Image,
     GeneratedImage,
     ImageGenerationModel,

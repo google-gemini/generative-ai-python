@@ -79,7 +79,6 @@ from google.generativeai.types import GenerationConfig
 
 __version__ = version.__version__
 
-del embedding
 del files
 del generative_models
 del models
