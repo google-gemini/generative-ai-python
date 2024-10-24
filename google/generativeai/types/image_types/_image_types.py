@@ -44,7 +44,7 @@ __all__ = ["Image", "GeneratedImage", "check_watermark", "CheckWatermarkResult",
 def _pil_to_blob(image: PIL.Image.Image) -> protos.Blob:
     # If the image is a local file, return a file-based blob without any modification.
     # Otherwise, return a lossless WebP blob (same quality with optimized size).
-    def file_blob(image: PIL.Image.Image) -> protos.Blob | None:
+    def file_blob(image: PIL.Image.Image) -> Union[protos.Blob, None]:
         if not isinstance(image, PIL.ImageFile.ImageFile) or image.filename is None:
             return None
         filename = str(image.filename)
