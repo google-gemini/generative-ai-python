@@ -122,7 +122,7 @@ class CheckWatermarkResult:
 
 
 def check_watermark(
-    img: pathlib.Path | ImageType, model_id: str = "models/image-verification-001"
+    img: Union[pathlib.Path, ImageType], model_id: str = "models/image-verification-001"
 ) -> "CheckWatermarkResult":
     """Checks if an image has a Google-AI watermark.
 
