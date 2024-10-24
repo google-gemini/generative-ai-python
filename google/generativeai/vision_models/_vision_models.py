@@ -274,7 +274,7 @@ class CheckWatermarkResult:
         elif decision == "REJECT":
             return False
         else:
-            raise ValueError("Unrecognized result")
+            raise ValueError(f"Unrecognized result: {decision}")
 
 
 class ImageGenerationModel:
