@@ -1,15 +1,9 @@
-description: A ProtocolMessage
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.Status" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.types.Status
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 
 </table>
 
@@ -29,24 +23,36 @@ A ProtocolMessage
 
 <tr>
 <td>
+
 `code`<a id="code"></a>
+
 </td>
 <td>
+
 `int32 code`
+
 </td>
 </tr><tr>
 <td>
+
 `details`<a id="details"></a>
+
 </td>
 <td>
+
 `repeated Any details`
+
 </td>
 </tr><tr>
 <td>
+
 `message`<a id="message"></a>
+
 </td>
 <td>
+
 `string message`
+
 </td>
 </tr>
 </table>

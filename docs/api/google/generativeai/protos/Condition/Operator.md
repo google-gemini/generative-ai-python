@@ -1,67 +1,9 @@
-description: Defines the valid operators that can be applied to a key-value pair.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Condition.Operator" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__abs__"/>
-<meta itemprop="property" content="__add__"/>
-<meta itemprop="property" content="__and__"/>
-<meta itemprop="property" content="__bool__"/>
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__floordiv__"/>
-<meta itemprop="property" content="__ge__"/>
-<meta itemprop="property" content="__gt__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="__invert__"/>
-<meta itemprop="property" content="__le__"/>
-<meta itemprop="property" content="__lshift__"/>
-<meta itemprop="property" content="__lt__"/>
-<meta itemprop="property" content="__mod__"/>
-<meta itemprop="property" content="__mul__"/>
-<meta itemprop="property" content="__ne__"/>
-<meta itemprop="property" content="__neg__"/>
-<meta itemprop="property" content="__new__"/>
-<meta itemprop="property" content="__or__"/>
-<meta itemprop="property" content="__pos__"/>
-<meta itemprop="property" content="__pow__"/>
-<meta itemprop="property" content="__radd__"/>
-<meta itemprop="property" content="__rand__"/>
-<meta itemprop="property" content="__rfloordiv__"/>
-<meta itemprop="property" content="__rlshift__"/>
-<meta itemprop="property" content="__rmod__"/>
-<meta itemprop="property" content="__rmul__"/>
-<meta itemprop="property" content="__ror__"/>
-<meta itemprop="property" content="__rpow__"/>
-<meta itemprop="property" content="__rrshift__"/>
-<meta itemprop="property" content="__rshift__"/>
-<meta itemprop="property" content="__rsub__"/>
-<meta itemprop="property" content="__rtruediv__"/>
-<meta itemprop="property" content="__rxor__"/>
-<meta itemprop="property" content="__sub__"/>
-<meta itemprop="property" content="__truediv__"/>
-<meta itemprop="property" content="__xor__"/>
-<meta itemprop="property" content="as_integer_ratio"/>
-<meta itemprop="property" content="bit_count"/>
-<meta itemprop="property" content="bit_length"/>
-<meta itemprop="property" content="conjugate"/>
-<meta itemprop="property" content="from_bytes"/>
-<meta itemprop="property" content="to_bytes"/>
-<meta itemprop="property" content="EQUAL"/>
-<meta itemprop="property" content="EXCLUDES"/>
-<meta itemprop="property" content="GREATER"/>
-<meta itemprop="property" content="GREATER_EQUAL"/>
-<meta itemprop="property" content="INCLUDES"/>
-<meta itemprop="property" content="LESS"/>
-<meta itemprop="property" content="LESS_EQUAL"/>
-<meta itemprop="property" content="NOT_EQUAL"/>
-<meta itemprop="property" content="OPERATOR_UNSPECIFIED"/>
-</div>
 
 # google.generativeai.protos.Condition.Operator
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/retriever.py#L257-L291">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -92,86 +34,122 @@ Defines the valid operators that can be applied to a key-value pair.
 
 <tr>
 <td>
+
 `OPERATOR_UNSPECIFIED`<a id="OPERATOR_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `0`
 
 The default value. This value is unused.
+
 </td>
 </tr><tr>
 <td>
+
 `LESS`<a id="LESS"></a>
+
 </td>
 <td>
+
 `1`
 
 Supported by numeric.
+
 </td>
 </tr><tr>
 <td>
+
 `LESS_EQUAL`<a id="LESS_EQUAL"></a>
+
 </td>
 <td>
+
 `2`
 
 Supported by numeric.
+
 </td>
 </tr><tr>
 <td>
+
 `EQUAL`<a id="EQUAL"></a>
+
 </td>
 <td>
+
 `3`
 
 Supported by numeric & string.
+
 </td>
 </tr><tr>
 <td>
+
 `GREATER_EQUAL`<a id="GREATER_EQUAL"></a>
+
 </td>
 <td>
+
 `4`
 
 Supported by numeric.
+
 </td>
 </tr><tr>
 <td>
+
 `GREATER`<a id="GREATER"></a>
+
 </td>
 <td>
+
 `5`
 
 Supported by numeric.
+
 </td>
 </tr><tr>
 <td>
+
 `NOT_EQUAL`<a id="NOT_EQUAL"></a>
+
 </td>
 <td>
+
 `6`
 
 Supported by numeric & string.
+
 </td>
 </tr><tr>
 <td>
+
 `INCLUDES`<a id="INCLUDES"></a>
+
 </td>
 <td>
+
 `7`
 
 Supported by string only when ``CustomMetadata`` value type
 for the given key has a ``string_list_value``.
+
 </td>
 </tr><tr>
 <td>
+
 `EXCLUDES`<a id="EXCLUDES"></a>
+
 </td>
 <td>
+
 `8`
 
 Supported by string only when ``CustomMetadata`` value type
 for the given key has a ``string_list_value``.
+
 </td>
 </tr>
 </table>
@@ -187,31 +165,47 @@ for the given key has a ``string_list_value``.
 
 <tr>
 <td>
+
 `denominator`<a id="denominator"></a>
+
 </td>
 <td>
+
 the denominator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `imag`<a id="imag"></a>
+
 </td>
 <td>
+
 the imaginary part of a complex number
+
 </td>
 </tr><tr>
 <td>
+
 `numerator`<a id="numerator"></a>
+
 </td>
 <td>
+
 the numerator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `real`<a id="real"></a>
+
 </td>
 <td>
+
 the real part of a complex number
+
 </td>
 </tr>
 </table>
@@ -226,10 +220,9 @@ the real part of a complex number
 <code>as_integer_ratio()
 </code></pre>
 
-Return integer ratio.
+Return a pair of integers, whose ratio is equal to the original int.
 
-Return a pair of integers, whose ratio is exactly equal to the original int
-and with a positive denominator.
+The ratio is in lowest terms and has a positive denominator.
 
 ```
 >>> (10).as_integer_ratio()
@@ -304,6 +297,15 @@ byteorder
   `sys.byteorder' as the byte order value.  Default is to use 'big'.
 signed
   Indicates whether two's complement is used to represent the integer.
+
+<h3 id="is_integer"><code>is_integer</code></h3>
+
+<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
+<code>is_integer()
+</code></pre>
+
+Returns True. Exists for duck type compatibility with float.is_integer.
+
 
 <h3 id="to_bytes"><code>to_bytes</code></h3>
 
@@ -716,66 +718,102 @@ Return self^value.
 
 <tr>
 <td>
+
 EQUAL<a id="EQUAL"></a>
+
 </td>
 <td>
+
 `<Operator.EQUAL: 3>`
+
 </td>
 </tr><tr>
 <td>
+
 EXCLUDES<a id="EXCLUDES"></a>
+
 </td>
 <td>
+
 `<Operator.EXCLUDES: 8>`
+
 </td>
 </tr><tr>
 <td>
+
 GREATER<a id="GREATER"></a>
+
 </td>
 <td>
+
 `<Operator.GREATER: 5>`
+
 </td>
 </tr><tr>
 <td>
+
 GREATER_EQUAL<a id="GREATER_EQUAL"></a>
+
 </td>
 <td>
+
 `<Operator.GREATER_EQUAL: 4>`
+
 </td>
 </tr><tr>
 <td>
+
 INCLUDES<a id="INCLUDES"></a>
+
 </td>
 <td>
+
 `<Operator.INCLUDES: 7>`
+
 </td>
 </tr><tr>
 <td>
+
 LESS<a id="LESS"></a>
+
 </td>
 <td>
+
 `<Operator.LESS: 1>`
+
 </td>
 </tr><tr>
 <td>
+
 LESS_EQUAL<a id="LESS_EQUAL"></a>
+
 </td>
 <td>
+
 `<Operator.LESS_EQUAL: 2>`
+
 </td>
 </tr><tr>
 <td>
+
 NOT_EQUAL<a id="NOT_EQUAL"></a>
+
 </td>
 <td>
+
 `<Operator.NOT_EQUAL: 6>`
+
 </td>
 </tr><tr>
 <td>
+
 OPERATOR_UNSPECIFIED<a id="OPERATOR_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `<Operator.OPERATOR_UNSPECIFIED: 0>`
+
 </td>
 </tr>
 </table>

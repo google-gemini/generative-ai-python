@@ -1,18 +1,11 @@
-description: Safety setting, affecting the safety-blocking behavior.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.SafetySetting" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="HarmBlockThreshold"/>
-</div>
 
 # google.generativeai.protos.SafetySetting
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L222-L268">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L224-L273">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -37,22 +30,30 @@ probability that content is blocked.
 
 <tr>
 <td>
+
 `category`<a id="category"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.HarmCategory`
 
 Required. The category for this setting.
+
 </td>
 </tr><tr>
 <td>
+
 `threshold`<a id="threshold"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.SafetySetting.HarmBlockThreshold`
 
 Required. Controls the probability threshold
 at which harm is blocked.
+
 </td>
 </tr>
 </table>

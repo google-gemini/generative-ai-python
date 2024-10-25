@@ -1,15 +1,9 @@
-description: Metadata on the usage of the cached content.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CachedContent.UsageMetadata" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CachedContent.UsageMetadata
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/cached_content.py#L102-L114">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -34,13 +28,17 @@ Metadata on the usage of the cached content.
 
 <tr>
 <td>
+
 `total_token_count`<a id="total_token_count"></a>
+
 </td>
 <td>
+
 `int`
 
 Total number of tokens that the cached
 content consumes.
+
 </td>
 </tr>
 </table>

@@ -1,25 +1,9 @@
-description: A permission to access a resource.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.Permission" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="delete"/>
-<meta itemprop="property" content="delete_async"/>
-<meta itemprop="property" content="get"/>
-<meta itemprop="property" content="get_async"/>
-<meta itemprop="property" content="to_dict"/>
-<meta itemprop="property" content="update"/>
-<meta itemprop="property" content="update_async"/>
-<meta itemprop="property" content="email_address"/>
-</div>
 
 # google.generativeai.types.Permission
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/permission_types.py#L92-L267">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -55,31 +39,47 @@ A permission to access a resource.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr><tr>
 <td>
+
 `role`<a id="role"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr><tr>
 <td>
+
 `grantee_type`<a id="grantee_type"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr><tr>
 <td>
+
 `email_address`<a id="email_address"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr>
 </table>
@@ -135,10 +135,14 @@ Get information about a specific permission.
 
 <tr>
 <td>
+
 `name`
+
 </td>
 <td>
+
 The name of the permission to get.
+
 </td>
 </tr>
 </table>
@@ -151,7 +155,9 @@ The name of the permission to get.
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
+
 Requested permission as an instance of `Permission`.
+
 </td>
 </tr>
 
@@ -204,11 +210,15 @@ Update a list of fields for a specified permission.
 
 <tr>
 <td>
+
 `updates`
+
 </td>
 <td>
+
 The list of fields to update.
 Currently only `role` is supported as an update path.
+
 </td>
 </tr>
 </table>
@@ -221,7 +231,9 @@ Currently only `role` is supported as an update path.
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
+
 `Permission` object with specified updates.
+
 </td>
 </tr>
 
@@ -264,10 +276,14 @@ Return self==value.
 
 <tr>
 <td>
+
 email_address<a id="email_address"></a>
+
 </td>
 <td>
+
 `None`
+
 </td>
 </tr>
 </table>

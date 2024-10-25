@@ -1,15 +1,9 @@
-description: This module provides low level access to the ProtoBuffer "Message" classes used by the API.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # Module: google.generativeai.protos
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/protos.py">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -188,6 +182,8 @@ Additional arguments are described in the docstring:
 
 [`class Document`](../../google/generativeai/protos/Document.md): A ``Document`` is a collection of ``Chunk``\ s.
 
+[`class DynamicRetrievalConfig`](../../google/generativeai/protos/DynamicRetrievalConfig.md): Describes the options to customize dynamic retrieval.
+
 [`class EmbedContentRequest`](../../google/generativeai/protos/EmbedContentRequest.md): Request containing the ``Content`` for the model to embed.
 
 [`class EmbedContentResponse`](../../google/generativeai/protos/EmbedContentResponse.md): The response to an ``EmbedContentRequest``.
@@ -214,13 +210,13 @@ Additional arguments are described in the docstring:
 
 [`class FunctionResponse`](../../google/generativeai/protos/FunctionResponse.md): The result output from a ``FunctionCall`` that contains a string representing the <a href="../../google/generativeai/protos/FunctionDeclaration.md#name"><code>FunctionDeclaration.name</code></a> and a structured JSON object containing any output from the function is used as context to the model.
 
-[`class GenerateAnswerRequest`](../../google/generativeai/protos/GenerateAnswerRequest.md): Request to generate a grounded answer from the model.
+[`class GenerateAnswerRequest`](../../google/generativeai/protos/GenerateAnswerRequest.md): Request to generate a grounded answer from the ``Model``.
 
 [`class GenerateAnswerResponse`](../../google/generativeai/protos/GenerateAnswerResponse.md): Response from the model for a grounded answer.
 
 [`class GenerateContentRequest`](../../google/generativeai/protos/GenerateContentRequest.md): Request to generate a completion from the model.
 
-[`class GenerateContentResponse`](../../google/generativeai/protos/GenerateContentResponse.md): Response from the model supporting multiple candidates.
+[`class GenerateContentResponse`](../../google/generativeai/protos/GenerateContentResponse.md): Response from the model supporting multiple candidate responses.
 
 [`class GenerateMessageRequest`](../../google/generativeai/protos/GenerateMessageRequest.md): Request to generate a message response from the model.
 
@@ -248,11 +244,19 @@ Additional arguments are described in the docstring:
 
 [`class GetTunedModelRequest`](../../google/generativeai/protos/GetTunedModelRequest.md): Request for getting information about a specific Model.
 
+[`class GoogleSearchRetrieval`](../../google/generativeai/protos/GoogleSearchRetrieval.md): Tool to retrieve public web data for grounding, powered by Google.
+
 [`class GroundingAttribution`](../../google/generativeai/protos/GroundingAttribution.md): Attribution for a source that contributed to an answer.
+
+[`class GroundingChunk`](../../google/generativeai/protos/GroundingChunk.md): Grounding chunk.
+
+[`class GroundingMetadata`](../../google/generativeai/protos/GroundingMetadata.md): Metadata returned to client when grounding is enabled.
 
 [`class GroundingPassage`](../../google/generativeai/protos/GroundingPassage.md): Passage included inline with a grounding configuration.
 
 [`class GroundingPassages`](../../google/generativeai/protos/GroundingPassages.md): A repeated list of passages.
+
+[`class GroundingSupport`](../../google/generativeai/protos/GroundingSupport.md): Grounding support.
 
 [`class HarmCategory`](../../google/generativeai/protos/HarmCategory.md): The category of a rating.
 
@@ -290,6 +294,8 @@ Additional arguments are described in the docstring:
 
 [`class ListTunedModelsResponse`](../../google/generativeai/protos/ListTunedModelsResponse.md): Response from ``ListTunedModels`` containing a paginated list of Models.
 
+[`class LogprobsResult`](../../google/generativeai/protos/LogprobsResult.md): Logprobs Result
+
 [`class Message`](../../google/generativeai/protos/Message.md): The base unit of structured text.
 
 [`class MessagePrompt`](../../google/generativeai/protos/MessagePrompt.md): All of the structured input text passed to the model as a prompt.
@@ -302,6 +308,10 @@ Additional arguments are described in the docstring:
 
 [`class Permission`](../../google/generativeai/protos/Permission.md): Permission resource grants user, group or the rest of the world access to the PaLM API resource (e.g.
 
+[`class PredictRequest`](../../google/generativeai/protos/PredictRequest.md): Request message for [PredictionService.Predict][google.ai.generativelanguage.v1beta.PredictionService.Predict].
+
+[`class PredictResponse`](../../google/generativeai/protos/PredictResponse.md): Response message for [PredictionService.Predict].
+
 [`class QueryCorpusRequest`](../../google/generativeai/protos/QueryCorpusRequest.md): Request for querying a ``Corpus``.
 
 [`class QueryCorpusResponse`](../../google/generativeai/protos/QueryCorpusResponse.md): Response from ``QueryCorpus`` containing a list of relevant chunks.
@@ -312,6 +322,8 @@ Additional arguments are described in the docstring:
 
 [`class RelevantChunk`](../../google/generativeai/protos/RelevantChunk.md): The information for a chunk relevant to a query.
 
+[`class RetrievalMetadata`](../../google/generativeai/protos/RetrievalMetadata.md): Metadata related to retrieval in the grounding flow.
+
 [`class SafetyFeedback`](../../google/generativeai/protos/SafetyFeedback.md): Safety feedback for an entire request.
 
 [`class SafetyRating`](../../google/generativeai/protos/SafetyRating.md): Safety rating for a piece of content.
@@ -319,6 +331,10 @@ Additional arguments are described in the docstring:
 [`class SafetySetting`](../../google/generativeai/protos/SafetySetting.md): Safety setting, affecting the safety-blocking behavior.
 
 [`class Schema`](../../google/generativeai/protos/Schema.md): The ``Schema`` object allows the definition of input and output data types.
+
+[`class SearchEntryPoint`](../../google/generativeai/protos/SearchEntryPoint.md): Google search entry point.
+
+[`class Segment`](../../google/generativeai/protos/Segment.md): Segment of the content.
 
 [`class SemanticRetrieverConfig`](../../google/generativeai/protos/SemanticRetrieverConfig.md): Configuration for retrieving grounding content from a ``Corpus`` or ``Document`` created using the Semantic Retriever API.
 

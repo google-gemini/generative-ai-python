@@ -1,17 +1,11 @@
-description: Tuned model as a source for training a new model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TunedModelSource" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.TunedModelSource
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/tuned_model.py#L198-L219">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/tuned_model.py#L208-L229">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,25 +28,33 @@ Tuned model as a source for training a new model.
 
 <tr>
 <td>
+
 `tuned_model`<a id="tuned_model"></a>
+
 </td>
 <td>
+
 `str`
 
 Immutable. The name of the ``TunedModel`` to use as the
 starting point for training the new model. Example:
 ``tunedModels/my-tuned-model``
+
 </td>
 </tr><tr>
 <td>
+
 `base_model`<a id="base_model"></a>
+
 </td>
 <td>
+
 `str`
 
 Output only. The name of the base ``Model`` this
 ``TunedModel`` was tuned from. Example:
-``models/text-bison-001``
+``models/gemini-1.5-flash-001``
+
 </td>
 </tr>
 </table>

@@ -1,15 +1,9 @@
-description: Response from QueryCorpus containing a list of relevant chunks.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.QueryCorpusResponse" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.QueryCorpusResponse
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/retriever_service.py#L266-L278">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -34,12 +28,16 @@ Response from ``QueryCorpus`` containing a list of relevant chunks.
 
 <tr>
 <td>
+
 `relevant_chunks`<a id="relevant_chunks"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.RelevantChunk]`
 
 The relevant chunks.
+
 </td>
 </tr>
 </table>

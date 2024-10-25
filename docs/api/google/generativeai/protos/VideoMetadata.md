@@ -1,15 +1,9 @@
-description: Metadata for a video File.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.VideoMetadata" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.VideoMetadata
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/file.py#L157-L169">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -34,12 +28,16 @@ Metadata for a video ``File``.
 
 <tr>
 <td>
+
 `video_duration`<a id="video_duration"></a>
+
 </td>
 <td>
+
 `google.protobuf.duration_pb2.Duration`
 
 Duration of the video.
+
 </td>
 </tr>
 </table>

@@ -1,65 +1,11 @@
-description: Block at and beyond a specified harm probability.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.HarmBlockThreshold" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__abs__"/>
-<meta itemprop="property" content="__add__"/>
-<meta itemprop="property" content="__and__"/>
-<meta itemprop="property" content="__bool__"/>
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__floordiv__"/>
-<meta itemprop="property" content="__ge__"/>
-<meta itemprop="property" content="__gt__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="__invert__"/>
-<meta itemprop="property" content="__le__"/>
-<meta itemprop="property" content="__lshift__"/>
-<meta itemprop="property" content="__lt__"/>
-<meta itemprop="property" content="__mod__"/>
-<meta itemprop="property" content="__mul__"/>
-<meta itemprop="property" content="__ne__"/>
-<meta itemprop="property" content="__neg__"/>
-<meta itemprop="property" content="__new__"/>
-<meta itemprop="property" content="__or__"/>
-<meta itemprop="property" content="__pos__"/>
-<meta itemprop="property" content="__pow__"/>
-<meta itemprop="property" content="__radd__"/>
-<meta itemprop="property" content="__rand__"/>
-<meta itemprop="property" content="__rfloordiv__"/>
-<meta itemprop="property" content="__rlshift__"/>
-<meta itemprop="property" content="__rmod__"/>
-<meta itemprop="property" content="__rmul__"/>
-<meta itemprop="property" content="__ror__"/>
-<meta itemprop="property" content="__rpow__"/>
-<meta itemprop="property" content="__rrshift__"/>
-<meta itemprop="property" content="__rshift__"/>
-<meta itemprop="property" content="__rsub__"/>
-<meta itemprop="property" content="__rtruediv__"/>
-<meta itemprop="property" content="__rxor__"/>
-<meta itemprop="property" content="__sub__"/>
-<meta itemprop="property" content="__truediv__"/>
-<meta itemprop="property" content="__xor__"/>
-<meta itemprop="property" content="as_integer_ratio"/>
-<meta itemprop="property" content="bit_count"/>
-<meta itemprop="property" content="bit_length"/>
-<meta itemprop="property" content="conjugate"/>
-<meta itemprop="property" content="from_bytes"/>
-<meta itemprop="property" content="to_bytes"/>
-<meta itemprop="property" content="BLOCK_LOW_AND_ABOVE"/>
-<meta itemprop="property" content="BLOCK_MEDIUM_AND_ABOVE"/>
-<meta itemprop="property" content="BLOCK_NONE"/>
-<meta itemprop="property" content="BLOCK_ONLY_HIGH"/>
-<meta itemprop="property" content="HARM_BLOCK_THRESHOLD_UNSPECIFIED"/>
-</div>
 
 # google.generativeai.types.HarmBlockThreshold
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L236-L257">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/safety.py#L238-L262">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -96,50 +42,83 @@ Block at and beyond a specified harm probability.
 
 <tr>
 <td>
+
 `HARM_BLOCK_THRESHOLD_UNSPECIFIED`<a id="HARM_BLOCK_THRESHOLD_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `0`
 
 Threshold is unspecified.
+
 </td>
 </tr><tr>
 <td>
+
 `BLOCK_LOW_AND_ABOVE`<a id="BLOCK_LOW_AND_ABOVE"></a>
+
 </td>
 <td>
+
 `1`
 
 Content with NEGLIGIBLE will be allowed.
+
 </td>
 </tr><tr>
 <td>
+
 `BLOCK_MEDIUM_AND_ABOVE`<a id="BLOCK_MEDIUM_AND_ABOVE"></a>
+
 </td>
 <td>
+
 `2`
 
 Content with NEGLIGIBLE and LOW will be
 allowed.
+
 </td>
 </tr><tr>
 <td>
+
 `BLOCK_ONLY_HIGH`<a id="BLOCK_ONLY_HIGH"></a>
+
 </td>
 <td>
+
 `3`
 
 Content with NEGLIGIBLE, LOW, and MEDIUM will
 be allowed.
+
 </td>
 </tr><tr>
 <td>
+
 `BLOCK_NONE`<a id="BLOCK_NONE"></a>
+
 </td>
 <td>
+
 `4`
 
 All content will be allowed.
+
+</td>
+</tr><tr>
+<td>
+
+`OFF`<a id="OFF"></a>
+
+</td>
+<td>
+
+`5`
+
+Turn off the safety filter.
+
 </td>
 </tr>
 </table>
@@ -155,31 +134,47 @@ All content will be allowed.
 
 <tr>
 <td>
+
 `denominator`<a id="denominator"></a>
+
 </td>
 <td>
+
 the denominator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `imag`<a id="imag"></a>
+
 </td>
 <td>
+
 the imaginary part of a complex number
+
 </td>
 </tr><tr>
 <td>
+
 `numerator`<a id="numerator"></a>
+
 </td>
 <td>
+
 the numerator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `real`<a id="real"></a>
+
 </td>
 <td>
+
 the real part of a complex number
+
 </td>
 </tr>
 </table>
@@ -194,10 +189,9 @@ the real part of a complex number
 <code>as_integer_ratio()
 </code></pre>
 
-Return integer ratio.
+Return a pair of integers, whose ratio is equal to the original int.
 
-Return a pair of integers, whose ratio is exactly equal to the original int
-and with a positive denominator.
+The ratio is in lowest terms and has a positive denominator.
 
 ```
 >>> (10).as_integer_ratio()
@@ -272,6 +266,15 @@ byteorder
   `sys.byteorder' as the byte order value.  Default is to use 'big'.
 signed
   Indicates whether two's complement is used to represent the integer.
+
+<h3 id="is_integer"><code>is_integer</code></h3>
+
+<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
+<code>is_integer()
+</code></pre>
+
+Returns True. Exists for duck type compatibility with float.is_integer.
+
 
 <h3 id="to_bytes"><code>to_bytes</code></h3>
 
@@ -684,38 +687,69 @@ Return self^value.
 
 <tr>
 <td>
+
 BLOCK_LOW_AND_ABOVE<a id="BLOCK_LOW_AND_ABOVE"></a>
+
 </td>
 <td>
+
 `<HarmBlockThreshold.BLOCK_LOW_AND_ABOVE: 1>`
+
 </td>
 </tr><tr>
 <td>
+
 BLOCK_MEDIUM_AND_ABOVE<a id="BLOCK_MEDIUM_AND_ABOVE"></a>
+
 </td>
 <td>
+
 `<HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE: 2>`
+
 </td>
 </tr><tr>
 <td>
+
 BLOCK_NONE<a id="BLOCK_NONE"></a>
+
 </td>
 <td>
+
 `<HarmBlockThreshold.BLOCK_NONE: 4>`
+
 </td>
 </tr><tr>
 <td>
+
 BLOCK_ONLY_HIGH<a id="BLOCK_ONLY_HIGH"></a>
+
 </td>
 <td>
+
 `<HarmBlockThreshold.BLOCK_ONLY_HIGH: 3>`
+
 </td>
 </tr><tr>
 <td>
+
 HARM_BLOCK_THRESHOLD_UNSPECIFIED<a id="HARM_BLOCK_THRESHOLD_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `<HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED: 0>`
+
+</td>
+</tr><tr>
+<td>
+
+OFF<a id="OFF"></a>
+
+</td>
+<td>
+
+`<HarmBlockThreshold.OFF: 5>`
+
 </td>
 </tr>
 </table>

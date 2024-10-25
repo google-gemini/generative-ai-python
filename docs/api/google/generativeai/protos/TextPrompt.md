@@ -1,15 +1,9 @@
-description: Text given to the model as a prompt.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TextPrompt" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.TextPrompt
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/text_service.py#L229-L243">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -36,12 +30,16 @@ completion.
 
 <tr>
 <td>
+
 `text`<a id="text"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The prompt text.
+
 </td>
 </tr>
 </table>

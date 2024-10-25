@@ -1,16 +1,9 @@
-description: Filter condition applicable to a single key.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Condition" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="Operator"/>
-</div>
 
 # google.generativeai.protos.Condition
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/retriever.py#L233-L307">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -40,35 +33,47 @@ members.
 
 <tr>
 <td>
+
 `string_value`<a id="string_value"></a>
+
 </td>
 <td>
+
 `str`
 
 The string value to filter the metadata on.
 
 This field is a member of `oneof`_ ``value``.
+
 </td>
 </tr><tr>
 <td>
+
 `numeric_value`<a id="numeric_value"></a>
+
 </td>
 <td>
+
 `float`
 
 The numeric value to filter the metadata on.
 
 This field is a member of `oneof`_ ``value``.
+
 </td>
 </tr><tr>
 <td>
+
 `operation`<a id="operation"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Condition.Operator`
 
 Required. Operator applied to the given
 key-value pair to trigger the condition.
+
 </td>
 </tr>
 </table>

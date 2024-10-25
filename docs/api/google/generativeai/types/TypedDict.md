@@ -1,15 +1,9 @@
-description: A simple typed namespace. At runtime it is equivalent to a plain dict.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.TypedDict" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.types.TypedDict
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 
 </table>
 
@@ -20,7 +14,7 @@ A simple typed namespace. At runtime it is equivalent to a plain dict.
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>google.generativeai.types.TypedDict(
-    typename, fields, /, *, total=True, **kwargs
+    typename, fields, /, *, total=True, closed=False, **kwargs
 )
 </code></pre>
 

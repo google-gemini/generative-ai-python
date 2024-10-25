@@ -1,15 +1,9 @@
-description: Request for getting information about a specific Chunk.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GetChunkRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GetChunkRequest
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/retriever_service.py#L603-L615">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -34,13 +28,17 @@ Request for getting information about a specific ``Chunk``.
 
 <tr>
 <td>
+
 `name`<a id="name"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The name of the ``Chunk`` to retrieve. Example:
 ``corpora/my-corpus-123/documents/the-doc-abc/chunks/some-chunk``
+
 </td>
 </tr>
 </table>

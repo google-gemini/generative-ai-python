@@ -1,15 +1,9 @@
-description: Counts the number of tokens in the prompt sent to a model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CountMessageTokensRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CountMessageTokensRequest
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/discuss_service.py#L306-L334">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -36,9 +30,12 @@ different ``token_count``.
 
 <tr>
 <td>
+
 `model`<a id="model"></a>
+
 </td>
 <td>
+
 `str`
 
 Required. The model's resource name. This serves as an ID
@@ -48,16 +45,21 @@ This name should match a model name returned by the
 ``ListModels`` method.
 
 Format: ``models/{model}``
+
 </td>
 </tr><tr>
 <td>
+
 `prompt`<a id="prompt"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.MessagePrompt`
 
 Required. The prompt, whose token count is to
 be returned.
+
 </td>
 </tr>
 </table>

@@ -1,15 +1,9 @@
-description: Calls the API to initiate a tuning process that optimizes a model for specific data, returning an operation object to track and manage the tuning progress.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.create_tuned_model" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.create_tuned_model
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/models.py#L245-L368">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -74,16 +68,23 @@ palm.generate_text(f"tunedModels/{my_id}", prompt="...")
 
 <tr>
 <td>
+
 `source_model`<a id="source_model"></a>
+
 </td>
 <td>
+
 The name of the model to tune.
+
 </td>
 </tr><tr>
 <td>
+
 `training_data`<a id="training_data"></a>
+
 </td>
 <td>
+
 The dataset to tune the model on. This must be either:
 * A <a href="../../google/generativeai/protos/Dataset.md"><code>protos.Dataset</code></a>, or
 * An `Iterable` of:
@@ -100,84 +101,129 @@ The dataset to tune the model on. This must be either:
 * A JSON file - Its contents will be handled either as an `Iterable` or `Mapping`
   above. This can be:
   * A local path as a `str` or `pathlib.Path`.
+
 </td>
 </tr><tr>
 <td>
+
 `id`<a id="id"></a>
+
 </td>
 <td>
+
 The model identifier, used to refer to the model in the API
 `tunedModels/{id}`. Must be unique.
+
 </td>
 </tr><tr>
 <td>
+
 `display_name`<a id="display_name"></a>
+
 </td>
 <td>
+
 A human-readable name for display.
+
 </td>
 </tr><tr>
 <td>
+
 `description`<a id="description"></a>
+
 </td>
 <td>
+
 A description of the tuned model.
+
 </td>
 </tr><tr>
 <td>
+
 `temperature`<a id="temperature"></a>
+
 </td>
 <td>
+
 The default temperature for the tuned model, see <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a> for details.
+
 </td>
 </tr><tr>
 <td>
+
 `top_p`<a id="top_p"></a>
+
 </td>
 <td>
+
 The default `top_p` for the model, see <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a> for details.
+
 </td>
 </tr><tr>
 <td>
+
 `top_k`<a id="top_k"></a>
+
 </td>
 <td>
+
 The default `top_k` for the model, see <a href="../../google/generativeai/types/Model.md"><code>types.Model</code></a> for details.
+
 </td>
 </tr><tr>
 <td>
+
 `epoch_count`<a id="epoch_count"></a>
+
 </td>
 <td>
+
 The number of tuning epochs to run. An epoch is a pass over the whole dataset.
+
 </td>
 </tr><tr>
 <td>
+
 `batch_size`<a id="batch_size"></a>
+
 </td>
 <td>
+
 The number of examples to use in each training batch.
+
 </td>
 </tr><tr>
 <td>
+
 `learning_rate`<a id="learning_rate"></a>
+
 </td>
 <td>
+
 The step size multiplier for the gradient updates.
+
 </td>
 </tr><tr>
 <td>
+
 `client`<a id="client"></a>
+
 </td>
 <td>
+
 Which client to use.
+
 </td>
 </tr><tr>
 <td>
+
 `request_options`<a id="request_options"></a>
+
 </td>
 <td>
+
 Options for the request.
+
 </td>
 </tr>
 </table>
@@ -190,7 +236,9 @@ Options for the request.
 <tr><th colspan="2"><h2 class="add-link">Returns</h2></th></tr>
 <tr class="alt">
 <td colspan="2">
+
 A [`google.api_core.operation.Operation`](https://googleapis.dev/python/google-api-core/latest/operation.html)
+
 </td>
 </tr>
 

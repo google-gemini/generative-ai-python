@@ -1,23 +1,9 @@
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.Permissions" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="__iter__"/>
-<meta itemprop="property" content="create"/>
-<meta itemprop="property" content="create_async"/>
-<meta itemprop="property" content="get"/>
-<meta itemprop="property" content="get_async"/>
-<meta itemprop="property" content="list"/>
-<meta itemprop="property" content="list_async"/>
-<meta itemprop="property" content="transfer_ownership"/>
-<meta itemprop="property" content="transfer_ownership_async"/>
-</div>
 
 # google.generativeai.types.Permissions
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/permission_types.py#L270-L479">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -50,9 +36,13 @@
 
 <tr>
 <td>
+
 `parent`<a id="parent"></a>
+
 </td>
 <td>
+
+
 
 </td>
 </tr>
@@ -85,31 +75,47 @@ Create a new permission on a resource (self).
 
 <tr>
 <td>
+
 `parent`
+
 </td>
 <td>
+
 The resource name of the parent resource in which the permission will be listed.
+
 </td>
 </tr><tr>
 <td>
+
 `role`
+
 </td>
 <td>
+
 role that will be granted by the permission.
+
 </td>
 </tr><tr>
 <td>
+
 `grantee_type`
+
 </td>
 <td>
+
 The type of the grantee for the permission.
+
 </td>
 </tr><tr>
 <td>
+
 `email_address`
+
 </td>
 <td>
+
 The email address of the grantee.
+
 </td>
 </tr>
 </table>
@@ -122,7 +128,9 @@ The email address of the grantee.
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
+
 `Permission` object with specified parent, role, grantee type, and email address.
+
 </td>
 </tr>
 
@@ -137,17 +145,25 @@ The email address of the grantee.
 
 <tr>
 <td>
+
 `ValueError`
+
 </td>
 <td>
+
 When email_address is specified and grantee_type is set to EVERYONE.
+
 </td>
 </tr><tr>
 <td>
+
 `ValueError`
+
 </td>
 <td>
+
 When email_address is not specified and grantee_type is not set to EVERYONE.
+
 </td>
 </tr>
 </table>
@@ -188,10 +204,14 @@ Get information about a specific permission.
 
 <tr>
 <td>
+
 `name`
+
 </td>
 <td>
+
 The name of the permission to get.
+
 </td>
 </tr>
 </table>
@@ -204,7 +224,9 @@ The name of the permission to get.
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
+
 Requested permission as an instance of `Permission`.
+
 </td>
 </tr>
 
@@ -232,10 +254,14 @@ Get information about a specific permission.
 
 <tr>
 <td>
+
 `name`
+
 </td>
 <td>
+
 The name of the permission to get.
+
 </td>
 </tr>
 </table>
@@ -248,7 +274,9 @@ The name of the permission to get.
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
+
 Requested permission as an instance of `Permission`.
+
 </td>
 </tr>
 
@@ -277,17 +305,25 @@ List `Permission`s enforced on a resource (self).
 
 <tr>
 <td>
+
 `parent`
+
 </td>
 <td>
+
 The resource name of the parent resource in which the permission will be listed.
+
 </td>
 </tr><tr>
 <td>
+
 `page_size`
+
 </td>
 <td>
+
 The maximum number of permissions to return (per page). The service may return fewer permissions.
+
 </td>
 </tr>
 </table>
@@ -300,7 +336,9 @@ The maximum number of permissions to return (per page). The service may return f
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
+
 Paginated list of `Permission` objects.
+
 </td>
 </tr>
 
@@ -341,17 +379,25 @@ Transfer ownership of a resource (self) to a new owner.
 
 <tr>
 <td>
+
 `name`
+
 </td>
 <td>
+
 Name of the resource to transfer ownership.
+
 </td>
 </tr><tr>
 <td>
+
 `email_address`
+
 </td>
 <td>
+
 Email address of the new owner.
+
 </td>
 </tr>
 </table>
