@@ -16,5 +16,5 @@ python:
   install:
     - .
 
-sphinx:
-  configuration: docs/conf.py
+# sphinx:
+#   configuration: docs/conf.py
