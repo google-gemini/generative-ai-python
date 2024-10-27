@@ -13,7 +13,7 @@ env:
   
 python:
   install:
-    - .
+    - path: .
 
 # sphinx:
 #   configuration: docs/conf.py
