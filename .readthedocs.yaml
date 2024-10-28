@@ -15,5 +15,5 @@ python:
   install:
     - path: .
 
-# sphinx:
-#   configuration: docs/conf.py
+sphinx:
+  configuration: docs/source/conf.py
