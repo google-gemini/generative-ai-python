@@ -1,8 +1,6 @@
 import os
 import sys
 
-from setup import release_status
-
 # Add the project root directory to sys.path
 sys.path.insert(0, os.path.abspath('../..'))  # Adjust this path as necessary
 
@@ -17,7 +15,7 @@ sys.path.insert(0, os.path.abspath('../..'))  # Adjust this path as necessary
 project = 'google-generativeai'
 copyright = '2024, Google LLC'
 author = 'Google LLC'
-release = release_status
+release = "0.2.2"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
