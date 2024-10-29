@@ -182,7 +182,6 @@ def to_mapping_value(value) -> struct_pb2.Struct:
     return struct_pb2.Struct(fields={k: to_value(v) for k, v in value.items()})
 
 
-# This is to get around https://github.com/googleapis/proto-plus-python/issues/488
 
 
 class PredictionServiceClient(glm.PredictionServiceClient):
