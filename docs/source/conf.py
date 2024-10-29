@@ -20,17 +20,17 @@ release = "0.2.2"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-# extensions = []
+extensions = ["sphinx_external_toc"]
+external_toc_path = "/api/python/google/generativeai/_toc.yaml"  # Path to your YAML file
+external_toc_exclude_missing = False  # Optional; set to True to exclude missing files
 
     # pip install furo
     # html_theme = 'furo'
 # templates_path = ['_templates']
 
 # conda install myst-parser # "myst_parser"
-exclude_patterns = ["sphinx_external_toc"]
+# exclude_patterns = []
 
-external_toc_path = "/api/python/google/generativeai/_toc.yaml"  # Path to your YAML file
-external_toc_exclude_missing = False  # Optional; set to True to exclude missing files
 
 
 # -- Options for HTML output -------------------------------------------------
