@@ -4,7 +4,7 @@ echo "[START code_execution_basic]"
 # [START code_execution_basic]
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
 -H 'Content-Type: application/json' \
--d ' {"tools": [{'code_execution': {}}],
+-d ' {"tools": [{"code_execution": {}}],
     "contents": {
       "parts": 
         {
@@ -18,7 +18,7 @@ echo "[START code_execution_chat]"
 # [START code_execution_chat]
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
 -H 'Content-Type: application/json' \
--d '{"tools": [{'code_execution': {}}],
+-d '{"tools": [{"code_execution": {}}],
     "contents": [
         {
             "role": "user",
