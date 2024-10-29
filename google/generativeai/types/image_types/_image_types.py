@@ -184,10 +184,10 @@ class Image:
 
     @staticmethod
     def load_from_file(location: os.PathLike) -> "Image":
-        """Loads image from local file or Google Cloud Storage.
+        """Loads image from local file.
 
         Args:
-            location: Local path or Google Cloud Storage uri from where to load
+            location: Local path from where to load
                 the image.
 
         Returns:
