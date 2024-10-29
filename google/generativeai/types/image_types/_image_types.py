@@ -118,7 +118,7 @@ class CheckWatermarkResult:
         elif decision == "REJECT":
             return False
         else:
-            raise ValueError("Unrecognized result")
+            raise ValueError(f"Unrecognized result: {decision}")
 
 
 def check_watermark(
@@ -127,7 +127,7 @@ def check_watermark(
     """Checks if an image has a Google-AI watermark.
 
     Args:
-        img: can be a `pathlib.Path` or a `PIL.Image.Image`, `IPythin.display.Image`, or `google.generativeai.Image`.
+        img: can be a `pathlib.Path` or a `PIL.Image.Image`, `IPython.display.Image`, or `google.generativeai.Image`.
         model_id: Which version of the image-verification model to send the image to.
 
     Returns:
