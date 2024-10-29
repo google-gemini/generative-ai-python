@@ -1,25 +1,9 @@
-description: Request options
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.RequestOptions" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__contains__"/>
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__getitem__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="__iter__"/>
-<meta itemprop="property" content="__len__"/>
-<meta itemprop="property" content="get"/>
-<meta itemprop="property" content="items"/>
-<meta itemprop="property" content="keys"/>
-<meta itemprop="property" content="values"/>
-</div>
 
 # google.generativeai.types.RequestOptions
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/helper_types.py#L35-L84">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -65,17 +49,25 @@ Request options
 
 <tr>
 <td>
+
 `retry`<a id="retry"></a>
+
 </td>
 <td>
+
 Refer to [retry docs](https://googleapis.dev/python/google-api-core/latest/retry.html) for details.
+
 </td>
 </tr><tr>
 <td>
+
 `timeout`<a id="timeout"></a>
+
 </td>
 <td>
+
 In seconds (or provide a [TimeToDeadlineTimeout](https://googleapis.dev/python/google-api-core/latest/timeout.html) object).
+
 </td>
 </tr>
 </table>
@@ -91,17 +83,25 @@ In seconds (or provide a [TimeToDeadlineTimeout](https://googleapis.dev/python/g
 
 <tr>
 <td>
+
 `retry`<a id="retry"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr><tr>
 <td>
+
 `timeout`<a id="timeout"></a>
+
 </td>
 <td>
+
 Dataclass field
+
 </td>
 </tr>
 </table>
