@@ -22,7 +22,7 @@ release = "0.2.2"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ["sphinx_external_toc"]
-external_toc_path = "docs/api/python/google/generativeai/_toc.yaml"  # Path to your YAML file
+external_toc_path = "/api/python/google/generativeai/_toc.yaml"  # Path to your YAML file
 external_toc_exclude_missing = False  # Optional; set to True to exclude missing files
 
     # pip install furo
