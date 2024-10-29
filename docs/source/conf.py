@@ -1,5 +1,6 @@
 import os
 import sys
+import sphinx_external_toc
 
 # Add the project root directory to sys.path
 sys.path.insert(0, os.path.abspath('../..'))  # Adjust this path as necessary
