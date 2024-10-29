@@ -18,15 +18,16 @@
 import base64
 import collections
 import dataclasses
-import hashlib
 import io
 import json
+import os
 import pathlib
 import typing
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from google.generativeai import client
 from google.generativeai import protos
+from google.generativeai.types import content_types
 
 from google.protobuf import struct_pb2
 
@@ -110,6 +111,52 @@ SAFETY_FILTER_LEVELS = SafetyFilterLevel.__args__  # type: ignore
 PersonGeneration = Literal["dont_allow", "allow_adult"]
 PERSON_GENERATIONS = PersonGeneration.__args__  # type: ignore
 
+ImageLikeType = Union["Image", pathlib.Path, content_types.ImageType]
+
+
+def check_watermark(
+    img: ImageLikeType, model_id: str = "models/image-verification-001"
+) -> "CheckWatermarkResult":
+    """Checks if an image has a Google-AI watermark.
+
+    Args:
+        img: can be a `pathlib.Path` or a `PIL.Image.Image`, `IPython.display.Image`, or `google.generativeai.Image`.
+        model_id: Which version of the image-verification model to send the image to.
+
+    Returns:
+
+    """
+    if isinstance(img, Image):
+        pass
+    elif isinstance(img, pathlib.Path):
+        img = Image.load_from_file(img)
+    elif IPython_display is not None and isinstance(img, IPython_display.Image):
+        img = Image(image_bytes=img.data)
+    elif PIL_Image is not None and isinstance(img, PIL_Image.Image):
+        blob = content_types._pil_to_blob(img)
+        img = Image(image_bytes=blob.data)
+    elif isinstance(img, protos.Blob):
+        img = Image(image_bytes=img.data)
+    else:
+        raise TypeError(
+            f"Not implemented: Could not convert a {type(img)} into `Image`\n    {img=}"
+        )
+
+    prediction_client = client.get_default_prediction_client()
+    if not model_id.startswith("models/"):
+        model_id = f"models/{model_id}"
+
+    instance = {"image": {"bytesBase64Encoded": base64.b64encode(img._loaded_bytes).decode()}}
+    parameters = {"watermarkVerification": True}
+
+    # This is to get around https://github.com/googleapis/proto-plus-python/issues/488
+    pr = protos.PredictRequest.pb()
+    request = pr(model=model_id, instances=[to_value(instance)], parameters=to_value(parameters))
+
+    response = prediction_client.predict(request)
+
+    return CheckWatermarkResult(response.predictions)
+
 
 class Image:
     """Image."""
@@ -131,7 +178,7 @@ class Image:
         self._image_bytes = image_bytes
 
     @staticmethod
-    def load_from_file(location: str) -> "Image":
+    def load_from_file(location: os.PathLike) -> "Image":
         """Loads image from local file or Google Cloud Storage.
 
         Args:
@@ -205,6 +252,29 @@ class Image:
 
     def _repr_png_(self):
         return self._pil_image._repr_png_()  # type:ignore
+
+    check_watermark = check_watermark
+
+
+class CheckWatermarkResult:
+    def __init__(self, predictions):
+        self._predictions = predictions
+
+    @property
+    def decision(self):
+        return self._predictions[0]["decision"]
+
+    def __str__(self):
+        return f"CheckWatermarkResult([{{'decision': {self.decision!r}}}])"
+
+    def __bool__(self):
+        decision = self.decision
+        if decision == "ACCEPT":
+            return True
+        elif decision == "REJECT":
+            return False
+        else:
+            raise ValueError(f"Unrecognized result: {decision}")
 
 
 class ImageGenerationModel:
@@ -479,7 +549,7 @@ class GeneratedImage(Image):
         return self._generation_parameters
 
     @staticmethod
-    def load_from_file(location: str) -> "GeneratedImage":
+    def load_from_file(location: os.PathLike) -> "GeneratedImage":
         """Loads image from file.
 
         Args:

@@ -35,6 +35,7 @@ if typing.TYPE_CHECKING:
     import IPython.display
 
     IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
+    ImageType = PIL.Image.Image | IPython.display.Image
 else:
     IMAGE_TYPES = ()
     try:
@@ -51,6 +52,8 @@ else:
         IMAGE_TYPES = IMAGE_TYPES + (IPython.display.Image,)
     except ImportError:
         IPython = None
+
+    ImageType = Union["PIL.Image.Image", "IPython.display.Image"]
 
 
 __all__ = [
@@ -123,7 +126,7 @@ def _pil_to_blob(image: PIL.Image.Image) -> protos.Blob:
     return file_blob(image) or webp_blob(image)
 
 
-def image_to_blob(image) -> protos.Blob:
+def image_to_blob(image: ImageType) -> protos.Blob:
     if PIL is not None:
         if isinstance(image, PIL.Image.Image):
             return _pil_to_blob(image)
