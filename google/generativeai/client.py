@@ -182,8 +182,6 @@ def to_mapping_value(value) -> struct_pb2.Struct:
     return struct_pb2.Struct(fields={k: to_value(v) for k, v in value.items()})
 
 
-
-
 class PredictionServiceClient(glm.PredictionServiceClient):
     def predict(self, model=None, instances=None, parameters=None):
         pr = protos.PredictRequest.pb()
