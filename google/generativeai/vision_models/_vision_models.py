@@ -16,88 +16,12 @@
 """Classes for working with vision models."""
 
 import base64
-import collections
 import dataclasses
-import io
-import json
-import os
-import pathlib
 import typing
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import List, Literal, Optional
 
 from google.generativeai import client
-from google.generativeai import protos
-from google.generativeai.types import content_types
-
-from google.protobuf import struct_pb2
-
-from proto.marshal.collections import maps
-from proto.marshal.collections import repeated
-
-
-# pylint: disable=g-import-not-at-top\
-if typing.TYPE_CHECKING:
-    from IPython import display as IPython_display
-else:
-    try:
-        from IPython import display as IPython_display
-    except ImportError:
-        IPython_display = None
-
-if typing.TYPE_CHECKING:
-    import PIL.Image as PIL_Image
-else:
-    try:
-        from PIL import Image as PIL_Image
-    except ImportError:
-        PIL_Image = None
-
-
-# This is to get around https://github.com/googleapis/proto-plus-python/issues/488
-def to_value(value) -> struct_pb2.Value:
-    """Return a protobuf Value object representing this value."""
-    if isinstance(value, struct_pb2.Value):
-        return value
-    if value is None:
-        return struct_pb2.Value(null_value=0)
-    if isinstance(value, bool):
-        return struct_pb2.Value(bool_value=value)
-    if isinstance(value, (int, float)):
-        return struct_pb2.Value(number_value=float(value))
-    if isinstance(value, str):
-        return struct_pb2.Value(string_value=value)
-    if isinstance(value, collections.abc.Sequence):
-        return struct_pb2.Value(list_value=to_list_value(value))
-    if isinstance(value, collections.abc.Mapping):
-        return struct_pb2.Value(struct_value=to_mapping_value(value))
-    raise ValueError("Unable to coerce value: %r" % value)
-
-
-def to_list_value(value) -> struct_pb2.ListValue:
-    # We got a proto, or else something we sent originally.
-    # Preserve the instance we have.
-    if isinstance(value, struct_pb2.ListValue):
-        return value
-    if isinstance(value, repeated.RepeatedComposite):
-        return struct_pb2.ListValue(values=[v for v in value.pb])
-
-    # We got a list (or something list-like); convert it.
-    return struct_pb2.ListValue(values=[to_value(v) for v in value])
-
-
-def to_mapping_value(value) -> struct_pb2.Struct:
-    # We got a proto, or else something we sent originally.
-    # Preserve the instance we have.
-    if isinstance(value, struct_pb2.Struct):
-        return value
-    if isinstance(value, maps.MapComposite):
-        return struct_pb2.Struct(
-            fields={k: v for k, v in value.pb.items()},
-        )
-
-    # We got a dict (or something dict-like); convert it.
-    return struct_pb2.Struct(fields={k: to_value(v) for k, v in value.items()})
-
+from google.generativeai.types import image_types
 
 AspectRatio = Literal["1:1", "9:16", "16:9", "4:3", "3:4"]
 ASPECT_RATIOS = AspectRatio.__args__  # type: ignore
@@ -110,171 +34,6 @@ SAFETY_FILTER_LEVELS = SafetyFilterLevel.__args__  # type: ignore
 
 PersonGeneration = Literal["dont_allow", "allow_adult"]
 PERSON_GENERATIONS = PersonGeneration.__args__  # type: ignore
-
-ImageLikeType = Union["Image", pathlib.Path, content_types.ImageType]
-
-
-def check_watermark(
-    img: ImageLikeType, model_id: str = "models/image-verification-001"
-) -> "CheckWatermarkResult":
-    """Checks if an image has a Google-AI watermark.
-
-    Args:
-        img: can be a `pathlib.Path` or a `PIL.Image.Image`, `IPython.display.Image`, or `google.generativeai.Image`.
-        model_id: Which version of the image-verification model to send the image to.
-
-    Returns:
-
-    """
-    if isinstance(img, Image):
-        pass
-    elif isinstance(img, pathlib.Path):
-        img = Image.load_from_file(img)
-    elif IPython_display is not None and isinstance(img, IPython_display.Image):
-        img = Image(image_bytes=img.data)
-    elif PIL_Image is not None and isinstance(img, PIL_Image.Image):
-        blob = content_types._pil_to_blob(img)
-        img = Image(image_bytes=blob.data)
-    elif isinstance(img, protos.Blob):
-        img = Image(image_bytes=img.data)
-    else:
-        raise TypeError(
-            f"Not implemented: Could not convert a {type(img)} into `Image`\n    {img=}"
-        )
-
-    prediction_client = client.get_default_prediction_client()
-    if not model_id.startswith("models/"):
-        model_id = f"models/{model_id}"
-
-    instance = {"image": {"bytesBase64Encoded": base64.b64encode(img._loaded_bytes).decode()}}
-    parameters = {"watermarkVerification": True}
-
-    # This is to get around https://github.com/googleapis/proto-plus-python/issues/488
-    pr = protos.PredictRequest.pb()
-    request = pr(model=model_id, instances=[to_value(instance)], parameters=to_value(parameters))
-
-    response = prediction_client.predict(request)
-
-    return CheckWatermarkResult(response.predictions)
-
-
-class Image:
-    """Image."""
-
-    __module__ = "vertexai.vision_models"
-
-    _loaded_bytes: Optional[bytes] = None
-    _loaded_image: Optional["PIL_Image.Image"] = None
-
-    def __init__(
-        self,
-        image_bytes: Optional[bytes],
-    ):
-        """Creates an `Image` object.
-
-        Args:
-            image_bytes: Image file bytes. Image can be in PNG or JPEG format.
-        """
-        self._image_bytes = image_bytes
-
-    @staticmethod
-    def load_from_file(location: os.PathLike) -> "Image":
-        """Loads image from local file or Google Cloud Storage.
-
-        Args:
-            location: Local path or Google Cloud Storage uri from where to load
-                the image.
-
-        Returns:
-            Loaded image as an `Image` object.
-        """
-        # Load image from local path
-        image_bytes = pathlib.Path(location).read_bytes()
-        image = Image(image_bytes=image_bytes)
-        return image
-
-    @property
-    def _image_bytes(self) -> bytes:
-        return self._loaded_bytes
-
-    @_image_bytes.setter
-    def _image_bytes(self, value: bytes):
-        self._loaded_bytes = value
-
-    @property
-    def _pil_image(self) -> "PIL_Image.Image":  # type: ignore
-        if self._loaded_image is None:
-            if not PIL_Image:
-                raise RuntimeError(
-                    "The PIL module is not available. Please install the Pillow package."
-                )
-            self._loaded_image = PIL_Image.open(io.BytesIO(self._image_bytes))
-        return self._loaded_image
-
-    @property
-    def _size(self):
-        return self._pil_image.size
-
-    @property
-    def _mime_type(self) -> str:
-        """Returns the MIME type of the image."""
-        if PIL_Image:
-            return PIL_Image.MIME.get(self._pil_image.format, "image/jpeg")
-        # Fall back to jpeg
-        return "image/jpeg"
-
-    def show(self):
-        """Shows the image.
-
-        This method only works when in a notebook environment.
-        """
-        if PIL_Image and IPython_display:
-            IPython_display.display(self._pil_image)
-
-    def save(self, location: str):
-        """Saves image to a file.
-
-        Args:
-            location: Local path where to save the image.
-        """
-        pathlib.Path(location).write_bytes(self._image_bytes)
-
-    def _as_base64_string(self) -> str:
-        """Encodes image using the base64 encoding.
-
-        Returns:
-            Base64 encoding of the image as a string.
-        """
-        # ! b64encode returns `bytes` object, not `str`.
-        # We need to convert `bytes` to `str`, otherwise we get service error:
-        # "received initial metadata size exceeds limit"
-        return base64.b64encode(self._image_bytes).decode("ascii")
-
-    def _repr_png_(self):
-        return self._pil_image._repr_png_()  # type:ignore
-
-    check_watermark = check_watermark
-
-
-class CheckWatermarkResult:
-    def __init__(self, predictions):
-        self._predictions = predictions
-
-    @property
-    def decision(self):
-        return self._predictions[0]["decision"]
-
-    def __str__(self):
-        return f"CheckWatermarkResult([{{'decision': {self.decision!r}}}])"
-
-    def __bool__(self):
-        decision = self.decision
-        if decision == "ACCEPT":
-            return True
-        elif decision == "REJECT":
-            return False
-        else:
-            raise ValueError(f"Unrecognized result: {decision}")
 
 
 class ImageGenerationModel:
@@ -417,20 +176,16 @@ class ImageGenerationModel:
             parameters["personGeneration"] = person_generation
             shared_generation_parameters["person_generation"] = person_generation
 
-        # This is to get around https://github.com/googleapis/proto-plus-python/issues/488
-        pr = protos.PredictRequest.pb()
-        request = pr(
-            model=self.model_name, instances=[to_value(instance)], parameters=to_value(parameters)
+        response = self._client.predict(
+            model=self.model_name, instances=[instance], parameters=parameters
         )
 
-        response = self._client.predict(request)
-
-        generated_images: List["GeneratedImage"] = []
+        generated_images: List[image_types.GeneratedImage] = []
         for idx, prediction in enumerate(response.predictions):
             generation_parameters = dict(shared_generation_parameters)
             generation_parameters["index_of_image_in_batch"] = idx
             encoded_bytes = prediction.get("bytesBase64Encoded")
-            generated_image = GeneratedImage(
+            generated_image = image_types.GeneratedImage(
                 image_bytes=base64.b64decode(encoded_bytes) if encoded_bytes else None,
                 generation_parameters=generation_parameters,
             )
@@ -507,84 +262,12 @@ class ImageGenerationResponse:
 
     __module__ = "vertexai.preview.vision_models"
 
-    images: List["GeneratedImage"]
+    images: List[image_types.GeneratedImage]
 
-    def __iter__(self) -> typing.Iterator["GeneratedImage"]:
+    def __iter__(self) -> typing.Iterator[image_types.GeneratedImage]:
         """Iterates through the generated images."""
         yield from self.images
 
-    def __getitem__(self, idx: int) -> "GeneratedImage":
+    def __getitem__(self, idx: int) -> image_types.GeneratedImage:
         """Gets the generated image by index."""
         return self.images[idx]
-
-
-_EXIF_USER_COMMENT_TAG_IDX = 0x9286
-_IMAGE_GENERATION_PARAMETERS_EXIF_KEY = (
-    "google.cloud.vertexai.image_generation.image_generation_parameters"
-)
-
-
-class GeneratedImage(Image):
-    """Generated image."""
-
-    __module__ = "google.generativeai"
-
-    def __init__(
-        self,
-        image_bytes: Optional[bytes],
-        generation_parameters: Dict[str, Any],
-    ):
-        """Creates a `GeneratedImage` object.
-
-        Args:
-            image_bytes: Image file bytes. Image can be in PNG or JPEG format.
-            generation_parameters: Image generation parameter values.
-        """
-        super().__init__(image_bytes=image_bytes)
-        self._generation_parameters = generation_parameters
-
-    @property
-    def generation_parameters(self):
-        """Image generation parameters as a dictionary."""
-        return self._generation_parameters
-
-    @staticmethod
-    def load_from_file(location: os.PathLike) -> "GeneratedImage":
-        """Loads image from file.
-
-        Args:
-            location: Local path from where to load the image.
-
-        Returns:
-            Loaded image as a `GeneratedImage` object.
-        """
-        base_image = Image.load_from_file(location=location)
-        exif = base_image._pil_image.getexif()  # pylint: disable=protected-access
-        exif_comment_dict = json.loads(exif[_EXIF_USER_COMMENT_TAG_IDX])
-        generation_parameters = exif_comment_dict[_IMAGE_GENERATION_PARAMETERS_EXIF_KEY]
-        return GeneratedImage(
-            image_bytes=base_image._image_bytes,  # pylint: disable=protected-access
-            generation_parameters=generation_parameters,
-        )
-
-    def save(self, location: str, include_generation_parameters: bool = True):
-        """Saves image to a file.
-
-        Args:
-            location: Local path where to save the image.
-            include_generation_parameters: Whether to include the image
-                generation parameters in the image's EXIF metadata.
-        """
-        if include_generation_parameters:
-            if not self._generation_parameters:
-                raise ValueError("Image does not have generation parameters.")
-            if not PIL_Image:
-                raise ValueError("The PIL module is required for saving generation parameters.")
-
-            exif = self._pil_image.getexif()
-            exif[_EXIF_USER_COMMENT_TAG_IDX] = json.dumps(
-                {_IMAGE_GENERATION_PARAMETERS_EXIF_KEY: self._generation_parameters}
-            )
-            self._pil_image.save(location, exif=exif)
-        else:
-            super().save(location=location)

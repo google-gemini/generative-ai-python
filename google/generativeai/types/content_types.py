@@ -16,44 +16,15 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
-import io
 import inspect
-import mimetypes
-import pathlib
-import typing
 from typing import Any, Callable, Union
 from typing_extensions import TypedDict
 
 import pydantic
 
 from google.generativeai.types import file_types
+from google.generativeai.types.image_types import _image_types
 from google.generativeai import protos
-
-if typing.TYPE_CHECKING:
-    import PIL.Image
-    import PIL.ImageFile
-    import IPython.display
-
-    IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
-    ImageType = PIL.Image.Image | IPython.display.Image
-else:
-    IMAGE_TYPES = ()
-    try:
-        import PIL.Image
-        import PIL.ImageFile
-
-        IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
-    except ImportError:
-        PIL = None
-
-    try:
-        import IPython.display
-
-        IMAGE_TYPES = IMAGE_TYPES + (IPython.display.Image,)
-    except ImportError:
-        IPython = None
-
-    ImageType = Union["PIL.Image.Image", "IPython.display.Image"]
 
 
 __all__ = [
@@ -97,62 +68,6 @@ def to_mode(x: ModeOptions) -> Mode:
     return _MODE[x]
 
 
-def _pil_to_blob(image: PIL.Image.Image) -> protos.Blob:
-    # If the image is a local file, return a file-based blob without any modification.
-    # Otherwise, return a lossless WebP blob (same quality with optimized size).
-    def file_blob(image: PIL.Image.Image) -> protos.Blob | None:
-        if not isinstance(image, PIL.ImageFile.ImageFile) or image.filename is None:
-            return None
-        filename = str(image.filename)
-        if not pathlib.Path(filename).is_file():
-            return None
-
-        mime_type = image.get_format_mimetype()
-        image_bytes = pathlib.Path(filename).read_bytes()
-
-        return protos.Blob(mime_type=mime_type, data=image_bytes)
-
-    def webp_blob(image: PIL.Image.Image) -> protos.Blob:
-        # Reference: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#webp
-        image_io = io.BytesIO()
-        image.save(image_io, format="webp", lossless=True)
-        image_io.seek(0)
-
-        mime_type = "image/webp"
-        image_bytes = image_io.read()
-
-        return protos.Blob(mime_type=mime_type, data=image_bytes)
-
-    return file_blob(image) or webp_blob(image)
-
-
-def image_to_blob(image: ImageType) -> protos.Blob:
-    if PIL is not None:
-        if isinstance(image, PIL.Image.Image):
-            return _pil_to_blob(image)
-
-    if IPython is not None:
-        if isinstance(image, IPython.display.Image):
-            name = image.filename
-            if name is None:
-                raise ValueError(
-                    "Conversion failed. The `IPython.display.Image` can only be converted if "
-                    "it is constructed from a local file. Please ensure you are using the format: Image(filename='...')."
-                )
-            mime_type, _ = mimetypes.guess_type(name)
-            if mime_type is None:
-                mime_type = "image/unknown"
-
-            return protos.Blob(mime_type=mime_type, data=image.data)
-
-    raise TypeError(
-        "Image conversion failed. The input was expected to be of type `Image` "
-        "(either `PIL.Image.Image` or `IPython.display.Image`).\n"
-        f"However, received an object of type: {type(image)}.\n"
-        f"Object Value: {image}"
-    )
-
-
 class BlobDict(TypedDict):
     mime_type: str
     data: bytes
@@ -189,12 +104,7 @@ def is_blob_dict(d):
     return "mime_type" in d and "data" in d
 
 
-if typing.TYPE_CHECKING:
-    BlobType = Union[
-        protos.Blob, BlobDict, PIL.Image.Image, IPython.display.Image
-    ]  # Any for the images
-else:
-    BlobType = Union[protos.Blob, BlobDict, Any]
+BlobType = Union[protos.Blob, BlobDict, _image_types.ImageType]  # Any for the images
 
 
 def to_blob(blob: BlobType) -> protos.Blob:
@@ -203,8 +113,8 @@ def to_blob(blob: BlobType) -> protos.Blob:
 
     if isinstance(blob, protos.Blob):
         return blob
-    elif isinstance(blob, IMAGE_TYPES):
-        return image_to_blob(blob)
+    elif isinstance(blob, _image_types.IMAGE_TYPES):
+        return _image_types.image_to_blob(blob)
     else:
         if isinstance(blob, Mapping):
             raise KeyError(
