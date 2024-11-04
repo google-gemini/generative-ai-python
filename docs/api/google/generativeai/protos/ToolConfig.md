@@ -1,17 +1,11 @@
-description: The Tool configuration containing parameters for specifying Tool use in the request.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.ToolConfig" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.ToolConfig
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L392-L405">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L462-L475">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,12 +28,16 @@ The Tool configuration containing parameters for specifying ``Tool`` use in the 
 
 <tr>
 <td>
+
 `function_calling_config`<a id="function_calling_config"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.FunctionCallingConfig`
 
 Optional. Function calling config.
+
 </td>
 </tr>
 </table>

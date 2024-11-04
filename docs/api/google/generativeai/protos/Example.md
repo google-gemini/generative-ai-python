@@ -1,15 +1,9 @@
-description: An input/output example used to instruct the Model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Example" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.Example
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/discuss_service.py#L280-L303">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -36,22 +30,30 @@ response.
 
 <tr>
 <td>
+
 `input`<a id="input"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Message`
 
 Required. An example of an input ``Message`` from the user.
+
 </td>
 </tr><tr>
 <td>
+
 `output`<a id="output"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.Message`
 
 Required. An example of what the model should
 output given the input.
+
 </td>
 </tr>
 </table>

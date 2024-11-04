@@ -1,17 +1,11 @@
-description: Captures default client configuration.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.configure" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.configure
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/client.py#L273-L312">
+  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/client.py#L300-L338">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -52,28 +46,40 @@ Note: Not all arguments are detailed below. Refer to the `*ServiceClient` classe
 
 <tr>
 <td>
+
 `transport`<a id="transport"></a>
+
 </td>
 <td>
+
 A string, one of: [`rest`, `grpc`, `grpc_asyncio`].
+
 </td>
 </tr><tr>
 <td>
+
 `api_key`<a id="api_key"></a>
+
 </td>
 <td>
+
 The API-Key to use when creating the default clients (each service uses
 a separate client). This is a shortcut for `client_options={"api_key": api_key}`.
 If omitted, and the `GOOGLE_API_KEY` environment variable is set, it will be
 used.
+
 </td>
 </tr><tr>
 <td>
+
 `default_metadata`<a id="default_metadata"></a>
+
 </td>
 <td>
+
 Default (key, value) metadata pairs to send with every request.
 when using `transport="rest"` these are sent as HTTP headers.
+
 </td>
 </tr>
 </table>

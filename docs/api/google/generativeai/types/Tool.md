@@ -1,21 +1,11 @@
-description: A wrapper for <a href="../../../google/generativeai/protos/Tool.md"><code>protos.Tool</code></a>, Contains a collection of related FunctionDeclaration objects.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.types.Tool" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__call__"/>
-<meta itemprop="property" content="__getitem__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="to_proto"/>
-</div>
 
 # google.generativeai.types.Tool
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L627-L680">
+  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L703-L769">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -24,11 +14,13 @@ description: A wrapper for <a href="../../../google/generativeai/protos/Tool.md"
 
 
 
-A wrapper for <a href="../../../google/generativeai/protos/Tool.md"><code>protos.Tool</code></a>, Contains a collection of related `FunctionDeclaration` objects.
+A wrapper for <a href="../../../google/generativeai/protos/Tool.md"><code>protos.Tool</code></a>, Contains a collection of related `FunctionDeclaration` objects, protos.CodeExecution object, and protos.GoogleSearchRetrieval object.
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>google.generativeai.types.Tool(
+    *,
     function_declarations: (Iterable[FunctionDeclarationType] | None) = None,
+    google_search_retrieval: (GoogleSearchRetrievalType | None) = None,
     code_execution: (protos.CodeExecution | None) = None
 )
 </code></pre>
@@ -47,16 +39,35 @@ A wrapper for <a href="../../../google/generativeai/protos/Tool.md"><code>protos
 
 <tr>
 <td>
+
 `code_execution`<a id="code_execution"></a>
+
 </td>
 <td>
+
+
 
 </td>
 </tr><tr>
 <td>
+
 `function_declarations`<a id="function_declarations"></a>
+
 </td>
 <td>
+
+
+
+</td>
+</tr><tr>
+<td>
+
+`google_search_retrieval`<a id="google_search_retrieval"></a>
+
+</td>
+<td>
+
+
 
 </td>
 </tr>
@@ -68,7 +79,7 @@ A wrapper for <a href="../../../google/generativeai/protos/Tool.md"><code>protos
 
 <h3 id="to_proto"><code>to_proto</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L679-L680">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L768-L769">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>to_proto()
@@ -79,7 +90,7 @@ A wrapper for <a href="../../../google/generativeai/protos/Tool.md"><code>protos
 
 <h3 id="__call__"><code>__call__</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L672-L677">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L761-L766">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>__call__(
@@ -92,7 +103,7 @@ Call self as a function.
 
 <h3 id="__getitem__"><code>__getitem__</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L664-L670">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/content_types.py#L753-L759">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>__getitem__(

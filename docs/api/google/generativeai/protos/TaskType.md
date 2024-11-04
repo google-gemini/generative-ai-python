@@ -1,68 +1,11 @@
-description: Type of task for which the embedding will be used.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.TaskType" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__abs__"/>
-<meta itemprop="property" content="__add__"/>
-<meta itemprop="property" content="__and__"/>
-<meta itemprop="property" content="__bool__"/>
-<meta itemprop="property" content="__eq__"/>
-<meta itemprop="property" content="__floordiv__"/>
-<meta itemprop="property" content="__ge__"/>
-<meta itemprop="property" content="__gt__"/>
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="__invert__"/>
-<meta itemprop="property" content="__le__"/>
-<meta itemprop="property" content="__lshift__"/>
-<meta itemprop="property" content="__lt__"/>
-<meta itemprop="property" content="__mod__"/>
-<meta itemprop="property" content="__mul__"/>
-<meta itemprop="property" content="__ne__"/>
-<meta itemprop="property" content="__neg__"/>
-<meta itemprop="property" content="__new__"/>
-<meta itemprop="property" content="__or__"/>
-<meta itemprop="property" content="__pos__"/>
-<meta itemprop="property" content="__pow__"/>
-<meta itemprop="property" content="__radd__"/>
-<meta itemprop="property" content="__rand__"/>
-<meta itemprop="property" content="__rfloordiv__"/>
-<meta itemprop="property" content="__rlshift__"/>
-<meta itemprop="property" content="__rmod__"/>
-<meta itemprop="property" content="__rmul__"/>
-<meta itemprop="property" content="__ror__"/>
-<meta itemprop="property" content="__rpow__"/>
-<meta itemprop="property" content="__rrshift__"/>
-<meta itemprop="property" content="__rshift__"/>
-<meta itemprop="property" content="__rsub__"/>
-<meta itemprop="property" content="__rtruediv__"/>
-<meta itemprop="property" content="__rxor__"/>
-<meta itemprop="property" content="__sub__"/>
-<meta itemprop="property" content="__truediv__"/>
-<meta itemprop="property" content="__xor__"/>
-<meta itemprop="property" content="as_integer_ratio"/>
-<meta itemprop="property" content="bit_count"/>
-<meta itemprop="property" content="bit_length"/>
-<meta itemprop="property" content="conjugate"/>
-<meta itemprop="property" content="from_bytes"/>
-<meta itemprop="property" content="to_bytes"/>
-<meta itemprop="property" content="CLASSIFICATION"/>
-<meta itemprop="property" content="CLUSTERING"/>
-<meta itemprop="property" content="FACT_VERIFICATION"/>
-<meta itemprop="property" content="QUESTION_ANSWERING"/>
-<meta itemprop="property" content="RETRIEVAL_DOCUMENT"/>
-<meta itemprop="property" content="RETRIEVAL_QUERY"/>
-<meta itemprop="property" content="SEMANTIC_SIMILARITY"/>
-<meta itemprop="property" content="TASK_TYPE_UNSPECIFIED"/>
-</div>
 
 # google.generativeai.protos.TaskType
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L50-L86">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L57-L93">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -91,83 +34,115 @@ Type of task for which the embedding will be used.
 
 <tr>
 <td>
+
 `TASK_TYPE_UNSPECIFIED`<a id="TASK_TYPE_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `0`
 
 Unset value, which will default to one of the
 other enum values.
+
 </td>
 </tr><tr>
 <td>
+
 `RETRIEVAL_QUERY`<a id="RETRIEVAL_QUERY"></a>
+
 </td>
 <td>
+
 `1`
 
 Specifies the given text is a query in a
 search/retrieval setting.
+
 </td>
 </tr><tr>
 <td>
+
 `RETRIEVAL_DOCUMENT`<a id="RETRIEVAL_DOCUMENT"></a>
+
 </td>
 <td>
+
 `2`
 
 Specifies the given text is a document from
 the corpus being searched.
+
 </td>
 </tr><tr>
 <td>
+
 `SEMANTIC_SIMILARITY`<a id="SEMANTIC_SIMILARITY"></a>
+
 </td>
 <td>
+
 `3`
 
 Specifies the given text will be used for
 STS.
+
 </td>
 </tr><tr>
 <td>
+
 `CLASSIFICATION`<a id="CLASSIFICATION"></a>
+
 </td>
 <td>
+
 `4`
 
 Specifies that the given text will be
 classified.
+
 </td>
 </tr><tr>
 <td>
+
 `CLUSTERING`<a id="CLUSTERING"></a>
+
 </td>
 <td>
+
 `5`
 
 Specifies that the embeddings will be used
 for clustering.
+
 </td>
 </tr><tr>
 <td>
+
 `QUESTION_ANSWERING`<a id="QUESTION_ANSWERING"></a>
+
 </td>
 <td>
+
 `6`
 
 Specifies that the given text will be used
 for question answering.
+
 </td>
 </tr><tr>
 <td>
+
 `FACT_VERIFICATION`<a id="FACT_VERIFICATION"></a>
+
 </td>
 <td>
+
 `7`
 
 Specifies that the given text will be used
 for fact verification.
+
 </td>
 </tr>
 </table>
@@ -183,31 +158,47 @@ for fact verification.
 
 <tr>
 <td>
+
 `denominator`<a id="denominator"></a>
+
 </td>
 <td>
+
 the denominator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `imag`<a id="imag"></a>
+
 </td>
 <td>
+
 the imaginary part of a complex number
+
 </td>
 </tr><tr>
 <td>
+
 `numerator`<a id="numerator"></a>
+
 </td>
 <td>
+
 the numerator of a rational number in lowest terms
+
 </td>
 </tr><tr>
 <td>
+
 `real`<a id="real"></a>
+
 </td>
 <td>
+
 the real part of a complex number
+
 </td>
 </tr>
 </table>
@@ -222,10 +213,9 @@ the real part of a complex number
 <code>as_integer_ratio()
 </code></pre>
 
-Return integer ratio.
+Return a pair of integers, whose ratio is equal to the original int.
 
-Return a pair of integers, whose ratio is exactly equal to the original int
-and with a positive denominator.
+The ratio is in lowest terms and has a positive denominator.
 
 ```
 >>> (10).as_integer_ratio()
@@ -300,6 +290,15 @@ byteorder
   `sys.byteorder' as the byte order value.  Default is to use 'big'.
 signed
   Indicates whether two's complement is used to represent the integer.
+
+<h3 id="is_integer"><code>is_integer</code></h3>
+
+<pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
+<code>is_integer()
+</code></pre>
+
+Returns True. Exists for duck type compatibility with float.is_integer.
+
 
 <h3 id="to_bytes"><code>to_bytes</code></h3>
 
@@ -712,59 +711,91 @@ Return self^value.
 
 <tr>
 <td>
+
 CLASSIFICATION<a id="CLASSIFICATION"></a>
+
 </td>
 <td>
+
 `<TaskType.CLASSIFICATION: 4>`
+
 </td>
 </tr><tr>
 <td>
+
 CLUSTERING<a id="CLUSTERING"></a>
+
 </td>
 <td>
+
 `<TaskType.CLUSTERING: 5>`
+
 </td>
 </tr><tr>
 <td>
+
 FACT_VERIFICATION<a id="FACT_VERIFICATION"></a>
+
 </td>
 <td>
+
 `<TaskType.FACT_VERIFICATION: 7>`
+
 </td>
 </tr><tr>
 <td>
+
 QUESTION_ANSWERING<a id="QUESTION_ANSWERING"></a>
+
 </td>
 <td>
+
 `<TaskType.QUESTION_ANSWERING: 6>`
+
 </td>
 </tr><tr>
 <td>
+
 RETRIEVAL_DOCUMENT<a id="RETRIEVAL_DOCUMENT"></a>
+
 </td>
 <td>
+
 `<TaskType.RETRIEVAL_DOCUMENT: 2>`
+
 </td>
 </tr><tr>
 <td>
+
 RETRIEVAL_QUERY<a id="RETRIEVAL_QUERY"></a>
+
 </td>
 <td>
+
 `<TaskType.RETRIEVAL_QUERY: 1>`
+
 </td>
 </tr><tr>
 <td>
+
 SEMANTIC_SIMILARITY<a id="SEMANTIC_SIMILARITY"></a>
+
 </td>
 <td>
+
 `<TaskType.SEMANTIC_SIMILARITY: 3>`
+
 </td>
 </tr><tr>
 <td>
+
 TASK_TYPE_UNSPECIFIED<a id="TASK_TYPE_UNSPECIFIED"></a>
+
 </td>
 <td>
+
 `<TaskType.TASK_TYPE_UNSPECIFIED: 0>`
+
 </td>
 </tr>
 </table>

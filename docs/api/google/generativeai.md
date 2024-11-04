@@ -1,17 +1,9 @@
-description: Google AI Python SDK
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__version__"/>
-<meta itemprop="property" content="annotations"/>
-</div>
 
 # Module: google.generativeai
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/__init__.py">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -52,6 +44,8 @@ See the [python quickstart](https://ai.google.dev/tutorials/python_quickstart) f
 
 ## Modules
 
+[`caching`](../google/generativeai/caching.md) module
+
 [`protos`](../google/generativeai/protos.md) module: This module provides low level access to the ProtoBuffer "Message" classes used by the API.
 
 [`types`](../google/generativeai/types.md) module: A collection of type definitions used throughout the library.
@@ -66,15 +60,7 @@ See the [python quickstart](https://ai.google.dev/tutorials/python_quickstart) f
 
 ## Functions
 
-[`chat(...)`](../google/generativeai/chat.md): Calls the API to initiate a chat with a model using provided parameters
-
-[`chat_async(...)`](../google/generativeai/chat_async.md): Calls the API to initiate a chat with a model using provided parameters
-
 [`configure(...)`](../google/generativeai/configure.md): Captures default client configuration.
-
-[`count_message_tokens(...)`](../google/generativeai/count_message_tokens.md): Calls the API to calculate the number of tokens used in the prompt.
-
-[`count_text_tokens(...)`](../google/generativeai/count_text_tokens.md): Calls the API to count the number of tokens in the text prompt.
 
 [`create_tuned_model(...)`](../google/generativeai/create_tuned_model.md): Calls the API to initiate a tuning process that optimizes a model for specific data, returning an operation object to track and manage the tuning progress.
 
@@ -85,10 +71,6 @@ See the [python quickstart](https://ai.google.dev/tutorials/python_quickstart) f
 [`embed_content(...)`](../google/generativeai/embed_content.md): Calls the API to create embeddings for content passed in.
 
 [`embed_content_async(...)`](../google/generativeai/embed_content_async.md): Calls the API to create async embeddings for content passed in.
-
-[`generate_embeddings(...)`](../google/generativeai/generate_embeddings.md): Calls the API to create an embedding for the text passed in.
-
-[`generate_text(...)`](../google/generativeai/generate_text.md): Calls the API to generate text based on the provided prompt.
 
 [`get_base_model(...)`](../google/generativeai/get_base_model.md): Calls the API to fetch a base model by name.
 
@@ -121,17 +103,25 @@ See the [python quickstart](https://ai.google.dev/tutorials/python_quickstart) f
 
 <tr>
 <td>
+
 __version__<a id="__version__"></a>
+
 </td>
 <td>
-`'0.7.2'`
+
+`'0.8.3'`
+
 </td>
 </tr><tr>
 <td>
+
 annotations<a id="annotations"></a>
+
 </td>
 <td>
+
 Instance of `__future__._Feature`
+
 </td>
 </tr>
 </table>

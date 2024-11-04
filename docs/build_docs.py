@@ -22,12 +22,10 @@ $> pip install -U git+https://github.com/tensorflow/docs
 $> python build_docs.py
 """
 
-import os
 import pathlib
 import re
 import textwrap
 import typing
-
 
 from absl import app
 from absl import flags
@@ -46,8 +44,11 @@ import PIL.Image  # must be imported before turning on TYPE_CHECKING
 typing.TYPE_CHECKING = True
 from google import generativeai as genai
 
+from tensorflow_docs.api_generator import doc_controls
 from tensorflow_docs.api_generator import generate_lib
 from tensorflow_docs.api_generator import public_api
+from tensorflow_docs.api_generator import parser
+from tensorflow_docs.api_generator.pretty_docs import base_page
 
 import yaml
 
@@ -73,6 +74,37 @@ _CODE_URL_PREFIX = flags.DEFINE_string(
     "https://github.com/google/generative-ai-python/blob/master/google/generativeai",
     "where to find the project code",
 )
+
+parser.ITEMS_TEMPLATE = textwrap.dedent(
+    """\
+  <tr>
+  <td>
+
+  {name}{anchor}
+
+  </td>
+  <td>
+
+  {description}
+
+  </td>
+  </tr>"""
+)
+
+parser.TEXT_TEMPLATE = textwrap.dedent(
+    """\
+  <tr class="alt">
+  <td colspan="2">
+
+  {text}
+
+  </td>
+  </tr>"""
+)
+
+base_page.TABLE_HEADER = '<table class="tfo-notebook-buttons tfo-api nocontent">'
+
+base_page.TemplatePageBuilder.get_devsite_headers = lambda x: ""
 
 
 def gen_api_docs():

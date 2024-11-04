@@ -1,17 +1,11 @@
-description: Hyperparameters controlling the tuning process.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.Hyperparameters" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.Hyperparameters
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/tuned_model.py#L270-L331">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/tuned_model.py#L280-L341">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -41,9 +35,12 @@ members.
 
 <tr>
 <td>
+
 `learning_rate`<a id="learning_rate"></a>
+
 </td>
 <td>
+
 `float`
 
 Optional. Immutable. The learning rate
@@ -52,12 +49,16 @@ of 0.001 or 0.0002 will be calculated based on
 the number of training examples.
 
 This field is a member of `oneof`_ ``learning_rate_option``.
+
 </td>
 </tr><tr>
 <td>
+
 `learning_rate_multiplier`<a id="learning_rate_multiplier"></a>
+
 </td>
 <td>
+
 `float`
 
 Optional. Immutable. The learning rate multiplier is used to
@@ -68,29 +69,38 @@ learning rate is dependent on base model and dataset size.
 If not set, a default of 1.0 will be used.
 
 This field is a member of `oneof`_ ``learning_rate_option``.
+
 </td>
 </tr><tr>
 <td>
+
 `epoch_count`<a id="epoch_count"></a>
+
 </td>
 <td>
+
 `int`
 
 Immutable. The number of training epochs. An
 epoch is one pass through the training data. If
 not set, a default of 5 will be used.
 
+
 </td>
 </tr><tr>
 <td>
+
 `batch_size`<a id="batch_size"></a>
+
 </td>
 <td>
+
 `int`
 
 Immutable. The batch size hyperparameter for
 tuning. If not set, a default of 4 or 16 will be
 used based on the number of training examples.
+
 
 </td>
 </tr>
