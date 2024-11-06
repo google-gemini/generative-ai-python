@@ -30,7 +30,7 @@ myst_enable_extensions = [
 myst_heading_anchors = 6
 
 source_suffix = {'.md': 'markdown',}
-master_doc = 'api/google/generativeai' # 'index'
+master_doc = 'index' #'api/google/generativeai'
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
