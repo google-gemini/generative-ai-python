@@ -18,7 +18,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install sphinx myst-parser
+          pip install sphinx myst-parser myst_nb
 
       - name: Build the documentation
         run: |
