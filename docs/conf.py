@@ -37,5 +37,10 @@ def set_relative_links(app, docname, source):
         '/api/google/generativeai/'
     )
 
+    source[0] = source[0].replace(
+        '/api/google/generativeai/GenerativeModel.md',
+        'index.md'
+    )
+
 def setup(app):
     app.connect('source-read', set_relative_links)
