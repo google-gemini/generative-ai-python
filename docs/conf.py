@@ -12,7 +12,7 @@ extensions = [
     ]
 
 intersphinx_mapping = {
-    "sphinx": ("https://vi-shruti.github.io/generative-ai-python/", None),
+    "generative-ai-python": ("https://vi-shruti.github.io/generative-ai-python/", None),
 }
 # autosectionlabel_prefix_document = True
 
