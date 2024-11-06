@@ -15,7 +15,6 @@ myst_enable_extensions = [
     "deflist",
     "fieldlist",
     "html_image",
-    "linkify",
     "replacements",
     "smartquotes",
     "strikethrough",
@@ -30,7 +29,7 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'alabaster'
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 def set_relative_links(app, docname, source):
     source[0] = source[0].replace(
