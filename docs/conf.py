@@ -39,6 +39,14 @@ html_theme = 'alabaster'
 # html_static_path = ['_static']
 
 
+# def set_relative_links(app, docname, source):
+#     source[0] = source[0].replace(
+#         '../google/generativeai/',
+#         '/api/google/generativeai/'
+#     )
+
+# def setup(app):
+#     app.connect('source-read', set_relative_links)
 
 import re
 
@@ -50,29 +58,11 @@ def set_relative_links(app, docname, source):
             path = path[:-3] + '.html'
         return f'/api/google/generativeai/{path}{anchor}'
 
-    # Pattern for Markdown links with optional anchors
-    pattern = r'\((\.\.\/google\/generativeai\/[\w-]+)(\.md)?(#[\w-]+)?\)'
+    # Pattern for both Markdown links and HTML anchor links
+    pattern = r'(?:href="|")(?:\.\.\/google\/generativeai\/)?([\w-]+\.md)(#[\w-]+)?"'
     
     # Replace the links
-    source[0] = re.sub(pattern, replace_link, source[0])
-
-    # Replace HTML anchor links
-    source[0] = re.sub(
-        r'<a href="(\.\.\/generativeai\/[\w-]+\.md)(#[\w-]+)">',
-        r'<a href="/api/google/generativeai/\1.html\2">',
-        source[0]
-    )
+    source[0] = re.sub(pattern, lambda m: f'href="{replace_link(m)}"', source[0])
 
 def setup(app):
     app.connect('source-read', set_relative_links)
-
-
-# def set_relative_links(app, docname, source):
-#     source[0] = source[0].replace(
-#         '../google/generativeai/',
-#         '/api/google/generativeai/'
-#     )
-
-# def setup(app):
-#     app.connect('source-read', set_relative_links)
-
