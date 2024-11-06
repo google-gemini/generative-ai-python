@@ -24,6 +24,9 @@ myst_enable_extensions = [
     "tasklist",
     "substitution"
 ]
+# https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#syntax-header-anchors
+# Controls allowable header anchors in markdown files. Value allows header anchors for h1 - h6
+myst_heading_anchors = 6
 
 source_suffix = {'.md': 'markdown',}
 master_doc = 'index'
