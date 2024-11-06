@@ -64,7 +64,8 @@ def update_internal_links(app, docname, source):
         anchor = match.group(2) or ''
         if path.endswith('.md'):
             path = path[:-3] + '.html'
-        return f'/generative-ai-python{path}{anchor}'
+        return f'{path}{anchor}'
+        # return f'/generative-ai-python{path}{anchor}'
 
     def replace_relative_path(match):
         return '/api/google/generativeai/'
