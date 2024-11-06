@@ -59,7 +59,7 @@ def replace_md_links(app, pagename, templatename, context, doctree):
             base_link = match.group(1)
             fragment = match.group(2) or ""
             # Replace .md with .html and retain the fragment if present
-            return f'<a href="{base_link}.html{fragment}">'
+            return f'<a href="{base_link}.html{fragment}" class="reference internal">'
 
         # Apply the replacement to all <a> links in the HTML body
         context['body'] = pattern.sub(md_to_html, context['body'])
