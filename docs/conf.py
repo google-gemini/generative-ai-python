@@ -64,5 +64,10 @@ def set_relative_links(app, docname, source):
     # Replace the links
     source[0] = re.sub(pattern, lambda m: f'href="{replace_link(m)}"', source[0])
 
+    source[0] = source[0].replace(
+        '../google/generativeai/',
+        '/api/google/generativeai/'
+    )
+
 def setup(app):
     app.connect('source-read', set_relative_links)
