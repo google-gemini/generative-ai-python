@@ -1,5 +1,3 @@
-import re
-
 project = 'Google Generative AI - Python'
 copyright = '2024, Google LLC'
 author = 'Google LLC'
@@ -32,7 +30,7 @@ myst_enable_extensions = [
 myst_heading_anchors = 6
 
 source_suffix = {'.md': 'markdown',}
-master_doc = 'index'
+master_doc = 'api/google/generativeai' # 'index'
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -47,24 +45,6 @@ def set_relative_links(app, docname, source):
         '/api/google/generativeai/'
     )
 
-    # if '#' in source[0]:
-    #     print("\n\nComing from set_relative_links: ")
-    #     print(source[0])
-    #     print("==========================================\n\n")        
-
 def setup(app):
     app.connect('source-read', set_relative_links)
 
-
-
-# def set_relative_links(app, pagename, templatename, context, doctree):
-#     if 'body' in context:
-#         # Perform the substitution in the HTML body
-#         context['body'] = re.sub(
-#             r'(\.\./google/generativeai/[^"]+)\.md(#\w+)?',
-#             r'/api/google/generativeai/\1.html\2',
-#             context['body']
-#         )
-
-# def setup(app):
-#     app.connect('html-page-context', set_relative_links)
