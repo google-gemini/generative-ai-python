@@ -1,5 +1,7 @@
 import re
-from docutils import nodes
+from sphinx.util import logging
+
+logger = logging.getLogger(__name__)
 
 project = 'Google Generative AI - Python'
 copyright = '2024, Google LLC'
@@ -47,21 +49,27 @@ html_theme = 'alabaster'
 
 
 
-def markdown_link_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
-    match = re.match(r'(.*?)\s*<(.+?)>', text)
-    if match:
-        label, target = match.groups()
-    else:
-        label = text
-        target = text
 
-    # Convert .md to .html and add the prefix
-    target = target.replace('.md#', '.html#')
-    target = f'/generative-ai-python{target}' if not target.startswith('/generative-ai-python') else target
+def update_internal_links(app, docname, source):
+    def replace_link(match):
+        path = match.group(1)
+        anchor = match.group(2) or ''
+        if path.endswith('.md'):
+            path = path[:-3] + '.html'
+        return f'/generative-ai-python{path}{anchor}'
 
-    url = target
-    node = nodes.reference(rawtext, label, refuri=url, **options)
-    return [node], []
+    def replace_relative_path(match):
+        return '/api/google/generativeai/'
+
+    # Pattern for links with potential anchors
+    link_pattern = r'(/api/google/generativeai/[\w-]+)(\.md)?(#[\w-]+)?'
+    # Pattern for relative paths
+    path_pattern = r'\.\.\/google\/generativeai\/'
+
+    # Replace links
+    source[0] = re.sub(link_pattern, replace_link, source[0])
+    # Replace relative paths
+    source[0] = re.sub(path_pattern, replace_relative_path, source[0])
 
 def setup(app):
-    app.add_role('mdlink', markdown_link_role)
+    app.connect('source-read', update_internal_links)
