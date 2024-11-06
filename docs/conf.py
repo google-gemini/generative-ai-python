@@ -5,7 +5,6 @@ author = 'Google LLC'
 extensions = [
     'sphinx.ext.coverage',
     'myst_parser',
-    "myst_nb",
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     ]
