@@ -12,6 +12,8 @@ import httplib2
 from io import IOBase
 
 import google.ai.generativelanguage as glm
+import google.ai.generativelanguage_v1alpha as glm_v1alpha
+
 import google.generativeai.protos as protos
 
 from google.auth import credentials as ga_credentials
@@ -226,6 +228,10 @@ class _ClientManager:
             cls = FileServiceClient
         elif name == "file_async":
             cls = FileServiceAsyncClient
+        elif name == "generative_alpha":
+            cls = glm_alpha.GenerativeServiceClient
+        elif name == "generative_alpha_async":
+            cls = glm_alpha.GenerativeServiceAsyncClient
         elif name.endswith("_async"):
             name = name.split("_")[0]
             cls = getattr(glm, name.title() + "ServiceAsyncClient")
@@ -355,13 +361,18 @@ def get_default_file_client() -> glm.FilesServiceClient:
 def get_default_file_async_client() -> glm.FilesServiceAsyncClient:
     return _client_manager.get_default_client("file_async")
 
-
 def get_default_generative_client() -> glm.GenerativeServiceClient:
     return _client_manager.get_default_client("generative")
 
 
 def get_default_generative_async_client() -> glm.GenerativeServiceAsyncClient:
     return _client_manager.get_default_client("generative_async")
+
+def get_default_generative_client() -> glm.GenerativeServiceClient:
+    return _client_manager.get_default_client("generative_alpha")
+
+def get_default_generative_async_client() -> glm.GenerativeServiceAsyncClient:
+    return _client_manager.get_default_client("generative_alpha_async")
 
 
 def get_default_operations_client() -> operations_v1.OperationsClient:
