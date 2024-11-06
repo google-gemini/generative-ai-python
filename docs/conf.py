@@ -58,7 +58,7 @@ def set_relative_links(app, docname, source):
 
     # Replace HTML anchor links
     source[0] = re.sub(
-        r'<a href="(\.\.\/google\/generativeai\/[\w-]+\.md)(#[\w-]+)">',
+        r'<a href="(\.\.\/generativeai\/[\w-]+\.md)(#[\w-]+)">',
         r'<a href="/api/google/generativeai/\1.html\2">',
         source[0]
     )
