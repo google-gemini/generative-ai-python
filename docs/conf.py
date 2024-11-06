@@ -3,6 +3,7 @@ copyright = '2024, Google LLC'
 author = 'Google LLC'
 
 extensions = [
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.coverage',
     'myst_parser',
     'sphinx.ext.viewcode',
