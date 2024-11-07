@@ -30,6 +30,7 @@ myst_enable_extensions = [
 # https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#syntax-header-anchors
 # Controls allowable header anchors in markdown files. Value allows header anchors for h1 - h6
 myst_heading_anchors = 6
+suppress_warnings = ["myst.xref_missing", "myst.iref_ambiguous"]
 
 source_suffix = {'.md': 'markdown',}
 master_doc = 'index' #'api/google/generativeai'
