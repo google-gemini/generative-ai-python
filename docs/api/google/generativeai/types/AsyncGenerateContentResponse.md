@@ -5,7 +5,7 @@
 
 <table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L692-L756">
+  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L695-L759">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -47,6 +47,17 @@ This is the async version of `genai.GenerateContentResponse`.
 <td>
 
 The list of candidate responses.
+
+</td>
+</tr><tr>
+<td>
+
+`model_version`<a id="model_version"></a>
+
+</td>
+<td>
+
+
 
 </td>
 </tr><tr>
@@ -102,7 +113,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="from_aiterator"><code>from_aiterator</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L694-L704">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L697-L707">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>from_aiterator(
@@ -115,7 +126,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="from_response"><code>from_response</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L706-L712">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L709-L715">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>@classmethod</code>
@@ -129,7 +140,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="resolve"><code>resolve</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L751-L756">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L754-L759">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>resolve()
@@ -140,7 +151,7 @@ A quick accessor equivalent to `self.candidates[0].content.parts[0].text`
 
 <h3 id="to_dict"><code>to_dict</code></h3>
 
-<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L405-L415">View source</a>
+<a target="_blank" class="external" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/types/generation_types.py#L404-L414">View source</a>
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>to_dict()

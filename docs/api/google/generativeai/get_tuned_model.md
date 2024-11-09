@@ -32,7 +32,7 @@ Calls the API to fetch a tuned model by name.
 
 ```
 import pprint
-model = genai.get_tuned_model('tunedModels/gemini-1.0-pro-001')
+model = genai.get_tuned_model('tunedModels/gemini-1.5-flash')
 pprint.pprint(model)
 ```
 

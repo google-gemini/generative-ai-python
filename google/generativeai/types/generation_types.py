@@ -359,10 +359,16 @@ def _join_chunks(chunks: Iterable[protos.GenerateContentResponse]):
     else:
         usage_metadata = None
 
+    if "model_version" in chunks[-1]:
+        model_version = chunks[-1].model_version
+    else:
+        model_version = None
+
     return protos.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
         usage_metadata=usage_metadata,
+        model_version=model_version,
     )
 
 
@@ -538,6 +544,10 @@ class BaseGenerateContentResponse:
     @property
     def usage_metadata(self):
         return self._result.usage_metadata
+    
+    @property
+    def model_version(self):
+        return self._result.model_version
 
     def __str__(self) -> str:
         if self._done:

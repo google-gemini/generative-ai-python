@@ -5,7 +5,7 @@
 
 <table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/client.py#L300-L338">
+  <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/client.py#L302-L340">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
