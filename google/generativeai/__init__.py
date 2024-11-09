@@ -38,45 +38,69 @@ print(response.text)
 
 See the [python quickstart](https://ai.google.dev/tutorials/python_quickstart) for more details.
 """
+# Main initialization file for Google's Generative AI SDK
+# This file serves as the primary entry point for the SDK
+
+# Future imports for Python 2/3 compatibility
 from __future__ import annotations
 
+# Import core version information
 from google.generativeai import version
 
-from google.generativeai import caching
-from google.generativeai import protos
-from google.generativeai import types
+# Import key functionality modules
+from google.generativeai import caching      # Handles caching of API responses
+from google.generativeai import protos       # Protocol buffers for API communication
+from google.generativeai import types        # Type definitions and hints
 
-from google.generativeai.client import configure
+# Import core client configuration
+from google.generativeai.client import configure  # Handles API authentication and setup
 
-from google.generativeai.embedding import embed_content
-from google.generativeai.embedding import embed_content_async
+# Import embedding-related functions
+from google.generativeai.embedding import (
+    embed_content,           # Synchronous content embedding
+    embed_content_async      # Asynchronous content embedding
+)
 
-from google.generativeai.files import upload_file
-from google.generativeai.files import get_file
-from google.generativeai.files import list_files
-from google.generativeai.files import delete_file
+# Import file management functions
+from google.generativeai.files import (
+    upload_file,            # Upload files to the API
+    get_file,              # Retrieve file information
+    list_files,            # List available files
+    delete_file            # Remove files from the API
+)
 
-from google.generativeai.generative_models import GenerativeModel
-from google.generativeai.generative_models import ChatSession
+# Import core generative AI functionality
+from google.generativeai.generative_models import (
+    GenerativeModel,        # Main class for text generation
+    ChatSession            # Handles conversational interactions
+)
 
-from google.generativeai.models import list_models
-from google.generativeai.models import list_tuned_models
+# Import model management functions
+from google.generativeai.models import (
+    list_models,           # List available base models
+    list_tuned_models,     # List custom-tuned models
+    get_model,             # Get specific model information
+    get_base_model,        # Get base model details
+    get_tuned_model,       # Get tuned model details
+    create_tuned_model,    # Create a new tuned model
+    update_tuned_model,    # Update existing tuned model
+    delete_tuned_model     # Remove tuned model
+)
 
-from google.generativeai.models import get_model
-from google.generativeai.models import get_base_model
-from google.generativeai.models import get_tuned_model
+# Import operation management functions
+from google.generativeai.operations import (
+    list_operations,       # List ongoing operations
+    get_operation          # Get specific operation details
+)
 
-from google.generativeai.models import create_tuned_model
-from google.generativeai.models import update_tuned_model
-from google.generativeai.models import delete_tuned_model
+# Import configuration types
+from google.generativeai.types import GenerationConfig  # Configuration for text generation
 
-from google.generativeai.operations import list_operations
-from google.generativeai.operations import get_operation
-
-from google.generativeai.types import GenerationConfig
-
+# Set version number from imported version file
 __version__ = version.__version__
 
+# Clean up namespace by removing imported modules
+# This prevents them from being directly accessible
 del embedding
 del files
 del generative_models
