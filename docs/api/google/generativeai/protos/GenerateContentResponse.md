@@ -5,7 +5,7 @@
 
 <table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L483-L613">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/generative_service.py#L483-L607">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -74,19 +74,6 @@ content filters.
 
 Output only. Metadata on the generation
 requests' token usage.
-
-</td>
-</tr><tr>
-<td>
-
-`model_version`<a id="model_version"></a>
-
-</td>
-<td>
-
-`str`
-
-Output only. The model version used to generate the response.
 
 </td>
 </tr>
