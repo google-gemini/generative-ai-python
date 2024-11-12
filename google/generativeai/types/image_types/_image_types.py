@@ -120,8 +120,6 @@ class CheckWatermarkResult:
             raise ValueError(f"Unrecognized result: {decision}")
 
 
-
-
 class Image:
     """Image."""
 
@@ -215,8 +213,6 @@ class Image:
 
     def _repr_png_(self):
         return self._pil_image._repr_png_()  # type:ignore
-
-    check_watermark = check_watermark
 
 
 _EXIF_USER_COMMENT_TAG_IDX = 0x9286
