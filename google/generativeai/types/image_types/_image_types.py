@@ -8,7 +8,6 @@ import typing
 from typing import Any, Dict, Optional, Union
 
 from google.generativeai import protos
-from google.generativeai import client
 
 # pylint: disable=g-import-not-at-top
 if typing.TYPE_CHECKING:
@@ -38,7 +37,7 @@ else:
     ImageType = Union["Image", "PIL.Image.Image", "IPython.display.Image"]
 # pylint: enable=g-import-not-at-top
 
-__all__ = ["Image", "GeneratedImage", "check_watermark", "CheckWatermarkResult", "ImageType"]
+__all__ = ["Image", "GeneratedImage", "ImageType"]
 
 
 def _pil_to_blob(image: PIL.Image.Image) -> protos.Blob:
@@ -121,46 +120,6 @@ class CheckWatermarkResult:
             raise ValueError(f"Unrecognized result: {decision}")
 
 
-def check_watermark(
-    img: Union[pathlib.Path, ImageType], model_id: str = "models/image-verification-001"
-) -> "CheckWatermarkResult":
-    """Checks if an image has a Google-AI watermark.
-
-    Args:
-        img: can be a `pathlib.Path` or a `PIL.Image.Image`, `IPython.display.Image`, or `google.generativeai.Image`.
-        model_id: Which version of the image-verification model to send the image to.
-
-    Returns:
-
-    """
-    if isinstance(img, Image):
-        pass
-    elif isinstance(img, pathlib.Path):
-        img = Image.load_from_file(img)
-    elif IPython.display is not None and isinstance(img, IPython.display.Image):
-        img = Image(image_bytes=img.data)
-    elif PIL.Image is not None and isinstance(img, PIL.Image.Image):
-        blob = _pil_to_blob(img)
-        img = Image(image_bytes=blob.data)
-    elif isinstance(img, protos.Blob):
-        img = Image(image_bytes=img.data)
-    else:
-        raise TypeError(
-            f"Not implemented: Could not convert a {type(img)} into `Image`\n    {img=}"
-        )
-
-    prediction_client = client.get_default_prediction_client()
-    if not model_id.startswith("models/"):
-        model_id = f"models/{model_id}"
-
-    instance = {"image": {"bytesBase64Encoded": base64.b64encode(img._loaded_bytes).decode()}}
-    parameters = {"watermarkVerification": True}
-
-    response = prediction_client.predict(
-        model=model_id, instances=[instance], parameters=parameters
-    )
-
-    return CheckWatermarkResult(response.predictions)
 
 
 class Image:
