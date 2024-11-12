@@ -14,7 +14,7 @@
 
 
 from __future__ import annotations
-
+import asyncio
 from collections.abc import Iterable, Mapping, Sequence
 import io
 import inspect
@@ -607,11 +607,7 @@ ValueType = Union[float, str, bool, StructType, list["ValueType"], None]
 
 
 class CallableFunctionDeclaration(FunctionDeclaration):
-    """An extension of `FunctionDeclaration` that can be built from a python function, and is callable.
-
-    Note: The python function must have type annotations.
-    """
-
+    """An extension of `FunctionDeclaration` that can be built from a python function, and is callable."""
     def __init__(
         self,
         *,
@@ -622,12 +618,29 @@ class CallableFunctionDeclaration(FunctionDeclaration):
     ):
         super().__init__(name=name, description=description, parameters=parameters)
         self.function = function
+        self.is_async = inspect.iscoroutinefunction(function)
 
-    def __call__(self, fc: protos.FunctionCall) -> protos.FunctionResponse:
-        result = self.function(**fc.args)
-        if not isinstance(result, dict):
-            result = {"result": result}
-        return protos.FunctionResponse(name=fc.name, response=result)
+    async def __call__(self, fc: protos.FunctionCall) -> protos.FunctionResponse:
+        try:
+            if self.is_async:
+                result = await self.function(**fc.args)
+            else:
+                result = self.function(**fc.args)
+
+            if not isinstance(result, dict):
+                result = {"result": result}
+
+            return protos.FunctionResponse(name=fc.name, response=result)
+        except Exception as e:
+            error_result = {
+                "error": str(e),
+                "type": type(e).__name__
+            }
+            return protos.FunctionResponse(name=fc.name, response=error_result)
+
+
+
+
 
 
 FunctionDeclarationType = Union[
@@ -758,10 +771,14 @@ class Tool:
 
         return self._index[name]
 
-    def __call__(self, fc: protos.FunctionCall) -> protos.FunctionResponse | None:
+    async def __call__(self, fc: protos.FunctionCall) -> protos.Part | None:
         declaration = self[fc]
         if not callable(declaration):
             return None
+        response = await declaration(fc)
+        return protos.Part(function_response=response)
+
+
 
         return declaration(fc)
 
@@ -833,10 +850,8 @@ def _make_tool(tool: ToolType) -> Tool:
                 f"Object Value: {tool}"
             ) from e
 
-
 class FunctionLibrary:
     """A container for a set of `Tool` objects, manages lookup and execution of their functions."""
-
     def __init__(self, tools: Iterable[ToolType]):
         tools = _make_tools(tools)
         self._tools = list(tools)
@@ -856,21 +871,30 @@ class FunctionLibrary:
     ) -> FunctionDeclaration | protos.FunctionDeclaration:
         if not isinstance(name, str):
             name = name.name
-
         return self._index[name]
 
-    def __call__(self, fc: protos.FunctionCall) -> protos.Part | None:
+    def __call__(self, fc: protos.FunctionCall) -> protos.Part:
         declaration = self[fc]
         if not callable(declaration):
             return None
-
-        response = declaration(fc)
+            
+        # Handle both sync and async functions
+        if inspect.iscoroutinefunction(declaration.__call__):
+            # For async functions, run in an event loop
+            loop = asyncio.get_event_loop()
+            response = loop.run_until_complete(declaration(fc))
+        else:
+            # For sync functions, call directly
+            response = declaration(fc)
+            
+        # Convert response to Part
+        if response is None:
+            return None
         return protos.Part(function_response=response)
 
     def to_proto(self):
         return [tool.to_proto() for tool in self._tools]
-
-
+    
 ToolsType = Union[Iterable[ToolType], ToolType]
 
 
