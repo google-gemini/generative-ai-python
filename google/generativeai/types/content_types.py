@@ -14,6 +14,7 @@
 
 
 from __future__ import annotations
+# we are importing asyncio here to use asynchronous functions
 import asyncio
 from collections.abc import Iterable, Mapping, Sequence
 import io
@@ -618,10 +619,12 @@ class CallableFunctionDeclaration(FunctionDeclaration):
     ):
         super().__init__(name=name, description=description, parameters=parameters)
         self.function = function
+        # class variable to check if the passed tool function is asynchronous function or not
         self.is_async = inspect.iscoroutinefunction(function)
 
     async def __call__(self, fc: protos.FunctionCall) -> protos.FunctionResponse:
         try:
+            # handling async function seperately 
             if self.is_async:
                 result = await self.function(**fc.args)
             else:
