@@ -4,6 +4,7 @@ SCRIPT_DIR=$(dirname "$0")
 MEDIA_DIR=$(realpath ${SCRIPT_DIR}/../../third_party)
 
 IMG_PATH=${MEDIA_DIR}/organ.jpg
+IMG_PATH2=${MEDIA_DIR}/Cajun_instruments.jpg
 AUDIO_PATH=${MEDIA_DIR}/sample.mp3
 VIDEO_PATH=${MEDIA_DIR}/Big_Buck_Bunny.mp4
 PDF_PATH=${MEDIA_DIR}/test.pdf
@@ -38,43 +39,136 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:s
 
 echo "[START text_gen_multimodal_one_image_prompt]"
 # [START text_gen_multimodal_one_image_prompt]
+# Use a temporary file to hold the base64 encoded image data
+TEMP_B64=$(mktemp)
+trap 'rm -f "$TEMP_B64"' EXIT
+base64 $B64FLAGS $IMG_PATH > "$TEMP_B64"
+
+# Use a temporary file to hold the JSON payload
+TEMP_JSON=$(mktemp)
+trap 'rm -f "$TEMP_JSON"' EXIT
+
+cat > "$TEMP_JSON" << EOF
+{
+  "contents": [{
+    "parts":[
+      {"text": "Tell me about this instrument"},
+      {
+        "inline_data": {
+          "mime_type":"image/jpeg",
+          "data": "$(cat "$TEMP_B64")"
+        }
+      }
+    ]
+  }]
+}
+EOF
+
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
-    -d '{
-      "contents": [{
-        "parts":[
-            {"text": "Tell me about this instrument"},
-            {
-              "inline_data": {
-                "mime_type":"image/jpeg",
-                "data": "'$(base64 $B64FLAGS $IMG_PATH)'"
-              }
-            }
-        ]
-        }]
-       }' 2> /dev/null
+    -d "@$TEMP_JSON" 2> /dev/null
 # [END text_gen_multimodal_one_image_prompt]
 
 echo "[START text_gen_multimodal_one_image_prompt_streaming]"
 # [START text_gen_multimodal_one_image_prompt_streaming]
+cat > "$TEMP_JSON" << EOF
+{
+  "contents": [{
+    "parts":[
+      {"text": "Tell me about this instrument"},
+      {
+        "inline_data": {
+          "mime_type":"image/jpeg",
+          "data": "$(cat "$TEMP_B64")"
+        }
+      }
+    ]
+  }]
+}
+EOF
+
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=$GOOGLE_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
-    -d '{
-      "contents": [{
+    -d "@$TEMP_JSON" 2> /dev/null
+# [END text_gen_multimodal_one_image_prompt_streaming]
+
+echo "[START text_gen_multimodal_two_image_prompt]"
+# [START text_gen_multimodal_two_image_prompt]
+# Base64 encode both images into temporary files
+TEMP_B64_1=$(mktemp)
+TEMP_B64_2=$(mktemp)
+trap 'rm -f "$TEMP_B64_1" "$TEMP_B64_2"' EXIT
+base64 $B64FLAGS "$IMG_PATH" > "$TEMP_B64_1"
+base64 $B64FLAGS "$IMG_PATH2" > "$TEMP_B64_2"
+
+# Create the JSON payload using the base64 data from both images
+cat > "$TEMP_JSON" << EOF
+{
+    "contents": [{
         "parts":[
-            {"text": "Tell me about this instrument"},
             {
-              "inline_data": {
-                "mime_type":"image/jpeg",
-                "data": "'$(base64 $B64FLAGS $IMG_PATH)'"
-              }
+                "inline_data": {
+                    "mime_type": "image/jpeg",
+                    "data": "$(cat "$TEMP_B64_1")"
+                }
+            },
+            {
+                "inline_data": {
+                    "mime_type": "image/jpeg",
+                    "data": "$(cat "$TEMP_B64_2")"
+                }
+            },
+            {
+                "text": "Generate a list of all the objects contained in both images."
             }
         ]
-        }]
-       }' 2> /dev/null
-# [END text_gen_multimodal_one_image_prompt_streaming]
+    }]
+}
+EOF
+
+# Make the API request using the JSON file
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d "@$TEMP_JSON" 2> /dev/null > response.json
+
+# Display the response
+cat response.json
+# [END text_gen_multimodal_two_image_prompt]
+
+echo "[START text_gen_multimodal_one_image_bounding_box_prompt]"
+# [START text_gen_multimodal_one_image_bounding_box_prompt]
+# Re-use TEMP_B64_2 (from the previous two-image prompt) and TEMP_JSON
+
+# Create the JSON payload for bounding box detection
+cat > "$TEMP_JSON" << EOF
+{
+    "contents": [{
+        "parts":[
+            {
+                "inline_data": {
+                    "mime_type": "image/jpeg",
+                    "data": "$(cat "$TEMP_B64_2")"
+                }
+            },
+            {
+                "text": "Generate bounding boxes for each of the objects in this image in [y_min, x_min, y_max, x_max] format."
+            }
+        ]
+    }]
+}
+EOF
+
+# Make the API request using the JSON file
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=$GOOGLE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d "@$TEMP_JSON" 2> /dev/null > response.json
+
+cat response.json
+# [END text_gen_multimodal_one_image_bounding_box_prompt]
 
 echo "[START text_gen_multimodal_audio]"
 # [START text_gen_multimodal_audio]
@@ -184,7 +278,7 @@ DISPLAY_NAME=VIDEO
 # Initial resumable request defining metadata.
 # The upload url is in the response headers dump them to a file.
 curl "${BASE_URL}/upload/v1beta/files?key=${GOOGLE_API_KEY}" \
-  -D upload-header.tmp \
+  -D "${tmp_header_file}" \
   -H "X-Goog-Upload-Protocol: resumable" \
   -H "X-Goog-Upload-Command: start" \
   -H "X-Goog-Upload-Header-Content-Length: ${NUM_BYTES}" \
@@ -226,7 +320,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:g
     -d '{
       "contents": [{
         "parts":[
-          {"text": "Please describe this file."},
+          {"text": "Transcribe the audio from this video, giving timestamps for salient events in the video. Also provide visual descriptions."},
           {"file_data":{"mime_type": "video/mp4", "file_uri": '$file_uri'}}]
         }]
        }' 2> /dev/null > response.json
