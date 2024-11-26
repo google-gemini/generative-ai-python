@@ -14,7 +14,6 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google.generativeai as genai
 import pathlib
 
 media = pathlib.Path(__file__).parents[1] / "third_party"
@@ -23,6 +22,8 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 class UnitTests(absltest.TestCase):
     def test_tokens_context_window(self):
         # [START tokens_context_window]
+        import google.generativeai as genai
+
         model_info = genai.get_model("models/gemini-1.5-flash")
 
         # Returns the "context window" for the model,
@@ -34,6 +35,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_text_only(self):
         # [START tokens_text_only]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("models/gemini-1.5-flash")
 
         prompt = "The quick brown fox jumps over the lazy dog."
@@ -54,6 +57,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_chat(self):
         # [START tokens_chat]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("models/gemini-1.5-flash")
 
         chat = model.start_chat(
@@ -86,6 +91,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_multimodal_image_inline(self):
         # [START tokens_multimodal_image_inline]
+        import google.generativeai as genai
+
         import PIL.Image
 
         model = genai.GenerativeModel("models/gemini-1.5-flash")
@@ -112,6 +119,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_multimodal_image_file_api(self):
         # [START tokens_multimodal_image_file_api]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("models/gemini-1.5-flash")
 
         prompt = "Tell me about this image"
@@ -136,6 +145,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_multimodal_video_audio_file_api(self):
         # [START tokens_multimodal_video_audio_file_api]
+        import google.generativeai as genai
+
         import time
 
         model = genai.GenerativeModel("models/gemini-1.5-flash")
@@ -169,6 +180,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_multimodal_pdf_file_api(self):
         # [START tokens_multimodal_pdf_file_api]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         sample_pdf = genai.upload_file(media / "test.pdf")
         token_count = model.count_tokens(["Give me a summary of this document.", sample_pdf])
@@ -180,6 +193,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_cached_content(self):
         # [START tokens_cached_content]
+        import google.generativeai as genai
+
         import time
 
         model = genai.GenerativeModel("models/gemini-1.5-flash")
@@ -220,6 +235,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_system_instruction(self):
         # [START tokens_system_instruction]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
         prompt = "The quick brown fox jumps over the lazy dog."
@@ -239,6 +256,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tokens_tools(self):
         # [START tokens_tools]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
         prompt = "I have 57 cats, each owns 44 mittens, how many mittens is that in total?"
