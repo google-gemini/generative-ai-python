@@ -15,7 +15,6 @@
 from absl.testing import absltest
 
 
-
 class UnitTests(absltest.TestCase):
     def test_system_instructions(self):
         # [START system_instruction]

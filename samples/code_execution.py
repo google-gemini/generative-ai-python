@@ -15,7 +15,6 @@
 from absl.testing import absltest
 
 
-
 class UnitTests(absltest.TestCase):
     def test_code_execution_basic(self):
         # [START code_execution_basic]

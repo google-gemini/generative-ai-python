@@ -15,7 +15,6 @@
 from absl.testing import absltest
 
 
-
 class UnitTests(absltest.TestCase):
     def test_models_list(self):
         # [START models_list]

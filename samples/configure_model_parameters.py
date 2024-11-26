@@ -15,7 +15,6 @@
 from absl.testing import absltest
 
 
-
 class UnitTests(absltest.TestCase):
     def test_configure_model(self):
         # [START configure_model_parameters]

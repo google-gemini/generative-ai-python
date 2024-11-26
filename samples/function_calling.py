@@ -15,7 +15,6 @@
 from absl.testing import absltest
 
 
-
 class UnitTests(absltest.TestCase):
     def test_function_calling(self):
         # [START function_calling]

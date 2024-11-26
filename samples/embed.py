@@ -15,13 +15,10 @@
 from absl.testing import absltest
 
 
-
-
 class UnitTests(absltest.TestCase):
     def test_embed_content(self):
         # [START embed_content]
         import google.generativeai as genai
-
 
         text = "Hello World!"
         result = genai.embed_content(
