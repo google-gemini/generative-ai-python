@@ -15,7 +15,6 @@
 from absl.testing import absltest
 
 import google
-import google.generativeai as genai
 import pathlib
 
 media = pathlib.Path(__file__).parents[1] / "third_party"
@@ -24,6 +23,8 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 class UnitTests(absltest.TestCase):
     def test_files_create_text(self):
         # [START files_create_text]
+        import google.generativeai as genai
+
         myfile = genai.upload_file(media / "poem.txt")
         print(f"{myfile=}")
 
@@ -36,6 +37,8 @@ class UnitTests(absltest.TestCase):
 
     def test_files_create_image(self):
         # [START files_create_image]
+        import google.generativeai as genai
+
         myfile = genai.upload_file(media / "Cajun_instruments.jpg")
         print(f"{myfile=}")
 
@@ -48,6 +51,8 @@ class UnitTests(absltest.TestCase):
 
     def test_files_create_audio(self):
         # [START files_create_audio]
+        import google.generativeai as genai
+
         myfile = genai.upload_file(media / "sample.mp3")
         print(f"{myfile=}")
 
@@ -58,6 +63,8 @@ class UnitTests(absltest.TestCase):
 
     def test_files_create_video(self):
         # [START files_create_video]
+        import google.generativeai as genai
+
         import time
 
         # Video clip (CC BY 3.0) from https://peach.blender.org/download/
@@ -77,6 +84,8 @@ class UnitTests(absltest.TestCase):
 
     def test_files_create_pdf(self):
         # [START files_create_pdf]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         sample_pdf = genai.upload_file(media / "test.pdf")
         response = model.generate_content(["Give me a summary of this pdf file.", sample_pdf])
@@ -85,6 +94,8 @@ class UnitTests(absltest.TestCase):
 
     def test_files_create_from_IO(self):
         # [START files_create_io]
+        import google.generativeai as genai
+
         # You can pass a file-like object, instead of a path.
         # Useful for streaming.
         model = genai.GenerativeModel("gemini-1.5-flash")
@@ -97,6 +108,8 @@ class UnitTests(absltest.TestCase):
 
     def test_files_list(self):
         # [START files_list]
+        import google.generativeai as genai
+
         print("My files:")
         for f in genai.list_files():
             print("  ", f.name)
@@ -104,6 +117,8 @@ class UnitTests(absltest.TestCase):
 
     def test_files_get(self):
         # [START files_get]
+        import google.generativeai as genai
+
         myfile = genai.upload_file(media / "poem.txt")
         file_name = myfile.name
         print(file_name)  # "files/*"
@@ -114,6 +129,8 @@ class UnitTests(absltest.TestCase):
 
     def test_files_delete(self):
         # [START files_delete]
+        import google.generativeai as genai
+
         myfile = genai.upload_file(media / "poem.txt")
 
         myfile.delete()

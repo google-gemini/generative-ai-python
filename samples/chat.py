@@ -14,7 +14,6 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google.generativeai as genai
 import pathlib
 
 media = pathlib.Path(__file__).parents[1] / "third_party"
@@ -23,6 +22,8 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 class UnitTests(absltest.TestCase):
     def test_chat(self):
         # [START chat]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat(
             history=[
@@ -38,6 +39,8 @@ class UnitTests(absltest.TestCase):
 
     def test_chat_streaming(self):
         # [START chat_streaming]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat(
             history=[
@@ -59,6 +62,8 @@ class UnitTests(absltest.TestCase):
 
     def test_chat_streaming_with_images(self):
         # [START chat_streaming_with_images]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         chat = model.start_chat()
 

@@ -14,12 +14,13 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google.generativeai as genai
 
 
 class UnitTests(absltest.TestCase):
     def test_safety_settings(self):
         # [START safety_settings]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         unsafe_prompt = "I support Martians Soccer Club and I think Jupiterians Football Club sucks! Write a ironic phrase about them."
         response = model.generate_content(
@@ -33,6 +34,8 @@ class UnitTests(absltest.TestCase):
 
     def test_safety_settings_multi(self):
         # [START safety_settings_multi]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         unsafe_prompt = "I support Martians Soccer Club and I think Jupiterians Football Club sucks! Write a ironic phrase about them."
         response = model.generate_content(

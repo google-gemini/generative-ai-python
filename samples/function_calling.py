@@ -14,12 +14,13 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google.generativeai as genai
 
 
 class UnitTests(absltest.TestCase):
     def test_function_calling(self):
         # [START function_calling]
+        import google.generativeai as genai
+
         def add(a: float, b: float):
             """returns a + b."""
             return a + b

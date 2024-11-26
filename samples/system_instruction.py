@@ -14,12 +14,13 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google.generativeai as genai
 
 
 class UnitTests(absltest.TestCase):
     def test_system_instructions(self):
         # [START system_instruction]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel(
             "models/gemini-1.5-flash",
             system_instruction="You are a cat. Your name is Neko.",
