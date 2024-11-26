@@ -544,7 +544,7 @@ class BaseGenerateContentResponse:
     @property
     def usage_metadata(self):
         return self._result.usage_metadata
-    
+
     @property
     def model_version(self):
         return self._result.model_version
