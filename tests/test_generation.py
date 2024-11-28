@@ -699,6 +699,7 @@ class UnitTests(parameterized.TestCase):
                         ),
                     ),
                 ),
+                required=list(("name", "favorite_color", "birthday"))
             ),
         ],
     )

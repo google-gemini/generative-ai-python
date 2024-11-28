@@ -423,7 +423,9 @@ def _build_schema(fname, fields_dict):
     for name, value in defs.items():
         unpack_defs(value, defs)
     unpack_defs(parameters, defs)
-
+    required_fields = []
+    if (fname == "dummy" and fields_dict["dummy"]):
+        required_fields = parameters['properties'][fname].get('required',None)
     # 5. Nullable fields:
     #     * https://github.com/pydantic/pydantic/issues/1270
     #     * https://stackoverflow.com/a/58841311
@@ -435,6 +437,8 @@ def _build_schema(fname, fields_dict):
     #    * https://github.com/pydantic/pydantic/issues/1051
     #    * http://cl/586221780
     strip_titles(parameters)
+    if required_fields:
+        parameters['properties']['dummy']['required']= required_fields
     return parameters
 
 
