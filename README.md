@@ -4,6 +4,8 @@
 ![Python support](https://img.shields.io/pypi/pyversions/google-generativeai)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/google-generativeai)
 
+> ## Important: This SDK does not support any new Gemini-2 features, support for Gemini-2 is being developed in in the new [Google Gen AI SDK](https://github.com/googleapis/python-genai).
+
 The Google AI Python SDK is the easiest way for Python developers to build with the Gemini API. The Gemini API gives you access to Gemini [models](https://ai.google.dev/models/gemini) created by [Google DeepMind](https://deepmind.google/technologies/gemini/#introduction). Gemini models are built from the ground up to be multimodal, so you can reason seamlessly across text, images, and code. 
 
 ## Get started with the Gemini API
