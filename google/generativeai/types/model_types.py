@@ -355,7 +355,10 @@ def make_model_name(name: AnyModelNameOptions):
     if isinstance(name, (Model, protos.Model, TunedModel, protos.TunedModel)):
         name = name.name  # pytype: disable=attribute-error
     elif isinstance(name, str):
-        name = name
+        if "/" not in name:
+            name = "models/" + name
+        else:
+            name = name
     else:
         raise TypeError(
             "Invalid input type. Expected one of the following types: `str`, `Model`, or `TunedModel`."
