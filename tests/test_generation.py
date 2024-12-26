@@ -493,6 +493,8 @@ class UnitTests(parameterized.TestCase):
             prompt_token_count=5
         )
 
+        chunks[-1].model_version = "gemini-1.5-flash-002"
+
         result = generation_types._join_chunks(chunks)
 
         expected = protos.GenerateContentResponse(
@@ -509,6 +511,7 @@ class UnitTests(parameterized.TestCase):
                     ],
                 },
                 "usage_metadata": {"prompt_token_count": 5},
+                "model_version": "gemini-1.5-flash-002",
             },
         )
 

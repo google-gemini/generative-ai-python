@@ -14,7 +14,6 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google.generativeai as genai
 import pathlib
 
 media = pathlib.Path(__file__).parents[1] / "third_party"
@@ -23,6 +22,8 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 class UnitTests(absltest.TestCase):
     def test_text_gen_text_only_prompt(self):
         # [START text_gen_text_only_prompt]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content("Write a story about a magic backpack.")
         print(response.text)
@@ -30,6 +31,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_text_only_prompt_streaming(self):
         # [START text_gen_text_only_prompt_streaming]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content("Write a story about a magic backpack.", stream=True)
         for chunk in response:
@@ -39,6 +42,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_one_image_prompt(self):
         # [START text_gen_multimodal_one_image_prompt]
+        import google.generativeai as genai
+
         import PIL.Image
 
         model = genai.GenerativeModel("gemini-1.5-flash")
@@ -49,6 +54,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_one_image_prompt_streaming(self):
         # [START text_gen_multimodal_one_image_prompt_streaming]
+        import google.generativeai as genai
+
         import PIL.Image
 
         model = genai.GenerativeModel("gemini-1.5-flash")
@@ -61,6 +68,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_multi_image_prompt(self):
         # [START text_gen_multimodal_multi_image_prompt]
+        import google.generativeai as genai
+
         import PIL.Image
 
         model = genai.GenerativeModel("gemini-1.5-flash")
@@ -74,6 +83,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_multi_image_prompt_streaming(self):
         # [START text_gen_multimodal_multi_image_prompt_streaming]
+        import google.generativeai as genai
+
         import PIL.Image
 
         model = genai.GenerativeModel("gemini-1.5-flash")
@@ -90,6 +101,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_audio(self):
         # [START text_gen_multimodal_audio]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         sample_audio = genai.upload_file(media / "sample.mp3")
         response = model.generate_content(["Give me a summary of this audio file.", sample_audio])
@@ -98,6 +111,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_audio_streaming(self):
         # [START text_gen_multimodal_audio_streaming]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         sample_audio = genai.upload_file(media / "sample.mp3")
         response = model.generate_content(["Give me a summary of this audio file.", sample_audio])
@@ -109,6 +124,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_video_prompt(self):
         # [START text_gen_multimodal_video_prompt]
+        import google.generativeai as genai
+
         import time
 
         # Video clip (CC BY 3.0) from https://peach.blender.org/download/
@@ -128,6 +145,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_video_prompt_streaming(self):
         # [START text_gen_multimodal_video_prompt_streaming]
+        import google.generativeai as genai
+
         import time
 
         # Video clip (CC BY 3.0) from https://peach.blender.org/download/
@@ -150,6 +169,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_pdf(self):
         # [START text_gen_multimodal_pdf]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         sample_pdf = genai.upload_file(media / "test.pdf")
         response = model.generate_content(["Give me a summary of this document:", sample_pdf])
@@ -158,6 +179,8 @@ class UnitTests(absltest.TestCase):
 
     def test_text_gen_multimodal_pdf_streaming(self):
         # [START text_gen_multimodal_pdf_streaming]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-flash")
         sample_pdf = genai.upload_file(media / "test.pdf")
         response = model.generate_content(["Give me a summary of this document:", sample_pdf])

@@ -14,12 +14,12 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google.generativeai as genai
-
 
 class UnitTests(absltest.TestCase):
     def test_models_list(self):
         # [START models_list]
+        import google.generativeai as genai
+
         print("List of models that support generateContent:\n")
         for m in genai.list_models():
             if "generateContent" in m.supported_generation_methods:
@@ -33,6 +33,8 @@ class UnitTests(absltest.TestCase):
 
     def test_models_get(self):
         # [START models_get]
+        import google.generativeai as genai
+
         model_info = genai.get_model("models/gemini-1.5-flash-latest")
         print(model_info)
         # [END models_get]

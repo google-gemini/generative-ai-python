@@ -14,12 +14,12 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google.generativeai as genai
-
 
 class UnitTests(absltest.TestCase):
     def test_code_execution_basic(self):
         # [START code_execution_basic]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel(model_name="gemini-1.5-flash", tools="code_execution")
         response = model.generate_content(
             (
@@ -38,6 +38,8 @@ class UnitTests(absltest.TestCase):
         # [END code_execution_basic]
 
         # [START code_execution_basic_return]
+        import google.generativeai as genai
+
         # text: "I can help with that! To calculate the sum of the first 50 prime numbers, we\'ll need to first identify all the prime numbers up to the 50th prime number. \n\nHere is the code to find and sum the first 50 prime numbers:\n\n"
         #
         # executable_code {
@@ -92,6 +94,8 @@ class UnitTests(absltest.TestCase):
 
     def test_code_execution_request_override(self):
         # [START code_execution_request_override]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel(model_name="gemini-1.5-flash")
         response = model.generate_content(
             (
@@ -103,6 +107,8 @@ class UnitTests(absltest.TestCase):
         print(response.text)
         # [END code_execution_request_override]
         # [START code_execution_request_override_return]
+        import google.generativeai as genai
+
         # ``` python
         # def is_prime(n):
         #     """
@@ -140,6 +146,8 @@ class UnitTests(absltest.TestCase):
 
     def test_code_execution_chat(self):
         # [START code_execution_chat]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel(model_name="gemini-1.5-flash", tools="code_execution")
         chat = model.start_chat()
         response = chat.send_message('Can you print "Hello world!"?')
@@ -152,6 +160,8 @@ class UnitTests(absltest.TestCase):
         print(response.text)
         # [END code_execution_chat]
         # [START code_execution_chat_return]
+        import google.generativeai as genai
+
         # ``` python
         # def is_prime(n):
         #     """
