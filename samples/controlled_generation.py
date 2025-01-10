@@ -13,7 +13,6 @@
 from absl.testing import absltest
 import pathlib
 
-import google.generativeai as genai
 
 media = pathlib.Path(__file__).parents[1] / "third_party"
 
@@ -21,6 +20,8 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 class UnitTests(absltest.TestCase):
     def test_json_controlled_generation(self):
         # [START json_controlled_generation]
+        import google.generativeai as genai
+
         import typing_extensions as typing
 
         class Recipe(typing.TypedDict):
@@ -39,6 +40,8 @@ class UnitTests(absltest.TestCase):
 
     def test_json_no_schema(self):
         # [START json_no_schema]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-pro-latest")
         prompt = """List a few popular cookie recipes in JSON format.
 
@@ -52,6 +55,8 @@ class UnitTests(absltest.TestCase):
 
     def test_json_enum(self):
         # [START json_enum]
+        import google.generativeai as genai
+
         import enum
 
         class Choice(enum.Enum):
@@ -75,6 +80,8 @@ class UnitTests(absltest.TestCase):
 
     def test_enum_in_json(self):
         # [START enum_in_json]
+        import google.generativeai as genai
+
         import enum
         from typing_extensions import TypedDict
 
@@ -103,6 +110,8 @@ class UnitTests(absltest.TestCase):
 
     def test_json_enum_raw(self):
         # [START json_enum_raw]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-pro-latest")
 
         organ = genai.upload_file(media / "organ.jpg")
@@ -121,6 +130,8 @@ class UnitTests(absltest.TestCase):
 
     def test_x_enum(self):
         # [START x_enum]
+        import google.generativeai as genai
+
         import enum
 
         class Choice(enum.Enum):
@@ -144,6 +155,8 @@ class UnitTests(absltest.TestCase):
 
     def test_x_enum_raw(self):
         # [START x_enum_raw]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel("gemini-1.5-pro-latest")
 
         organ = genai.upload_file(media / "organ.jpg")

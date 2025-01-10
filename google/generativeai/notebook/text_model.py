@@ -20,7 +20,7 @@ import google.generativeai as genai
 from google.generativeai.types import generation_types
 from google.generativeai.notebook.lib import model as model_lib
 
-_DEFAULT_MODEL = "models/gemini-pro"
+_DEFAULT_MODEL = "models/gemini-1.5-flash"
 
 
 class TextModel(model_lib.AbstractModel):

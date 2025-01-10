@@ -1,17 +1,11 @@
-description: A repeated list of passages.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.GroundingPassages" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.GroundingPassages
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
-  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L674-L686">
+  <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/content.py#L759-L771">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
     View source on GitHub
   </a>
@@ -34,12 +28,16 @@ A repeated list of passages.
 
 <tr>
 <td>
+
 `passages`<a id="passages"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.GroundingPassage]`
 
 List of passages.
+
 </td>
 </tr>
 </table>

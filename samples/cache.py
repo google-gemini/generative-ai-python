@@ -14,7 +14,6 @@
 # limitations under the License.
 from absl.testing import absltest
 
-import google.generativeai as genai
 
 import pathlib
 
@@ -24,6 +23,8 @@ media = pathlib.Path(__file__).parents[1] / "third_party"
 class UnitTests(absltest.TestCase):
     def test_cache_create(self):
         # [START cache_create]
+        import google.generativeai as genai
+
         document = genai.upload_file(path=media / "a11.txt")
         model_name = "gemini-1.5-flash-001"
         cache = genai.caching.CachedContent.create(
@@ -41,6 +42,8 @@ class UnitTests(absltest.TestCase):
 
     def test_cache_create_from_name(self):
         # [START cache_create_from_name]
+        import google.generativeai as genai
+
         document = genai.upload_file(path=media / "a11.txt")
         model_name = "gemini-1.5-flash-001"
         cache = genai.caching.CachedContent.create(
@@ -60,6 +63,8 @@ class UnitTests(absltest.TestCase):
 
     def test_cache_create_from_chat(self):
         # [START cache_create_from_chat]
+        import google.generativeai as genai
+
         model_name = "gemini-1.5-flash-001"
         system_instruction = "You are an expert analyzing transcripts."
 
@@ -92,6 +97,8 @@ class UnitTests(absltest.TestCase):
 
     def test_cache_delete(self):
         # [START cache_delete]
+        import google.generativeai as genai
+
         document = genai.upload_file(path=media / "a11.txt")
         model_name = "gemini-1.5-flash-001"
         cache = genai.caching.CachedContent.create(
@@ -104,6 +111,8 @@ class UnitTests(absltest.TestCase):
 
     def test_cache_get(self):
         # [START cache_get]
+        import google.generativeai as genai
+
         document = genai.upload_file(path=media / "a11.txt")
         model_name = "gemini-1.5-flash-001"
         cache = genai.caching.CachedContent.create(
@@ -117,6 +126,8 @@ class UnitTests(absltest.TestCase):
 
     def test_cache_list(self):
         # [START cache_list]
+        import google.generativeai as genai
+
         document = genai.upload_file(path=media / "a11.txt")
         model_name = "gemini-1.5-flash-001"
         cache = genai.caching.CachedContent.create(
@@ -132,6 +143,8 @@ class UnitTests(absltest.TestCase):
 
     def test_cache_update(self):
         # [START cache_update]
+        import google.generativeai as genai
+
         import datetime
 
         document = genai.upload_file(path=media / "a11.txt")

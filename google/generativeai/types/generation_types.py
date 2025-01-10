@@ -85,6 +85,8 @@ class GenerationConfigDict(TypedDict, total=False):
     temperature: float
     response_mime_type: str
     response_schema: protos.Schema | Mapping[str, Any]  # fmt: off
+    presence_penalty: float
+    frequency_penalty: float
 
 
 @dataclasses.dataclass
@@ -144,8 +146,6 @@ class GenerationConfig:
             Note: The default value varies by model, see the
             `Model.top_k` attribute of the `Model` returned the
             `genai.get_model` function.
-        seed:
-            Optional.  Seed used in decoding. If not set, the request uses a randomly generated seed.
         response_mime_type:
             Optional. Output response mimetype of the generated candidate text.
 
@@ -161,10 +161,6 @@ class GenerationConfig:
             Optional.
         frequency_penalty:
             Optional.
-        response_logprobs:
-            Optional. If true, export the `logprobs` results in response.
-        logprobs:
-            Optional. Number of candidates of log probabilities to return at each step of decoding.
     """
 
     candidate_count: int | None = None
@@ -173,13 +169,10 @@ class GenerationConfig:
     temperature: float | None = None
     top_p: float | None = None
     top_k: int | None = None
-    seed: int | None = None
     response_mime_type: str | None = None
     response_schema: protos.Schema | Mapping[str, Any] | type | None = None
     presence_penalty: float | None = None
     frequency_penalty: float | None = None
-    response_logprobs: bool | None = None
-    logprobs: int | None = None
 
 
 GenerationConfigType = Union[protos.GenerationConfig, GenerationConfigDict, GenerationConfig]
@@ -366,10 +359,16 @@ def _join_chunks(chunks: Iterable[protos.GenerateContentResponse]):
     else:
         usage_metadata = None
 
+    if "model_version" in chunks[-1]:
+        model_version = chunks[-1].model_version
+    else:
+        model_version = None
+
     return protos.GenerateContentResponse(
         candidates=_join_candidate_lists(c.candidates for c in chunks),
         prompt_feedback=_join_prompt_feedbacks(c.prompt_feedback for c in chunks),
         usage_metadata=usage_metadata,
+        model_version=model_version,
     )
 
 
@@ -545,6 +544,10 @@ class BaseGenerateContentResponse:
     @property
     def usage_metadata(self):
         return self._result.usage_metadata
+
+    @property
+    def model_version(self):
+        return self._result.model_version
 
     def __str__(self) -> str:
         if self._done:

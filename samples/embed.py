@@ -15,12 +15,10 @@
 from absl.testing import absltest
 
 
-import google.generativeai as genai
-
-
 class UnitTests(absltest.TestCase):
     def test_embed_content(self):
         # [START embed_content]
+        import google.generativeai as genai
 
         text = "Hello World!"
         result = genai.embed_content(
@@ -31,6 +29,8 @@ class UnitTests(absltest.TestCase):
 
     def batch_embed_contents(self):
         # [START batch_embed_contents]
+        import google.generativeai as genai
+
         texts = [
             "What is the meaning of life?",
             "How much wood would a woodchuck chuck?",

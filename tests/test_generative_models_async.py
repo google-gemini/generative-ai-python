@@ -80,7 +80,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
     async def test_basic(self):
         # Generate text from text prompt
-        model = generative_models.GenerativeModel(model_name="gemini-pro")
+        model = generative_models.GenerativeModel(model_name="gemini-1.5-flash")
 
         self.responses["generate_content"] = [simple_response("world!")]
 
@@ -93,7 +93,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
     async def test_streaming(self):
         # Generate text from text prompt
-        model = generative_models.GenerativeModel(model_name="gemini-pro")
+        model = generative_models.GenerativeModel(model_name="gemini-1.5-flash")
 
         async def responses():
             for c in "world!":
@@ -195,7 +195,7 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
         )
         self.responses["generate_content"] = [simple_response("echo echo")]
 
-        model = generative_models.GenerativeModel("gemini-pro", tools=tools)
+        model = generative_models.GenerativeModel("gemini-1.5-flash", tools=tools)
         _ = await model.generate_content_async("Hello", tools=[tools], tool_config=tool_config)
 
         req = self.observed_requests[0]

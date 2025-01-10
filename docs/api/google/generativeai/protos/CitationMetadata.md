@@ -1,15 +1,9 @@
-description: A collection of source attributions for a piece of content.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CitationMetadata" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CitationMetadata
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/citation.py#L31-L43">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -34,12 +28,16 @@ A collection of source attributions for a piece of content.
 
 <tr>
 <td>
+
 `citation_sources`<a id="citation_sources"></a>
+
 </td>
 <td>
+
 `MutableSequence[google.ai.generativelanguage.CitationSource]`
 
 Citations to sources for a specific response.
+
 </td>
 </tr>
 </table>

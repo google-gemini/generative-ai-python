@@ -36,14 +36,14 @@ class GenerativeModel:
     >>> import google.generativeai as genai
     >>> import PIL.Image
     >>> genai.configure(api_key='YOUR_API_KEY')
-    >>> model = genai.GenerativeModel('models/gemini-pro')
+    >>> model = genai.GenerativeModel('models/gemini-1.5-flash')
     >>> result = model.generate_content('Tell me a story about a magic backpack')
     >>> result.text
     "In the quaint little town of Lakeside, there lived a young girl named Lily..."
 
     Multimodal input:
 
-    >>> model = genai.GenerativeModel('models/gemini-pro')
+    >>> model = genai.GenerativeModel('models/gemini-1.5-flash')
     >>> result = model.generate_content([
     ...     "Give me a recipe for these:", PIL.Image.open('scones.jpeg')])
     >>> result.text
@@ -250,7 +250,7 @@ class GenerativeModel:
         This `GenerativeModel.generate_content` method can handle multimodal input, and multi-turn
         conversations.
 
-        >>> model = genai.GenerativeModel('models/gemini-pro')
+        >>> model = genai.GenerativeModel('models/gemini-1.5-flash')
         >>> response = model.generate_content('Tell me a story about a magic backpack')
         >>> response.text
 
@@ -481,7 +481,7 @@ class GenerativeModel:
 class ChatSession:
     """Contains an ongoing conversation with the model.
 
-    >>> model = genai.GenerativeModel('models/gemini-pro')
+    >>> model = genai.GenerativeModel('models/gemini-1.5-flash')
     >>> chat = model.start_chat()
     >>> response = chat.send_message("Hello")
     >>> print(response.text)
@@ -524,7 +524,7 @@ class ChatSession:
 
         Appends the request and response to the conversation history.
 
-        >>> model = genai.GenerativeModel('models/gemini-pro')
+        >>> model = genai.GenerativeModel('models/gemini-1.5-flash')
         >>> chat = model.start_chat()
         >>> response = chat.send_message("Hello")
         >>> print(response.text)

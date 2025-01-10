@@ -1,19 +1,9 @@
-description: Contains an ongoing conversation with the model.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.ChatSession" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="rewind"/>
-<meta itemprop="property" content="send_message"/>
-<meta itemprop="property" content="send_message_async"/>
-</div>
 
 # google.generativeai.ChatSession
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/generative_models.py#L481-L875">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -39,7 +29,7 @@ Contains an ongoing conversation with the model.
 <!-- Placeholder for "Used in" -->
 
 ```
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> chat = model.start_chat()
 >>> response = chat.send_message("Hello")
 >>> print(response.text)
@@ -58,17 +48,25 @@ This `ChatSession` object collects the messages sent and received, in its
 
 <tr>
 <td>
+
 `model`<a id="model"></a>
+
 </td>
 <td>
+
 The model to use in the chat.
+
 </td>
 </tr><tr>
 <td>
+
 `history`<a id="history"></a>
+
 </td>
 <td>
+
 A chat history to initialize the object with.
+
 </td>
 </tr>
 </table>
@@ -84,17 +82,25 @@ A chat history to initialize the object with.
 
 <tr>
 <td>
+
 `history`<a id="history"></a>
+
 </td>
 <td>
+
 The chat history.
+
 </td>
 </tr><tr>
 <td>
+
 `last`<a id="last"></a>
+
 </td>
 <td>
+
 returns the last received `genai.GenerateContentResponse`
+
 </td>
 </tr>
 </table>
@@ -136,7 +142,7 @@ Sends the conversation history with the added message and returns the model's re
 Appends the request and response to the conversation history.
 
 ```
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> chat = model.start_chat()
 >>> response = chat.send_message("Hello")
 >>> print(response.text)
@@ -167,31 +173,47 @@ Like <a href="../../google/generativeai/GenerativeModel.md#generate_content"><co
 
 <tr>
 <td>
+
 `content`
+
 </td>
 <td>
+
 The message contents.
+
 </td>
 </tr><tr>
 <td>
+
 `generation_config`
+
 </td>
 <td>
+
 Overrides for the model's generation config.
+
 </td>
 </tr><tr>
 <td>
+
 `safety_settings`
+
 </td>
 <td>
+
 Overrides for the model's safety settings.
+
 </td>
 </tr><tr>
 <td>
+
 `stream`
+
 </td>
 <td>
+
 If True, yield response chunks as they are generated.
+
 </td>
 </tr>
 </table>
