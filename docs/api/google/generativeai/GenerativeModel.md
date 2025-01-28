@@ -1,22 +1,9 @@
-description: The genai.GenerativeModel class wraps default parameters for calls to <a href="../../google/generativeai/GenerativeModel.md#generate_content"><code>GenerativeModel.generate_content</code></a>, <a href="../../google/generativeai/GenerativeModel.md#count_tokens"><code>GenerativeModel.count_tokens</code></a>, and <a href="../../google/generativeai/GenerativeModel.md#start_chat"><code>GenerativeModel.start_chat</code></a>.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.GenerativeModel" />
-<meta itemprop="path" content="Stable" />
-<meta itemprop="property" content="__init__"/>
-<meta itemprop="property" content="count_tokens"/>
-<meta itemprop="property" content="count_tokens_async"/>
-<meta itemprop="property" content="from_cached_content"/>
-<meta itemprop="property" content="generate_content"/>
-<meta itemprop="property" content="generate_content_async"/>
-<meta itemprop="property" content="start_chat"/>
-</div>
 
 # google.generativeai.GenerativeModel
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/generative_models.py#L27-L478">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -31,7 +18,7 @@ The `genai.GenerativeModel` class wraps default parameters for calls to <a href=
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>google.generativeai.GenerativeModel(
-    model_name: str = &#x27;gemini-pro&#x27;,
+    model_name: str = &#x27;gemini-1.5-flash-002&#x27;,
     safety_settings: (safety_types.SafetySettingOptions | None) = None,
     generation_config: (generation_types.GenerationConfigType | None) = None,
     tools: (content_types.FunctionLibraryType | None) = None,
@@ -51,7 +38,7 @@ requests. What media-types are supported for input and output is model-dependant
 >>> import google.generativeai as genai
 >>> import PIL.Image
 >>> genai.configure(api_key='YOUR_API_KEY')
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> result = model.generate_content('Tell me a story about a magic backpack')
 >>> result.text
 "In the quaint little town of Lakeside, there lived a young girl named Lily..."
@@ -62,7 +49,7 @@ requests. What media-types are supported for input and output is model-dependant
 
 
 ```
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> result = model.generate_content([
 ...     "Give me a recipe for these:", PIL.Image.open('scones.jpeg')])
 >>> result.text
@@ -93,26 +80,38 @@ To list the compatible model names use:
 
 <tr>
 <td>
+
 `model_name`<a id="model_name"></a>
+
 </td>
 <td>
+
 The name of the model to query. To list compatible models use
+
 </td>
 </tr><tr>
 <td>
+
 `safety_settings`<a id="safety_settings"></a>
+
 </td>
 <td>
+
 Sets the default safety filters. This controls which content is blocked
 by the api before being returned.
+
 </td>
 </tr><tr>
 <td>
+
 `generation_config`<a id="generation_config"></a>
+
 </td>
 <td>
+
 A `genai.GenerationConfig` setting the default generation parameters to
 use.
+
 </td>
 </tr>
 </table>
@@ -128,16 +127,24 @@ use.
 
 <tr>
 <td>
+
 `cached_content`<a id="cached_content"></a>
+
 </td>
 <td>
+
+
 
 </td>
 </tr><tr>
 <td>
+
 `model_name`<a id="model_name"></a>
+
 </td>
 <td>
+
+
 
 </td>
 </tr>
@@ -209,24 +216,36 @@ Creates a model with `cached_content` as model's context.
 
 <tr>
 <td>
+
 `cached_content`
+
 </td>
 <td>
+
 context for the model.
+
 </td>
 </tr><tr>
 <td>
+
 `generation_config`
+
 </td>
 <td>
+
 Overrides for the model's generation config.
+
 </td>
 </tr><tr>
 <td>
+
 `safety_settings`
+
 </td>
 <td>
+
 Overrides for the model's safety settings.
+
 </td>
 </tr>
 </table>
@@ -239,7 +258,9 @@ Overrides for the model's safety settings.
 <tr><th colspan="2">Returns</th></tr>
 <tr class="alt">
 <td colspan="2">
+
 `GenerativeModel` object with `cached_content` as its context.
+
 </td>
 </tr>
 
@@ -270,7 +291,7 @@ This <a href="../../google/generativeai/GenerativeModel.md#generate_content"><co
 conversations.
 
 ```
->>> model = genai.GenerativeModel('models/gemini-pro')
+>>> model = genai.GenerativeModel('models/gemini-1.5-flash')
 >>> response = model.generate_content('Tell me a story about a magic backpack')
 >>> response.text
 ```
@@ -323,45 +344,69 @@ But note that an `Iterable[protos.Part]` is taken as the parts of a single messa
 
 <tr>
 <td>
+
 `contents`
+
 </td>
 <td>
+
 The contents serving as the model's prompt.
+
 </td>
 </tr><tr>
 <td>
+
 `generation_config`
+
 </td>
 <td>
+
 Overrides for the model's generation config.
+
 </td>
 </tr><tr>
 <td>
+
 `safety_settings`
+
 </td>
 <td>
+
 Overrides for the model's safety settings.
+
 </td>
 </tr><tr>
 <td>
+
 `stream`
+
 </td>
 <td>
+
 If True, yield response chunks as they are generated.
+
 </td>
 </tr><tr>
 <td>
+
 `tools`
+
 </td>
 <td>
+
 `protos.Tools` more info coming soon.
+
 </td>
 </tr><tr>
 <td>
+
 `request_options`
+
 </td>
 <td>
+
 Options for the request.
+
 </td>
 </tr>
 </table>
@@ -415,10 +460,14 @@ Returns a `genai.ChatSession` attached to this model.
 
 <tr>
 <td>
+
 `history`
+
 </td>
 <td>
+
 An iterable of <a href="../../google/generativeai/protos/Content.md"><code>protos.Content</code></a> objects, or equivalents to initialize the session.
+
 </td>
 </tr>
 </table>

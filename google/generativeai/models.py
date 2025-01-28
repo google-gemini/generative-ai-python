@@ -40,7 +40,7 @@ def get_model(
 
     ```
     import pprint
-    model = genai.get_model('models/gemini-pro')
+    model = genai.get_model('models/gemini-1.5-flash')
     pprint.pprint(model)
     ```
 
@@ -112,7 +112,7 @@ def get_tuned_model(
 
     ```
     import pprint
-    model = genai.get_tuned_model('tunedModels/gemini-1.0-pro-001')
+    model = genai.get_tuned_model('tunedModels/gemini-1.5-flash')
     pprint.pprint(model)
     ```
 

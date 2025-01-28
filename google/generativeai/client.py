@@ -5,9 +5,11 @@ import contextlib
 import inspect
 import dataclasses
 import pathlib
+import threading
 from typing import Any, cast
 from collections.abc import Sequence
 import httplib2
+from io import IOBase
 
 import google.ai.generativelanguage as glm
 import google.generativeai.protos as protos
@@ -63,6 +65,7 @@ def patch_colab_gce_credentials():
 class FileServiceClient(glm.FileServiceClient):
     def __init__(self, *args, **kwargs):
         self._discovery_api = None
+        self._local = threading.local()
         super().__init__(*args, **kwargs)
 
     def _setup_discovery_api(self, metadata: dict | Sequence[tuple[str, str]] = ()):
@@ -82,13 +85,13 @@ class FileServiceClient(glm.FileServiceClient):
         request.http.close()
 
         discovery_doc = content.decode("utf-8")
-        self._discovery_api = googleapiclient.discovery.build_from_document(
+        self._local.discovery_api = googleapiclient.discovery.build_from_document(
             discovery_doc, developerKey=api_key
         )
 
     def create_file(
         self,
-        path: str | pathlib.Path | os.PathLike,
+        path: str | pathlib.Path | os.PathLike | IOBase,
         *,
         mime_type: str | None = None,
         name: str | None = None,
@@ -105,10 +108,16 @@ class FileServiceClient(glm.FileServiceClient):
         if display_name is not None:
             file["displayName"] = display_name
 
-        media = googleapiclient.http.MediaFileUpload(
-            filename=path, mimetype=mime_type, resumable=resumable
-        )
-        request = self._discovery_api.media().upload(body={"file": file}, media_body=media)
+        if isinstance(path, IOBase):
+            media = googleapiclient.http.MediaIoBaseUpload(
+                fd=path, mimetype=mime_type, resumable=resumable
+            )
+        else:
+            media = googleapiclient.http.MediaFileUpload(
+                filename=path, mimetype=mime_type, resumable=resumable
+            )
+
+        request = self._local.discovery_api.media().upload(body={"file": file}, media_body=media)
         for key, value in metadata:
             request.headers[key] = value
         result = request.execute()

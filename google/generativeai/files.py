@@ -21,6 +21,7 @@ from typing import Iterable
 import logging
 from google.generativeai import protos
 from itertools import islice
+from io import IOBase
 
 from google.generativeai.types import file_types
 
@@ -32,7 +33,7 @@ mimetypes.add_type("image/webp", ".webp")
 
 
 def upload_file(
-    path: str | pathlib.Path | os.PathLike,
+    path: str | pathlib.Path | os.PathLike | IOBase,
     *,
     mime_type: str | None = None,
     name: str | None = None,
@@ -42,7 +43,7 @@ def upload_file(
     """Calls the API to upload a file using a supported file service.
 
     Args:
-        path: The path to the file to be uploaded.
+        path: The path to the file or a file-like object (e.g., BytesIO) to be uploaded.
         mime_type: The MIME type of the file. If not provided, it will be
             inferred from the file extension.
         name: The name of the file in the destination (e.g., 'files/sample-image').
@@ -57,16 +58,29 @@ def upload_file(
     """
     client = get_default_file_client()
 
-    path = pathlib.Path(os.fspath(path))
+    if isinstance(path, IOBase):
+        if mime_type is None:
+            raise ValueError(
+                "Unknown mime type: When passing a file like object to `path` (instead of a\n"
+                "    path-like object) you must set the `mime_type` argument"
+            )
+    else:
+        path = pathlib.Path(os.fspath(path))
 
-    if mime_type is None:
-        mime_type, _ = mimetypes.guess_type(path)
+        if display_name is None:
+            display_name = path.name
+
+        if mime_type is None:
+            mime_type, _ = mimetypes.guess_type(path)
+
+        if mime_type is None:
+            raise ValueError(
+                "Unknown mime type: Could not determine the mimetype for your file\n"
+                "    please set the `mime_type` argument"
+            )
 
     if name is not None and "/" not in name:
         name = f"files/{name}"
-
-    if display_name is None:
-        display_name = path.name
 
     response = client.create_file(
         path=path, mime_type=mime_type, name=name, display_name=display_name, resumable=resumable

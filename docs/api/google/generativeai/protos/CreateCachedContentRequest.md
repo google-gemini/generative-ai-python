@@ -1,15 +1,9 @@
-description: Request to create CachedContent.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.protos.CreateCachedContentRequest" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.protos.CreateCachedContentRequest
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage/google/ai/generativelanguage_v1beta/types/cache_service.py#L100-L112">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -34,12 +28,16 @@ Request to create CachedContent.
 
 <tr>
 <td>
+
 `cached_content`<a id="cached_content"></a>
+
 </td>
 <td>
+
 `google.ai.generativelanguage.CachedContent`
 
 Required. The cached content to create.
+
 </td>
 </tr>
 </table>

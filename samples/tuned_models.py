@@ -15,7 +15,6 @@
 from absl.testing import absltest
 
 import google
-import google.generativeai as genai
 
 import pathlib
 
@@ -25,6 +24,8 @@ samples = pathlib.Path(__file__).parent
 class UnitTests(absltest.TestCase):
     def test_tuned_models_create(self):
         # [START tuned_models_create]
+        import google.generativeai as genai
+
         import time
 
         base_model = "models/gemini-1.5-flash-001-tuning"
@@ -74,6 +75,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tuned_models_generate_content(self):
         # [START tuned_models_generate_content]
+        import google.generativeai as genai
+
         model = genai.GenerativeModel(model_name="tunedModels/my-increment-model")
         result = model.generate_content("III")
         print(result.text)  # "IV"
@@ -81,12 +84,16 @@ class UnitTests(absltest.TestCase):
 
     def test_tuned_models_get(self):
         # [START tuned_models_get]
+        import google.generativeai as genai
+
         model_info = genai.get_model("tunedModels/my-increment-model")
         print(model_info)
         # [END tuned_models_get]
 
     def test_tuned_models_list(self):
         # [START tuned_models_list]
+        import google.generativeai as genai
+
         for model_info in genai.list_tuned_models():
             print(model_info.name)
         # [END tuned_models_list]
@@ -114,6 +121,8 @@ class UnitTests(absltest.TestCase):
                 time.sleep(10)
 
         # [START tuned_models_delete]
+        import google.generativeai as genai
+
         model_name = "tunedModels/delete-this-model"
         model_info = genai.get_model(model_name)
         print(model_info)
@@ -124,6 +133,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tuned_models_permissions_create(self):
         # [START tuned_models_permissions_create]
+        import google.generativeai as genai
+
         model_info = genai.get_model("tunedModels/my-increment-model")
         # [START_EXCLUDE]
         for p in model_info.permissions.list():
@@ -148,6 +159,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tuned_models_permissions_list(self):
         # [START tuned_models_permissions_list]
+        import google.generativeai as genai
+
         model_info = genai.get_model("tunedModels/my-increment-model")
 
         # [START_EXCLUDE]
@@ -175,6 +188,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tuned_models_permissions_get(self):
         # [START tuned_models_permissions_get]
+        import google.generativeai as genai
+
         model_info = genai.get_model("tunedModels/my-increment-model")
 
         # [START_EXCLUDE]
@@ -197,6 +212,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tuned_models_permissions_update(self):
         # [START tuned_models_permissions_update]
+        import google.generativeai as genai
+
         model_info = genai.get_model("tunedModels/my-increment-model")
 
         # [START_EXCLUDE]
@@ -216,6 +233,8 @@ class UnitTests(absltest.TestCase):
 
     def test_tuned_models_permission_delete(self):
         # [START tuned_models_permissions_delete]
+        import google.generativeai as genai
+
         model_info = genai.get_model("tunedModels/my-increment-model")
         # [START_EXCLUDE]
         for p in model_info.permissions.list():

@@ -19,6 +19,7 @@ from collections.abc import Iterable, Mapping, Sequence
 import io
 import inspect
 import mimetypes
+import pathlib
 import typing
 from typing import Any, Callable, Union
 from typing_extensions import TypedDict
@@ -30,7 +31,7 @@ from google.generativeai import protos
 
 if typing.TYPE_CHECKING:
     import PIL.Image
-    import PIL.PngImagePlugin
+    import PIL.ImageFile
     import IPython.display
 
     IMAGE_TYPES = (PIL.Image.Image, IPython.display.Image)
@@ -38,7 +39,7 @@ else:
     IMAGE_TYPES = ()
     try:
         import PIL.Image
-        import PIL.PngImagePlugin
+        import PIL.ImageFile
 
         IMAGE_TYPES = IMAGE_TYPES + (PIL.Image.Image,)
     except ImportError:
@@ -71,47 +72,61 @@ __all__ = [
     "FunctionLibraryType",
 ]
 
+Mode = protos.DynamicRetrievalConfig.Mode
 
-def pil_to_blob(img):
-    # When you load an image with PIL you get a subclass of PIL.Image
-    # The subclass knows what file type it was loaded from it has a `.format` class attribute
-    # and the `get_format_mimetype` method. Convert these back to the same file type.
-    #
-    # The base image class doesn't know its file type, it just knows its mode.
-    # RGBA converts to PNG easily, P[allet] converts to GIF, RGB to GIF.
-    # But for anything else I'm not going to bother mapping it out (for now) let's just convert to RGB and send it.
-    #
-    # References:
-    #   - file formats: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
-    #   - image modes: https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
+ModeOptions = Union[int, str, Mode]
 
-    bytesio = io.BytesIO()
+_MODE: dict[ModeOptions, Mode] = {
+    Mode.MODE_UNSPECIFIED: Mode.MODE_UNSPECIFIED,
+    0: Mode.MODE_UNSPECIFIED,
+    "mode_unspecified": Mode.MODE_UNSPECIFIED,
+    "unspecified": Mode.MODE_UNSPECIFIED,
+    Mode.MODE_DYNAMIC: Mode.MODE_DYNAMIC,
+    1: Mode.MODE_DYNAMIC,
+    "mode_dynamic": Mode.MODE_DYNAMIC,
+    "dynamic": Mode.MODE_DYNAMIC,
+}
 
-    get_mime = getattr(img, "get_format_mimetype", None)
-    if get_mime is not None:
-        # If the image is created from a file, convert back to the same file type.
-        img.save(bytesio, format=img.format)
-        mime_type = img.get_format_mimetype()
-    elif img.mode == "RGBA":
-        img.save(bytesio, format="PNG")
-        mime_type = "image/png"
-    elif img.mode == "P":
-        img.save(bytesio, format="GIF")
-        mime_type = "image/gif"
-    else:
-        if img.mode != "RGB":
-            img = img.convert("RGB")
-        img.save(bytesio, format="JPEG")
-        mime_type = "image/jpeg"
-    bytesio.seek(0)
-    data = bytesio.read()
-    return protos.Blob(mime_type=mime_type, data=data)
+
+def to_mode(x: ModeOptions) -> Mode:
+    if isinstance(x, str):
+        x = x.lower()
+    return _MODE[x]
+
+
+def _pil_to_blob(image: PIL.Image.Image) -> protos.Blob:
+    # If the image is a local file, return a file-based blob without any modification.
+    # Otherwise, return a lossless WebP blob (same quality with optimized size).
+    def file_blob(image: PIL.Image.Image) -> protos.Blob | None:
+        if not isinstance(image, PIL.ImageFile.ImageFile) or image.filename is None:
+            return None
+        filename = str(image.filename)
+        if not pathlib.Path(filename).is_file():
+            return None
+
+        mime_type = image.get_format_mimetype()
+        image_bytes = pathlib.Path(filename).read_bytes()
+
+        return protos.Blob(mime_type=mime_type, data=image_bytes)
+
+    def webp_blob(image: PIL.Image.Image) -> protos.Blob:
+        # Reference: https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#webp
+        image_io = io.BytesIO()
+        image.save(image_io, format="webp", lossless=True)
+        image_io.seek(0)
+
+        mime_type = "image/webp"
+        image_bytes = image_io.read()
+
+        return protos.Blob(mime_type=mime_type, data=image_bytes)
+
+    return file_blob(image) or webp_blob(image)
 
 
 def image_to_blob(image) -> protos.Blob:
     if PIL is not None:
         if isinstance(image, PIL.Image.Image):
-            return pil_to_blob(image)
+            return _pil_to_blob(image)
 
     if IPython is not None:
         if isinstance(image, IPython.display.Image):
@@ -650,16 +665,54 @@ def _encode_fd(fd: FunctionDeclaration | protos.FunctionDeclaration) -> protos.F
     return fd.to_proto()
 
 
+class DynamicRetrievalConfigDict(TypedDict):
+    mode: protos.DynamicRetrievalConfig.mode
+    dynamic_threshold: float
+
+
+DynamicRetrievalConfig = Union[protos.DynamicRetrievalConfig, DynamicRetrievalConfigDict]
+
+
+class GoogleSearchRetrievalDict(TypedDict):
+    dynamic_retrieval_config: DynamicRetrievalConfig
+
+
+GoogleSearchRetrievalType = Union[protos.GoogleSearchRetrieval, GoogleSearchRetrievalDict]
+
+
+def _make_google_search_retrieval(gsr: GoogleSearchRetrievalType):
+    if isinstance(gsr, protos.GoogleSearchRetrieval):
+        return gsr
+    elif isinstance(gsr, Mapping):
+        drc = gsr.get("dynamic_retrieval_config", None)
+        if drc is not None and isinstance(drc, Mapping):
+            mode = drc.get("mode", None)
+            if mode is not None:
+                mode = to_mode(mode)
+                gsr = gsr.copy()
+                gsr["dynamic_retrieval_config"]["mode"] = mode
+        return protos.GoogleSearchRetrieval(gsr)
+    else:
+        raise TypeError(
+            "Invalid input type. Expected an instance of `genai.GoogleSearchRetrieval`.\n"
+            f"However, received an object of type: {type(gsr)}.\n"
+            f"Object Value: {gsr}"
+        )
+
+
 class Tool:
-    """A wrapper for `protos.Tool`, Contains a collection of related `FunctionDeclaration` objects."""
+    """A wrapper for `protos.Tool`, Contains a collection of related `FunctionDeclaration` objects,
+    protos.CodeExecution object, and protos.GoogleSearchRetrieval object."""
 
     def __init__(
         self,
+        *,
         function_declarations: Iterable[FunctionDeclarationType] | None = None,
+        google_search_retrieval: GoogleSearchRetrievalType | None = None,
         code_execution: protos.CodeExecution | None = None,
     ):
         # The main path doesn't use this but is seems useful.
-        if function_declarations:
+        if function_declarations is not None:
             self._function_declarations = [
                 _make_function_declaration(f) for f in function_declarations
             ]
@@ -674,14 +727,24 @@ class Tool:
             self._function_declarations = []
             self._index = {}
 
+        if google_search_retrieval is not None:
+            self._google_search_retrieval = _make_google_search_retrieval(google_search_retrieval)
+        else:
+            self._google_search_retrieval = None
+
         self._proto = protos.Tool(
             function_declarations=[_encode_fd(fd) for fd in self._function_declarations],
+            google_search_retrieval=google_search_retrieval,
             code_execution=code_execution,
         )
 
     @property
     def function_declarations(self) -> list[FunctionDeclaration | protos.FunctionDeclaration]:
         return self._function_declarations
+
+    @property
+    def google_search_retrieval(self) -> protos.GoogleSearchRetrieval:
+        return self._google_search_retrieval
 
     @property
     def code_execution(self) -> protos.CodeExecution:
@@ -711,7 +774,7 @@ class ToolDict(TypedDict):
 
 
 ToolType = Union[
-    Tool, protos.Tool, ToolDict, Iterable[FunctionDeclarationType], FunctionDeclarationType
+    str, Tool, protos.Tool, ToolDict, Iterable[FunctionDeclarationType], FunctionDeclarationType
 ]
 
 
@@ -723,9 +786,23 @@ def _make_tool(tool: ToolType) -> Tool:
             code_execution = tool.code_execution
         else:
             code_execution = None
-        return Tool(function_declarations=tool.function_declarations, code_execution=code_execution)
+
+        if "google_search_retrieval" in tool:
+            google_search_retrieval = tool.google_search_retrieval
+        else:
+            google_search_retrieval = None
+
+        return Tool(
+            function_declarations=tool.function_declarations,
+            google_search_retrieval=google_search_retrieval,
+            code_execution=code_execution,
+        )
     elif isinstance(tool, dict):
-        if "function_declarations" in tool or "code_execution" in tool:
+        if (
+            "function_declarations" in tool
+            or "google_search_retrieval" in tool
+            or "code_execution" in tool
+        ):
             return Tool(**tool)
         else:
             fd = tool
@@ -733,10 +810,17 @@ def _make_tool(tool: ToolType) -> Tool:
     elif isinstance(tool, str):
         if tool.lower() == "code_execution":
             return Tool(code_execution=protos.CodeExecution())
+        # Check to see if one of the mode enums matches
+        elif tool.lower() == "google_search_retrieval":
+            return Tool(google_search_retrieval=protos.GoogleSearchRetrieval())
         else:
-            raise ValueError("The only string that can be passed as a tool is 'code_execution'.")
+            raise ValueError(
+                "The only string that can be passed as a tool is 'code_execution', or one of the specified values for the `mode` parameter for google_search_retrieval."
+            )
     elif isinstance(tool, protos.CodeExecution):
         return Tool(code_execution=tool)
+    elif isinstance(tool, protos.GoogleSearchRetrieval):
+        return Tool(google_search_retrieval=tool)
     elif isinstance(tool, Iterable):
         return Tool(function_declarations=tool)
     else:
@@ -792,7 +876,7 @@ ToolsType = Union[Iterable[ToolType], ToolType]
 
 def _make_tools(tools: ToolsType) -> list[Tool]:
     if isinstance(tools, str):
-        if tools.lower() == "code_execution":
+        if tools.lower() == "code_execution" or tools.lower() == "google_search_retrieval":
             return [_make_tool(tools)]
         else:
             raise ValueError("The only string that can be passed as a tool is 'code_execution'.")

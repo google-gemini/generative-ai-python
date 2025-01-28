@@ -18,6 +18,7 @@ from google.generativeai.types import file_types
 
 import collections
 import datetime
+import io
 import os
 from typing import Iterable, Sequence
 import pathlib
@@ -38,7 +39,7 @@ class FileServiceClient(client_lib.FileServiceClient):
 
     def create_file(
         self,
-        path: str | pathlib.Path | os.PathLike,
+        path: str | io.IOBase | os.PathLike,
         *,
         mime_type: str | None = None,
         name: str | None = None,
@@ -102,12 +103,13 @@ class UnitTests(parameterized.TestCase):
             protos.File(
                 uri="https://test",
                 state="ACTIVE",
+                mime_type="video/quicktime",
                 video_metadata=dict(video_duration=datetime.timedelta(seconds=30)),
                 error=dict(code=7, message="ok?"),
             )
         )
 
-        f = genai.upload_file(path="dummy")
+        f = genai.upload_file(path="dummy.mov")
         self.assertEqual(google.rpc.status_pb2.Status(code=7, message="ok?"), f.error)
         self.assertEqual(
             protos.VideoMetadata(dict(video_duration=datetime.timedelta(seconds=30))),

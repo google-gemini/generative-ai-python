@@ -1,15 +1,9 @@
-description: Calls the API to list all tuned models.
-
-<div itemscope itemtype="http://developers.google.com/ReferenceObject">
-<meta itemprop="name" content="google.generativeai.list_tuned_models" />
-<meta itemprop="path" content="Stable" />
-</div>
 
 # google.generativeai.list_tuned_models
 
 <!-- Insert buttons and diff -->
 
-<table class="tfo-notebook-buttons tfo-api nocontent" align="left">
+<table class="tfo-notebook-buttons tfo-api nocontent">
 <td>
   <a target="_blank" href="https://github.com/google/generative-ai-python/blob/master/google/generativeai/models.py#L209-L242">
     <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
@@ -49,24 +43,36 @@ for model in genai.list_tuned_models():
 
 <tr>
 <td>
+
 `page_size`<a id="page_size"></a>
+
 </td>
 <td>
+
 How many `types.Models` to fetch per page (api call).
+
 </td>
 </tr><tr>
 <td>
+
 `client`<a id="client"></a>
+
 </td>
 <td>
+
 You may pass a `glm.ModelServiceClient` instead of using the default client.
+
 </td>
 </tr><tr>
 <td>
+
 `request_options`<a id="request_options"></a>
+
 </td>
 <td>
+
 Options for the request.
+
 </td>
 </tr>
 </table>
@@ -79,7 +85,9 @@ Options for the request.
 <tr><th colspan="2"><h2 class="add-link">Yields</h2></th></tr>
 <tr class="alt">
 <td colspan="2">
+
 <a href="../../google/generativeai/types/TunedModel.md"><code>types.TunedModel</code></a> objects.
+
 </td>
 </tr>
 
