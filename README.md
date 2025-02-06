@@ -14,12 +14,7 @@ The Google AI Python SDK is the easiest way for Python developers to build with 
 5. For detailed instructions, try the 
 [Python SDK tutorial](https://ai.google.dev/tutorials/python_quickstart) on [ai.google.dev](https://ai.google.dev).
 
-Important: There are currently two different python SDKs for the Gemini API.
-This repository is in the process of converting from the old one (`google-generativeai`) to
-the new one (`google-genai`). The 
-[Migration guide](https://ai.google.dev/gemini-api/docs/migrate) is attached below.
-
-## Upgrade to the Google Gen AI SDK for Python
+## Upgrade to the new Google Gen AI SDK for Python
 
 Until now, the `google-generativeai` SDK package has been the recommended tool
 for accessing the Gemini API from Python. While this package gets the job done,
@@ -27,7 +22,8 @@ the long incremental development process (starting from the PaLM API in 2023)
 made it impossible to implement some important high level features without
 significant breakages.
 
-The new SDK package, `google-genai`, is a from-scratch rewrite designed to
+The new SDK package, `google-genai` ([github](https://github.com/googleapis/python-genai),
+[pypi](https://pypi.org/project/google-genai/)), is a from-scratch rewrite designed to
 resolve these problems. Among other things, the new package:
 
 *   Is clear about when clients are created, configured, and used (clear
