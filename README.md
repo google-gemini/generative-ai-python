@@ -46,6 +46,7 @@ features. Any new new code should be written using the new SDK, `google-genai`.
     </a>
   </td>
 </table>
+<br><br>
 
 ### Install the SDK
 
