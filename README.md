@@ -10,33 +10,31 @@ The Google AI Python SDK is the easiest way for Python developers to build with 
 1. Go to [Google AI Studio](https://aistudio.google.com/).
 2. Login with your Google account.
 3. [Create](https://aistudio.google.com/app/apikey) an API key.
-4. Try a Python SDK [quickstart](https://github.com/google-gemini/gemini-api-cookbook/blob/main/quickstarts/Prompting.ipynb) in the [Gemini API Cookbook](https://github.com/google-gemini/gemini-api-cookbook/).
-5. For detailed instructions, try the 
+4. For detailed instructions, try the 
 [Python SDK tutorial](https://ai.google.dev/tutorials/python_quickstart) on [ai.google.dev](https://ai.google.dev).
+5. For more examples try the [Gemini API Cookbook](https://github.com/google-gemini/gemini-api-cookbook/). 
 
-## Upgrade to the new Google Gen AI SDK for Python
+# Upgrade the Google GenAI SDK for Python
 
-Until now, the `google-generativeai` SDK package has been the recommended tool
-for accessing the Gemini API from Python. While this package gets the job done,
-the long incremental development process (starting from the PaLM API in 2023)
-made it impossible to implement some important high level features without
-significant breakages.
+With Gemini 2 we are offering a new SDK
+(<code>[google-genai](https://pypi.org/project/google-genai/)</code>,
+<code>v1.0</code>). The updated SDK is fully compatible with all Gemini API
+models and features, including recent additions like the
+[live API](https://aistudio.google.com/live) (audio + video streaming),
+improved tool usage (
+[code execution](https://ai.google.dev/gemini-api/docs/code-execution?lang=python),
+[function calling](https://ai.google.dev/gemini-api/docs/function-calling/tutorial?lang=python) and integrated
+[Google search grounding](https://ai.google.dev/gemini-api/docs/grounding?lang=python)),
+and media generation ([Imagen](https://ai.google.dev/gemini-api/docs/imagen)).
+This SDK allows you to connect to the Gemini API through either
+[Google AI Studio](https://aistudio.google.com/prompts/new_chat?model=gemini-2.0-flash-exp) or
+[Vertex AI](https://cloud.google.com/vertex-ai/generative-ai/docs/gemini-v2).
 
-The new SDK package, `google-genai` ([github](https://github.com/googleapis/python-genai),
-[pypi](https://pypi.org/project/google-genai/)), is a from-scratch rewrite designed to
-resolve these problems. Among other things, the new package:
+The <code>[google-generativeai](https://pypi.org/project/google-generativeai)</code>
+package will continue to support the original Gemini models.
+It <em>can</em> also be used with Gemini 2 models, just with a limited feature
+set. All new features will be developed in the new Google GenAI SDK.
 
-*   Is clear about when clients are created, configured, and used (clear
-    separation between data objects, and the API client).
-*   Lets you swap between API versions, or use Vertex AI's implementation of
-    the Gemini API.
-*   Follows consistent patterns across methods and language implementations.
-*   Follows the API layout closely; paths and data structures mostly match
-    between the SDK and the REST interface.
-
-From Gemini 2.0 onwards the old SDK, `google-generativeai`, will no longer be
-developing new features. The old SDK can run a subset of Gemini-2.0 model
-features. Any new new code should be written using the new SDK, `google-genai`.
 
 <table align="left">
   <td>
@@ -46,9 +44,8 @@ features. Any new new code should be written using the new SDK, `google-genai`.
     </a>
   </td>
 </table>
-<br><br>
 
-### Install the SDK
+## Install the SDK
 
 **Before**
 
@@ -62,7 +59,7 @@ pip install -U -q "google-generativeai"
 pip install -U -q "google-genai"
 ```
 
-### Authenticate
+## Authenticate
 
 Authenticate with API key. You can
 [create](https://aistudio.google.com/app/apikey)
@@ -94,7 +91,7 @@ from google import genai
 client = genai.Client(api_key=...)
 ```
 
-### Generate content
+## Generate content
 
 The new SDK provides access to all the API methods through the `Client` object.
 Except for a few stateful special cases (`chat`, live-api `session`s) these are all
@@ -120,7 +117,7 @@ from google import genai
 client = genai.Client()
 
 response = client.models.generate_content(
-    model='gemini-1.5-flash', 
+    model='gemini-2.0-flash', 
     contents='Tell me a story in 300 words.'
 )
 print(response.text)
@@ -155,7 +152,7 @@ from PIL import Image
 client = genai.Client()
 
 response = client.models.generate_content(
-    model='gemini-1.5-flash', 
+    model='gemini-2.0-flash',
     contents=[
         'Tell me a story based on this image',
         Image.open(image_path)
@@ -165,7 +162,7 @@ print(response.text)
 ```
 
 
-#### Streaming
+### Streaming
 
 Streaming methods are each separate functions named with a `_stream` suffix.
 
@@ -188,14 +185,14 @@ from google import genai
 client = genai.Client()
 
 for chunk in client.models.generate_content_stream(
-   model='gemini-1.5-flash',
-   contents='Tell me a story in 300 words.'
+  model='gemini-2.0-flash',
+  contents='Tell me a story in 300 words.'
 ):
     print(chunk.text)
 ```
 
 
-### Optional arguments
+## Optional arguments
 
 For all methods in the new SDK the required arguments are provided as keyword
 arguments. All optional inputs are provided in the `config` argument.
@@ -234,23 +231,23 @@ from google.genai import types
 client = genai.Client()
 
 response = client.models.generate_content(
-   model='gemini-1.5-flash',
-   contents='Tell me a story in 100 words.',
-   config=types.GenerateContentConfig(
-       system_instruction='you are a story teller for kids under 5 years old',
-       max_output_tokens= 400,
-       top_k= 2,
-       top_p= 0.5,
-       temperature= 0.5,
-       response_mime_type= 'application/json',
-       stop_sequences= ['\n'],
-       seed=42,
+  model='gemini-2.0-flash',
+  contents='Tell me a story in 100 words.',
+  config=types.GenerateContentConfig(
+      system_instruction='you are a story teller for kids under 5 years old',
+      max_output_tokens= 400,
+      top_k= 2,
+      top_p= 0.5,
+      temperature= 0.5,
+      response_mime_type= 'application/json',
+      stop_sequences= ['\n'],
+      seed=42,
    ),
 )
 ```
 
 
-#### Example: Safety settings
+### Example: Safety settings
 
 Generate response with safety settings:
 
@@ -259,7 +256,7 @@ Generate response with safety settings:
 ```python
 import google.generativeai as genai
 
-model = genai.GenerativeModel('gemini-1.5-pro-002')
+model = genai.GenerativeModel('gemini-1.5-flash')
 response = model.generate_content(
     'say something bad',
     safety_settings={
@@ -277,21 +274,21 @@ from google.genai import types
 client = genai.Client()
 
 response = client.models.generate_content(
-   model='gemini-1.5-pro-002',
-   contents='say something bad',
-   config=types.GenerateContentConfig(
-       safety_settings= [
-            types.SafetySetting(
-                category='HARM_CATEGORY_HATE_SPEECH',
-                threshold='BLOCK_ONLY_HIGH'
-            ),
-       ]
-   ),
+  model='gemini-2.0-flash',
+  contents='say something bad',
+  config=types.GenerateContentConfig(
+      safety_settings= [
+          types.SafetySetting(
+              category='HARM_CATEGORY_HATE_SPEECH',
+              threshold='BLOCK_ONLY_HIGH'
+          ),
+      ]
+  ),
 )
 ```
 
 
-### Async
+## Async
 
 To use the new SDK with `asyncio`, there is a separate `async` implementation of
 every method under `client.aio`.
@@ -314,12 +311,12 @@ from google import genai
 client = genai.Client()
 
 response = await client.aio.models.generate_content(
-    model='gemini-1.5-flash', 
+    model='gemini-2.0-flash', 
     contents='Tell me a story in 300 words.'
 )
 ```
 
-### Chat
+## Chat
 
 Starts a chat and sends a message to the model:
 
@@ -343,7 +340,7 @@ response = chat.send_message(
 from google import genai
 client = genai.Client()
 
-chat = client.chats.create(model='gemini-1.5-flash')
+chat = client.chats.create(model='gemini-2.0-flash')
 
 response = chat.send_message(
     message='Tell me a story in 100 words')
@@ -352,7 +349,7 @@ response = chat.send_message(
 ```
 
 
-### Function calling
+## Function calling
 
 In the New SDK, automatic function calling is the default. Here we disable it. 
 
@@ -373,7 +370,7 @@ def get_current_weather(location: str) -> str:
     return "23C"
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-pro-002",
+    model_name="gemini-1.5-flash",
     tools=[get_current_weather]
 )
 
@@ -399,7 +396,7 @@ def get_current_weather(location: str) -> str:
     return "23C"
 
 response = client.models.generate_content(
-   model='gemini-1.5-pro-002',
+   model='gemini-2.0-flash',
    contents="What is the weather like in Boston?",
    config=types.GenerateContentConfig(
        tools=[get_current_weather],
@@ -410,7 +407,7 @@ response = client.models.generate_content(
 function_call = response.candidates[0].content.parts[0].function_call
 ```
 
-#### Automatic function calling
+### Automatic function calling
 
 The old SDK only supports automatic function calling in chat. In the new SDK
 this is the default behavior in `generate_content`.
@@ -424,7 +421,7 @@ def get_current_weather(city: str) -> str:
     return "23C"
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-pro-002",
+    model_name="gemini-1.5-flash",
     tools=[get_current_weather]
 )
 
@@ -444,7 +441,7 @@ def get_current_weather(city: str) -> str:
     return "23C"
 
 response = client.models.generate_content(
-   model='gemini-1.5-pro-002',
+   model='gemini-2.0-flash',
    contents="What is the weather like in Boston?",
    config=types.GenerateContentConfig(
        tools=[get_current_weather] 
@@ -452,7 +449,7 @@ response = client.models.generate_content(
 )
 ```
 
-### Code execution
+## Code execution
 
 Code execution is a tool that allows the model to generate Python code, run it,
 and return the result.
@@ -480,7 +477,7 @@ from google.genai import types
 client = genai.Client()
 
 response = client.models.generate_content(
-    model='gemini-1.5-flash',
+    model='gemini-2.0-flash',
     contents='What is the sum of the first 50 prime numbers? Generate and run '
              'code for the calculation, and make sure you get all 50.',
     config=types.GenerateContentConfig(
@@ -489,7 +486,7 @@ response = client.models.generate_content(
 )
 ```
 
-### Search grounding
+## Search grounding
 
 `GoogleSearch` (Gemini>=2.0) and `GoogleSearchRetrieval` (Gemini < 2.0) are tools
 that allow the model to retrieve public web data for grounding, powered by Google.
@@ -514,7 +511,7 @@ from google.genai import types
 client = genai.Client()
 
 response = client.models.generate_content(
-    model='gemini-2.0-flash-exp',
+    model='gemini-2.0-flash',
     contents='What is the Google stock price?',
     config=types.GenerateContentConfig(
         tools=[
@@ -526,7 +523,7 @@ response = client.models.generate_content(
 )
 ```
 
-### JSON response
+## JSON response
 
 Generate answers in JSON format.
 
@@ -545,14 +542,14 @@ import google.generativeai as genai
 import typing_extensions as typing
 
 class CountryInfo(typing.TypedDict):
-    name: str 
+    name: str
     population: int
-    capital: str 
-    continent: str 
-    major_cities: list[str] 
-    gdp: int 
+    capital: str
+    continent: str
+    major_cities: list[str]
+    gdp: int
     official_language: str
-    total_area_sq_mi: int 
+    total_area_sq_mi: int
 
 model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 result = model.generate_content(
@@ -572,18 +569,18 @@ from google import genai
 from pydantic import BaseModel
 client = genai.Client()
 
-class CountryInfo(BaseModel): 
-    name: str 
+class CountryInfo(BaseModel):
+    name: str
     population: int
-    capital: str 
+    capital: str
     continent: str
-    major_cities: list[str] 
-    gdp: int 
+    major_cities: list[str]
+    gdp: int
     official_language: str
-    total_area_sq_mi: int 
+    total_area_sq_mi: int
 
 response = client.models.generate_content( 
-    model='gemini-1.5-flash', 
+    model='gemini-2.0-flash', 
     contents='Give me information of the United States.', 
     config={ 
         'response_mime_type': 'application/json',
@@ -594,9 +591,9 @@ response = client.models.generate_content(
 response.parsed
 ```
 
-### Files
+## Files
 
-#### Upload
+### Upload
 
 Upload a file:
 
@@ -638,7 +635,7 @@ pathlib.Path('a11.txt').write_text(response.text)
 my_file = client.files.upload(file='a11.txt')
 
 response = client.models.generate_content(
-    model='gemini-1.5-flash', 
+    model='gemini-2.0-flash', 
     contents=[
         'Can you summarize this file:', 
         my_file
@@ -647,7 +644,7 @@ response = client.models.generate_content(
 print(response.text)
 ```
 
-#### List and get
+### List and get
 
 List uploaded files and get an uploaded file with a file name:
 
@@ -675,7 +672,7 @@ file = client.files.get(name=file.name)
 ```
 
 
-#### Delete
+### Delete
 
 Delete a file:
 
@@ -705,7 +702,7 @@ response = client.files.delete(name=dummy_file.name)
 ```
 
 
-### Context caching
+## Context caching
 
 Context caching allows the user to pass the content to the model once, cache the
 input tokens, and then refer to the cached tokens in subsequent calls to lower the
@@ -751,6 +748,13 @@ from google import genai
 from google.genai import types
 client = genai.Client()
 
+# Check which models support caching.
+for m in client.models.list():
+  for action in m.supported_actions:
+    if action == "createCachedContent":
+      print(m.name) 
+      break
+
 # Download file
 response = requests.get(
     'https://storage.googleapis.com/generativeai-downloads/data/a11.txt')
@@ -780,7 +784,7 @@ response = client.models.generate_content(
 )
 ```
 
-### Count tokens
+## Count tokens
 
 Count the number of tokens in a request.
 
@@ -802,12 +806,12 @@ from google import genai
 client = genai.Client()
 
 response = client.models.count_tokens(
-    model='gemini-1.5-flash',
+    model='gemini-2.0-flash',
     contents='The quick brown fox jumps over the lazy dog.',
 )
 ```
 
-### Generate images
+## Generate images
 
 Generate images:
 
@@ -853,7 +857,7 @@ for n, image in enumerate(gen_images.generated_images):
 ```
 
 
-### Embed content
+## Embed content
 
 Generate content embeddings.
 
@@ -880,7 +884,7 @@ response = client.models.embed_content(
 )
 ```
 
-### Tune a Model
+## Tune a Model
 
 Create and use a tuned model.
 
@@ -902,7 +906,7 @@ for i in range(1, 6):
 
 name = f'generate-num-{random.randint(0,10000)}'
 operation = genai.create_tuned_model(
-    source_model='gemini-1.0-pro-001',
+    source_model='models/gemini-1.5-flash-001-tuning',
     training_data=train_data,
     id = name,
     epoch_count = 5,
@@ -920,6 +924,18 @@ response = model.generate_content('55')
 **After**
 
 ```python
+from google import genai
+from google.genai import types
+
+client = genai.Client()
+
+# Check which models are available for tuning.
+for m in client.models.list():
+  for action in m.supported_actions:
+    if action == "createTunedModel":
+      print(m.name) 
+      break
+
 # create tuning model
 training_dataset=types.TuningDataset(
         examples=[
@@ -931,7 +947,7 @@ training_dataset=types.TuningDataset(
         ],
     )
 tuning_job = client.tunings.tune(
-    base_model='models/gemini-1.0-pro-001',
+    base_model='models/gemini-1.5-flash-001-tuning',
     training_dataset=training_dataset,
     config=types.CreateTuningJobConfig(
         epoch_count= 5,
@@ -947,3 +963,4 @@ response = client.models.generate_content(
     contents='55', 
 )
 ```
+
