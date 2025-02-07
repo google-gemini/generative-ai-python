@@ -25,7 +25,12 @@ package will continue to support the original Gemini models.
 It <em>can</em> also be used with Gemini 2 models, just with a limited feature
 set. All new features will be developed in the new Google GenAI SDK.
 
-
+<!-- 
+[START update]
+# With Gemini-2 we're launching a new SDK, see this doc for details.
+# https://ai.google.dev/gemini-api/docs/migrate
+[END update]
+ -->
 
 <table align="left">
   <td>
@@ -35,6 +40,7 @@ set. All new features will be developed in the new Google GenAI SDK.
     </a>
   </td>
 </table>
+</br></br>
 
 ## Install the SDK
 
