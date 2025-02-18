@@ -4,6 +4,11 @@
 ![Python support](https://img.shields.io/pypi/pyversions/google-generativeai)
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/google-generativeai)
 
+> [!IMPORTANT]
+> From Gemini 2.0 onwards this SDK will no longer be
+developing new features. Any new code should be written using the new SDK, `google-genai` ([github](https://github.com/googleapis/python-genai),
+[pypi](https://pypi.org/project/google-genai/)). See the migration guide below to upgrade to the new SDK.
+
 # Upgrade the Google GenAI SDK for Python
 
 With Gemini 2 we are offering a [new SDK](https://github.com/googleapis/python-genai)
