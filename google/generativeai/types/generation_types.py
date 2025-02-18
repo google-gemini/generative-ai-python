@@ -532,7 +532,7 @@ class BaseGenerateContentResponse:
                 texts.extend([f"```{outcome_result}", part.code_execution_result.output, "```"])
                 continue
 
-            part_type = protos.Part.pb(part).whichOneof("data")
+            part_type = protos.Part.pb(part).WhichOneof("data")
             raise ValueError(f"Could not convert `part.{part_type}` to text.")
 
         return "\n".join(texts)
