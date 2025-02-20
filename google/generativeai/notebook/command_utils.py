@@ -106,7 +106,7 @@ def create_llm_function(
 
 
 def _convert_simple_compare_fn(
-    name_and_simple_fn: tuple[str, Callable[[str, str], Any]]
+    name_and_simple_fn: tuple[str, Callable[[str, str], Any]],
 ) -> tuple[str, llm_function.CompareFn]:
     simple_fn = name_and_simple_fn[1]
     new_fn = lambda x, y: simple_fn(x.result_value(), y.result_value())
