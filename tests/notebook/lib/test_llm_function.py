@@ -393,7 +393,7 @@ class LLMCompareFunctionTest(absltest.TestCase):
 
         # Batch-based comparison function for post-processing.
         def _sum_of_lengths(
-            rows: Sequence[tuple[Mapping[str, Any], Mapping[str, Any]]]
+            rows: Sequence[tuple[Mapping[str, Any], Mapping[str, Any]]],
         ) -> Sequence[int]:
             return [lhs["length"] + rhs["length"] for lhs, rhs in rows]
 

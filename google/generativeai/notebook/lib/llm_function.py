@@ -64,7 +64,7 @@ def _convert_compare_fn_to_batch_add_fn(
             llmfn_output_row.LLMFnOutputRowView,
         ],
         Any,
-    ]
+    ],
 ) -> llmfn_post_process.LLMCompareFnPostProcessBatchAddFn:
     """Vectorize a single-row-based comparison function."""
 
@@ -74,7 +74,7 @@ def _convert_compare_fn_to_batch_add_fn(
                 llmfn_output_row.LLMFnOutputRowView,
                 llmfn_output_row.LLMFnOutputRowView,
             ]
-        ]
+        ],
     ) -> Sequence[Any]:
         return [fn(lhs, rhs) for lhs, rhs in lhs_and_rhs_rows]
 
