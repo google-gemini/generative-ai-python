@@ -52,7 +52,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-lat
     "contents": {
       "role": "user",
       "parts": {
-        "text": "What can you do?"
+        "text": "Turn on the lights please."
       }
     }
   }
