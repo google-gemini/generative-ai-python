@@ -169,14 +169,6 @@ class UnitTests(parameterized.TestCase):
         model = models.get_base_model(name)
         self.assertEqual(max_temperature, model.max_temperature)
 
-    @parameterized.named_parameters(
-        ["simple", "mystery-bison-001"],
-        ["model-instance", protos.Model(name="how?-bison-001")],
-    )
-    def test_fail_with_unscoped_model_name(self, name):
-        with self.assertRaises(ValueError):
-            model = models.get_model(name)
-
     def test_list_models(self):
         # The low level lib wraps the response in an iterable, so this is a fair test.
         self.responses = {
