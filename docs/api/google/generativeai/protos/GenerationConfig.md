@@ -242,7 +242,7 @@ been seen in the respponse so far.
 A positive penalty will discourage the use of tokens that
 have already been used, proportional to the number of times
 the token has been used: The more a token is used, the more
-dificult it is for the model to use that token again
+difficult it is for the model to use that token again
 increasing the vocabulary of responses.
 
 Caution: A *negative* penalty will encourage the model to
