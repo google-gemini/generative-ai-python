@@ -483,7 +483,7 @@ response = client.models.generate_content(
     contents='What is the sum of the first 50 prime numbers? Generate and run '
              'code for the calculation, and make sure you get all 50.',
     config=types.GenerateContentConfig(
-        tools=[types.Tool(code_execution=types.CodeExecution())],
+        tools=[types.Tool(code_execution=types.ToolCodeExecution)],
     ),
 )
 ```
