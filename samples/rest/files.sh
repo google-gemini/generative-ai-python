@@ -22,7 +22,7 @@ tmp_header_file=upload-header.tmp
 
 # Initial resumable request defining metadata.
 # The upload url is in the response headers dump them to a file.
-curl "${BASE_URL}/upload/v1beta/files?key=${GOOGLE_API_KEY}" \
+curl "${BASE_URL}/upload/v1beta/files?key=${GEMINI_API_KEY}" \
   -D upload-header.tmp \
   -H "X-Goog-Upload-Protocol: resumable" \
   -H "X-Goog-Upload-Command: start" \
@@ -45,7 +45,7 @@ file_uri=$(jq ".file.uri" file_info.json)
 echo file_uri=$file_uri
 
 # Now generate content using that file
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -75,7 +75,7 @@ echo file_uri=$file_uri
 
 echo "[START files_delete]"
 # [START files_delete]
-curl --request "DELETE" https://generativelanguage.googleapis.com/v1beta/files/$name?key=$GOOGLE_API_KEY
+curl --request "DELETE" https://generativelanguage.googleapis.com/v1beta/files/$name?key=$GEMINI_API_KEY
 # [END files_delete]
 
 # [END files_create_text]
@@ -90,7 +90,7 @@ tmp_header_file=upload-header.tmp
 
 # Initial resumable request defining metadata.
 # The upload url is in the response headers dump them to a file.
-curl "${BASE_URL}/upload/v1beta/files?key=${GOOGLE_API_KEY}" \
+curl "${BASE_URL}/upload/v1beta/files?key=${GEMINI_API_KEY}" \
   -D upload-header.tmp \
   -H "X-Goog-Upload-Protocol: resumable" \
   -H "X-Goog-Upload-Command: start" \
@@ -113,7 +113,7 @@ file_uri=$(jq ".file.uri" file_info.json)
 echo file_uri=$file_uri
 
 # Now generate content using that file
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -143,7 +143,7 @@ tmp_header_file=upload-header.tmp
 
 # Initial resumable request defining metadata.
 # The upload url is in the response headers dump them to a file.
-curl "${BASE_URL}/upload/v1beta/files?key=${GOOGLE_API_KEY}" \
+curl "${BASE_URL}/upload/v1beta/files?key=${GEMINI_API_KEY}" \
   -D upload-header.tmp \
   -H "X-Goog-Upload-Protocol: resumable" \
   -H "X-Goog-Upload-Command: start" \
@@ -166,7 +166,7 @@ file_uri=$(jq ".file.uri" file_info.json)
 echo file_uri=$file_uri
 
 # Now generate content using that file
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -191,7 +191,7 @@ DISPLAY_NAME=VIDEO_PATH
 
 # Initial resumable request defining metadata.
 # The upload url is in the response headers dump them to a file.
-curl "${BASE_URL}/upload/v1beta/files?key=${GOOGLE_API_KEY}" \
+curl "${BASE_URL}/upload/v1beta/files?key=${GEMINI_API_KEY}" \
   -D upload-header.tmp \
   -H "X-Goog-Upload-Protocol: resumable" \
   -H "X-Goog-Upload-Command: start" \
@@ -227,7 +227,7 @@ do
 done
 
 # Now generate content using that file
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -252,7 +252,7 @@ tmp_header_file=upload-header.tmp
 
 # Initial resumable request defining metadata.
 # The upload url is in the response headers dump them to a file.
-curl "${BASE_URL}/upload/v1beta/files?key=${GOOGLE_API_KEY}" \
+curl "${BASE_URL}/upload/v1beta/files?key=${GEMINI_API_KEY}" \
   -D upload-header.tmp \
   -H "X-Goog-Upload-Protocol: resumable" \
   -H "X-Goog-Upload-Command: start" \
@@ -296,5 +296,5 @@ echo "[START files_list]"
 # [START files_list]
 echo "My files: "
 
-curl "https://generativelanguage.googleapis.com/v1beta/files?key=$GOOGLE_API_KEY"
+curl "https://generativelanguage.googleapis.com/v1beta/files?key=$GEMINI_API_KEY"
 # [END files_list]
