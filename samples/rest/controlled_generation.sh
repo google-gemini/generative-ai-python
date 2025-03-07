@@ -2,7 +2,7 @@ set -eu
 
 echo "json_controlled_generation"
 # [START json_controlled_generation]
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY" \
 -H 'Content-Type: application/json' \
 -d '{
     "contents": [{
@@ -27,7 +27,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:g
 
 echo "json_no_schema"
 # [START json_no_schema]
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY" \
 -H 'Content-Type: application/json' \
 -d '{
     "contents": [{
