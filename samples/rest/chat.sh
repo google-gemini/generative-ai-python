@@ -5,7 +5,7 @@ MEDIA_DIR=$(realpath ${SCRIPT_DIR}/../../third_party)
 
 echo "[START chat]"
 # [START chat]
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GEMINI_API_KEY \
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -25,7 +25,7 @@ curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:ge
 
 echo "[START chat_streaming]"
 # [START chat_streaming]
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=$GEMINI_API_KEY \
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=$GEMINI_API_KEY \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -53,7 +53,7 @@ else
   B64FLAGS="-w0"
 fi
 
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=$GEMINI_API_KEY \
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=$GEMINI_API_KEY \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
