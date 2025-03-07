@@ -19,14 +19,14 @@ fi
 
 echo "[START tokens_context_window]"
 # [START tokens_context_window]
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro?key=$GOOGLE_API_KEY > model.json
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro?key=$GEMINI_API_KEY > model.json
 jq .inputTokenLimit model.json
 jq .outputTokenLimit model.json
 # [END tokens_context_window]
 
 echo "[START tokens_text_only]"
 # [START tokens_text_only]
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens?key=$GOOGLE_API_KEY \
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:countTokens?key=$GEMINI_API_KEY \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -40,7 +40,7 @@ curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:co
 
 echo "[START tokens_chat]"
 # [START tokens_chat]
-curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens?key=$GOOGLE_API_KEY \
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:countTokens?key=$GEMINI_API_KEY \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
@@ -57,7 +57,7 @@ curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:co
 
 echo "[START tokens_multimodal_image_inline]"
 # [START tokens_multimodal_image_inline]
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:countTokens?key=$GEMINI_API_KEY" \
     -H 'Content-Type: application/json' \
     -X POST \
     -d '{
