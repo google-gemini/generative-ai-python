@@ -2,7 +2,7 @@ set -eu
 
 echo "[START tuned_models_create]"
 # [START tuned_models_create]
-curl -X POST "https://generativelanguage.googleapis.com/v1beta/tunedModels?key=$GOOGLE_API_KEY" \
+curl -X POST "https://generativelanguage.googleapis.com/v1beta/tunedModels?key=$GEMINI_API_KEY" \
     -H 'Content-Type: application/json' \
     -d '
       {
@@ -77,7 +77,7 @@ tuning_done=false
 while [[ "$tuning_done" != "true" ]];
 do
   sleep 5
-  curl -X GET "https://generativelanguage.googleapis.com/v1/${operation}?key=$GOOGLE_API_KEY" \
+  curl -X GET "https://generativelanguage.googleapis.com/v1/${operation}?key=$GEMINI_API_KEY" \
     -H 'Content-Type: application/json' \
      2> /dev/null > tuning_operation.json
 
@@ -90,7 +90,7 @@ done
 
 # Or get the TunedModel and check it's state. The model is ready to use if the state is active.
 modelname=$(cat tunemodel.json | jq ".metadata.tunedModel" | tr -d '"')
-curl -X GET  https://generativelanguage.googleapis.com/v1beta/${modelname}?key=$GOOGLE_API_KEY \
+curl -X GET  https://generativelanguage.googleapis.com/v1beta/${modelname}?key=$GEMINI_API_KEY \
     -H 'Content-Type: application/json' > tuned_model.json
 
 cat tuned_model.json | jq ".state"
@@ -99,7 +99,7 @@ cat tuned_model.json | jq ".state"
 
 echo "[START tuned_models_generate_content]"
 # [START tuned_models_generate_content]
-curl -X POST https://generativelanguage.googleapis.com/v1beta/$modelname:generateContent?key=$GOOGLE_API_KEY \
+curl -X POST https://generativelanguage.googleapis.com/v1beta/$modelname:generateContent?key=$GEMINI_API_KEY \
     -H 'Content-Type: application/json' \
     -d '{
         "contents": [{
@@ -112,7 +112,7 @@ curl -X POST https://generativelanguage.googleapis.com/v1beta/$modelname:generat
 
 echo "[START tuned_models_get]"
 # [START tuned_models_get]
-curl -X GET https://generativelanguage.googleapis.com/v1beta/${modelname}?key=$GOOGLE_API_KEY \
+curl -X GET https://generativelanguage.googleapis.com/v1beta/${modelname}?key=$GEMINI_API_KEY \
     -H 'Content-Type: application/json' | grep state
 # [END tuned_models_get]
 
@@ -130,7 +130,7 @@ jq .tunedModels[].name < tuned_models.json
 page_token=$(jq .nextPageToken < tuned_models.json | tr -d '"')
 
 if [[ "$page_token" != "null"" ]]; then
-curl -X GET https://generativelanguage.googleapis.com/v1beta/tunedModels?page_size=5\&page_token=${page_token}?key=$GOOGLE_API_KEY \
+curl -X GET https://generativelanguage.googleapis.com/v1beta/tunedModels?page_size=5\&page_token=${page_token}?key=$GEMINI_API_KEY \
     -H "Content-Type: application/json"  > tuned_models2.json
 jq .tunedModels[].name < tuned_models.json
 fi
@@ -138,6 +138,6 @@ fi
 
 echo "[START tuned_models_delete]"
 # [START tuned_models_delete]
-curl -X DELETE https://generativelanguage.googleapis.com/v1beta/${modelname}?key=$GOOGLE_API_KEY \
+curl -X DELETE https://generativelanguage.googleapis.com/v1beta/${modelname}?key=$GEMINI_API_KEY \
     -H 'Content-Type: application/json' 
 # [END tuned_models_delete]
