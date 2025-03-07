@@ -2,7 +2,7 @@ set -eu
 
 echo "[START embed_content]"
 # [START embed_content]
-curl "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=$GEMINI_API_KEY" \
 -H 'Content-Type: application/json' \
 -d '{"model": "models/text-embedding-004",
     "content": {
@@ -12,7 +12,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004
 
 echo "[START batch_embed_contents]"
 # [START batch_embed_contents]
-curl "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents?key=$GOOGLE_API_KEY" \
+curl "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents?key=$GEMINI_API_KEY" \
 -H 'Content-Type: application/json' \
 -d '{"requests": [{
       "model": "models/text-embedding-004",
