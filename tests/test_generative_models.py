@@ -15,6 +15,7 @@ from google.generativeai.types import generation_types
 from google.generativeai.types import helper_types
 
 import PIL.Image
+import unittest.mock
 
 HERE = pathlib.Path(__file__).parent
 TEST_IMAGE_PATH = HERE / "test_img.png"
@@ -1247,6 +1248,60 @@ class CUJTests(parameterized.TestCase):
 
         request_options["retry"] = None
         self.assertEqual(request_options, self.observed_kwargs[0])
+
+    def test_generate_content_called_with_request_options(self):
+        self.client.generate_content = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        request_options = {"timeout": 120}
+
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(contents=["Hello?"], request_options=request_options)
+
+        self.client.generate_content.assert_called_once_with(request, **request_options)
+
+    def test_generate_content_called_with_extra_headers(self):
+        self.client.generate_content = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        extra_headers = [("helicone-user-id", "user-123")]
+        request_options = {"extra_headers": extra_headers}
+
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(contents=["Hello?"], request_options=request_options)
+
+        # The method should extract extra_headers and pass it as metadata parameter
+        self.client.generate_content.assert_called_once_with(
+            request, metadata=extra_headers
+        )
+
+    def test_count_tokens_called_with_extra_headers(self):
+        self.client.count_tokens = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        extra_headers = [("helicone-user-id", "user-123")]
+        request_options = {"extra_headers": extra_headers}
+
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
+        response = model.count_tokens(contents=["Hello?"], request_options=request_options)
+
+        # The method should extract extra_headers and pass it as metadata parameter
+        self.client.count_tokens.assert_called_once_with(
+            request, metadata=extra_headers
+        )
+
+    def test_generate_content_called_with_extra_headers_and_other_options(self):
+        self.client.generate_content = unittest.mock.MagicMock()
+        request = unittest.mock.ANY
+        extra_headers = [("helicone-user-id", "user-123")]
+        timeout = 120
+        request_options = {"extra_headers": extra_headers, "timeout": timeout}
+
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(contents=["Hello?"], request_options=request_options)
+
+        # The method should extract extra_headers and pass it as metadata parameter,
+        # and pass other options as they are
+        self.client.generate_content.assert_called_once_with(
+            request, metadata=extra_headers, timeout=timeout
+        )
 
 
 if __name__ == "__main__":

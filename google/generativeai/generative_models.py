@@ -276,6 +276,18 @@ class GenerativeModel:
 
         For a simpler multi-turn interface see `GenerativeModel.start_chat`.
 
+        ### Per-request Headers
+
+        You can set custom headers for specific requests using the `request_options` parameter:
+
+        >>> from google.generativeai.types import RequestOptions
+        >>> response = model.generate_content('Hello',
+        ...     request_options=RequestOptions(
+        ...         extra_headers=[('helicone-user-id', 'user-123')]))
+
+        This is useful for integrating with proxy services like Helicone that require user-specific 
+        headers for tracking and analytics.
+
         ### Input type flexibility
 
         While the underlying API strictly expects a `list[protos.Content]` objects, this method
@@ -297,7 +309,8 @@ class GenerativeModel:
             safety_settings: Overrides for the model's safety settings.
             stream: If True, yield response chunks as they are generated.
             tools: `protos.Tools` more info coming soon.
-            request_options: Options for the request.
+            request_options: Options for the request, including retry, timeout, and extra_headers.
+                Use this to set custom headers/metadata for individual requests.
         """
         if not contents:
             raise TypeError("contents must not be empty")
@@ -322,15 +335,35 @@ class GenerativeModel:
         try:
             if stream:
                 with generation_types.rewrite_stream_error():
+                    # Process extra_headers if present and add them to metadata
+                    metadata = ()
+                    if request_options.get("extra_headers"):
+                        metadata = list(request_options.get("extra_headers", ()))
+                        # Make a copy of request_options without extra_headers
+                        request_options_copy = {k: v for k, v in request_options.items() if k != "extra_headers"}
+                    else:
+                        request_options_copy = request_options
+                        
                     iterator = self._client.stream_generate_content(
                         request,
-                        **request_options,
+                        metadata=metadata,
+                        **request_options_copy,
                     )
                 return generation_types.GenerateContentResponse.from_iterator(iterator)
             else:
+                # Process extra_headers if present and add them to metadata
+                metadata = ()
+                if request_options.get("extra_headers"):
+                    metadata = list(request_options.get("extra_headers", ()))
+                    # Make a copy of request_options without extra_headers
+                    request_options_copy = {k: v for k, v in request_options.items() if k != "extra_headers"}
+                else:
+                    request_options_copy = request_options
+                    
                 response = self._client.generate_content(
                     request,
-                    **request_options,
+                    metadata=metadata,
+                    **request_options_copy,
                 )
                 return generation_types.GenerateContentResponse.from_response(response)
         except google.api_core.exceptions.InvalidArgument as e:
@@ -352,7 +385,22 @@ class GenerativeModel:
         tool_config: content_types.ToolConfigType | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> generation_types.AsyncGenerateContentResponse:
-        """The async version of `GenerativeModel.generate_content`."""
+        """The async version of `GenerativeModel.generate_content`.
+        
+        This method supports all the same features as `generate_content`, including:
+        
+        ### Per-request Headers
+
+        You can set custom headers for specific requests using the `request_options` parameter:
+
+        >>> from google.generativeai.types import RequestOptions
+        >>> response = await model.generate_content_async('Hello',
+        ...     request_options=RequestOptions(
+        ...         extra_headers=[('helicone-user-id', 'user-123')]))
+
+        This is useful for integrating with proxy services like Helicone that require user-specific 
+        headers for tracking and analytics.
+        """
         if not contents:
             raise TypeError("contents must not be empty")
 
@@ -376,15 +424,35 @@ class GenerativeModel:
         try:
             if stream:
                 with generation_types.rewrite_stream_error():
+                    # Process extra_headers if present and add them to metadata
+                    metadata = ()
+                    if request_options.get("extra_headers"):
+                        metadata = list(request_options.get("extra_headers", ()))
+                        # Make a copy of request_options without extra_headers
+                        request_options_copy = {k: v for k, v in request_options.items() if k != "extra_headers"}
+                    else:
+                        request_options_copy = request_options
+                        
                     iterator = await self._async_client.stream_generate_content(
                         request,
-                        **request_options,
+                        metadata=metadata,
+                        **request_options_copy,
                     )
                 return await generation_types.AsyncGenerateContentResponse.from_aiterator(iterator)
             else:
+                # Process extra_headers if present and add them to metadata
+                metadata = ()
+                if request_options.get("extra_headers"):
+                    metadata = list(request_options.get("extra_headers", ()))
+                    # Make a copy of request_options without extra_headers
+                    request_options_copy = {k: v for k, v in request_options.items() if k != "extra_headers"}
+                else:
+                    request_options_copy = request_options
+                    
                 response = await self._async_client.generate_content(
                     request,
-                    **request_options,
+                    metadata=metadata,
+                    **request_options_copy,
                 )
                 return generation_types.AsyncGenerateContentResponse.from_response(response)
         except google.api_core.exceptions.InvalidArgument as e:
@@ -406,6 +474,20 @@ class GenerativeModel:
         tool_config: content_types.ToolConfigType | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> protos.CountTokensResponse:
+        """Counts the number of tokens in the request.
+
+        This method doesn't generate content, it just counts the tokens in the
+        input. This is useful for checking if your prompt is too long.
+        
+        ### Per-request Headers
+
+        Just like `generate_content`, you can set custom headers for specific requests:
+
+        >>> from google.generativeai.types import RequestOptions
+        >>> response = model.count_tokens('Hello',
+        ...     request_options=RequestOptions(
+        ...         extra_headers=[('helicone-user-id', 'user-123')]))
+        """
         if request_options is None:
             request_options = {}
 
@@ -421,7 +503,17 @@ class GenerativeModel:
                 tools=tools,
                 tool_config=tool_config,
         ))
-        return self._client.count_tokens(request, **request_options)
+        
+        # Process extra_headers if present and add them to metadata
+        metadata = ()
+        if request_options.get("extra_headers"):
+            metadata = list(request_options.get("extra_headers", ()))
+            # Make a copy of request_options without extra_headers
+            request_options_copy = {k: v for k, v in request_options.items() if k != "extra_headers"}
+        else:
+            request_options_copy = request_options
+            
+        return self._client.count_tokens(request, metadata=metadata, **request_options_copy)
 
     async def count_tokens_async(
         self,
@@ -433,6 +525,19 @@ class GenerativeModel:
         tool_config: content_types.ToolConfigType | None = None,
         request_options: helper_types.RequestOptionsType | None = None,
     ) -> protos.CountTokensResponse:
+        """The async version of `GenerativeModel.count_tokens`.
+        
+        This method supports all the same features as `count_tokens`, including:
+        
+        ### Per-request Headers
+
+        Just like `generate_content_async`, you can set custom headers for specific requests:
+
+        >>> from google.generativeai.types import RequestOptions
+        >>> response = await model.count_tokens_async('Hello',
+        ...     request_options=RequestOptions(
+        ...         extra_headers=[('helicone-user-id', 'user-123')]))
+        """
         if request_options is None:
             request_options = {}
 
@@ -448,7 +553,17 @@ class GenerativeModel:
                 tools=tools,
                 tool_config=tool_config,
         ))
-        return await self._async_client.count_tokens(request, **request_options)
+        
+        # Process extra_headers if present and add them to metadata
+        metadata = ()
+        if request_options.get("extra_headers"):
+            metadata = list(request_options.get("extra_headers", ()))
+            # Make a copy of request_options without extra_headers
+            request_options_copy = {k: v for k, v in request_options.items() if k != "extra_headers"}
+        else:
+            request_options_copy = request_options
+            
+        return await self._async_client.count_tokens(request, metadata=metadata, **request_options_copy)
 
     # fmt: on
 
