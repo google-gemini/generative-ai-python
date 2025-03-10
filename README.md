@@ -9,6 +9,51 @@
 developing new features. Any new code should be written using the new SDK, `google-genai` ([github](https://github.com/googleapis/python-genai),
 [pypi](https://pypi.org/project/google-genai/)). See the migration guide below to upgrade to the new SDK.
 
+# Using the Gemini API with Proxies
+
+If you need to use the Gemini API in environments where direct internet access is restricted and all traffic must go through a proxy server, you can now configure the SDK to use your proxy:
+
+```python
+import google.generativeai as genai
+import httplib2
+import socks
+
+# Configure a proxy for all API requests
+proxy_info = httplib2.ProxyInfo(
+    proxy_type=socks.PROXY_TYPE_HTTP,
+    proxy_host='your-proxy-host',  # Replace with your proxy host
+    proxy_port=8080                # Replace with your proxy port
+)
+
+# Optional: Configure authenticated proxy
+# proxy_info = httplib2.ProxyInfo(
+#     proxy_type=socks.PROXY_TYPE_HTTP,
+#     proxy_host='your-proxy-host',
+#     proxy_port=8080,
+#     proxy_user='username',
+#     proxy_pass='password'
+# )
+
+# Configure the Gemini API with your API key and proxy settings
+genai.configure(
+    api_key='YOUR_API_KEY', 
+    proxy_info=proxy_info
+)
+
+# All operations, including file uploads, will now use the proxy
+model = genai.GenerativeModel('gemini-1.5-flash')
+response = model.generate_content('Hello!')
+print(response.text)
+
+# File uploads will also use the proxy
+file = genai.upload_file(path='document.pdf')
+```
+
+This feature is particularly useful for:
+- Corporate environments with restricted internet access
+- Networks behind firewalls that require all traffic to go through a proxy
+- Environments with authenticated proxies requiring username/password
+
 # Upgrade the Google GenAI SDK for Python
 
 With Gemini 2 we are offering a [new SDK](https://github.com/googleapis/python-genai)
@@ -95,38 +140,6 @@ client = genai.Client(api_key=...)
 
 ## Generate content
 
-The new SDK provides access to all the API methods through the `Client` object.
-Except for a few stateful special cases (`chat`, live-api `session`s) these are all
-stateless functions. For utility and uniformity objects returned are `pydantic`
-classes.
-
-**Before**
-
-```python
-import google.generativeai as genai
-
-model = genai.GenerativeModel('gemini-1.5-flash')
-response = model.generate_content(
-    'Tell me a story in 300 words'
-)
-print(response.text)
-```
-
-**After**
-
-```python
-from google import genai
-client = genai.Client()
-
-response = client.models.generate_content(
-    model='gemini-2.0-flash', 
-    contents='Tell me a story in 300 words.'
-)
-print(response.text)
-
-print(response.model_dump_json(
-    exclude_none=True, indent=4))
-```
 
 
 Many of the same convenience features exist in the new SDK. For example

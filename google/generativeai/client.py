@@ -66,6 +66,7 @@ class FileServiceClient(glm.FileServiceClient):
     def __init__(self, *args, **kwargs):
         self._discovery_api = None
         self._local = threading.local()
+        self._proxy_info = kwargs.pop('proxy_info', None)
         super().__init__(*args, **kwargs)
 
     def _setup_discovery_api(self, metadata: dict | Sequence[tuple[str, str]] = ()):
@@ -75,8 +76,9 @@ class FileServiceClient(glm.FileServiceClient):
                 "Invalid operation: Uploading to the File API requires an API key. Please provide a valid API key."
             )
 
+        http_client = httplib2.Http(proxy_info=self._proxy_info)
         request = googleapiclient.http.HttpRequest(
-            http=httplib2.Http(),
+            http=http_client,
             postproc=lambda resp, content: (resp, content),
             uri=f"{GENAI_API_DISCOVERY_URL}?version=v1beta&key={api_key}",
             headers=dict(metadata),
@@ -86,7 +88,7 @@ class FileServiceClient(glm.FileServiceClient):
 
         discovery_doc = content.decode("utf-8")
         self._local.discovery_api = googleapiclient.discovery.build_from_document(
-            discovery_doc, developerKey=api_key
+            discovery_doc, developerKey=api_key, http=http_client
         )
 
     def create_file(
@@ -137,6 +139,7 @@ class _ClientManager:
     client_config: dict[str, Any] = dataclasses.field(default_factory=dict)
     default_metadata: Sequence[tuple[str, str]] = ()
     clients: dict[str, Any] = dataclasses.field(default_factory=dict)
+    proxy_info: Any = None
 
     def configure(
         self,
@@ -153,6 +156,7 @@ class _ClientManager:
         client_options: client_options_lib.ClientOptions | dict[str, Any] | None = None,
         client_info: gapic_v1.client_info.ClientInfo | None = None,
         default_metadata: Sequence[tuple[str, str]] = (),
+        proxy_info: Any = None,
     ) -> None:
         """Initializes default client configurations using specified parameters or environment variables.
 
@@ -171,6 +175,8 @@ class _ClientManager:
                 are set, they will be used in this order of priority.
             default_metadata: Default (key, value) metadata pairs to send with every request.
                 when using `transport="rest"` these are sent as HTTP headers.
+            proxy_info: Proxy configuration for all HTTP requests. This should be an instance
+                of httplib2.ProxyInfo or similar.
         """
         if isinstance(client_options, dict):
             client_options = client_options_lib.from_dict(client_options)
@@ -218,6 +224,7 @@ class _ClientManager:
 
         self.client_config = client_config
         self.default_metadata = default_metadata
+        self.proxy_info = proxy_info
 
         self.clients = {}
 
@@ -238,7 +245,10 @@ class _ClientManager:
 
         try:
             with patch_colab_gce_credentials():
-                client = cls(**self.client_config)
+                if name == "file" and self.proxy_info is not None:
+                    client = cls(proxy_info=self.proxy_info, **self.client_config)
+                else:
+                    client = cls(**self.client_config)
         except ga_exceptions.DefaultCredentialsError as e:
             e.args = (
                 "\n  No API_KEY or ADC found. Please either:\n"
@@ -312,6 +322,7 @@ def configure(
     client_options: client_options_lib.ClientOptions | dict | None = None,
     client_info: gapic_v1.client_info.ClientInfo | None = None,
     default_metadata: Sequence[tuple[str, str]] = (),
+    proxy_info: Any = None,
 ):
     """Captures default client configuration.
 
@@ -329,6 +340,8 @@ def configure(
             used.
         default_metadata: Default (key, value) metadata pairs to send with every request.
             when using `transport="rest"` these are sent as HTTP headers.
+        proxy_info: Proxy configuration for all HTTP requests. This should be an instance
+            of httplib2.ProxyInfo or similar.
     """
     return _client_manager.configure(
         api_key=api_key,
@@ -337,6 +350,7 @@ def configure(
         client_options=client_options,
         client_info=client_info,
         default_metadata=default_metadata,
+        proxy_info=proxy_info,
     )
 
 
