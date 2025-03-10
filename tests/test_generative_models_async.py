@@ -263,6 +263,50 @@ class AsyncTests(parameterized.TestCase, unittest.IsolatedAsyncioTestCase):
 
         self.client.count_tokens.assert_called_once_with(request, **request_options)
 
+    async def test_generate_content_async_called_with_extra_headers(self):
+        self.client.generate_content = unittest.mock.AsyncMock()
+        request = unittest.mock.ANY
+        extra_headers = [("helicone-user-id", "user-123")]
+        request_options = {"extra_headers": extra_headers}
+
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
+        response = await model.generate_content_async(contents=["Hello?"], request_options=request_options)
+
+        # The method should extract extra_headers and pass it as metadata parameter
+        self.client.generate_content.assert_called_once_with(
+            request, metadata=extra_headers
+        )
+
+    async def test_count_tokens_async_called_with_extra_headers(self):
+        self.client.count_tokens = unittest.mock.AsyncMock()
+        request = unittest.mock.ANY
+        extra_headers = [("helicone-user-id", "user-123")]
+        request_options = {"extra_headers": extra_headers}
+
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
+        response = await model.count_tokens_async(contents=["Hello?"], request_options=request_options)
+
+        # The method should extract extra_headers and pass it as metadata parameter
+        self.client.count_tokens.assert_called_once_with(
+            request, metadata=extra_headers
+        )
+
+    async def test_generate_content_async_called_with_extra_headers_and_other_options(self):
+        self.client.generate_content = unittest.mock.AsyncMock()
+        request = unittest.mock.ANY
+        extra_headers = [("helicone-user-id", "user-123")]
+        timeout = 120
+        request_options = {"extra_headers": extra_headers, "timeout": timeout}
+
+        model = generative_models.GenerativeModel("gemini-1.5-flash")
+        response = await model.generate_content_async(contents=["Hello?"], request_options=request_options)
+
+        # The method should extract extra_headers and pass it as metadata parameter,
+        # and pass other options as they are
+        self.client.generate_content.assert_called_once_with(
+            request, metadata=extra_headers, timeout=timeout
+        )
+
 
 if __name__ == "__main__":
     absltest.main()
