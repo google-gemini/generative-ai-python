@@ -38,7 +38,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:g
   -H 'Content-Type: application/json' \
   -d @<(echo '
   {
-    "system_instruction": {
+    "systemInstruction": {
       "parts": {
         "text": "You are a helpful lighting system bot. You can turn lights on and off, and you can set the color. Do not perform any other tasks."
       }

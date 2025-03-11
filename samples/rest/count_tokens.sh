@@ -65,8 +65,8 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:c
         "parts":[
             {"text": "Tell me about this instrument"},
             {
-              "inline_data": {
-                "mime_type":"image/jpeg",
+              "inlineData": {
+                "mimeType":"image/jpeg",
                 "data": "'$(base64 $B64FLAGS $IMG_PATH)'"
               }
             }
@@ -184,8 +184,8 @@ echo '{
     {
       "parts":[
         {
-          "inline_data": {
-            "mime_type":"text/plain",
+          "inlineData": {
+            "mimeType":"text/plain",
             "data": "'$(base64 $B64FLAGS $A11_PATH)'"
           }
         }
@@ -215,7 +215,7 @@ echo "[START tokens_system_instruction]"
 # [START tokens_system_instruction]
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=$GOOGLE_API_KEY" \
 -H 'Content-Type: application/json' \
--d '{ "system_instruction": {
+-d '{ "systemInstruction": {
     "parts":
       { "text": "You are a cat. Your name is Neko."}},
     "contents": {
@@ -264,7 +264,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-lat
   -H 'Content-Type: application/json' \
   -d '
   {
-    "system_instruction": {
+    "systemInstruction": {
       "parts": {
         "text": "You are a helpful lighting system bot. You can turn lights on and off, and you can set the color. Do not perform any other tasks."
       }

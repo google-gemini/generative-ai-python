@@ -54,8 +54,8 @@ cat > "$TEMP_JSON" << EOF
     "parts":[
       {"text": "Tell me about this instrument"},
       {
-        "inline_data": {
-          "mime_type":"image/jpeg",
+        "inlineData": {
+          "mimeType":"image/jpeg",
           "data": "$(cat "$TEMP_B64")"
         }
       }
@@ -78,8 +78,8 @@ cat > "$TEMP_JSON" << EOF
     "parts":[
       {"text": "Tell me about this instrument"},
       {
-        "inline_data": {
-          "mime_type":"image/jpeg",
+        "inlineData": {
+          "mimeType":"image/jpeg",
           "data": "$(cat "$TEMP_B64")"
         }
       }
@@ -109,14 +109,14 @@ cat > "$TEMP_JSON" << EOF
     "contents": [{
         "parts":[
             {
-                "inline_data": {
-                    "mime_type": "image/jpeg",
+                "inlineData": {
+                    "mimeType": "image/jpeg",
                     "data": "$(cat "$TEMP_B64_1")"
                 }
             },
             {
-                "inline_data": {
-                    "mime_type": "image/jpeg",
+                "inlineData": {
+                    "mimeType": "image/jpeg",
                     "data": "$(cat "$TEMP_B64_2")"
                 }
             },
@@ -148,8 +148,8 @@ cat > "$TEMP_JSON" << EOF
     "contents": [{
         "parts":[
             {
-                "inline_data": {
-                    "mime_type": "image/jpeg",
+                "inlineData": {
+                    "mimeType": "image/jpeg",
                     "data": "$(cat "$TEMP_B64_2")"
                 }
             },
