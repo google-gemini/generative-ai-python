@@ -113,9 +113,9 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:c
       "contents": [{
         "parts":[
           {"text": "Can you tell me about the instruments in this photo?"},
-          {"file_data":
-            {"mime_type": "image/jpeg", 
-            "file_uri": '$file_uri'}
+          {"fileData":
+            {"mimeType": "image/jpeg", 
+            "fileUri": '$file_uri'}
           }]
         }]
        }' 
@@ -171,7 +171,7 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:c
       "contents": [{
         "parts":[
           {"text": "Describe this video clip"},
-          {"file_data":{"mime_type": "video/mp4", "file_uri": '$file_uri'}}]
+          {"fileData":{"mimeType": "video/mp4", "fileUri": '$file_uri'}}]
         }]
        }'
 # [END tokens_multimodal_video_audio_file_api]
@@ -271,8 +271,8 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-lat
     },
     "tools": ['$(source "$tools")'],
 
-    "tool_config": {
-      "function_calling_config": {"mode": "none"}
+    "toolConfig": {
+      "functionCallingConfig": {"mode": "none"}
     },
 
     "contents": {

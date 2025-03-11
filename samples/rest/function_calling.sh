@@ -45,8 +45,8 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:g
     },
     "tools": ['$(cat tools.json)'],
 
-    "tool_config": {
-      "function_calling_config": {"mode": "auto"}
+    "toolConfig": {
+      "functionCallingConfig": {"mode": "auto"}
     },
 
     "contents": {
