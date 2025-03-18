@@ -10,11 +10,11 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
 
       - name: Get Changed Files
         id: changed_files
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@2d756ea4c53f7f6b397767d8723b3a10a9f35bf2  # v44
         with:
           files:  |
             samples/*.py
