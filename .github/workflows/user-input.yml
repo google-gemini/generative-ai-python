@@ -1,0 +1,14 @@
+name: Manage awaiting user response
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  remove_label:
+    runs-on: ubuntu-latest
+    if: "contains(github.event.issue.labels.*.name, 'status: awaiting user response')"
+    steps:
+      - uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: "status: awaiting user response"
