@@ -21,7 +21,7 @@ import google.api_core.retry
 import collections
 import dataclasses
 
-from typing import Union
+from typing import Union, Sequence
 from typing_extensions import TypedDict
 
 __all__ = ["RequestOptions", "RequestOptionsType"]
@@ -30,6 +30,7 @@ __all__ = ["RequestOptions", "RequestOptionsType"]
 class RequestOptionsDict(TypedDict, total=False):
     retry: google.api_core.retry.Retry
     timeout: Union[int, float, google.api_core.timeout.TimeToDeadlineTimeout]
+    extra_headers: Sequence[tuple[str, str]]
 
 
 @dataclasses.dataclass(init=False)
@@ -46,23 +47,32 @@ class RequestOptions(collections.abc.Mapping):
     ...         retry=retry.Retry(initial=10, multiplier=2, maximum=60, timeout=300)))
     >>> response = model.generate_content('Hello',
     ...     request_options=RequestOptions(timeout=600)))
+    >>> # With per-request custom headers
+    >>> response = model.generate_content('Hello',
+    ...     request_options=RequestOptions(
+    ...         extra_headers=[('helicone-user-id', 'user-123')]))
 
     Args:
         retry: Refer to [retry docs](https://googleapis.dev/python/google-api-core/latest/retry.html) for details.
         timeout: In seconds (or provide a [TimeToDeadlineTimeout](https://googleapis.dev/python/google-api-core/latest/timeout.html) object).
+        extra_headers: Additional (key, value) metadata pairs to send with this specific request.
+            When using `transport="rest"` these are sent as HTTP headers.
     """
 
     retry: google.api_core.retry.Retry | None
     timeout: int | float | google.api_core.timeout.TimeToDeadlineTimeout | None
+    extra_headers: Sequence[tuple[str, str]] | None
 
     def __init__(
         self,
         *,
         retry: google.api_core.retry.Retry | None = None,
         timeout: int | float | google.api_core.timeout.TimeToDeadlineTimeout | None = None,
+        extra_headers: Sequence[tuple[str, str]] | None = None,
     ):
         self.retry = retry
         self.timeout = timeout
+        self.extra_headers = extra_headers
 
     # Inherit from Mapping for **unpacking
     def __getitem__(self, item):
@@ -70,6 +80,8 @@ class RequestOptions(collections.abc.Mapping):
             return self.retry
         elif item == "timeout":
             return self.timeout
+        elif item == "extra_headers":
+            return self.extra_headers
         else:
             raise KeyError(
                 f"Invalid key: 'RequestOptions' does not contain a key named '{item}'. "
@@ -79,9 +91,10 @@ class RequestOptions(collections.abc.Mapping):
     def __iter__(self):
         yield "retry"
         yield "timeout"
+        yield "extra_headers"
 
     def __len__(self):
-        return 2
+        return 3
 
 
 RequestOptionsType = Union[RequestOptions, RequestOptionsDict]

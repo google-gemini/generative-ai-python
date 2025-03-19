@@ -136,6 +136,44 @@ class ClientTests(parameterized.TestCase):
         )
         self.assertEqual(cm1.default_metadata, cm2.default_metadata)
 
+    def test_proxy_info_passed_to_file_service_client():
+        """Test that proxy_info is passed to FileServiceClient."""
+        import httplib2
+        import socks
+        from google.generativeai.client import FileServiceClient, configure
+        from unittest.mock import patch, MagicMock
+
+        # Create a proxy_info object
+        proxy_info = httplib2.ProxyInfo(
+            proxy_type=socks.PROXY_TYPE_HTTP,
+            proxy_host='proxy-host',
+            proxy_port=8080
+        )
+
+        # Mock httplib2.Http to verify it's called with proxy_info
+        http_mock = MagicMock()
+        
+        with patch('httplib2.Http', return_value=http_mock) as http_class_mock, \
+             patch('googleapiclient.discovery.build_from_document') as build_mock:
+            
+            # Configure with proxy_info
+            configure(api_key="fake-key", proxy_info=proxy_info)
+            
+            # Create a file service client
+            file_client = FileServiceClient(proxy_info=proxy_info)
+            
+            # Call _setup_discovery_api to trigger HTTP client creation
+            file_client._setup_discovery_api()
+            
+            # Verify httplib2.Http was called with proxy_info
+            http_class_mock.assert_called_with(proxy_info=proxy_info)
+            
+            # Verify build_from_document was called with the http client
+            build_mock.assert_called_once()
+            # Verify the http parameter was passed
+            assert 'http' in build_mock.call_args[1]
+            assert build_mock.call_args[1]['http'] == http_mock
+
 
 if __name__ == "__main__":
     absltest.main()
